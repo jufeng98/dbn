@@ -1,8 +1,21 @@
 package com.dci.intellij.dbn.debugger.jdwp.process;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.UnknownHostException;
+import java.util.Optional;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import com.dci.intellij.dbn.common.dispose.Failsafe;
 import com.dci.intellij.dbn.common.util.Strings;
 import com.dci.intellij.dbn.connection.ConnectionHandler;
+import com.dci.intellij.dbn.debugger.common.config.DBRunConfig;
 import com.dci.intellij.dbn.debugger.common.process.DBDebugProcessStarter;
 import com.dci.intellij.dbn.debugger.jdwp.config.DBJdwpRunConfig;
 import com.intellij.debugger.DebugEnvironment;
@@ -29,6 +42,11 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.UnknownHostException;
+import com.jetbrains.jdi.GenericListeningConnector;
+import com.jetbrains.jdi.SocketTransportService;
+import com.jetbrains.jdi.VirtualMachineManagerImpl;
+import com.sun.jdi.connect.ListeningConnector;
+import com.sun.jdi.connect.spi.Connection;
 
 import static com.dci.intellij.dbn.diagnostics.Diagnostics.conditionallyLog;
 
@@ -62,6 +80,7 @@ public abstract class DBJdwpProcessStarter extends DBDebugProcessStarter {
     @NotNull
     @Override
     public final XDebugProcess start(@NotNull XDebugSession session) throws ExecutionException {
+    	fixSocketConnectors();
         Executor executor = DefaultDebugExecutor.getDebugExecutorInstance();
         RunProfile runProfile = session.getRunProfile();
         assertNotNull(runProfile, "Invalid run profile");
@@ -102,7 +121,75 @@ public abstract class DBJdwpProcessStarter extends DBDebugProcessStarter {
         return tcpHost;
     }
 
-    protected abstract DBJdwpDebugProcess createDebugProcess(@NotNull XDebugSession session, DebuggerSession debuggerSession, String hostname, int tcpPort);
+    private void fixSocketConnectors() {
+    	VirtualMachineManagerImpl vmm = VirtualMachineManagerImpl.virtualMachineManager();
+    	Optional<ListeningConnector> curConnector = 
+    		vmm.listeningConnectors().stream().filter(l -> l.name().equals("com.jetbrains.jdi.SocketListen")).findFirst();
+    	curConnector.ifPresentOrElse(
+    		c -> {
+//    			vmm.removeConnector(c);
+//    			SocketListeningConnector newConnector = new SocketListeningConnector();
+    			Class<? extends GenericListeningConnector> class1 = 
+    				GenericListeningConnector.class;
+    			Field declaredField = null;
+				try {
+					declaredField = class1.getDeclaredField("transportService");
+				} catch (NoSuchFieldException | SecurityException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    			declaredField.setAccessible(true);
+    			SocketTransportService sts = new SocketTransportService() {
+
+					@Override
+					public Connection accept(ListenKey key, long acceptTimeout, long handshakeTimeout) throws IOException {
+						final Connection delegate = super.accept(key, acceptTimeout, handshakeTimeout);
+						Connection foo = new Connection() {
+
+							@Override
+							public byte[] readPacket() throws IOException {
+								byte[] packet = delegate.readPacket();
+								System.out.printf("Reading JDWP data. %d bytes\n", packet.length);
+								Packet p = Packet.read(new ByteArrayInputStream(packet));
+								System.out.println(p.toString());
+								return packet;
+							}
+
+							@Override
+							public void writePacket(byte[] pkt) throws IOException {
+								delegate.writePacket(pkt);
+								System.out.printf("Writing JDWP data. %d bytes\n", pkt.length);
+								Packet p = Packet.read(new ByteArrayInputStream(pkt));
+								System.out.println(p.toString());
+							}
+
+							@Override
+							public void close() throws IOException {
+								delegate.close();
+							}
+
+							@Override
+							public boolean isOpen() {
+								return delegate.isOpen();
+							}
+							
+						};
+						return foo;
+					}
+    				
+    			};
+    			try {
+					declaredField.set(c, sts);
+				} catch (IllegalArgumentException | IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    		}, 
+    		() -> {throw new RuntimeException("Expected to find listening connector");});
+    }
+    
+
+	protected abstract DBJdwpDebugProcess createDebugProcess(@NotNull XDebugSession session, DebuggerSession debuggerSession, String hostname, int tcpPort);
 
     private @NotNull <T> T assertNotNull(@Nullable T object, String message) throws ExecutionException {
         if (object == null) {
