@@ -30,4 +30,6 @@ public interface DBJdwpRunConfig {
     void setTcpHostAddress(String tcpHost);
 
     void setCompileDependencies(boolean selected);
+
+    default boolean getIsCloudDatabase(){return false;}
 }

@@ -15,9 +15,11 @@ import com.dci.intellij.dbn.connection.jdbc.DBNConnection;
 import com.dci.intellij.dbn.connection.ssh.SshTunnelConnector;
 import com.dci.intellij.dbn.connection.ssh.SshTunnelManager;
 import com.dci.intellij.dbn.connection.ssl.SslConnectionManager;
+import com.dci.intellij.dbn.debugger.jdwp.process.DBJdwpCloudProcessStarter;
 import com.dci.intellij.dbn.diagnostics.Diagnostics;
 import com.intellij.openapi.project.Project;
 import lombok.Getter;
+import oracle.jdbc.driver.OracleConnection;
 import org.jetbrains.annotations.Nullable;
 
 import java.sql.Connection;
@@ -129,6 +131,11 @@ class Connector {
 
             if (databaseType == DatabaseType.ORACLE) {
                 properties.put(Property.SESSION_PROGRAM, appName);
+                // i check if we have got jdwpHostPort if yes i get a connection using CONNECTION_PROPERTY_THIN_DEBUG_JDWP property
+                if (DBJdwpCloudProcessStarter.getJdwpHostPort() != null) {
+                    properties.put(OracleConnection.CONNECTION_PROPERTY_THIN_DEBUG_JDWP, DBJdwpCloudProcessStarter.getJdwpHostPort());
+                    DBJdwpCloudProcessStarter.setJdwpHostPort(null);
+                }
             }
 
             Map<String, String> configProperties = databaseSettings.getParent().getPropertiesSettings().getProperties();
