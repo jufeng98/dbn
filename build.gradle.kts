@@ -15,6 +15,7 @@ repositories {
 dependencies {
   annotationProcessor("org.projectlombok:lombok:1.18.26")
   testAnnotationProcessor("org.projectlombok:lombok:1.18.26")
+  implementation(files("lib/ojdbc8.jar"))
 
   implementation("org.projectlombok:lombok:1.18.26")
   implementation("org.dom4j:dom4j:2.1.4")
