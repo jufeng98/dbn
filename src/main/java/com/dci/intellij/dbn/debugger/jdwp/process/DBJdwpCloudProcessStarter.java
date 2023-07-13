@@ -37,7 +37,7 @@ import java.util.Properties;
 
 public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
 
-    public static String jdwpHostPort = null;
+    private static String jdwpHostPort = null;
     private NSTunnelConnection debugConnection = null;
     ByteBuffer readBuffer = ByteBuffer.allocate(320000);
     ByteBuffer writeBuffer = ByteBuffer.allocate(320000);
@@ -59,7 +59,9 @@ public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
         if (debugConnection != null) {
             try {
                 debugConnection.close();
-            } catch (Exception e) {}
+            } catch (Exception e) {
+                throw e;
+            }
         }
         Properties props = new Properties();
         String URL = getConnection().getSettings().getDatabaseSettings().getConnectionUrl();
@@ -131,14 +133,13 @@ public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
                         declaredField = class1.getDeclaredField("transportService");
                     } catch (NoSuchFieldException | SecurityException e) {
                         // TODO Auto-generated catch block
-                        e.printStackTrace();
+                        throw new RuntimeException(e);
                     }
                     declaredField.setAccessible(true);
                     SocketTransportService sts = new SocketTransportService() {
 
                         @Override
                         public Connection attach(String address, long attachTimeout, long handshakeTimeout) throws IOException {
-//						final Connection delegate = super.attach(address, attachTimeout, handshakeTimeout);
                             doHandCheck();
 
                             Connection foo = new Connection() {
@@ -148,8 +149,6 @@ public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
                                 public byte[] readPacket() throws IOException {
                                     byte[] packet = readPackets();
                                     System.out.printf("Reading JDWP data. %d bytes\n", packet.length);
-//								Packet p = Packet.read(new ByteArrayInputStream(packet));
-                                    System.out.println(Arrays.toString(packet));
                                     return packet;
                                 }
 
@@ -157,7 +156,6 @@ public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
                                 public void writePacket(byte[] pkt) throws IOException {
                                     writePackets(pkt);
                                     System.out.printf("Writing JDWP data. %d bytes\n", pkt.length);
-//								Packet p = Packet.read(new ByteArrayInputStream(pkt));
                                     System.out.println(Arrays.toString(pkt));
                                 }
 
@@ -233,7 +231,6 @@ public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
                 readBuffer.clear();
             }
 
-            System.out.println("length = " + packet.length + "\n" + Arrays.toString(packet));
             return packet;
         }
 
