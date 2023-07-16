@@ -38,12 +38,19 @@ public abstract class DBJdwpLocalProcessStarter extends DBJdwpProcessStarter {
                 try (ServerSocket ignored = new ServerSocket(portNumber)) {
                     return portNumber;
                 }
-            } catch (Exception ignore) {
-            }
+            } catch (Exception ignore) {}
         }
         throw new ExecutionException("Could not find free port in the range " + minPortNumber + " - " + maxPortNumber);
     }
 
+    /**
+     * local database start's implementation: set up the ip host and port in  intellij
+     * debugger framework , also setting up that we want to use listen connector and make the
+     * debugger listen till the database connect using sockets
+     * @param session session to be passed to {@link XDebugProcess#XDebugProcess} constructor
+     * @return
+     * @throws ExecutionException
+     */
     @NotNull
     @Override
     public final XDebugProcess start(@NotNull XDebugSession session) throws ExecutionException {
