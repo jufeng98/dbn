@@ -42,8 +42,14 @@ public abstract class DBJdwpProcessStarter extends DBDebugProcessStarter {
         super(connection);
     }
 
-
-
+    /**
+     *there is two implementations of this method , the first one to debug local database ,
+     *  second one is for debugging database in cloud
+     * @param session session to be passed to {@link XDebugProcess#XDebugProcess} constructor
+     * @return
+     * @throws ExecutionException
+     */
+    abstract public  XDebugProcess start(@NotNull XDebugSession session) throws ExecutionException ;
 
     protected abstract DBJdwpDebugProcess createDebugProcess(@NotNull XDebugSession session, DebuggerSession debuggerSession, String hostname, int tcpPort);
 

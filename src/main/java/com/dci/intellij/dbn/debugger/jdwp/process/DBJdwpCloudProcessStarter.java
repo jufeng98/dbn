@@ -73,7 +73,14 @@ public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
     }
 
 
-
+    /**
+     * cloud database start's implementation : use attach connector . and using reflexion to override
+     * the behavior of attach connector to use the NSTunnelConnection instead of establish new connection
+     * between debugger and database
+     * @param session session to be passed to {@link XDebugProcess#XDebugProcess} constructor
+     * @return
+     * @throws ExecutionException
+     */
     @Override
     public @NotNull XDebugProcess start(@NotNull XDebugSession session) throws ExecutionException {
         fixSocketConnectors();
@@ -148,15 +155,12 @@ public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
                                 @Override
                                 public byte[] readPacket() throws IOException {
                                     byte[] packet = readPackets();
-                                    System.out.printf("Reading JDWP data. %d bytes\n", packet.length);
                                     return packet;
                                 }
 
                                 @Override
                                 public void writePacket(byte[] pkt) throws IOException {
                                     writePackets(pkt);
-                                    System.out.printf("Writing JDWP data. %d bytes\n", pkt.length);
-                                    System.out.println(Arrays.toString(pkt));
                                 }
 
                                 @Override
@@ -241,7 +245,7 @@ public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
     }
 
 
-    void writePackets(byte[] bytes) throws IOException {
+    synchronized void writePackets(byte[] bytes) throws IOException {
         writeBuffer.clear();
         writeBuffer.put(bytes);
         writeBuffer.flip();
