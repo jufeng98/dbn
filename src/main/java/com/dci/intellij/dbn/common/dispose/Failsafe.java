@@ -16,17 +16,13 @@ import static com.dci.intellij.dbn.diagnostics.Diagnostics.conditionallyLog;
 @Slf4j
 public class Failsafe {
     public static @NotNull <T> T nn(@Nullable T object) {
-        if (object == null) {
-            throw new AlreadyDisposedException(null);
-        }
+        if (object == null) throw new AlreadyDisposedException(null);
         return object;
     }
 
     @NotNull
     public static <T> T nd(@Nullable T object) {
-        if (isNotValid(object)) {
-            throw new AlreadyDisposedException(object);
-        }
+        if (isNotValid(object)) throw new AlreadyDisposedException(object);
         return object;
     }
 
