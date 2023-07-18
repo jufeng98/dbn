@@ -3,8 +3,11 @@ package com.dci.intellij.dbn.debugger.jdwp.process;
 import com.dci.intellij.dbn.common.dispose.Failsafe;
 import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.connection.config.ConnectionPropertiesSettings;
+import com.dci.intellij.dbn.connection.ConnectionUtil;
 import com.dci.intellij.dbn.debugger.common.config.DBRunConfig;
 import com.dci.intellij.dbn.debugger.jdwp.config.DBJdwpRunConfig;
+import com.dci.intellij.dbn.debugger.jdwp.process.tunnel.NSTunnelConnectionProxy;
+import com.dci.intellij.dbn.debugger.jdwp.process.tunnel.NSTunnelIO;
 import com.intellij.debugger.DebugEnvironment;
 import com.intellij.debugger.DebuggerManagerEx;
 import com.intellij.debugger.DefaultDebugEnvironment;
@@ -25,13 +28,14 @@ import com.jetbrains.jdi.SocketTransportService;
 import com.jetbrains.jdi.VirtualMachineManagerImpl;
 import com.sun.jdi.connect.AttachingConnector;
 import com.sun.jdi.connect.spi.Connection;
-import oracle.net.ns.NSTunnelConnection;
+//import oracle.net.ns.NSTunnelConnection;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.sql.Driver;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.Properties;
@@ -39,7 +43,7 @@ import java.util.Properties;
 public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
 
     private  String jdwpHostPort = null;
-    private NSTunnelConnection debugConnection = null;
+    private NSTunnelConnectionProxy debugConnection = null;
     ByteBuffer readBuffer = ByteBuffer.allocate(320000);
     ByteBuffer writeBuffer = ByteBuffer.allocate(320000);
 
@@ -62,10 +66,17 @@ public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
         }
         Properties props = new Properties();
         String URL = getConnection().getSettings().getDatabaseSettings().getConnectionUrl();
-        debugConnection = NSTunnelConnection.newInstance(URL, props);
-        System.out.println("Connect = " + debugConnection.tunnelAddress());
+//        debugConnection = NSTunnelConnection.newInstance(URL, props);
+        try {
+            Driver driver = ConnectionUtil.resolveDriver(getConnection().getSettings().getDatabaseSettings());
+            debugConnection = NSTunnelIO.newInstance(driver.getClass().getClassLoader(), URL, props);
+            System.out.println("Connect = " + debugConnection.tunnelAddress());
+        } catch (final Exception e) {
+        	e.printStackTrace();
+        }
+        
 
-        jdwpHostPort = debugConnection.tunnelAddress();
+       jdwpHostPort = debugConnection.tunnelAddress();
        ConnectionPropertiesSettings connectionSettings  =  getConnection().getSettings().getPropertiesSettings();
        connectionSettings.getProperties().put("jdwpHostPort",jdwpHostPort);
     }
