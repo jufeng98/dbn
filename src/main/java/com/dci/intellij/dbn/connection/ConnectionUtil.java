@@ -128,7 +128,7 @@ public class ConnectionUtil {
     }
 
     @Nullable
-    static Driver resolveDriver(ConnectionDatabaseSettings databaseSettings) throws Exception {
+    public static Driver resolveDriver(ConnectionDatabaseSettings databaseSettings) throws Exception {
         DatabaseDriverManager driverManager = DatabaseDriverManager.getInstance();
         DriverSource driverSource = databaseSettings.getDriverSource();
         String driverClassName = databaseSettings.getDriver();

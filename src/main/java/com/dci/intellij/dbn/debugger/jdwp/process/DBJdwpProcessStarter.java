@@ -24,6 +24,14 @@ import com.intellij.util.Range;
 import com.intellij.xdebugger.XDebugProcess;
 import com.intellij.xdebugger.XDebugSession;
 import lombok.extern.slf4j.Slf4j;
+import com.jetbrains.jdi.GenericAttachingConnector;
+import com.jetbrains.jdi.SocketTransportService;
+import com.jetbrains.jdi.VirtualMachineManagerImpl;
+import com.sun.jdi.connect.AttachingConnector;
+import com.sun.jdi.connect.spi.Connection;
+//import oracle.jdbc.OracleConnection;
+//import oracle.jdbc.datasource.impl.OracleDataSource;
+//import oracle.net.ns.NSTunnelConnection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
