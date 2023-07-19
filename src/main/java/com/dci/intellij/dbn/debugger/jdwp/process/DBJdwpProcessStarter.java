@@ -32,6 +32,11 @@ import org.jetbrains.annotations.Nullable;
 import static com.dci.intellij.dbn.diagnostics.Diagnostics.conditionallyLog;
 
 @Slf4j
+/**
+ * This is the parent of all JDWP process starter classes for debugging the Oracle the database from
+ * DBN. Sub-classes should implement the start method, which will be called by the framework to
+ * launch the virtual debug process object and initialize PL/SQL debugging.
+ */
 public abstract class DBJdwpProcessStarter extends DBDebugProcessStarter {
 
     public static final Key<Integer> JDWP_DEBUGGER_PORT = new Key<>("JDWP_DEBUGGER_PORT");
