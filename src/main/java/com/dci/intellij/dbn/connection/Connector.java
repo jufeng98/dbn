@@ -132,9 +132,10 @@ class Connector {
             if (databaseType == DatabaseType.ORACLE) {
                 properties.put(Property.SESSION_PROGRAM, appName);
                 // i check if we have got jdwpHostPort if yes i get a connection using CONNECTION_PROPERTY_THIN_DEBUG_JDWP property
-                if (DBJdwpCloudProcessStarter.getJdwpHostPort() != null) {
-                    properties.put(OracleConnection.CONNECTION_PROPERTY_THIN_DEBUG_JDWP, DBJdwpCloudProcessStarter.getJdwpHostPort());
-                    DBJdwpCloudProcessStarter.setJdwpHostPort(null);
+                Map<String, String> configProp = connectionSettings.getPropertiesSettings().getProperties();
+                if (configProp.containsKey("jdwpHostPort") && connectionType == ConnectionType.DEBUG) {
+                    properties.put(OracleConnection.CONNECTION_PROPERTY_THIN_DEBUG_JDWP,configProp.get("jdwpHostPort") );
+                    configProp.remove("jdwpHostPort");
                 }
             }
 

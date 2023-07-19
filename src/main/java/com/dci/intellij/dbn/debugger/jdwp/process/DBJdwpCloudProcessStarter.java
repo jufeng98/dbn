@@ -2,6 +2,7 @@ package com.dci.intellij.dbn.debugger.jdwp.process;
 
 import com.dci.intellij.dbn.common.dispose.Failsafe;
 import com.dci.intellij.dbn.connection.ConnectionHandler;
+import com.dci.intellij.dbn.connection.config.ConnectionPropertiesSettings;
 import com.dci.intellij.dbn.debugger.common.config.DBRunConfig;
 import com.dci.intellij.dbn.debugger.jdwp.config.DBJdwpRunConfig;
 import com.intellij.debugger.DebugEnvironment;
@@ -37,7 +38,7 @@ import java.util.Properties;
 
 public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
 
-    private static String jdwpHostPort = null;
+    private  String jdwpHostPort = null;
     private NSTunnelConnection debugConnection = null;
     ByteBuffer readBuffer = ByteBuffer.allocate(320000);
     ByteBuffer writeBuffer = ByteBuffer.allocate(320000);
@@ -47,13 +48,9 @@ public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
     }
 
 
-    public static String getJdwpHostPort() {
-        return jdwpHostPort;
-    }
 
-    public static synchronized void setJdwpHostPort(String jdwpHostPort) {
-        DBJdwpCloudProcessStarter.jdwpHostPort = jdwpHostPort;
-    }
+
+
 
     void connect() throws IOException {
         if (debugConnection != null) {
@@ -68,8 +65,9 @@ public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
         debugConnection = NSTunnelConnection.newInstance(URL, props);
         System.out.println("Connect = " + debugConnection.tunnelAddress());
 
-        setJdwpHostPort(debugConnection.tunnelAddress());
-
+        jdwpHostPort = debugConnection.tunnelAddress();
+       ConnectionPropertiesSettings connectionSettings  =  getConnection().getSettings().getPropertiesSettings();
+       connectionSettings.getProperties().put("jdwpHostPort",jdwpHostPort);
     }
 
 
@@ -99,8 +97,8 @@ public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
         }
 
         ExecutionEnvironment environment = ExecutionEnvironmentBuilder.create(session.getProject(),executor,runProfile).build();
-        String debugHostName = extractHost(getJdwpHostPort());
-        String port = extractPort(getJdwpHostPort());
+        String debugHostName = extractHost(jdwpHostPort);
+        String port = extractPort(jdwpHostPort);
         RemoteConnection remoteConnection = new RemoteConnection(true,debugHostName,port,false);
 
 
