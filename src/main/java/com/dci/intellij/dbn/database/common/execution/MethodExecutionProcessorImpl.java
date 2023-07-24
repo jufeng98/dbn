@@ -14,6 +14,7 @@ import com.dci.intellij.dbn.data.type.DBDataType;
 import com.dci.intellij.dbn.database.interfaces.DatabaseDebuggerInterface;
 import com.dci.intellij.dbn.debugger.DBDebuggerType;
 import com.dci.intellij.dbn.debugger.jdwp.config.DBJdwpRunConfig;
+import com.dci.intellij.dbn.debugger.jdwp.config.DBMethodJdwpRunConfig;
 import com.dci.intellij.dbn.execution.ExecutionOption;
 import com.dci.intellij.dbn.execution.ExecutionOptions;
 import com.dci.intellij.dbn.execution.ExecutionStatus;
@@ -99,9 +100,12 @@ public abstract class MethodExecutionProcessorImpl implements MethodExecutionPro
             Resources.cancel(context.getStatement());
             throw e;
         } finally {
-            DBNConnection targetConnection = conn;
-            DatabaseDebuggerInterface debuggerInterface = getConnection().getDebuggerInterface();
-            debuggerInterface.disconnectJdwpSession(targetConnection);
+
+           if (!DBMethodJdwpRunConfig.getIsCloudDatabase()){
+               DBNConnection targetConnection = conn;
+               DatabaseDebuggerInterface debuggerInterface = getConnection().getDebuggerInterface();
+               debuggerInterface.disconnectJdwpSession(targetConnection);
+            }
 
             release(context);
         }
