@@ -251,8 +251,8 @@ public abstract class DBJdwpDebugProcess<T extends ExecutionInput>
                     targetConnection.beforeClose(() -> releaseSession(targetConnection));
 
 
-                    DBJdwpRunConfig jdwpRunConfig = (DBJdwpRunConfig) runProfile;
-                    if(!jdwpRunConfig.getIsCloudDatabase()){
+//                    DBJdwpRunConfig jdwpRunConfig = (DBJdwpRunConfig) runProfile;
+                    if(!DBJdwpRunConfig.getIsCloudDatabase()){
                         DatabaseDebuggerInterface debuggerInterface = getDebuggerInterface();
                         console.info("Initializing debug session on address " + localTcpHost + ":" + localTcpPort);
                         debuggerInterface.initializeJdwpSession(targetConnection, localTcpHost, String.valueOf(localTcpPort));
