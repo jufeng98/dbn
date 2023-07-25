@@ -26,6 +26,7 @@ import com.dci.intellij.dbn.debugger.jdwp.DBJdwpBreakpointHandler;
 import com.dci.intellij.dbn.debugger.jdwp.DBJdwpSourcePath;
 import com.dci.intellij.dbn.debugger.jdwp.ManagedThreadCommand;
 import com.dci.intellij.dbn.debugger.jdwp.config.DBJdwpRunConfig;
+import com.dci.intellij.dbn.debugger.jdwp.config.DBMethodJdwpRunConfig;
 import com.dci.intellij.dbn.debugger.jdwp.frame.DBJdwpDebugStackFrame;
 import com.dci.intellij.dbn.debugger.jdwp.frame.DBJdwpDebugSuspendContext;
 import com.dci.intellij.dbn.editor.DBContentType;
@@ -252,7 +253,7 @@ public abstract class DBJdwpDebugProcess<T extends ExecutionInput>
 
 
 //                    DBJdwpRunConfig jdwpRunConfig = (DBJdwpRunConfig) runProfile;
-                    if(!DBJdwpRunConfig.getIsCloudDatabase()){
+                    if(!DBMethodJdwpRunConfig.getIsCloudDatabase()){
                         DatabaseDebuggerInterface debuggerInterface = getDebuggerInterface();
                         console.info("Initializing debug session on address " + localTcpHost + ":" + localTcpPort);
                         debuggerInterface.initializeJdwpSession(targetConnection, localTcpHost, String.valueOf(localTcpPort));
