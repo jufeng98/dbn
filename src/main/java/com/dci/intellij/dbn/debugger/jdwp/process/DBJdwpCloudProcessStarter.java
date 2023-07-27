@@ -72,7 +72,7 @@ public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
 
 
     /**
-     * cloud database start's implementation : use attach connector . and using reflexion to override
+     * cloud database start's implementation : use attach connector . and using reflection to override
      * the behavior of attach connector to use the NSTunnelConnection instead of establish new connection
      * between debugger and database
      * @param session session to be passed to {@link XDebugProcess#XDebugProcess} constructor
