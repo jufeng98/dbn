@@ -54,7 +54,7 @@ import static com.intellij.openapi.ui.DialogWrapper.OK_EXIT_CODE;
 public abstract class DBProgramRunner<T extends ExecutionInput> extends GenericProgramRunner {
     public static final String INVALID_RUNNER_ID = "DBNInvalidRunner";
     public static final String CLOUD_DATABASE_PATTERN = ".+\\.ade\\..+\\.oraclecloud\\.com";
-    public String hostnames = System.getProperty("cloud.hostnames");
+    public static String hostnames = System.getProperty("cloud.hostnames");
 
     @Nullable
     @Override
@@ -284,7 +284,7 @@ public abstract class DBProgramRunner<T extends ExecutionInput> extends GenericP
                     "Error initializing environment: {0}", e);
         }
     }
-    protected   boolean isCloudDatabaseDefaultValue(ConnectionHandler conn)  {
+    public static  boolean isCloudDatabaseDefaultValue(ConnectionHandler conn)  {
 
         String databaseHost = conn.getDatabaseInfo().getHost();
         try{
