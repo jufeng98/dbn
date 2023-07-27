@@ -101,12 +101,6 @@ public abstract class MethodExecutionProcessorImpl implements MethodExecutionPro
             throw e;
         } finally {
 
-           if (!DBMethodJdwpRunConfig.getIsCloudDatabase()){
-               DBNConnection targetConnection = conn;
-               DatabaseDebuggerInterface debuggerInterface = getConnection().getDebuggerInterface();
-               debuggerInterface.disconnectJdwpSession(targetConnection);
-            }
-
             release(context);
         }
     }
