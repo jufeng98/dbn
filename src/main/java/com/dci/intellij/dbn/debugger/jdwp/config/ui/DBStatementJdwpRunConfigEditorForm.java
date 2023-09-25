@@ -46,7 +46,7 @@ public class DBStatementJdwpRunConfigEditorForm extends DBProgramRunConfiguratio
 
     @Override
     public void readConfiguration(DBStatementJdwpRunConfig configuration) {
-        isCloudDatabaseCheckBox.setSelected(configuration.getIsCloudDatabase());
+        isCloudDatabaseCheckBox.setSelected(configuration.isTcpDriverTunneling());
         isCloudDatabaseCheckBox.setEnabled(false);
         configForm.readConfiguration(configuration);
     }
