@@ -24,6 +24,7 @@ public interface DBJdwpRunConfig {
      * @deprecated moved to {@link ConnectionDebuggerSettings#isCompileDependencies()}
      */
     boolean isCompileDependencies();
+     boolean isTcpDriverTunneling();
 
     void setTcpPortRange(Range<Integer> portRange);
 
@@ -31,5 +32,5 @@ public interface DBJdwpRunConfig {
 
     void setCompileDependencies(boolean selected);
 
-    default boolean getIsCloudDatabase(){return false;}
+
 }

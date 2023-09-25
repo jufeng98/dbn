@@ -20,7 +20,7 @@ public class DBMethodJdwpRunner extends DBProgramRunner<MethodExecutionInput> {
 
     @Override
     protected DBDebugProcessStarter createProcessStarter(ConnectionHandler connection) {
-        if(DBMethodJdwpRunConfig.isCloudDatabase){
+        if(isCloudDatabaseDefaultValue(connection)){
             return new DBMethodJdwpCloudProcessStarter(connection);
         }
         return new DBMethodJdwpLocalProcessStarter(connection);

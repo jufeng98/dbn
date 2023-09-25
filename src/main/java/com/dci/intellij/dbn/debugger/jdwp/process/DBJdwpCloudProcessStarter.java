@@ -91,10 +91,7 @@ public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
         RunProfile runProfile = session.getRunProfile();
         assertNotNull(runProfile,"invalid run profile");
 
-        if(runProfile instanceof DBRunConfig){
-            DBRunConfig runConfig = (DBRunConfig) runProfile;
-            runConfig.setCanRun(true);
-        }
+
 
         ExecutionEnvironment environment = ExecutionEnvironmentBuilder.create(session.getProject(),executor,runProfile).build();
         String debugHostName = extractHost(jdwpHostPort);
