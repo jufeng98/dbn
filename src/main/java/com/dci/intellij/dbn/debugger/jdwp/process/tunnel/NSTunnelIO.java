@@ -13,6 +13,9 @@ public class NSTunnelIO {
 		try {
 			realNSTunnelClass = realNSTunnelClassLoader.loadClass("oracle.net.ns.NSTunnelConnection");
 			Object readNSTunnelObj = invokeStaticNew(realNSTunnelClass, url, props);
+			if (readNSTunnelObj == null) {
+			    return null;
+			}
 			NSTunnelConnectionProxyHandler handler = new NSTunnelConnectionProxyHandler(readNSTunnelObj);
 			NSTunnelConnectionProxy newProxyInstance = (NSTunnelConnectionProxy) 
 					Proxy.newProxyInstance(realNSTunnelClassLoader,
