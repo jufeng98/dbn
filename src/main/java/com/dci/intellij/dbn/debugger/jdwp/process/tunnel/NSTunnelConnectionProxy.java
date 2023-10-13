@@ -14,6 +14,9 @@ import java.nio.ByteBuffer;
  *
  */
 public interface NSTunnelConnectionProxy {
+    
+    public static final String CONNECTION_PROPERTY_THIN_DEBUG_JDWP = "oracle.jdbc.debugJDWP";
+    
 	/**
 	 * Close the tunnel.  Discard this instance after closing; don't reuse
 	 */

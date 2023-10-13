@@ -57,22 +57,32 @@ public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
 
 
     void connect() throws IOException {
-        if (debugConnection != null) {
-            try {
+        if (debugConnection != null
+              && debugConnection.isOpen()) {
                 debugConnection.close();
-            } catch (Exception e) {
-                throw e;
             }
         }
+
         Properties props = new Properties();
         String URL = getConnection().getSettings().getDatabaseSettings().getConnectionUrl();
 //        debugConnection = NSTunnelConnection.newInstance(URL, props);
         try {
             Driver driver = ConnectionUtil.resolveDriver(getConnection().getSettings().getDatabaseSettings());
+            if (driver == null) {
+                throw new IOException("Could not find driver for Cloud NSTunnelConnection class loading");
+            }
             debugConnection = NSTunnelIO.newInstance(driver.getClass().getClassLoader(), URL, props);
+            if (debugConnection == null) {
+                throw new IOException("Could not load tunneling object.  Does the current driver support Cloud NS?");
+            }
             System.out.println("Connect = " + debugConnection.tunnelAddress());
         } catch (final Exception e) {
-        	e.printStackTrace();
+        	if (e instanceof IOException) {
+        	    throw e;
+        	}
+        	else {
+        	    throw new IOException(e);
+        	}
         }
         
 
