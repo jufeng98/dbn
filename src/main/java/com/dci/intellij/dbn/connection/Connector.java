@@ -15,6 +15,8 @@ import com.dci.intellij.dbn.connection.jdbc.DBNConnection;
 import com.dci.intellij.dbn.connection.ssh.SshTunnelConnector;
 import com.dci.intellij.dbn.connection.ssh.SshTunnelManager;
 import com.dci.intellij.dbn.connection.ssl.SslConnectionManager;
+import com.dci.intellij.dbn.debugger.jdwp.process.DBJdwpCloudProcessStarter;
+import com.dci.intellij.dbn.debugger.jdwp.process.tunnel.NSTunnelConnectionProxy;
 import com.dci.intellij.dbn.diagnostics.Diagnostics;
 import com.intellij.openapi.project.Project;
 import lombok.Getter;
@@ -129,6 +131,12 @@ class Connector {
 
             if (databaseType == DatabaseType.ORACLE) {
                 properties.put(Property.SESSION_PROGRAM, appName);
+                // i check if we have got jdwpHostPort if yes i get a connection using CONNECTION_PROPERTY_THIN_DEBUG_JDWP property
+                Map<String, String> configProp = connectionSettings.getPropertiesSettings().getProperties();
+                if (configProp.containsKey("jdwpHostPort") && connectionType == ConnectionType.DEBUG) {
+                    properties.put(NSTunnelConnectionProxy.CONNECTION_PROPERTY_THIN_DEBUG_JDWP,configProp.get("jdwpHostPort") );
+                    configProp.remove("jdwpHostPort");
+                }
             }
 
             Map<String, String> configProperties = databaseSettings.getParent().getPropertiesSettings().getProperties();

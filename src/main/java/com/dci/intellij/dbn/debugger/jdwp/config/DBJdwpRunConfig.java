@@ -24,10 +24,13 @@ public interface DBJdwpRunConfig {
      * @deprecated moved to {@link ConnectionDebuggerSettings#isCompileDependencies()}
      */
     boolean isCompileDependencies();
+     boolean isTcpDriverTunneling();
 
     void setTcpPortRange(Range<Integer> portRange);
 
     void setTcpHostAddress(String tcpHost);
 
     void setCompileDependencies(boolean selected);
+
+
 }

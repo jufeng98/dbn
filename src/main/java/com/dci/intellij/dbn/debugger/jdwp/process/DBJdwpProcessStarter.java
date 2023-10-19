@@ -3,6 +3,8 @@ package com.dci.intellij.dbn.debugger.jdwp.process;
 import com.dci.intellij.dbn.common.dispose.Failsafe;
 import com.dci.intellij.dbn.common.util.Strings;
 import com.dci.intellij.dbn.connection.ConnectionHandler;
+import com.dci.intellij.dbn.connection.jdbc.DBNConnection;
+import com.dci.intellij.dbn.debugger.common.config.DBRunConfig;
 import com.dci.intellij.dbn.debugger.common.process.DBDebugProcessStarter;
 import com.dci.intellij.dbn.debugger.jdwp.config.DBJdwpRunConfig;
 import com.intellij.debugger.DebugEnvironment;
@@ -22,89 +24,50 @@ import com.intellij.util.Range;
 import com.intellij.xdebugger.XDebugProcess;
 import com.intellij.xdebugger.XDebugSession;
 import lombok.extern.slf4j.Slf4j;
+import com.jetbrains.jdi.GenericAttachingConnector;
+import com.jetbrains.jdi.SocketTransportService;
+import com.jetbrains.jdi.VirtualMachineManagerImpl;
+import com.sun.jdi.connect.AttachingConnector;
+import com.sun.jdi.connect.spi.Connection;
+//import oracle.jdbc.OracleConnection;
+//import oracle.jdbc.datasource.impl.OracleDataSource;
+//import oracle.net.ns.NSTunnelConnection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.UnknownHostException;
+
 
 import static com.dci.intellij.dbn.diagnostics.Diagnostics.conditionallyLog;
 
 @Slf4j
+/**
+ * This is the parent of all JDWP process starter classes for debugging the Oracle the database from
+ * DBN. Sub-classes should implement the start method, which will be called by the framework to
+ * launch the virtual debug process object and initialize PL/SQL debugging.
+ */
 public abstract class DBJdwpProcessStarter extends DBDebugProcessStarter {
 
     public static final Key<Integer> JDWP_DEBUGGER_PORT = new Key<>("JDWP_DEBUGGER_PORT");
+
+
 
     DBJdwpProcessStarter(ConnectionHandler connection) {
         super(connection);
     }
 
-    private static int findFreePort(String host, int minPortNumber, int maxPortNumber) throws ExecutionException {
-        InetAddress inetAddress;
-        try {
-            inetAddress = InetAddress.getByName(host);
-        } catch (UnknownHostException e) {
-            throw new ExecutionException("Failed to resolve host '" + host + "'", e);
-        }
-
-        for (int portNumber = minPortNumber; portNumber < maxPortNumber; portNumber++) {
-            try (ServerSocket ignored = new ServerSocket(portNumber, 50, inetAddress)) {
-                return portNumber;
-            } catch (Exception e) {
-                conditionallyLog(e);
-            }
-        }
-        throw new ExecutionException("Could not find any free port on host '" + host + "' in the range " + minPortNumber + " - " + maxPortNumber);
-    }
-
-    @NotNull
-    @Override
-    public final XDebugProcess start(@NotNull XDebugSession session) throws ExecutionException {
-        Executor executor = DefaultDebugExecutor.getDebugExecutorInstance();
-        RunProfile runProfile = session.getRunProfile();
-        assertNotNull(runProfile, "Invalid run profile");
-
-        ExecutionEnvironment environment = ExecutionEnvironmentBuilder.create(session.getProject(), executor, runProfile).build();
-        DBJdwpRunConfig jdwpRunConfig = (DBJdwpRunConfig) runProfile;
-        Range<Integer> portRange = jdwpRunConfig.getTcpPortRange();
-        String tcpHost = resolveTcpHost(jdwpRunConfig);
-        int tcpPort = findFreePort(tcpHost, portRange.getFrom(), portRange.getTo());
-
-
-        RemoteConnection remoteConnection = new RemoteConnection(true, tcpHost, Integer.toString(tcpPort), true);
-
-        RunProfileState state = Failsafe.nn(runProfile.getState(executor, environment));
-
-        DebugEnvironment debugEnvironment = new DefaultDebugEnvironment(environment, state, remoteConnection, true);
-        DebuggerManagerEx debuggerManagerEx = DebuggerManagerEx.getInstanceEx(session.getProject());
-        DebuggerSession debuggerSession = debuggerManagerEx.attachVirtualMachine(debugEnvironment);
-        assertNotNull(debuggerSession, "Could not initialize JDWP listener");
-
-        return createDebugProcess(session, debuggerSession, tcpHost, tcpPort);
-    }
-
-    private static String resolveTcpHost(DBJdwpRunConfig jdwpRunConfig) {
-        String tcpHost = jdwpRunConfig.getTcpHostAddress();
-        try {
-            tcpHost = Strings.isEmptyOrSpaces(tcpHost) ?
-                    Inet4Address.getLocalHost().getHostAddress() :
-                    InetAddress.getAllByName(tcpHost)[0].getHostAddress();
-
-        } catch (UnknownHostException e) {
-            conditionallyLog(e);
-            // TODO log to the debugger console instead
-            log.warn("Failed to resolve TCP host address '{}'. Using 'localhost'", tcpHost, e);
-            tcpHost =  "localhost";
-
-        }
-        return tcpHost;
-    }
+    /**
+     *there is two implementations of this method , the first one to debug local database ,
+     *  second one is for debugging database in cloud
+     * @param session session to be passed to {@link XDebugProcess#XDebugProcess} constructor
+     * @return
+     * @throws ExecutionException
+     */
+    abstract public  XDebugProcess start(@NotNull XDebugSession session) throws ExecutionException ;
 
     protected abstract DBJdwpDebugProcess createDebugProcess(@NotNull XDebugSession session, DebuggerSession debuggerSession, String hostname, int tcpPort);
 
-    private @NotNull <T> T assertNotNull(@Nullable T object, String message) throws ExecutionException {
+    @NotNull
+    protected <T> T assertNotNull(@Nullable T object, String message) throws ExecutionException {
         if (object == null) {
             throw new ExecutionException(message);
         }
