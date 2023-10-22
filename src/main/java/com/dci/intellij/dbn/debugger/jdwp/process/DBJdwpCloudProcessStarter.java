@@ -51,17 +51,11 @@ public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
         super(connection);
     }
 
-
-
-
-
-
     void connect() throws IOException {
         if (debugConnection != null
               && debugConnection.isOpen()) {
                 debugConnection.close();
             }
-        }
 
         Properties props = new Properties();
         String URL = getConnection().getSettings().getDatabaseSettings().getConnectionUrl();
@@ -78,13 +72,13 @@ public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
             System.out.println("Connect = " + debugConnection.tunnelAddress());
         } catch (final Exception e) {
         	if (e instanceof IOException) {
-        	    throw e;
+        	    throw (IOException) e;
         	}
         	else {
         	    throw new IOException(e);
         	}
         }
-        
+
 
        jdwpHostPort = debugConnection.tunnelAddress();
        ConnectionPropertiesSettings connectionSettings  =  getConnection().getSettings().getPropertiesSettings();
