@@ -4,11 +4,11 @@ import com.dci.intellij.dbn.DatabaseNavigator;
 import com.dci.intellij.dbn.common.component.ApplicationComponentBase;
 import com.dci.intellij.dbn.common.component.PersistentState;
 import com.dci.intellij.dbn.common.latent.Latent;
+import com.dci.intellij.dbn.common.project.Projects;
 import com.dci.intellij.dbn.common.util.InternalApi;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,8 +26,7 @@ public class DefaultProjectSettingsManager extends ApplicationComponentBase impl
 
     @NotNull
     private ProjectSettings createProjectSettings() {
-        ProjectManager projectManager = ProjectManager.getInstance();
-        Project defaultProject = projectManager.getDefaultProject();
+        Project defaultProject = Projects.getDefaultProject();
         ProjectSettings projectSettings = new ProjectSettings(defaultProject);
         if (stateCapture != null) {
             projectSettings.readConfiguration(stateCapture);

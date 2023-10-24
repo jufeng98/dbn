@@ -60,4 +60,8 @@ public final class Projects {
     public static @NotNull Project[] getOpenProjects() {
         return Unsafe.silent(EMPTY_PROJECT_ARRAY, () -> ProjectManager.getInstance().getOpenProjects());
     }
+
+    public static Project getDefaultProject() {
+        return ProjectManager.getInstance().getDefaultProject();
+    }
 }

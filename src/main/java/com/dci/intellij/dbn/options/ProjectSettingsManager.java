@@ -8,6 +8,7 @@ import com.dci.intellij.dbn.common.component.Components;
 import com.dci.intellij.dbn.common.component.PersistentState;
 import com.dci.intellij.dbn.common.component.ProjectComponentBase;
 import com.dci.intellij.dbn.common.event.ProjectEvents;
+import com.dci.intellij.dbn.common.project.Projects;
 import com.dci.intellij.dbn.common.util.Dialogs;
 import com.dci.intellij.dbn.common.util.Messages;
 import com.dci.intellij.dbn.connection.ConnectionId;
@@ -27,7 +28,6 @@ import com.dci.intellij.dbn.options.ui.ProjectSettingsDialog;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
 import lombok.Getter;
 import lombok.Setter;
 import org.jdom.Element;
@@ -111,7 +111,7 @@ public class ProjectSettingsManager extends ProjectComponentBase implements Pers
     }
 
     public void openDefaultProjectSettings() {
-        Dialogs.show(() -> new ProjectSettingsDialog(ProjectManager.getInstance().getDefaultProject()));
+        Dialogs.show(() -> new ProjectSettingsDialog(Projects.getDefaultProject()));
     }
 
     public void openProjectSettings(ConfigId configId) {

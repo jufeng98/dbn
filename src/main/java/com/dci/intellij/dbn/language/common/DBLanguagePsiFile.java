@@ -1,6 +1,5 @@
 package com.dci.intellij.dbn.language.common;
 
-import com.dci.intellij.dbn.common.dispose.Checks;
 import com.dci.intellij.dbn.common.dispose.StatefulDisposable;
 import com.dci.intellij.dbn.common.dispose.UnlistedDisposable;
 import com.dci.intellij.dbn.common.environment.EnvironmentType;
@@ -9,6 +8,7 @@ import com.dci.intellij.dbn.common.ui.Presentable;
 import com.dci.intellij.dbn.common.util.Commons;
 import com.dci.intellij.dbn.common.util.Editors;
 import com.dci.intellij.dbn.common.util.Lists;
+import com.dci.intellij.dbn.common.util.SlowOps;
 import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.connection.SchemaId;
 import com.dci.intellij.dbn.connection.context.DatabaseContextBase;
@@ -355,9 +355,9 @@ public abstract class DBLanguagePsiFile extends PsiFileImpl implements DatabaseC
     public boolean isValid() {
         VirtualFile virtualFile = getViewProvider().getVirtualFile();
         if (virtualFile.getFileSystem() instanceof DatabaseFileSystem) {
-            return Checks.isValid(virtualFile);
+            return virtualFile.isValid();
         } else {
-            return Read.call(() -> isSuperValid());
+            return Read.call(() -> SlowOps.checkValid(this, f -> f.isSuperValid()));
         }
     }
 

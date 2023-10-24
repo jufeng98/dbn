@@ -28,6 +28,7 @@ import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.ListPopup;
@@ -511,16 +512,28 @@ public class FileConnectionContextManager extends ProjectComponentBase implement
 
     @Override
     public void loadComponentState(@NotNull Element element) {
+        Progress.background(getProject(), null, false, "Restoring context", "Restoring file database connection context", indicator -> loadFileMappings(element, indicator));
+    }
+
+    private void loadFileMappings(@NotNull Element element, ProgressIndicator indicator) {
+        List<Element> mappingElements = element.getChildren();
         Map<String, FileConnectionContext> mappings = registry.getMappings();
-        for (Element child : element.getChildren()) {
+
+        int size = mappingElements.size();
+        for (int i = 0; i < size; i++) {
+            Element child = mappingElements.get(i);
             FileConnectionContext mapping = new FileConnectionContextImpl();
             mapping.readState(child);
 
-            String fileUrl = mapping.getFileUrl();
             VirtualFile virtualFile = mapping.getFile();
-            if (virtualFile != null) {
-                mappings.put(fileUrl, mapping);
-            }
+            if (virtualFile == null) continue;
+
+            double progress = Progress.progressOf(i, size);
+            indicator.setFraction(progress);
+            indicator.setText2(virtualFile.getPath());
+
+            String fileUrl = mapping.getFileUrl();
+            mappings.put(fileUrl, mapping);
         }
     }
 

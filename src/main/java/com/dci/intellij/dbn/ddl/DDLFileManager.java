@@ -109,7 +109,7 @@ public class DDLFileManager extends ProjectComponentBase implements PersistentSt
         @Override
         public void fileTypesChanged(@NotNull FileTypeEvent event) {
             FileTypeService fileTypeService = FileTypeService.getInstance();
-            if (fileTypeService.isSilentFileChangeContext()) return;
+            if (fileTypeService.isSilentFileTypeChange()) return;
 
             List<DDLFileType> ddlFileTypeList = getExtensionSettings().getFileTypes();
             for (DDLFileType ddlFileType : ddlFileTypeList) {

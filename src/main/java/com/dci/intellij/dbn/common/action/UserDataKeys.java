@@ -21,6 +21,7 @@ public interface UserDataKeys {
     @Compatibility
     Key<TextEditor> TEXT_EDITOR_KEY = nvl(cast(Key.findKeyByName("textEditor")), () -> Key.create("textEditor"));
 
+    Key<Boolean> INVALID_ENTITY = Key.create("DBNavigator.InvalidEntity");
     Key<String> ACTION_PLACE = Key.create("DBNavigator.ActionPlace");
     Key<Boolean> PROJECT_SETTINGS_LOADED = Key.create("DBNavigator.ProjectSettingsLoaded");
     Key<ProjectRef> PROJECT_REF = Key.create("DBNavigator.ProjectRef");
