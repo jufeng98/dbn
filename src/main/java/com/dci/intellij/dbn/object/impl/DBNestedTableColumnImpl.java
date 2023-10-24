@@ -1,8 +1,10 @@
 package com.dci.intellij.dbn.object.impl;
 
+import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.database.common.metadata.DBObjectMetadata;
 import com.dci.intellij.dbn.object.DBNestedTable;
 import com.dci.intellij.dbn.object.DBNestedTableColumn;
+import com.dci.intellij.dbn.object.common.DBObject;
 import com.dci.intellij.dbn.object.common.DBObjectImpl;
 import com.dci.intellij.dbn.object.type.DBObjectType;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +19,7 @@ class DBNestedTableColumnImpl extends DBObjectImpl<DBObjectMetadata> implements 
     }
 
     @Override
-    protected String initObject(DBObjectMetadata metadata) throws SQLException {
+    protected String initObject(ConnectionHandler connection, DBObject parentObject, DBObjectMetadata metadata) throws SQLException {
         return null; //TODO
     }
 

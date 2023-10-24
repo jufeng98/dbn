@@ -4,7 +4,6 @@ import com.dci.intellij.dbn.DatabaseNavigator;
 import com.dci.intellij.dbn.common.component.PersistentState;
 import com.dci.intellij.dbn.common.component.ProjectComponentBase;
 import com.dci.intellij.dbn.common.event.ProjectEvents;
-import com.dci.intellij.dbn.common.thread.Dispatch;
 import com.dci.intellij.dbn.common.thread.Progress;
 import com.dci.intellij.dbn.common.thread.Write;
 import com.dci.intellij.dbn.common.util.*;
@@ -95,8 +94,7 @@ public class DatabaseConsoleManager extends ProjectComponentBase implements Pers
             consoleFile.setDatabaseSchema(connection.getDefaultSchema());
 
             reloadConsoles(connection);
-
-            Dispatch.run(() -> Editors.openFileEditor(project, consoleFile, true));
+            Editors.openFileEditor(project, consoleFile, true);
         });
     }
 

@@ -188,22 +188,28 @@ public class DatabaseFileEditorManager extends ProjectComponentBase {
 
             // open / reopen (select) the file
             boolean focusEditor = handle.getEditorInstructions().isFocus();
-            FileEditor[] fileEditors = Editors.openFileEditor(project, databaseFile, focusEditor);
+            Editors.openFileEditor(project, databaseFile, focusEditor, fileEditors ->
+                    focusEditor(handle, fileEditors, focusEditor, databaseFile));
 
-            for (FileEditor fileEditor : fileEditors) {
-                if (fileEditor instanceof SourceCodeMainEditor) {
-                    SourceCodeMainEditor sourceCodeEditor = (SourceCodeMainEditor) fileEditor;
-                    NavigationInstructions instructions = NavigationInstructions.create().
-                            with(SCROLL).
-                            with(FOCUS, focusEditor);
-
-                    EditorProviderId editorProviderId = handle.getEditorProviderId();
-                    Editors.selectEditor(project, fileEditor, databaseFile, editorProviderId, instructions);
-                    sourceCodeEditor.navigateTo(object);
-                    break;
-                }
-            }
         });
+    }
+
+    private void focusEditor(DBFileOpenHandle handle, FileEditor[] fileEditors, boolean focusEditor, DBEditableObjectVirtualFile databaseFile) {
+        DBObject object = handle.getObject();
+        Project project = object.getProject();
+        for (FileEditor fileEditor : fileEditors) {
+            if (fileEditor instanceof SourceCodeMainEditor) {
+                SourceCodeMainEditor sourceCodeEditor = (SourceCodeMainEditor) fileEditor;
+                NavigationInstructions instructions = NavigationInstructions.create().
+                        with(SCROLL).
+                        with(FOCUS, focusEditor);
+
+                EditorProviderId editorProviderId = handle.getEditorProviderId();
+                Editors.selectEditor(project, fileEditor, databaseFile, editorProviderId, instructions);
+                sourceCodeEditor.navigateTo(object);
+                break;
+            }
+        }
     }
 
     private static void invokeFileOpen(DBFileOpenHandle handle, Runnable opener) {

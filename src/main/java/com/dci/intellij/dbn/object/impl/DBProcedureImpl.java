@@ -2,11 +2,13 @@ package com.dci.intellij.dbn.object.impl;
 
 import com.dci.intellij.dbn.browser.ui.HtmlToolTipBuilder;
 import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.database.common.metadata.def.DBProcedureMetadata;
 import com.dci.intellij.dbn.editor.DBContentType;
 import com.dci.intellij.dbn.object.DBProcedure;
 import com.dci.intellij.dbn.object.DBProgram;
 import com.dci.intellij.dbn.object.DBSchema;
+import com.dci.intellij.dbn.object.common.DBObject;
 import com.dci.intellij.dbn.object.common.DBSchemaObject;
 import com.dci.intellij.dbn.object.common.status.DBObjectStatus;
 import com.dci.intellij.dbn.object.common.status.DBObjectStatusHolder;
@@ -30,8 +32,8 @@ class DBProcedureImpl extends DBMethodImpl<DBProcedureMetadata> implements DBPro
     }
 
     @Override
-    protected String initObject(DBProcedureMetadata metadata) throws SQLException {
-        super.initObject(metadata);
+    protected String initObject(ConnectionHandler connection, DBObject parentObject, DBProcedureMetadata metadata) throws SQLException {
+        super.initObject(connection, parentObject, metadata);
         return metadata.getProcedureName();
     }
 

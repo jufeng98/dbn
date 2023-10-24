@@ -44,16 +44,16 @@ class DBUserImpl extends DBRootObjectImpl<DBUserMetadata> implements DBUser {
     }
 
     @Override
-    protected String initObject(DBUserMetadata metadata) throws SQLException {
+    protected String initObject(ConnectionHandler connection, DBObject parentObject, DBUserMetadata metadata) throws SQLException {
         String name = metadata.getUserName();
         set(DBObjectProperty.EXPIRED, metadata.isExpired());
         set(DBObjectProperty.LOCKED, metadata.isLocked());
-        set(SESSION_USER, Strings.equalsIgnoreCase(name, this.getConnection().getUserName()));
+        set(SESSION_USER, Strings.equalsIgnoreCase(name, connection.getUserName()));
         return name;
     }
 
     @Override
-    protected void initLists() {
+    protected void initLists(ConnectionHandler connection) {
         DBObjectListContainer childObjects = ensureChildObjects();
         DBObjectBundle objectBundle = getObjectBundle();
         childObjects.createSubcontentObjectList(GRANTED_ROLE, this, objectBundle, USER_ROLE);

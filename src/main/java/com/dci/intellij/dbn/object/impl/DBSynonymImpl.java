@@ -2,6 +2,7 @@ package com.dci.intellij.dbn.object.impl;
 
 import com.dci.intellij.dbn.browser.ui.HtmlToolTipBuilder;
 import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.database.common.metadata.def.DBSynonymMetadata;
 import com.dci.intellij.dbn.object.DBSchema;
 import com.dci.intellij.dbn.object.DBSynonym;
@@ -31,13 +32,13 @@ class DBSynonymImpl extends DBSchemaObjectImpl<DBSynonymMetadata> implements DBS
     }
 
     @Override
-    protected String initObject(DBSynonymMetadata metadata) throws SQLException {
+    protected String initObject(ConnectionHandler connection, DBObject parentObject, DBSynonymMetadata metadata) throws SQLException {
         String name = metadata.getSynonymName();
         String schemaName = metadata.getUnderlyingObjectOwner();
         String objectName = metadata.getUnderlyingObjectName();
         DBObjectType objectType = DBObjectType.get(metadata.getUnderlyingObjectType(), DBObjectType.ANY);
 
-        DBSchema schema = getObjectBundle().getSchema(schemaName);
+        DBSchema schema = connection.getObjectBundle().getSchema(schemaName);
         if (schema != null) {
             DBObjectRef schemaRef = schema.ref();
             underlyingObject = new DBObjectRef<>(schemaRef, objectType, objectName);

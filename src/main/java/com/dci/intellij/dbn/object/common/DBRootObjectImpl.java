@@ -29,9 +29,9 @@ public abstract class DBRootObjectImpl<M extends DBObjectMetadata> extends DBObj
     }
 
     @Override
-    protected void init(M metadata) throws SQLException {
-        super.init(metadata);
-        initLists();
+    protected void init(ConnectionHandler connection, DBObject parentObject, M metadata) throws SQLException {
+        super.init(connection, parentObject, metadata);
+        initLists(connection);
     }
 
     @NotNull

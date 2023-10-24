@@ -500,6 +500,7 @@ public class Editors {
         editorManager.addTopComponent(fileEditor, toolbarComponent);
     }
 
+    @Nullable
     public static FileEditor[] openFileEditor(Project project, VirtualFile file, boolean focus) {
         AtomicReference<FileEditor[]> fileEditors = new AtomicReference<>();
         openFileEditor(project, file, focus, editors -> fileEditors.set(editors));

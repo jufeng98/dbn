@@ -50,7 +50,7 @@ public class DynamicSubcontentLoader<T extends DynamicContentElement, M extends 
 
             if (useAlternativeLoader) {
                 sourceContent.loadInBackground();
-                getAlternativeLoader().loadContent(content);
+                alternativeLoader.loadContent(content);
 
             } else if (sourceContent instanceof GroupedDynamicContent) {
                 GroupedDynamicContent<T> groupedContent = (GroupedDynamicContent<T>) sourceContent;

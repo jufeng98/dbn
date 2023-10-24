@@ -2,6 +2,7 @@ package com.dci.intellij.dbn.connection;
 
 import com.dci.intellij.dbn.common.constant.PseudoConstant;
 import com.dci.intellij.dbn.common.constant.PseudoConstantConverter;
+import com.dci.intellij.dbn.connection.context.DatabaseContext;
 
 import java.util.UUID;
 
@@ -20,6 +21,10 @@ public final class ConnectionId extends PseudoConstant<ConnectionId> {
     private ConnectionId(String id) {
         super(id);
         this.index = ConnectionIdIndex.next();
+    }
+
+    public static ConnectionId of(DatabaseContext context) {
+        return context == null ? null :  context.getConnectionId();
     }
 
     public boolean isVirtual() {

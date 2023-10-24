@@ -10,11 +10,11 @@ import com.dci.intellij.dbn.common.util.Strings;
 import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.connection.ConnectionId;
 import com.dci.intellij.dbn.connection.SchemaId;
+import com.dci.intellij.dbn.connection.context.DatabaseContext;
 import com.dci.intellij.dbn.connection.context.DatabaseContextBase;
 import com.dci.intellij.dbn.object.DBSchema;
 import com.dci.intellij.dbn.object.common.DBObject;
 import com.dci.intellij.dbn.object.common.DBObjectBundle;
-import com.dci.intellij.dbn.object.common.DBVirtualObject;
 import com.dci.intellij.dbn.object.type.DBObjectType;
 import com.intellij.openapi.project.Project;
 import lombok.Getter;
@@ -44,6 +44,7 @@ import static com.dci.intellij.dbn.vfs.DatabaseFileSystem.PSS;
 @Getter
 @Setter
 public class DBObjectRef<T extends DBObject> implements Comparable<DBObjectRef<?>>, Reference<T>, PersistentStateElement, DatabaseContextBase {
+    private static final Pattern PATH_TOKENIZER = Pattern.compile("[^/\"]+|\"([^\"]*)\"");
     private static final String QUOTE = "\"";
 
     private Object parent; // can hold connection id or an actual DBObjectRef (memory optimisation)
@@ -53,7 +54,6 @@ public class DBObjectRef<T extends DBObject> implements Comparable<DBObjectRef<?
 
     private WeakRef<T> reference;
     private int hashCode = -1;
-    private static final Pattern PATH_TOKENIZER = Pattern.compile("[^/\"]+|\"([^\"]*)\"");
 
     public DBObjectRef(ConnectionId connectionId, String identifier) {
         deserialize(connectionId, identifier);
@@ -67,12 +67,15 @@ public class DBObjectRef<T extends DBObject> implements Comparable<DBObjectRef<?
         this.objectName = objectName.intern();
         this.objectType = objectType;
         this.overload = object.getOverload();
+
+/*
         DBObject parentObj = object.getParentObject();
         if (parentObj != null) {
             this.parent = parentObj.ref();
         } else if (!(object instanceof DBVirtualObject)){
             this.parent = object.getConnectionId();
         }
+*/
     }
 
     public DBObjectRef(DBObjectRef<?> parent, DBObjectType objectType, String objectName) {
@@ -85,6 +88,27 @@ public class DBObjectRef<T extends DBObject> implements Comparable<DBObjectRef<?
         this.parent = connectionId;
         this.objectType = objectType;
         this.objectName = objectName.intern();
+    }
+
+    public void setParent(Object parent) {
+        if (parent == null) return;
+
+        if (parent instanceof DBObject) {
+            DBObject object = (DBObject) parent;
+            this.parent = object.ref();
+
+        } else if (parent instanceof DBObjectRef) {
+            this.parent = parent;
+
+        } else if (parent instanceof ConnectionId) {
+            this.parent =  parent;
+
+        } else if (parent instanceof DatabaseContext) {
+            DatabaseContext databaseContext = (DatabaseContext) parent;
+            this.parent = databaseContext.getConnectionId();
+        } else {
+            throw new IllegalArgumentException(parent + " is not supported as parent of database object");
+        }
     }
 
     public DBObjectRef() {
@@ -367,14 +391,12 @@ public class DBObjectRef<T extends DBObject> implements Comparable<DBObjectRef<?
 
     private T getObject() {
         try {
-            if (reference == null) {
-                return null;
-            }
+            if (reference == null) return null;
 
             T object = reference.get();
-            if (object == null || object.isDisposed()) {
-                return null;
-            }
+            if (object == null) return null;
+            if (object.isDisposed()) return null;
+
             return object;
         } catch (Exception e) {
             conditionallyLog(e);

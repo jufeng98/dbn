@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 class FileCollector extends VirtualFileVisitor {
-    private static final FileTypeManager fileTypeManager = FileTypeManager.getInstance();
+    private final FileTypeManager fileTypeManager = FileTypeManager.getInstance();
     private final Map<String, VirtualFile> bucket = new HashMap<>();
     private final FileSearchRequest request;
 

@@ -3,6 +3,7 @@ package com.dci.intellij.dbn.object.impl;
 import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.database.common.metadata.def.DBCharsetMetadata;
 import com.dci.intellij.dbn.object.DBCharset;
+import com.dci.intellij.dbn.object.common.DBObject;
 import com.dci.intellij.dbn.object.common.DBRootObjectImpl;
 import com.dci.intellij.dbn.object.type.DBObjectType;
 import lombok.Getter;
@@ -21,7 +22,7 @@ class DBCharsetImpl extends DBRootObjectImpl<DBCharsetMetadata> implements DBCha
     }
 
     @Override
-    protected String initObject(DBCharsetMetadata metadata) throws SQLException {
+    protected String initObject(ConnectionHandler connection, DBObject parentObject, DBCharsetMetadata metadata) throws SQLException {
         displayName = metadata.getDisplayName();
         deprecated = metadata.isDeprecated();
         maxLength = metadata.getMaxLength();

@@ -3,9 +3,11 @@ package com.dci.intellij.dbn.object.impl;
 import com.dci.intellij.dbn.browser.DatabaseBrowserUtils;
 import com.dci.intellij.dbn.browser.model.BrowserTreeNode;
 import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.database.common.metadata.def.DBTableMetadata;
 import com.dci.intellij.dbn.editor.DBContentType;
 import com.dci.intellij.dbn.object.*;
+import com.dci.intellij.dbn.object.common.DBObject;
 import com.dci.intellij.dbn.object.common.list.DBObjectListContainer;
 import com.dci.intellij.dbn.object.common.list.DBObjectNavigationList;
 import com.dci.intellij.dbn.object.filter.type.ObjectTypeFilterSettings;
@@ -34,15 +36,15 @@ class DBTableImpl extends DBDatasetImpl<DBTableMetadata> implements DBTable {
     }
 
     @Override
-    protected String initObject(DBTableMetadata metadata) throws SQLException {
+    protected String initObject(ConnectionHandler connection, DBObject parentObject, DBTableMetadata metadata) throws SQLException {
         String name = metadata.getTableName();
         set(TEMPORARY, metadata.isTemporary());
         return name;
     }
 
     @Override
-    protected void initLists() {
-        super.initLists();
+    protected void initLists(ConnectionHandler connection) {
+        super.initLists(connection);
         DBSchema schema = getSchema();
         DBObjectListContainer childObjects = ensureChildObjects();
 

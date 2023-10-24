@@ -1,9 +1,11 @@
 package com.dci.intellij.dbn.object.impl;
 
 import com.dci.intellij.dbn.browser.ui.HtmlToolTipBuilder;
+import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.database.common.metadata.def.DBClusterMetadata;
 import com.dci.intellij.dbn.object.DBCluster;
 import com.dci.intellij.dbn.object.DBSchema;
+import com.dci.intellij.dbn.object.common.DBObject;
 import com.dci.intellij.dbn.object.common.DBSchemaObjectImpl;
 import com.dci.intellij.dbn.object.type.DBObjectType;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +18,7 @@ class DBClusterImpl extends DBSchemaObjectImpl<DBClusterMetadata> implements DBC
     }
 
     @Override
-    protected String initObject(DBClusterMetadata metadata) throws SQLException {
+    protected String initObject(ConnectionHandler connection, DBObject parentObject, DBClusterMetadata metadata) throws SQLException {
         return metadata.getClusterName();
     }
 

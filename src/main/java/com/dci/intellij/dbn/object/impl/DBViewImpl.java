@@ -12,6 +12,7 @@ import com.dci.intellij.dbn.language.sql.SQLLanguage;
 import com.dci.intellij.dbn.object.DBSchema;
 import com.dci.intellij.dbn.object.DBType;
 import com.dci.intellij.dbn.object.DBView;
+import com.dci.intellij.dbn.object.common.DBObject;
 import com.dci.intellij.dbn.object.common.DBObjectBundle;
 import com.dci.intellij.dbn.object.common.list.DBObjectNavigationList;
 import com.dci.intellij.dbn.object.common.property.DBObjectProperty;
@@ -35,13 +36,13 @@ class DBViewImpl extends DBDatasetImpl<DBViewMetadata> implements DBView {
     }
 
     @Override
-    protected String initObject(DBViewMetadata metadata) throws SQLException {
+    protected String initObject(ConnectionHandler connection, DBObject parentObject, DBViewMetadata metadata) throws SQLException {
         String name = metadata.getViewName();
         set(DBObjectProperty.SYSTEM_OBJECT, metadata.isSystemView());
         String typeOwner = metadata.getViewTypeOwner();
         String typeName = metadata.getViewType();
         if (typeOwner != null && typeName != null) {
-            DBObjectBundle objectBundle = getObjectBundle();
+            DBObjectBundle objectBundle = connection.getObjectBundle();
             DBSchema typeSchema = objectBundle.getSchema(typeOwner);
             type = DBObjectRef.of(typeSchema == null ? null : typeSchema.getType(typeName));
         }

@@ -1,5 +1,6 @@
 package com.dci.intellij.dbn.object.impl;
 
+import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.database.common.metadata.def.DBGrantedRoleMetadata;
 import com.dci.intellij.dbn.object.DBGrantedRole;
 import com.dci.intellij.dbn.object.DBPrivilege;
@@ -25,9 +26,9 @@ class DBGrantedRoleImpl extends DBObjectImpl<DBGrantedRoleMetadata> implements D
     }
 
     @Override
-    protected String initObject(DBGrantedRoleMetadata metadata) throws SQLException {
+    protected String initObject(ConnectionHandler connection, DBObject parentObject, DBGrantedRoleMetadata metadata) throws SQLException {
         String name = metadata.getGrantedRoleName();
-        this.role = DBObjectRef.of(getObjectBundle().getRole(name));
+        this.role = DBObjectRef.of(connection.getObjectBundle().getRole(name));
         set(ADMIN_OPTION, metadata.isAdminOption());
         set(DEFAULT_ROLE, metadata.isDefaultRole());
         return name;

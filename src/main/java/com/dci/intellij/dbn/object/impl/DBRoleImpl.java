@@ -5,6 +5,7 @@ import com.dci.intellij.dbn.browser.model.BrowserTreeNode;
 import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.database.common.metadata.def.DBRoleMetadata;
 import com.dci.intellij.dbn.object.*;
+import com.dci.intellij.dbn.object.common.DBObject;
 import com.dci.intellij.dbn.object.common.DBObjectBundle;
 import com.dci.intellij.dbn.object.common.DBRootObjectImpl;
 import com.dci.intellij.dbn.object.common.list.DBObjectListContainer;
@@ -33,13 +34,13 @@ class DBRoleImpl extends DBRootObjectImpl<DBRoleMetadata> implements DBRole {
     }
 
     @Override
-    protected String initObject(DBRoleMetadata metadata) throws SQLException {
+    protected String initObject(ConnectionHandler connection, DBObject parentObject, DBRoleMetadata metadata) throws SQLException {
         return metadata.getRoleName();
     }
 
     @Override
-    protected void initLists() {
-        DBObjectBundle objectBundle = getObjectBundle();
+    protected void initLists(ConnectionHandler connection) {
+        DBObjectBundle objectBundle = connection.getObjectBundle();
         DBObjectListContainer childObjects = ensureChildObjects();
         childObjects.createSubcontentObjectList(GRANTED_PRIVILEGE, this, objectBundle, ROLE_PRIVILEGE);
         childObjects.createSubcontentObjectList(GRANTED_ROLE, this, objectBundle, ROLE_ROLE);

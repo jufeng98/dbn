@@ -1,10 +1,12 @@
 package com.dci.intellij.dbn.object.impl;
 
 import com.dci.intellij.dbn.browser.ui.HtmlToolTipBuilder;
+import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.data.type.DBDataType;
 import com.dci.intellij.dbn.database.common.metadata.def.DBTypeAttributeMetadata;
 import com.dci.intellij.dbn.object.DBType;
 import com.dci.intellij.dbn.object.DBTypeAttribute;
+import com.dci.intellij.dbn.object.common.DBObject;
 import com.dci.intellij.dbn.object.common.DBObjectImpl;
 import com.dci.intellij.dbn.object.common.list.DBObjectNavigationList;
 import com.dci.intellij.dbn.object.properties.DBDataTypePresentableProperty;
@@ -27,10 +29,10 @@ class DBTypeAttributeImpl extends DBObjectImpl<DBTypeAttributeMetadata> implemen
     }
 
     @Override
-    protected String initObject(DBTypeAttributeMetadata metadata) throws SQLException {
+    protected String initObject(ConnectionHandler connection, DBObject parentObject, DBTypeAttributeMetadata metadata) throws SQLException {
         String name = metadata.getAttributeName();
         position = metadata.getPosition();
-        dataType = DBDataType.get(this.getConnection(), metadata.getDataType());
+        dataType = DBDataType.get(connection, metadata.getDataType());
         return name;
     }
 

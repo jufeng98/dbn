@@ -2,8 +2,10 @@ package com.dci.intellij.dbn.object.impl;
 
 import com.dci.intellij.dbn.browser.model.BrowserTreeNode;
 import com.dci.intellij.dbn.browser.ui.HtmlToolTipBuilder;
+import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.database.common.metadata.def.DBNestedTableMetadata;
 import com.dci.intellij.dbn.object.*;
+import com.dci.intellij.dbn.object.common.DBObject;
 import com.dci.intellij.dbn.object.common.DBObjectImpl;
 import com.dci.intellij.dbn.object.lookup.DBObjectRef;
 import com.dci.intellij.dbn.object.type.DBObjectType;
@@ -23,12 +25,12 @@ class DBNestedTableImpl extends DBObjectImpl<DBNestedTableMetadata> implements D
     }
 
     @Override
-    protected String initObject(DBNestedTableMetadata metadata) throws SQLException {
+    protected String initObject(ConnectionHandler connection, DBObject parentObject, DBNestedTableMetadata metadata) throws SQLException {
         String name = metadata.getNestedTableName();
 
         String typeOwner = metadata.getDeclaredTypeOwner();
         String typeName = metadata.getDeclaredTypeName();
-        DBSchema schema = getObjectBundle().getSchema(typeOwner);
+        DBSchema schema = connection.getObjectBundle().getSchema(typeOwner);
         typeRef = DBObjectRef.of(schema == null ? null : schema.getType(typeName));
         // todo !!!
         return name;

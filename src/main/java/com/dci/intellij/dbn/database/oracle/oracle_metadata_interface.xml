@@ -222,7 +222,7 @@
     <statement-execution-processor id="dataset-columns" is-query="true" is-prepared-statement="true">
         <statement prefixes="DBA, ALL">
             with DBN_CONSTRAINTS as (
-                select distinct
+                select /*+ materialize */
                     c.owner,
                     c.table_name,
                     cc.column_name,
@@ -361,7 +361,7 @@
     <statement-execution-processor id="all-dataset-columns" is-query="true" is-prepared-statement="true" timeout="90">
         <statement prefixes="DBA, ALL">
             with DBN_CONSTRAINTS as (
-                select distinct
+                select /*+ materialize */
                     c.owner,
                     c.table_name,
                     cc.column_name,

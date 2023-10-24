@@ -8,6 +8,7 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.Collection;
 
 public class OracleNativeDataTypes extends DatabaseNativeDataTypes {
     {
@@ -56,6 +57,7 @@ public class OracleNativeDataTypes extends DatabaseNativeDataTypes {
         createDateTimeDefinition("TIMESTAMP", Timestamp.class, OracleTypes.TIMESTAMP);
         createDateTimeDefinition("TIMESTAMP WITH LOCAL TIME ZONE", Timestamp.class, OracleTypes.TIMESTAMPLTZ);
         createDateTimeDefinition("TIMESTAMP WITH LOCAL TZ", Timestamp.class, OracleTypes.TIMESTAMPLTZ);
+        createDateTimeDefinition("TIMESTAMP WITH TIME ZONE", Timestamp.class, OracleTypes.TIMESTAMPLTZ);
         createDateTimeDefinition("TIMESTAMP WITH TZ", Timestamp.class, OracleTypes.TIMESTAMPLTZ);
         createBasicDefinition("INTERVAL DAY TO SECOND", Object.class, OracleTypes.INTERVALDS, GenericDataType.PROPRIETARY);
         createBasicDefinition("INTERVAL YEAR TO MONTH", Object.class, OracleTypes.INTERVALYM, GenericDataType.PROPRIETARY);
@@ -70,10 +72,20 @@ public class OracleNativeDataTypes extends DatabaseNativeDataTypes {
         createBasicDefinition("BFILE", Object.class, OracleTypes.BFILE, GenericDataType.FILE);
         createBasicDefinition("ROWID", Object.class, OracleTypes.ROWID, GenericDataType.ROWID);
         createBasicDefinition("UROWID", Object.class, OracleTypes.ROWID, GenericDataType.ROWID);
+        createBasicDefinition("REF", Object.class, OracleTypes.REF, GenericDataType.REF);
         createBasicDefinition("REF CURSOR", Object.class, OracleTypes.CURSOR, GenericDataType.CURSOR, true, "CURSOR");
- 
+
+        createBasicDefinition("ANYDATA", Object.class, OracleTypes.OTHER, GenericDataType.OBJECT);
+        createBasicDefinition("ANYTYPE", Object.class, OracleTypes.OTHER, GenericDataType.OBJECT);
+        createBasicDefinition("ANYDATASET", Object.class, OracleTypes.OTHER, GenericDataType.OBJECT);
+        createBasicDefinition("OBJECT", Object.class, OracleTypes.OTHER, GenericDataType.OBJECT);
+        createBasicDefinition("TABLE", Object.class, OracleTypes.OTHER, GenericDataType.TABLE);
+        createBasicDefinition("COLLECTION", Collection.class, OracleTypes.ARRAY, GenericDataType.COLLECTION);
+
         createBasicDefinition("BOOLEAN", Boolean.class, OracleTypes.VARCHAR, GenericDataType.BOOLEAN);
         createBasicDefinition("PL/SQL BOOLEAN", String.class, OracleTypes.VARCHAR, GenericDataType.BOOLEAN);
+        createBasicDefinition("PL/SQL TABLE", String.class, OracleTypes.OTHER, GenericDataType.TABLE);
+        createBasicDefinition("PL/SQL RECORD", String.class, OracleTypes.OTHER, GenericDataType.OBJECT);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.dci.intellij.dbn.object.common;
 
+import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.database.common.metadata.DBObjectMetadata;
 import com.dci.intellij.dbn.object.type.DBObjectType;
 import com.intellij.openapi.util.TextRange;
@@ -27,7 +28,7 @@ public class DBFictiveObject extends DBObjectImpl implements PsiReference {
     }
 
     @Override
-    protected String initObject(DBObjectMetadata metadata) throws SQLException {
+    protected String initObject(ConnectionHandler connection, DBObject parentObject, DBObjectMetadata metadata) throws SQLException {
         throw new UnsupportedOperationException();
     }
 

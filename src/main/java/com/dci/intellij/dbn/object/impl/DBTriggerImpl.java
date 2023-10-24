@@ -1,10 +1,12 @@
 package com.dci.intellij.dbn.object.impl;
 
+import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.database.common.metadata.def.DBTriggerMetadata;
 import com.dci.intellij.dbn.editor.DBContentType;
 import com.dci.intellij.dbn.object.DBDataset;
 import com.dci.intellij.dbn.object.DBSchema;
 import com.dci.intellij.dbn.object.DBTrigger;
+import com.dci.intellij.dbn.object.common.DBObject;
 import com.dci.intellij.dbn.object.common.DBSchemaObjectImpl;
 import com.dci.intellij.dbn.object.common.operation.DBOperationExecutor;
 import com.dci.intellij.dbn.object.common.operation.DatabaseOperationManager;
@@ -36,7 +38,7 @@ abstract class DBTriggerImpl extends DBSchemaObjectImpl<DBTriggerMetadata> imple
     }
 
     @Override
-    protected String initObject(DBTriggerMetadata metadata) throws SQLException {
+    protected String initObject(ConnectionHandler connection, DBObject parentObject, DBTriggerMetadata metadata) throws SQLException {
         String name = metadata.getTriggerName();
         set(FOR_EACH_ROW, metadata.isForEachRow());
 

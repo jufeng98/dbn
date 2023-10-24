@@ -107,7 +107,7 @@ public class DBVirtualObject extends DBRootObjectImpl implements PsiReference {
         psiCache = new DBObjectPsiCache(psiElement);
         relevantPsiElement = PsiElementRef.of(psiElement);
         String name = resolveName();
-        objectRef = new DBObjectRef<>(this, name);
+        ref = new DBObjectRef<>(this, name);
     }
 
     private String resolveName() {
@@ -193,7 +193,7 @@ public class DBVirtualObject extends DBRootObjectImpl implements PsiReference {
     }
 
     @Override
-    protected String initObject(DBObjectMetadata metadata) throws SQLException {
+    protected String initObject(ConnectionHandler connection, DBObject parentObject, DBObjectMetadata metadata) throws SQLException {
         throw new UnsupportedOperationException();
     }
 
@@ -405,7 +405,7 @@ public class DBVirtualObject extends DBRootObjectImpl implements PsiReference {
     }
 
     public void setParentObject(DBVirtualObject virtualObject) {
-        parentObjectRef = DBObjectRef.of(virtualObject);
+        ref.setParent(DBObjectRef.of(virtualObject));
     }
 
     @Override
@@ -418,7 +418,7 @@ public class DBVirtualObject extends DBRootObjectImpl implements PsiReference {
     @NotNull
     @Override
     public DBObjectType getObjectType() {
-        return objectRef.getObjectType();
+        return ref.getObjectType();
     }
 
     @Override

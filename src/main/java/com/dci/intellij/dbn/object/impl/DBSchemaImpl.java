@@ -49,17 +49,17 @@ class DBSchemaImpl extends DBRootObjectImpl<DBSchemaMetadata> implements DBSchem
     }
 
     @Override
-    protected String initObject(DBSchemaMetadata metadata) throws SQLException {
+    protected String initObject(ConnectionHandler connection, DBObject parentObject, DBSchemaMetadata metadata) throws SQLException {
         String name = metadata.getSchemaName();
         set(PUBLIC_SCHEMA, metadata.isPublic());
         set(SYSTEM_SCHEMA, metadata.isSystem());
         set(EMPTY_SCHEMA, metadata.isEmpty());
-        set(USER_SCHEMA, Strings.equalsIgnoreCase(name, this.getConnection().getUserName()));
+        set(USER_SCHEMA, Strings.equalsIgnoreCase(name, connection.getUserName()));
         return name;
     }
 
     @Override
-    protected void initLists() {
+    protected void initLists(ConnectionHandler connection) {
         DBObjectListContainer childObjects = ensureChildObjects();
 
         childObjects.createObjectList(TABLE,             this);

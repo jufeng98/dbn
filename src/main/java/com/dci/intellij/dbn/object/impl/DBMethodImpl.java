@@ -2,12 +2,14 @@ package com.dci.intellij.dbn.object.impl;
 
 import com.dci.intellij.dbn.browser.DatabaseBrowserUtils;
 import com.dci.intellij.dbn.browser.model.BrowserTreeNode;
+import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.database.common.metadata.def.DBMethodMetadata;
 import com.dci.intellij.dbn.editor.DBContentType;
 import com.dci.intellij.dbn.language.common.DBLanguage;
 import com.dci.intellij.dbn.object.DBArgument;
 import com.dci.intellij.dbn.object.DBMethod;
 import com.dci.intellij.dbn.object.DBSchema;
+import com.dci.intellij.dbn.object.common.DBObject;
 import com.dci.intellij.dbn.object.common.DBSchemaObject;
 import com.dci.intellij.dbn.object.common.DBSchemaObjectImpl;
 import com.dci.intellij.dbn.object.common.list.DBObjectListContainer;
@@ -38,7 +40,7 @@ abstract class DBMethodImpl<M extends DBMethodMetadata> extends DBSchemaObjectIm
     }
 
     @Override
-    protected String initObject(M metadata) throws SQLException {
+    protected String initObject(ConnectionHandler connection, DBObject parentObject, M metadata) throws SQLException {
         set(DETERMINISTIC, metadata.isDeterministic());
         overload = metadata.getOverload();
         position = metadata.getPosition();
@@ -64,8 +66,8 @@ abstract class DBMethodImpl<M extends DBMethodMetadata> extends DBSchemaObjectIm
     }
 
     @Override
-    protected void initLists() {
-        super.initLists();
+    protected void initLists(ConnectionHandler connection) {
+        super.initLists(connection);
         DBObjectListContainer childObjects = ensureChildObjects();
         childObjects.createSubcontentObjectList(ARGUMENT, this, getSchema());
     }

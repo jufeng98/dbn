@@ -1,5 +1,6 @@
 package com.dci.intellij.dbn.object.impl;
 
+import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.database.common.metadata.def.DBGrantedPrivilegeMetadata;
 import com.dci.intellij.dbn.object.DBGrantedPrivilege;
 import com.dci.intellij.dbn.object.DBPrivilege;
@@ -23,9 +24,9 @@ class DBGrantedPrivilegeImpl extends DBObjectImpl<DBGrantedPrivilegeMetadata> im
     }
 
     @Override
-    protected String initObject(DBGrantedPrivilegeMetadata metadata) throws SQLException {
+    protected String initObject(ConnectionHandler connection, DBObject parentObject, DBGrantedPrivilegeMetadata metadata) throws SQLException {
         String name = metadata.getGrantedPrivilegeName();
-        privilege = DBObjectRef.of(getObjectBundle().getPrivilege(name));
+        privilege = DBObjectRef.of(connection.getObjectBundle().getPrivilege(name));
         set(ADMIN_OPTION, metadata.isAdminOption());
         return name;
     }

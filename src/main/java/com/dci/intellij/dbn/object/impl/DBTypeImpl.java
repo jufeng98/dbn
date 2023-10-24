@@ -4,6 +4,7 @@ import com.dci.intellij.dbn.browser.DatabaseBrowserUtils;
 import com.dci.intellij.dbn.browser.model.BrowserTreeNode;
 import com.dci.intellij.dbn.browser.ui.HtmlToolTipBuilder;
 import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.data.type.DBDataType;
 import com.dci.intellij.dbn.data.type.DBDataTypeDefinition;
 import com.dci.intellij.dbn.data.type.DBNativeDataType;
@@ -57,7 +58,7 @@ class DBTypeImpl
     }
 
     @Override
-    protected String initObject(DBTypeMetadata metadata) throws SQLException {
+    protected String initObject(ConnectionHandler connection, DBObject parentObject, DBTypeMetadata metadata) throws SQLException {
         String name = metadata.getTypeName();
         superTypeOwner = metadata.getSupertypeOwner();
         superTypeName = metadata.getSupertypeName();
@@ -66,7 +67,7 @@ class DBTypeImpl
         boolean collection = metadata.isCollection();
         set(DBObjectProperty.COLLECTION, collection);
 
-        nativeDataType = getObjectBundle().getNativeDataType(typeCode);
+        nativeDataType = connection.getObjectBundle().getNativeDataType(typeCode);
         if (collection) {
             DBDataTypeMetadata collectionMetadata = metadata.getDataType().collection();
             collectionElementTypeRef = new DBDataTypeDefinition(collectionMetadata);
@@ -76,8 +77,8 @@ class DBTypeImpl
 
 
     @Override
-    protected void initLists() {
-        super.initLists();
+    protected void initLists(ConnectionHandler connection) {
+        super.initLists(connection);
         if (!isCollection()) {
             DBObjectListContainer childObjects = ensureChildObjects();
             DBSchema schema = getSchema();

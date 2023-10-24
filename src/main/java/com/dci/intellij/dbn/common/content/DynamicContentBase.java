@@ -117,7 +117,7 @@ public abstract class DynamicContentBase<T extends DynamicContentElement>
 
     @Override
     public boolean isReady() {
-        return is(LOADED) && isNot(LOADING) && isNot(DIRTY);
+        return isLoaded() && !isLoading() && !isDirty();
     }
 
     @Override
@@ -379,12 +379,12 @@ public abstract class DynamicContentBase<T extends DynamicContentElement>
     private boolean allowSyncLoad() {
         if (ThreadMonitor.isDispatchThread()) return false;
         if (ThreadMonitor.isWriteActionThread()) return false;
-        if (ThreadMonitor.isReadActionThread()) return false;
 
+        if (canLoadFast()) return true;
+        if (ThreadMonitor.isReadActionThread()) return false;
         if (ThreadMonitor.isBackgroundProcess()) return true;
         if (ThreadMonitor.isProgressProcess()) return true;
         if (ThreadMonitor.isModalProcess()) return true;
-        if (canLoadFast()) return true;
         return false;
     }
 

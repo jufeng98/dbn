@@ -2,11 +2,13 @@ package com.dci.intellij.dbn.object.impl;
 
 import com.dci.intellij.dbn.browser.ui.HtmlToolTipBuilder;
 import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.data.type.DBDataType;
 import com.dci.intellij.dbn.database.common.metadata.def.DBArgumentMetadata;
 import com.dci.intellij.dbn.object.DBArgument;
 import com.dci.intellij.dbn.object.DBFunction;
 import com.dci.intellij.dbn.object.DBMethod;
+import com.dci.intellij.dbn.object.common.DBObject;
 import com.dci.intellij.dbn.object.common.DBObjectImpl;
 import com.dci.intellij.dbn.object.common.list.DBObjectNavigationList;
 import com.dci.intellij.dbn.object.common.property.DBObjectProperty;
@@ -35,7 +37,7 @@ class DBArgumentImpl extends DBObjectImpl<DBArgumentMetadata> implements DBArgum
     }
 
     @Override
-    protected String initObject(DBArgumentMetadata metadata) throws SQLException {
+    protected String initObject(ConnectionHandler connection, DBObject parentObject, DBArgumentMetadata metadata) throws SQLException {
         overload = metadata.getOverload();
         position = metadata.getPosition();
         sequence = metadata.getSequence();
@@ -48,8 +50,8 @@ class DBArgumentImpl extends DBObjectImpl<DBArgumentMetadata> implements DBArgum
         String name = metadata.getArgumentName();
         if (name == null) name = position == 0 ? "return" : "[unnamed]";
 
-        dataType = DBDataType.get(this.getConnection(), metadata.getDataType());
-        if (getParentObject() instanceof DBFunction) {
+        dataType = DBDataType.get(connection, metadata.getDataType());
+        if (parentObject instanceof DBFunction) {
             position++;
         }
         return name;

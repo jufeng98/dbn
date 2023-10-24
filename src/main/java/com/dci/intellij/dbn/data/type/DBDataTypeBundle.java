@@ -42,22 +42,19 @@ public final class DBDataTypeBundle extends StatefulDisposableBase implements Un
     }
 
     public DBNativeDataType getNativeDataType(String name) {
-        if (name != null) {
-            String upperCaseName = cachedUpperCase(name);
-            Map<String, DBNativeDataType> dataTypes = getNativeDataTypes();
+        if (name == null) return null;
 
-            DBNativeDataType dataType = dataTypes.get(upperCaseName);
-            if (dataType != null) {
-                return dataType;
-            }
+        String upperCaseName = cachedUpperCase(name);
+        Map<String, DBNativeDataType> dataTypes = getNativeDataTypes();
 
-            for (val entry : dataTypes.entrySet()) {
-                String key = entry.getKey();
-                DBNativeDataType value = entry.getValue();
-                if (key.startsWith(upperCaseName)) {
+        DBNativeDataType dataType = dataTypes.get(upperCaseName);
+        if (dataType != null) return dataType;
 
-                    return value;
-                }
+        for (val entry : dataTypes.entrySet()) {
+            String key = entry.getKey();
+            DBNativeDataType value = entry.getValue();
+            if (key.startsWith(upperCaseName)) {
+                return value;
             }
         }
         return null;

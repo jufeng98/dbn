@@ -3,6 +3,7 @@ package com.dci.intellij.dbn.object.impl;
 import com.dci.intellij.dbn.browser.ui.HtmlToolTipBuilder;
 import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.load.ProgressMonitor;
+import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.data.grid.options.DataGridSettings;
 import com.dci.intellij.dbn.data.type.DBDataType;
 import com.dci.intellij.dbn.database.common.metadata.def.DBColumnMetadata;
@@ -39,7 +40,7 @@ class DBColumnImpl extends DBObjectImpl<DBColumnMetadata> implements DBColumn {
     }
 
     @Override
-    protected String initObject(DBColumnMetadata metadata) throws SQLException {
+    protected String initObject(ConnectionHandler connection, DBObject parentObject, DBColumnMetadata metadata) throws SQLException {
         String name = metadata.getColumnName();
         set(PRIMARY_KEY, metadata.isPrimaryKey());
         set(FOREIGN_KEY, metadata.isForeignKey());
@@ -49,12 +50,12 @@ class DBColumnImpl extends DBObjectImpl<DBColumnMetadata> implements DBColumn {
         set(HIDDEN, metadata.isHidden());
         position = metadata.getPosition();
 
-        dataType = DBDataType.get(this.getConnection(), metadata.getDataType());
+        dataType = DBDataType.get(connection, metadata.getDataType());
         return name;
     }
 
     @Override
-    protected void initLists() {
+    protected void initLists(ConnectionHandler connection) {
         DBDataset dataset = getDataset();
         DBObjectListContainer childObjects = ensureChildObjects();
         childObjects.createSubcontentObjectList(CONSTRAINT, this, dataset, CONSTRAINT_COLUMN);

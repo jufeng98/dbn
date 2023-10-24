@@ -1,6 +1,7 @@
 package com.dci.intellij.dbn.object.impl;
 
 import com.dci.intellij.dbn.browser.ui.HtmlToolTipBuilder;
+import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.data.type.DBDataType;
 import com.dci.intellij.dbn.database.common.metadata.DBObjectMetadata;
 import com.dci.intellij.dbn.object.*;
@@ -21,8 +22,8 @@ abstract class DBDatasetImpl<M extends DBObjectMetadata> extends DBSchemaObjectI
     }
 
     @Override
-    protected void initLists() {
-        super.initLists();
+    protected void initLists(ConnectionHandler connection) {
+        super.initLists(connection);
         DBSchema schema = getSchema();
         DBObjectListContainer childObjects = ensureChildObjects();
 

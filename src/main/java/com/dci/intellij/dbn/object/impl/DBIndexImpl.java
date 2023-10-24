@@ -1,10 +1,12 @@
 package com.dci.intellij.dbn.object.impl;
 
 import com.dci.intellij.dbn.browser.ui.HtmlToolTipBuilder;
+import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.database.common.metadata.def.DBIndexMetadata;
 import com.dci.intellij.dbn.object.DBColumn;
 import com.dci.intellij.dbn.object.DBDataset;
 import com.dci.intellij.dbn.object.DBIndex;
+import com.dci.intellij.dbn.object.common.DBObject;
 import com.dci.intellij.dbn.object.common.DBSchemaObjectImpl;
 import com.dci.intellij.dbn.object.common.list.DBObjectListContainer;
 import com.dci.intellij.dbn.object.common.list.DBObjectNavigationList;
@@ -28,7 +30,7 @@ class DBIndexImpl extends DBSchemaObjectImpl<DBIndexMetadata> implements DBIndex
     }
 
     @Override
-    protected String initObject(DBIndexMetadata metadata) throws SQLException {
+    protected String initObject(ConnectionHandler connection, DBObject parentObject, DBIndexMetadata metadata) throws SQLException {
         String name = metadata.getIndexName();
         set(UNIQUE, metadata.isUnique());
         return name;
@@ -47,8 +49,8 @@ class DBIndexImpl extends DBSchemaObjectImpl<DBIndexMetadata> implements DBIndex
     }
 
     @Override
-    protected void initLists() {
-        super.initLists();
+    protected void initLists(ConnectionHandler connection) {
+        super.initLists(connection);
         DBDataset dataset = getDataset();
         if (dataset != null) {
             DBObjectListContainer childObjects = ensureChildObjects();

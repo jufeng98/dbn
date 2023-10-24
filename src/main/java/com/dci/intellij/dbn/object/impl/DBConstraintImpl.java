@@ -2,11 +2,13 @@ package com.dci.intellij.dbn.object.impl;
 
 import com.dci.intellij.dbn.browser.ui.HtmlToolTipBuilder;
 import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.database.common.metadata.def.DBConstraintMetadata;
 import com.dci.intellij.dbn.object.DBColumn;
 import com.dci.intellij.dbn.object.DBConstraint;
 import com.dci.intellij.dbn.object.DBDataset;
 import com.dci.intellij.dbn.object.DBSchema;
+import com.dci.intellij.dbn.object.common.DBObject;
 import com.dci.intellij.dbn.object.common.DBSchemaObjectImpl;
 import com.dci.intellij.dbn.object.common.list.DBObjectListContainer;
 import com.dci.intellij.dbn.object.common.list.DBObjectNavigationList;
@@ -48,7 +50,7 @@ class DBConstraintImpl extends DBSchemaObjectImpl<DBConstraintMetadata> implemen
     }
 
     @Override
-    protected String initObject(DBConstraintMetadata metadata) throws SQLException {
+    protected String initObject(ConnectionHandler connection, DBObject parentObject, DBConstraintMetadata metadata) throws SQLException {
         String name = metadata.getConstraintName();
         checkCondition = metadata.getCheckCondition();
 
@@ -68,7 +70,7 @@ class DBConstraintImpl extends DBSchemaObjectImpl<DBConstraintMetadata> implemen
             String fkOwner = metadata.getFkConstraintOwner();
             String fkName = metadata.getFkConstraintName();
 
-            DBSchema schema = getObjectBundle().getSchema(fkOwner);
+            DBSchema schema = connection.getObjectBundle().getSchema(fkOwner);
             if (schema != null) {
                 DBObjectRef<DBSchema> schemaRef = schema.ref();
                 foreignKeyConstraint = new DBObjectRef<>(schemaRef, CONSTRAINT, fkName);
@@ -78,8 +80,8 @@ class DBConstraintImpl extends DBSchemaObjectImpl<DBConstraintMetadata> implemen
     }
 
     @Override
-    protected void initLists() {
-        super.initLists();
+    protected void initLists(ConnectionHandler connection) {
+        super.initLists(connection);
         DBObjectListContainer childObjects = ensureChildObjects();
         childObjects.createSubcontentObjectList(
                 COLUMN, this,

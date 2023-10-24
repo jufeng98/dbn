@@ -68,9 +68,7 @@ import static java.util.Collections.emptyList;
 
 public abstract class DBObjectImpl<M extends DBObjectMetadata> extends DBObjectTreeNodeBase implements DBObject, ToolTipProvider {
 
-    private final ConnectionRef connection;
-    protected DBObjectRef<?> objectRef;
-    protected DBObjectRef<?> parentObjectRef;
+    protected DBObjectRef<?> ref;
     protected DBObjectProperties properties = new DBObjectProperties();
 
     private static final WeakRefCache<DBObjectImpl, DBObjectListContainer> childObjects = WeakRefCache.weakKey();
@@ -80,36 +78,34 @@ public abstract class DBObjectImpl<M extends DBObjectMetadata> extends DBObjectT
     };
 
     protected DBObjectImpl(@NotNull DBObject parentObject, M metadata) throws SQLException {
-        this.connection = ConnectionRef.of(parentObject.getConnection());
-        this.parentObjectRef = DBObjectRef.of(parentObject);
-        init(metadata);
+        init(parentObject.getConnection(), parentObject, metadata);
     }
 
     protected DBObjectImpl(@NotNull ConnectionHandler connection, M metadata) throws SQLException {
-        this.connection = ConnectionRef.of(connection);
-        init(metadata);
+        init(connection, null, metadata);
     }
 
     protected DBObjectImpl(@Nullable ConnectionHandler connection, DBObjectType objectType, String name) {
-        this.connection = ConnectionRef.of(connection);
-        objectRef = new DBObjectRef<>(this, objectType, name);
+        ref = new DBObjectRef<>(this, objectType, name);
+        ref.setParent(connection);
     }
 
-    protected void init(M metadata) throws SQLException {
-        String name = initObject(metadata);
-        objectRef = new DBObjectRef<>(this, name);
+    protected void init(@Nullable ConnectionHandler connection, @Nullable DBObject parentObject, M metadata) throws SQLException {
+        String name = initObject(connection, parentObject, metadata);
+        ref = new DBObjectRef<>(this, name);
+        ref.setParent(parentObject == null ? connection : parentObject);
 
         initStatus(metadata);
         initProperties();
     }
 
-    protected abstract String initObject(M metadata) throws SQLException;
+    protected abstract String initObject(ConnectionHandler connection, DBObject parentObject, M metadata) throws SQLException;
 
     public void initStatus(M metadata) throws SQLException {}
 
     protected void initProperties() {}
 
-    protected void initLists() {}
+    protected void initLists(ConnectionHandler connection) {}
 
     @Override
     public boolean set(DBObjectProperty status, boolean value) {
@@ -128,7 +124,7 @@ public abstract class DBObjectImpl<M extends DBObjectMetadata> extends DBObjectT
 
     @Override
     public DBObjectRef ref() {
-        return objectRef;
+        return ref;
     }
 
     @Override
@@ -159,11 +155,13 @@ public abstract class DBObjectImpl<M extends DBObjectMetadata> extends DBObjectT
 
     @Override
     public <T extends DBObject> T getParentObject() {
-        return cast(DBObjectRef.get(parentObjectRef));
+        return DBObjectRef.get(getParentObjectRef());
     }
 
     public <T extends DBObject> DBObjectRef<T> getParentObjectRef() {
-        return cast(parentObjectRef);
+        Object parent = ref.getParent();
+        if (parent instanceof DBObjectRef) return cast(parent);
+        return null;
     }
 
     @Override
@@ -191,7 +189,7 @@ public abstract class DBObjectImpl<M extends DBObjectMetadata> extends DBObjectT
     @Override
     @NotNull
     public String getName() {
-        return objectRef.getObjectName();
+        return ref.getObjectName();
     }
 
     @Override
@@ -232,12 +230,12 @@ public abstract class DBObjectImpl<M extends DBObjectMetadata> extends DBObjectT
     @NotNull
     @Override
     public String getQualifiedName() {
-        return objectRef.getPath();
+        return ref.getPath();
     }
 
     @Override
     public String getQualifiedNameWithType() {
-        return objectRef.getQualifiedNameWithType();
+        return ref.getQualifiedNameWithType();
     }
 
     @Override
@@ -299,7 +297,7 @@ public abstract class DBObjectImpl<M extends DBObjectMetadata> extends DBObjectT
     @Override
     @NotNull
     public ConnectionHandler getConnection() {
-        return ConnectionRef.ensure(connection);
+        return ref.ensureConnection();
     }
 
     @NotNull
@@ -321,7 +319,7 @@ public abstract class DBObjectImpl<M extends DBObjectMetadata> extends DBObjectT
         if (isNot(LISTS_LOADED)) {
             synchronized (this) {
                 if (isNot(LISTS_LOADED)) {
-                    initLists();
+                    initLists(getConnection());
                     set(LISTS_LOADED, true);
                 }
             }
@@ -502,7 +500,7 @@ public abstract class DBObjectImpl<M extends DBObjectMetadata> extends DBObjectT
     @Override
     @Nullable
     public <E extends DatabaseEntity> E getUndisposedEntity() {
-        return cast(objectRef.get());
+        return cast(ref.get());
     }
 
     @Override
@@ -597,6 +595,7 @@ public abstract class DBObjectImpl<M extends DBObjectMetadata> extends DBObjectT
     @NotNull
     public BrowserTreeNode getParent() {
         DBObjectType objectType = getObjectType();
+        DBObjectRef<DBObject> parentObjectRef = getParentObjectRef();
         if (parentObjectRef != null){
             DBObject object = parentObjectRef.ensure();
 
@@ -644,7 +643,7 @@ public abstract class DBObjectImpl<M extends DBObjectMetadata> extends DBObjectT
     public int compareTo(@NotNull Object o) {
         if (o instanceof DBObject) {
             DBObject object = (DBObject) o;
-            return objectRef.compareTo(object.ref());
+            return ref.compareTo(object.ref());
         }
         return -1;
     }

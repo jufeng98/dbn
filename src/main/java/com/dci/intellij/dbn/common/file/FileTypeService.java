@@ -21,7 +21,11 @@ import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.dci.intellij.dbn.common.component.Components.applicationService;
 import static com.dci.intellij.dbn.common.file.FileTypeService.COMPONENT_NAME;
@@ -38,7 +42,7 @@ import static com.dci.intellij.dbn.common.options.setting.Settings.stringAttribu
 public class FileTypeService extends ApplicationComponentBase implements PersistentState {
     public static final String COMPONENT_NAME = "DBNavigator.Application.FileTypeService";
 
-    private final Map<String, String> originalFileAssociations = new HashMap<>();
+    private final Map<String, String> originalFileAssociations = new ConcurrentHashMap<>();
     private boolean silentFileChangeContext = false;
 
     private FileTypeService() {
