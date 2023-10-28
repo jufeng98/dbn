@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.dci"
-version = "3.3.9995.0"
+version = "3.4.1710.0"
 
 repositories {
   mavenCentral()
