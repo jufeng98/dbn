@@ -103,7 +103,7 @@ public class DBObjectListVirtualFile<T extends DBObjectList> extends DBVirtualFi
 
     @Override
     public boolean isValid() {
-        return super.isValid() && Checks.isValid(objectList.get());
+        return Checks.isValid(objectList.get());
     }
 
     @Override

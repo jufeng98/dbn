@@ -27,7 +27,7 @@ public abstract class ConsoleMessage extends Message implements Disposable {
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         nullify();
     }
 }

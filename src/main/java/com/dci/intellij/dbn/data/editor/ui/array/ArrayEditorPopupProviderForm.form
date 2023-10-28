@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.dci.intellij.dbn.data.editor.ui.TextEditorPopupProviderForm">
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.dci.intellij.dbn.data.editor.ui.array.ArrayEditorPopupProviderForm">
   <grid id="27dc6" binding="mainPanel" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="4" left="4" bottom="4" right="4"/>
     <constraints>
@@ -36,21 +36,13 @@
           </grid>
         </children>
       </grid>
-      <scrollpane id="99c3b" class="com.dci.intellij.dbn.common.ui.misc.DBNScrollPane" binding="textEditorScrollPane">
+      <scrollpane id="5e54a" class="com.dci.intellij.dbn.common.ui.misc.DBNScrollPane" binding="listScrollPane">
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="none"/>
-        <children>
-          <component id="e0e5d" class="javax.swing.JTextArea" binding="editorTextArea">
-            <constraints/>
-            <properties>
-              <lineWrap value="true"/>
-              <minimumSize width="200" height="14"/>
-            </properties>
-          </component>
-        </children>
+        <children/>
       </scrollpane>
     </children>
   </grid>

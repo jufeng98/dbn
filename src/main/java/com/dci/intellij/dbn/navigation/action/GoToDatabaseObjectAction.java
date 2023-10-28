@@ -13,7 +13,6 @@ import com.dci.intellij.dbn.object.action.AnObjectAction;
 import com.dci.intellij.dbn.object.common.DBObject;
 import com.dci.intellij.dbn.object.common.property.DBObjectProperty;
 import com.dci.intellij.dbn.options.ProjectSettings;
-import com.dci.intellij.dbn.options.ProjectSettingsManager;
 import com.intellij.ide.actions.GotoActionBase;
 import com.intellij.ide.util.gotoByName.ChooseByNamePopup;
 import com.intellij.ide.util.gotoByName.ChooseByNamePopupComponent;
@@ -48,7 +47,7 @@ public class GoToDatabaseObjectAction extends GotoActionBase implements DumbAwar
         Project project = event.getData(PlatformDataKeys.PROJECT);
         if (isNotValid(project)) return;
 
-        ProjectSettings projectSettings = ProjectSettingsManager.getSettings(project);
+        ProjectSettings projectSettings = ProjectSettings.get(project);
         ObjectsLookupSettings objectsLookupSettings = projectSettings.getNavigationSettings().getObjectsLookupSettings();
         boolean promptConnectionSelection = objectsLookupSettings.getPromptConnectionSelection().value();
 

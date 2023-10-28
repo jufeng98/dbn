@@ -33,7 +33,6 @@ public class DBSessionStatementVirtualFile extends DBVirtualFileBase implements 
     private CharSequence content;
     private SchemaId schemaId;
 
-
     public DBSessionStatementVirtualFile(SessionBrowser sessionBrowser, String content) {
         super(sessionBrowser.getProject(), sessionBrowser.getConnection().getName());
         this.sessionBrowser = WeakRef.of(sessionBrowser);
@@ -51,6 +50,11 @@ public class DBSessionStatementVirtualFile extends DBVirtualFileBase implements 
         ConnectionHandler connection = Failsafe.nn(getConnection());
         DBLanguageDialect languageDialect = connection.resolveLanguageDialect(language);
         return languageDialect == null ? null : fileViewProvider.initializePsiFile(languageDialect);
+    }
+
+    @Override
+    public boolean isValid() {
+        return true;
     }
 
     @NotNull

@@ -160,7 +160,7 @@ public class InterfaceQueue extends StatefulDisposableBase implements DatabaseIn
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         while(queue.peek() != null) {
             InterfaceTask<?> task = queue.remove();
             task.changeStatus(CANCELLED);

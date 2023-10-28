@@ -30,9 +30,7 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.Icon;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 @Getter
 @EqualsAndHashCode(callSuper = false)
@@ -55,6 +53,16 @@ public class ProjectSettings
 
     public ProjectSettings(Project project) {
         super(project);
+    }
+
+    public static ProjectSettings get(Project project) {
+        return project.isDefault() ?
+                DefaultProjectSettingsManager.getInstance().getProjectSettings() :
+                ProjectSettingsManager.getInstance(project).getProjectSettings();
+    }
+
+    public static ProjectSettings getDefault() {
+        return DefaultProjectSettingsManager.getInstance().getProjectSettings();
     }
 
     @Override

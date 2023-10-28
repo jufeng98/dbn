@@ -39,7 +39,6 @@ public abstract class DBVirtualFileBase extends VirtualFile implements DBVirtual
 
     protected String path;
     protected String url;
-    private volatile boolean valid = true;
     private volatile int documentSignature;
 
     private long modificationStamp = LocalTimeCounter.currentTime();
@@ -192,9 +191,6 @@ public abstract class DBVirtualFileBase extends VirtualFile implements DBVirtual
     }
 
     public void invalidate() {
-        if (!valid) return;
-
-        valid = false;
         DatabaseFileViewProvider cachedViewProvider = getCachedViewProvider();
 
         if (cachedViewProvider != null) {

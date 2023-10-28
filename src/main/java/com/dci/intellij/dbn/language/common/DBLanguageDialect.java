@@ -7,6 +7,8 @@ import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.connection.mapping.FileConnectionContextManager;
 import com.dci.intellij.dbn.language.common.element.ChameleonElementType;
 import com.dci.intellij.dbn.language.common.element.TokenPairTemplate;
+import com.dci.intellij.dbn.language.psql.PSQLLanguage;
+import com.dci.intellij.dbn.language.sql.SQLLanguage;
 import com.intellij.lang.Language;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -107,7 +109,10 @@ public abstract class DBLanguageDialect extends Language implements DBFileElemen
 
 
     public static DBLanguageDialect get(DBLanguageDialectIdentifier identifier) {
-        return REGISTRY.get(identifier);
+         // make sure all dialects are loaded before doing this lookup
+         SQLLanguage.INSTANCE.getAvailableLanguageDialects();
+         PSQLLanguage.INSTANCE.getAvailableLanguageDialects();
+         return REGISTRY.get(identifier);
     }
 
     @Nullable

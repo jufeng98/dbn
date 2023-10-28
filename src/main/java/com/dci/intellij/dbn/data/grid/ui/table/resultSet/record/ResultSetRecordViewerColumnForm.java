@@ -133,7 +133,7 @@ public class ResultSetRecordViewerColumnForm extends DBNFormBase {
 
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         super.disposeInner();
         cell = null;
     }

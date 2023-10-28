@@ -857,7 +857,7 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
 
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         nullify();
     }
 }

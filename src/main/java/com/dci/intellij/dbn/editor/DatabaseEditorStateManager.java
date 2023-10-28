@@ -15,7 +15,7 @@ import com.dci.intellij.dbn.editor.data.DatasetEditor;
 import com.dci.intellij.dbn.object.common.DBObject;
 import com.dci.intellij.dbn.object.common.editor.DefaultEditorOption;
 import com.dci.intellij.dbn.object.type.DBObjectType;
-import com.dci.intellij.dbn.options.ProjectSettingsManager;
+import com.dci.intellij.dbn.options.ProjectSettings;
 import com.dci.intellij.dbn.vfs.file.DBContentVirtualFile;
 import com.dci.intellij.dbn.vfs.file.DBEditableObjectVirtualFile;
 import com.dci.intellij.dbn.vfs.file.DBSourceCodeVirtualFile;
@@ -138,7 +138,7 @@ public class DatabaseEditorStateManager extends ProjectComponentBase implements 
 
     @Nullable
     public EditorProviderId getEditorProvider(DBObjectType objectType) {
-        DatabaseBrowserSettings browserSettings = ProjectSettingsManager.getSettings(getProject()).getBrowserSettings();
+        DatabaseBrowserSettings browserSettings = ProjectSettings.get(getProject()).getBrowserSettings();
         DatabaseBrowserEditorSettings editorSettings = browserSettings.getEditorSettings();
         DefaultEditorOption option = editorSettings.getOption(objectType);
         if (option != null) {

@@ -20,11 +20,6 @@ public abstract class LoadInProgressRegistry<T extends StatefulDisposable> exten
         Disposer.register(parentDisposable, this);
     }
 
-    @Override
-    protected void disposeInner() {
-        nodes.clear();
-    }
-
     public void register(T node) {
         boolean startTimer = nodes.size() == 0;
         nodes.add(node);
@@ -71,4 +66,10 @@ public abstract class LoadInProgressRegistry<T extends StatefulDisposable> exten
     public interface Notifier<T extends StatefulDisposable> {
         void notify(T node);
     }
+
+    @Override
+    public void disposeInner() {
+        nodes.clear();
+    }
+
 }

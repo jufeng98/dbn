@@ -1,6 +1,9 @@
 package com.dci.intellij.dbn.common.action;
 
 import com.dci.intellij.dbn.connection.config.ui.ConnectionBundleSettingsForm;
+import com.dci.intellij.dbn.data.editor.ui.array.ArrayEditorPopupProviderForm;
+import com.dci.intellij.dbn.data.editor.ui.calendar.CalendarPopupProviderForm;
+import com.dci.intellij.dbn.data.editor.ui.text.TextEditorPopupProviderForm;
 import com.dci.intellij.dbn.diagnostics.ui.ParserDiagnosticsForm;
 import com.dci.intellij.dbn.editor.data.DatasetEditor;
 import com.dci.intellij.dbn.editor.session.SessionBrowser;
@@ -23,4 +26,8 @@ public interface DataKeys {
     DataKey<ExplainPlanResult> EXPLAIN_PLAN_RESULT = DataKey.create("DBNavigator.ExplainPlanResult");
     DataKey<DatabaseLoggingResult> DATABASE_LOG_OUTPUT = DataKey.create("DBNavigator.DatabaseLogOutput");
     DataKey<ParserDiagnosticsForm> PARSER_DIAGNOSTICS_FORM = DataKey.create("DBNavigator.ParserDiagnosticsForm");
+
+    DataKey<CalendarPopupProviderForm> CALENDAR_POPUP_PROVIDER_FORM = DataKey.create("DBNavigator.CalendarPopupProviderForm");
+    DataKey<ArrayEditorPopupProviderForm> ARRAY_EDITOR_POPUP_PROVIDER_FORM = DataKey.create("DBNavigator.ArrayEditorPopupProviderForm");
+    DataKey<TextEditorPopupProviderForm> TEXT_EDITOR_POPUP_PROVIDER_FORM = DataKey.create("DBNavigator.TextEditorPopupProviderForm");
 }

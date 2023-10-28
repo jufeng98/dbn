@@ -41,7 +41,7 @@ public class ObjectPropertiesTableModel extends StatefulDisposableBase implement
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         nullify();
     }
 }

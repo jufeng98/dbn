@@ -14,7 +14,6 @@ import com.dci.intellij.dbn.language.common.psi.*;
 import com.dci.intellij.dbn.object.common.DBSchemaObject;
 import com.dci.intellij.dbn.object.type.DBObjectType;
 import com.dci.intellij.dbn.options.ProjectSettings;
-import com.dci.intellij.dbn.options.ProjectSettingsManager;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.openapi.editor.markup.GutterIconRenderer;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -143,7 +142,7 @@ public class PSQLLanguageAnnotator extends DBLanguageAnnotator {
                     DBSchemaObject object = (DBSchemaObject) file.getUnderlyingObject();
                     VirtualFile virtualFile = file.getVirtualFile();
 
-                    ProjectSettings projectSettings = ProjectSettingsManager.getSettings(basePsiElement.getProject());
+                    ProjectSettings projectSettings = ProjectSettings.get(basePsiElement.getProject());
                     CodeEditorGeneralSettings codeEditorGeneralSettings = projectSettings.getCodeEditorSettings().getGeneralSettings();
 
                     if (codeEditorGeneralSettings.isShowSpecDeclarationNavigationGutter()) {

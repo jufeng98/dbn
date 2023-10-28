@@ -2,7 +2,6 @@ package com.dci.intellij.dbn.common.action;
 
 import com.dci.intellij.dbn.common.util.Commons;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,7 +11,7 @@ import javax.swing.*;
 import static com.dci.intellij.dbn.common.dispose.Checks.isValid;
 import static com.dci.intellij.dbn.common.dispose.Failsafe.guarded;
 
-public abstract class ProjectAction extends BasicAction implements DumbAware {
+public abstract class ProjectAction extends BasicAction {
 
     public ProjectAction() {}
 

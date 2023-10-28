@@ -1,6 +1,8 @@
 package com.dci.intellij.dbn.editor.data.ui;
 
 import com.dci.intellij.dbn.common.ref.WeakRef;
+import com.dci.intellij.dbn.common.thread.Dispatch;
+import com.dci.intellij.dbn.common.ui.DBNTooltip;
 import com.dci.intellij.dbn.common.ui.form.DBNFormBase;
 import com.dci.intellij.dbn.common.ui.util.Fonts;
 import com.dci.intellij.dbn.common.util.Strings;
@@ -8,7 +10,6 @@ import com.dci.intellij.dbn.editor.data.DatasetEditorError;
 import com.dci.intellij.dbn.editor.data.model.DatasetEditorModelCell;
 import com.dci.intellij.dbn.editor.data.model.DatasetEditorModelRow;
 import com.dci.intellij.dbn.editor.data.ui.table.DatasetEditorTable;
-import com.intellij.ide.IdeTooltip;
 import com.intellij.ide.IdeTooltipManager;
 import com.intellij.ui.JBColor;
 import org.jetbrains.annotations.NotNull;
@@ -54,19 +55,20 @@ public class DatasetEditorErrorForm extends DBNFormBase implements ChangeListene
         DatasetEditorModelCell cell = getCell();
         DatasetEditorModelRow row = cell.getRow();
         DatasetEditorTable table = row.getModel().getEditorTable();
+        if (!table.isShowing()) return;
+
         Rectangle rectangle = table.getCellRect(row.getIndex(), cell.getIndex(), false);
+        Point location = rectangle.getLocation();
+        int x = (int) (location.getX() + rectangle.getWidth() / 4);
+        int y = (int) (location.getY() - 2);
+        Point cellLocation = new Point(x, y);
 
-        if (table.isShowing()) {
-            Point location = rectangle.getLocation();
-            int x = (int) (location.getX() + rectangle.getWidth() / 4);
-            int y = (int) (location.getY() - 2);
-            Point cellLocation = new Point(x, y);
+        JPanel component = this.getMainComponent();
+        DBNTooltip tooltip = new DBNTooltip(table, cellLocation, component);
+        tooltip.setTextBackground(BACKGROUND_COLOR);
+        tooltip.setDismissOnTimeout(false);
 
-            JPanel component = this.getMainComponent();
-            IdeTooltip tooltip = new IdeTooltip(table, cellLocation, component);
-            tooltip.setTextBackground(BACKGROUND_COLOR);
-            IdeTooltipManager.getInstance().show(tooltip, true);
-        }
+        Dispatch.delayed(200, () -> IdeTooltipManager.getInstance().show(tooltip, true));
     }
 
     @NotNull

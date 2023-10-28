@@ -194,7 +194,7 @@ public class MethodExecutionResultForm extends ExecutionResultFormBase<MethodExe
 
 
     private void createActionsPanel() {
-        ActionToolbar actionToolbar = Actions.createActionToolbar(actionsPanel,"DBNavigator.MethodExecutionResult.Controls", false,"DBNavigator.ActionGroup.MethodExecutionResult");
+        ActionToolbar actionToolbar = Actions.createActionToolbar(actionsPanel, "DBNavigator.ActionGroup.MethodExecutionResult", "DBNavigator.MethodExecutionResult.Controls", false);
         actionsPanel.add(actionToolbar.getComponent());
     }
 

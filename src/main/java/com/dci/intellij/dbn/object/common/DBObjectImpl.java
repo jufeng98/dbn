@@ -63,6 +63,7 @@ import java.util.stream.Collectors;
 
 import static com.dci.intellij.dbn.common.dispose.Failsafe.nd;
 import static com.dci.intellij.dbn.common.util.Unsafe.cast;
+import static com.dci.intellij.dbn.object.common.property.DBObjectProperty.DISPOSED;
 import static com.dci.intellij.dbn.object.common.property.DBObjectProperty.LISTS_LOADED;
 import static java.util.Collections.emptyList;
 
@@ -714,6 +715,16 @@ public abstract class DBObjectImpl<M extends DBObjectMetadata> extends DBObjectT
     @Override
     public boolean canNavigateToSource() {
         return false;
+    }
+
+    @Override
+    public boolean isDisposed() {
+        return properties.is(DISPOSED);
+    }
+
+    @Override
+    public void setDisposed(boolean disposed) {
+        properties.set(DISPOSED, true);
     }
 
     @Override

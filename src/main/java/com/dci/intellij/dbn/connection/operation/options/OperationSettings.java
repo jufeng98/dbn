@@ -9,7 +9,6 @@ import com.dci.intellij.dbn.editor.session.options.SessionBrowserSettings;
 import com.dci.intellij.dbn.execution.compiler.options.CompilerSettings;
 import com.dci.intellij.dbn.options.ConfigId;
 import com.dci.intellij.dbn.options.ProjectSettings;
-import com.dci.intellij.dbn.options.ProjectSettingsManager;
 import com.dci.intellij.dbn.options.TopLevelConfig;
 import com.intellij.openapi.project.Project;
 import lombok.EqualsAndHashCode;
@@ -30,7 +29,7 @@ public class OperationSettings extends CompositeProjectConfiguration<ProjectSett
     }
 
     public static OperationSettings getInstance(@NotNull Project project) {
-        return ProjectSettingsManager.getSettings(project).getOperationSettings();
+        return ProjectSettings.get(project).getOperationSettings();
     }
 
     @NotNull

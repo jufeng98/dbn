@@ -1,5 +1,6 @@
 package com.dci.intellij.dbn.connection.transaction;
 
+import com.dci.intellij.dbn.common.component.ApplicationMonitor;
 import com.dci.intellij.dbn.common.component.ProjectComponentBase;
 import com.dci.intellij.dbn.common.component.ProjectManagerListener;
 import com.dci.intellij.dbn.common.event.ProjectEvents;
@@ -9,7 +10,6 @@ import com.dci.intellij.dbn.common.thread.Progress;
 import com.dci.intellij.dbn.common.thread.ProgressRunnable;
 import com.dci.intellij.dbn.common.util.Dialogs;
 import com.dci.intellij.dbn.common.util.Editors;
-import com.dci.intellij.dbn.common.util.InternalApi;
 import com.dci.intellij.dbn.common.util.Messages;
 import com.dci.intellij.dbn.connection.*;
 import com.dci.intellij.dbn.connection.jdbc.DBNConnection;
@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static com.dci.intellij.dbn.common.component.ApplicationMonitor.checkAppExitRequested;
 import static com.dci.intellij.dbn.common.component.Components.projectService;
 import static com.dci.intellij.dbn.common.dispose.Checks.isValid;
 import static com.dci.intellij.dbn.common.dispose.Failsafe.guarded;
@@ -93,7 +94,7 @@ public class DatabaseTransactionManager extends ProjectComponentBase implements 
             }
         } else {
             Project project = connection.getProject();
-            if (InternalApi.isAppDisposeInProgress()) {
+            if (ApplicationMonitor.isAppExiting()) {
                 executeActions(connection, conn, actions, callback);
             } else {
                 String connectionName = connection.getConnectionName(conn);
@@ -335,7 +336,7 @@ public class DatabaseTransactionManager extends ProjectComponentBase implements 
         ConnectionManager connectionManager = ConnectionManager.getInstance(project);
         if (!connectionManager.hasUncommittedChanges()) return true;
 
-        boolean exitApp = InternalApi.isAppExitInProgress();
+        boolean exitApp = checkAppExitRequested();
 
         TransactionManagerSettings transactionManagerSettings = getSettings();
         InteractiveOptionBroker<TransactionOption> closeProjectOptionHandler = transactionManagerSettings.getCloseProject();

@@ -151,9 +151,4 @@ public abstract class DBNDialog<F extends DBNForm> extends DialogWrapper impleme
         disposeInner();
         //nullify();
     }
-
-    protected void disposeInner() {
-    }
-
-
 }

@@ -88,7 +88,7 @@ public abstract class ObjectCacheBase<K, O, E extends Throwable> extends Statefu
 
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         data.clear();
     }
 }

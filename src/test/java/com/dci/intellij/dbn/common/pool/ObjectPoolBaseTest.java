@@ -121,12 +121,6 @@ public class ObjectPoolBaseTest {
             this.index = index;
         }
 
-
-        @Override
-        protected void disposeInner() {
-
-        }
-
         @Override
         public String toString() {
             return "Object " + index;

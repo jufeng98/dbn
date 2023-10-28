@@ -3,7 +3,6 @@ package com.dci.intellij.dbn.connection.jdbc;
 import com.dci.intellij.dbn.common.ui.util.Listeners;
 import com.dci.intellij.dbn.common.util.Strings;
 import com.dci.intellij.dbn.common.util.TimeUtil;
-import com.dci.intellij.dbn.common.util.Traceable;
 import com.dci.intellij.dbn.common.util.UUIDs;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +25,6 @@ public abstract class DBNResource<T> extends ResourceStatusHolder implements Res
     private ResourceStatusAdapter<CancellableResource> cancelled;
     private final Listeners<DBNResourceListener> listeners = Listeners.create();
 
-    protected Traceable traceable = new Traceable();
     private final Map<String, Long> errorLogs = new ConcurrentHashMap<>();
 
     DBNResource(T inner, ResourceType type) {
@@ -94,6 +92,11 @@ public abstract class DBNResource<T> extends ResourceStatusHolder implements Res
 
     @Override
     public void statusChanged(ResourceStatus status) {
+    }
+
+    @Override
+    public boolean isObsolete() {
+        return isClosed();
     }
 
     public boolean isClosed() {

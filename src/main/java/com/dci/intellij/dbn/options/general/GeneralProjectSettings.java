@@ -6,7 +6,6 @@ import com.dci.intellij.dbn.common.options.CompositeProjectConfiguration;
 import com.dci.intellij.dbn.common.options.Configuration;
 import com.dci.intellij.dbn.options.ConfigId;
 import com.dci.intellij.dbn.options.ProjectSettings;
-import com.dci.intellij.dbn.options.ProjectSettingsManager;
 import com.dci.intellij.dbn.options.TopLevelConfig;
 import com.dci.intellij.dbn.options.general.ui.GeneralProjectSettingsForm;
 import com.intellij.openapi.project.Project;
@@ -25,7 +24,7 @@ public class GeneralProjectSettings extends CompositeProjectConfiguration<Projec
     }
 
     public static GeneralProjectSettings getInstance(@NotNull Project project) {
-        return ProjectSettingsManager.getSettings(project).getGeneralSettings();
+        return ProjectSettings.get(project).getGeneralSettings();
     }
 
     @NotNull

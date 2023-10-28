@@ -53,7 +53,7 @@ public class DBSessionBrowserVirtualFile extends DBVirtualFileBase implements Co
 
     @Override
     public boolean isValid() {
-        return super.isValid() && connection.isValid();
+        return connection.isValid();
     }    
 
     @Override

@@ -37,7 +37,7 @@ public abstract class TextFieldPopupProviderForm extends DBNFormBase implements 
     private JBPopup popup;
     private final Set<AnAction> actions = new HashSet<>();
 
-    TextFieldPopupProviderForm(TextFieldWithPopup<?> editorComponent, boolean autoPopup, boolean buttonVisible) {
+    protected TextFieldPopupProviderForm(TextFieldWithPopup<?> editorComponent, boolean autoPopup, boolean buttonVisible) {
         super(editorComponent, editorComponent.getProject());
         this.editorComponent = WeakRef.of(editorComponent);
         this.autoPopup = autoPopup;
@@ -66,7 +66,7 @@ public abstract class TextFieldPopupProviderForm extends DBNFormBase implements 
     /**
      * Create the popup and return it.
      * If the popup shouldn't show-up for some reason (e.g. empty completion actions),
-     * than this method should return null
+     * then this method should return null
      */
     @Nullable
     public abstract JBPopup createPopup();
@@ -83,7 +83,7 @@ public abstract class TextFieldPopupProviderForm extends DBNFormBase implements 
 
     protected abstract String getKeyShortcutName();
 
-    void registerAction(AnAction action) {
+    protected void registerAction(AnAction action) {
         actions.add(action);
     }
 
@@ -96,7 +96,9 @@ public abstract class TextFieldPopupProviderForm extends DBNFormBase implements 
 
             DataContext dataContext = Context.getDataContext(this);
             ActionManager actionManager = ActionManager.getInstance();
-            AnActionEvent actionEvent = new AnActionEvent(null, dataContext, "", action.getTemplatePresentation(), actionManager, 2);
+            Presentation templatePresentation = action.getTemplatePresentation();
+            Presentation presentation = new Presentation(templatePresentation.getText());
+            AnActionEvent actionEvent = new AnActionEvent(null, dataContext, "", presentation, actionManager, 2);
             action.actionPerformed(actionEvent);
             e.consume();
             return;
@@ -109,20 +111,20 @@ public abstract class TextFieldPopupProviderForm extends DBNFormBase implements 
 
         TextFieldWithPopup editorComponent = getEditorComponent();
         popup = createPopup();
-        if (popup != null) {
-            Disposer.register(TextFieldPopupProviderForm.this, popup);
+        if (popup == null) return;
 
-            JPanel panel = (JPanel) popup.getContent();
-            panel.setBorder(Borders.COMPONENT_OUTLINE_BORDER);
+        Disposer.register(TextFieldPopupProviderForm.this, popup);
 
-            editorComponent.clearSelection();
+        JPanel panel = (JPanel) popup.getContent();
+        panel.setBorder(Borders.COMPONENT_OUTLINE_BORDER);
 
-            if (editorComponent.isShowing()) {
-                Point location = editorComponent.getLocationOnScreen();
-                location.setLocation(location.getX() + 4, location.getY() + editorComponent.getHeight() + 4);
-                popup.showInScreenCoordinates(editorComponent, location);
-                //cellEditor.highlight(TextCellEditor.HIGHLIGHT_TYPE_POPUP);
-            }
+        editorComponent.clearSelection();
+
+        if (editorComponent.isShowing()) {
+            Point location = editorComponent.getLocationOnScreen();
+            location.setLocation(location.getX() + 4, location.getY() + editorComponent.getHeight() + 4);
+            popup.showInScreenCoordinates(editorComponent, location);
+            //cellEditor.highlight(TextCellEditor.HIGHLIGHT_TYPE_POPUP);
         }
     }
 

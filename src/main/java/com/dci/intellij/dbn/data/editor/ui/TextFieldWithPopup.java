@@ -4,6 +4,9 @@ import com.dci.intellij.dbn.common.color.Colors;
 import com.dci.intellij.dbn.common.dispose.DisposableContainers;
 import com.dci.intellij.dbn.common.ui.misc.DBNButton;
 import com.dci.intellij.dbn.common.ui.util.Mouse;
+import com.dci.intellij.dbn.data.editor.ui.array.ArrayEditorPopupProviderForm;
+import com.dci.intellij.dbn.data.editor.ui.calendar.CalendarPopupProviderForm;
+import com.dci.intellij.dbn.data.editor.ui.text.TextEditorPopupProviderForm;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.Nullable;
 
@@ -62,11 +65,13 @@ public class TextFieldWithPopup<T extends JComponent> extends TextFieldWithButto
     @Override
     public void setEditable(boolean editable) {
         super.setEditable(editable);
+/*
         popupProviders
                 .stream()
                 .map(p -> p.getButton())
                 .filter(b -> b != null)
                 .forEach(b -> b.setVisible(editable));
+*/
     }
 
     /******************************************************
@@ -95,25 +100,25 @@ public class TextFieldWithPopup<T extends JComponent> extends TextFieldWithButto
     private void addPopupProvider(TextFieldPopupProvider popupProvider) {
         popupProviders.add(popupProvider);
 
-        if (popupProvider.isButtonVisible()) {
-            Icon buttonIcon = popupProvider.getButtonIcon();
-            DBNButton button = new DBNButton(buttonIcon);
+        if (!popupProvider.isButtonVisible()) return;
 
-            String toolTipText = "Open " + popupProvider.getDescription();
-            String keyShortcutDescription = popupProvider.getKeyShortcutDescription();
-            if (keyShortcutDescription != null) {
-                toolTipText += " (" + keyShortcutDescription + ')';
-            }
-            button.setToolTipText(toolTipText);
+        Icon buttonIcon = popupProvider.getButtonIcon();
+        DBNButton button = new DBNButton(buttonIcon);
 
-            button.addMouseListener(Mouse.listener().onClick(e -> showPopup(popupProvider)));
-
-            int index = buttonsPanel.getComponentCount();
-            buttonsPanel.add(button, index);
-            customizeButton(button);
-            popupProvider.setButton(button);
-            Colors.subscribe(this, () -> customizeButton(button));
+        String toolTipText = "Open " + popupProvider.getDescription();
+        String keyShortcutDescription = popupProvider.getKeyShortcutDescription();
+        if (keyShortcutDescription != null) {
+            toolTipText += " (" + keyShortcutDescription + ')';
         }
+        button.setToolTipText(toolTipText);
+
+        button.addMouseListener(Mouse.listener().onClick(e -> showPopup(popupProvider)));
+
+        int index = buttonsPanel.getComponentCount();
+        buttonsPanel.add(button, index);
+        customizeButton(button);
+        popupProvider.setButton(button);
+        Colors.subscribe(this, () -> customizeButton(button));
     }
 
     private void showPopup(TextFieldPopupProvider popupProvider) {
@@ -216,7 +221,7 @@ public class TextFieldWithPopup<T extends JComponent> extends TextFieldWithButto
 
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         parentComponent = null;
     }
 }

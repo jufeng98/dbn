@@ -71,11 +71,13 @@ public class CodeEditorConfirmationSettings extends BasicConfiguration<CodeEdito
     public void readConfiguration(Element element) {
         saveChanges.readConfiguration(element);
         revertChanges.readConfiguration(element);
+        exitOnChanges.readConfiguration(element);
     }
 
     @Override
     public void writeConfiguration(Element element) {
         saveChanges.writeConfiguration(element);
         revertChanges.writeConfiguration(element);
+        exitOnChanges.writeConfiguration(element);
     }
 }

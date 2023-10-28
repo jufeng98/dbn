@@ -5,7 +5,6 @@ import com.dci.intellij.dbn.common.options.Configuration;
 import com.dci.intellij.dbn.ddl.options.ui.DDFileSettingsForm;
 import com.dci.intellij.dbn.options.ConfigId;
 import com.dci.intellij.dbn.options.ProjectSettings;
-import com.dci.intellij.dbn.options.ProjectSettingsManager;
 import com.dci.intellij.dbn.options.TopLevelConfig;
 import com.intellij.openapi.project.Project;
 import lombok.EqualsAndHashCode;
@@ -23,7 +22,7 @@ public class DDLFileSettings extends CompositeProjectConfiguration<ProjectSettin
     }
 
     public static DDLFileSettings getInstance(@NotNull Project project) {
-        return ProjectSettingsManager.getSettings(project).getDdlFileSettings();
+        return ProjectSettings.get(project).getDdlFileSettings();
     }
 
     @NotNull

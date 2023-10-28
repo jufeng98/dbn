@@ -66,7 +66,7 @@ public class SessionBrowserForm extends DBNFormBase implements SearchableDataCom
         loadTimestampLabel.setForeground(Colors.HINT_COLOR);
         refreshLoadTimestamp();
 
-        ActionToolbar actionToolbar = Actions.createActionToolbar(actionsPanel,"", true, "DBNavigator.ActionGroup.SessionBrowser");
+        ActionToolbar actionToolbar = Actions.createActionToolbar(actionsPanel, "DBNavigator.ActionGroup.SessionBrowser", "", true);
 
         actionsPanel.add(actionToolbar.getComponent(), BorderLayout.WEST);
         loadingIconPanel.add(new AsyncProcessIcon("Loading"), BorderLayout.CENTER);
@@ -199,7 +199,7 @@ public class SessionBrowserForm extends DBNFormBase implements SearchableDataCom
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         DataManager.removeDataProvider(actionsPanel);
         super.disposeInner();
         browserTable = null;

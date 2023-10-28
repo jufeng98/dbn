@@ -10,6 +10,8 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.tree.TreeNode;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 
 public interface BrowserTreeNode extends TreeNode, NavigationItem, ItemPresentation, ToolTipProvider, DatabaseEntity {
@@ -41,4 +43,23 @@ public interface BrowserTreeNode extends TreeNode, NavigationItem, ItemPresentat
     BrowserTreeNode getParent();
 
     int getIndex(BrowserTreeNode child);
+
+    default String getLocationString() {
+        return null;
+    }
+
+    @Override
+    default Enumeration<? extends BrowserTreeNode> children() {
+        return Collections.enumeration(getChildren());
+    }
+
+    @Override
+    default int getIndex(TreeNode child) {
+        return getIndex((BrowserTreeNode) child);
+    }
+
+    @Override
+    default boolean getAllowsChildren() {
+        return !isLeaf();
+    }
 }

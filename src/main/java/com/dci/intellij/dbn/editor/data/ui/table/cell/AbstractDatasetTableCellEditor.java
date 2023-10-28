@@ -16,6 +16,7 @@ import com.dci.intellij.dbn.editor.data.options.DataEditorSettings;
 import com.dci.intellij.dbn.editor.data.ui.table.DatasetEditorTable;
 import com.intellij.openapi.project.Project;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -166,7 +167,7 @@ public abstract class AbstractDatasetTableCellEditor extends AbstractCellEditor 
 
                 if (trim) textValue = textValue.trim();
 
-                if (textValue.length() > 0) {
+                if (!textValue.isEmpty()) {
                     Formatter formatter = cell.getFormatter();
                     Object value = formatter.parseObject(clazz, textValue);
                     return dataType.getNativeType().getDefinition().convert(value);
@@ -215,12 +216,11 @@ public abstract class AbstractDatasetTableCellEditor extends AbstractCellEditor 
      ********************************************************/
 
     @Getter
+    @Setter
     private boolean disposed;
 
     @Override
-    public void dispose() {
-        if (disposed) return;
-        disposed = true;
+    public void disposeInner() {
         nullify();
     }
 }

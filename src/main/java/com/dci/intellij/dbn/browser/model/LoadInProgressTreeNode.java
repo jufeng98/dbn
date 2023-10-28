@@ -1,6 +1,7 @@
 package com.dci.intellij.dbn.browser.model;
 
 import com.dci.intellij.dbn.code.sql.color.SQLTextAttributesKeys;
+import com.dci.intellij.dbn.common.dispose.StatefulDisposableBase;
 import com.dci.intellij.dbn.common.load.LoadInProgressIcon;
 import com.dci.intellij.dbn.common.ref.WeakRef;
 import com.dci.intellij.dbn.connection.ConnectionHandler;
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 
 import static com.dci.intellij.dbn.common.dispose.Failsafe.nn;
 
-public class LoadInProgressTreeNode extends BrowserTreeNodeBase implements BrowserTreeNode {
+public class LoadInProgressTreeNode extends StatefulDisposableBase implements BrowserTreeNode {
     private final WeakRef<BrowserTreeNode> parent;
 
     public LoadInProgressTreeNode(@NotNull BrowserTreeNode parent) {
@@ -179,7 +180,10 @@ public class LoadInProgressTreeNode extends BrowserTreeNodeBase implements Brows
     }
 
     @Override
-    protected void disposeInner() {
+    public boolean isDisposed() {
+        if (super.isDisposed()) return true;
 
+        BrowserTreeNode parent = WeakRef.get(this.parent);
+        return parent == null || parent.isDisposed();
     }
 }

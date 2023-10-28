@@ -669,7 +669,7 @@ public class ConnectionHandlerImpl extends StatefulDisposableBase implements Con
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         nullify();
     }
 }

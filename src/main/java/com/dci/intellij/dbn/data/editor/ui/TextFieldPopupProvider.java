@@ -19,6 +19,15 @@ public interface TextFieldPopupProvider extends Disposable{
     @Nullable
     JLabel getButton();
 
+    String getDescription();
+
+    String getKeyShortcutDescription();
+
+    @Nullable
+    Icon getButtonIcon();
+
+    Shortcut[] getShortcuts();
+
     boolean isButtonVisible();
 
     boolean isEnabled();
@@ -31,20 +40,11 @@ public interface TextFieldPopupProvider extends Disposable{
 
     void hidePopup();
 
-    void handleFocusLostEvent(FocusEvent focusEvent);
+    default void handleFocusLostEvent(FocusEvent focusEvent) {}
 
-    void handleKeyPressedEvent(KeyEvent keyEvent);
+    default void handleKeyPressedEvent(KeyEvent keyEvent) {}
 
-    void handleKeyReleasedEvent(KeyEvent keyEvent);
-
-    String getDescription();
-
-    String getKeyShortcutDescription();
-
-    @Nullable
-    Icon getButtonIcon();
-
-    Shortcut[] getShortcuts();
+    default void handleKeyReleasedEvent(KeyEvent keyEvent) {}
 
     default boolean matchesKeyEvent(KeyEvent keyEvent) {
         return Keyboard.match(getShortcuts(), keyEvent);

@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.util.Collection;
+import java.util.List;
 
 public class DataGridAuditColumnSettingsForm extends ConfigurationEditorForm<DataGridAuditColumnSettings> {
     private JPanel mainPanel;
@@ -57,16 +57,14 @@ public class DataGridAuditColumnSettingsForm extends ConfigurationEditorForm<Dat
         boolean visibilityChanged = configuration.isShowColumns() != auditColumnsVisible;
         configuration.setShowColumns(auditColumnsVisible);
         configuration.setAllowEditing(editableCheckBox.isSelected());
-
         configuration.setColumnNames(editableStringListForm.getStringValues());
 
         Project project = configuration.getProject();
         SettingsChangeNotifier.register(() -> {
-            if (visibilityChanged) {
-                ProjectEvents.notify(project,
-                        DataGridSettingsChangeListener.TOPIC,
-                        (listener) -> listener.auditDataVisibilityChanged(auditColumnsVisible));
-            }
+            if (!visibilityChanged) return;
+            ProjectEvents.notify(project,
+                    DataGridSettingsChangeListener.TOPIC,
+                    (listener) -> listener.auditDataVisibilityChanged(auditColumnsVisible));
         });
     }
 
@@ -75,7 +73,7 @@ public class DataGridAuditColumnSettingsForm extends ConfigurationEditorForm<Dat
         DataGridAuditColumnSettings settings = getConfiguration();
         visibleCheckBox.setSelected(settings.isShowColumns());
         editableCheckBox.setSelected(settings.isAllowEditing());
-        Collection<String> columnNamesSet = settings.getColumnNames();
+        List<String> columnNamesSet = settings.getColumnNames();
         editableStringListForm.setStringValues(columnNamesSet);
     }
 }

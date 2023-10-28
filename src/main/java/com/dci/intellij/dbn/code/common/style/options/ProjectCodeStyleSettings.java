@@ -8,7 +8,6 @@ import com.dci.intellij.dbn.code.sql.style.options.SQLCodeStyleSettings;
 import com.dci.intellij.dbn.common.options.CompositeProjectConfiguration;
 import com.dci.intellij.dbn.common.options.Configuration;
 import com.dci.intellij.dbn.options.ProjectSettings;
-import com.dci.intellij.dbn.options.ProjectSettingsManager;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,7 +17,7 @@ public class ProjectCodeStyleSettings extends CompositeProjectConfiguration<Proj
     }
 
     public static ProjectCodeStyleSettings getInstance(@NotNull Project project) {
-        return ProjectSettingsManager.getSettings(project).getCodeStyleSettings();
+        return ProjectSettings.get(project).getCodeStyleSettings();
     }
 
     @NotNull

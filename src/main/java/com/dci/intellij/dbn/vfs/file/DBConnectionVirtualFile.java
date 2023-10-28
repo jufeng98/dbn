@@ -44,7 +44,7 @@ public class DBConnectionVirtualFile extends DBVirtualFileBase {
 
     @Override
     public boolean isValid() {
-        return super.isValid() && connection.isValid();
+        return connection.isValid();
     }
 
     @Override

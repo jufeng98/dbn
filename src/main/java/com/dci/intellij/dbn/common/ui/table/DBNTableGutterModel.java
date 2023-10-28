@@ -50,7 +50,7 @@ public class DBNTableGutterModel<T extends DBNTableWithGutterModel> extends Stat
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         nullify();
     }
 }

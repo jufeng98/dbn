@@ -59,11 +59,6 @@ public class TnsNamesTableModel extends StatefulDisposableBase implements DBNRea
     }
 
     @Override
-    protected void disposeInner() {
-        nullify();
-    }
-
-    @Override
     public Object getValue(TnsProfile tnsProfile, int column) {
         switch (column) {
             case 0: return tnsProfile.getProfile();
@@ -118,5 +113,10 @@ public class TnsNamesTableModel extends StatefulDisposableBase implements DBNRea
 
     public List<TnsProfile> getProfiles() {
         return tnsNames.getProfiles();
+    }
+
+    @Override
+    public void disposeInner() {
+        nullify();
     }
 }

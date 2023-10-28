@@ -26,8 +26,4 @@ public class DBObjectRecursiveLoaderVisitor extends StatefulDisposableBase imple
             object.visitChildObjects(this, false);
         }
     }
-
-    @Override
-    protected void disposeInner() {
-    }
 }

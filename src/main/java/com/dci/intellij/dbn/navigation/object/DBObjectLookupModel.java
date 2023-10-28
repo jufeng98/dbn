@@ -13,7 +13,7 @@ import com.dci.intellij.dbn.object.DBSchema;
 import com.dci.intellij.dbn.object.common.DBObject;
 import com.dci.intellij.dbn.object.lookup.DBObjectRef;
 import com.dci.intellij.dbn.object.type.DBObjectType;
-import com.dci.intellij.dbn.options.ProjectSettingsManager;
+import com.dci.intellij.dbn.options.ProjectSettings;
 import com.intellij.ide.util.gotoByName.ChooseByNameModel;
 import com.intellij.openapi.project.Project;
 import lombok.Getter;
@@ -40,7 +40,7 @@ public class DBObjectLookupModel extends StatefulDisposableBase implements Choos
         this.project = ProjectRef.of(project);
         this.selectedConnection = ConnectionRef.of(selectedConnection);
         this.selectedSchema = DBObjectRef.of(selectedSchema);
-        settings = ProjectSettingsManager.getSettings(project).getNavigationSettings().getObjectsLookupSettings();
+        settings = ProjectSettings.get(project).getNavigationSettings().getObjectsLookupSettings();
     }
 
     @Override
@@ -196,7 +196,7 @@ public class DBObjectLookupModel extends StatefulDisposableBase implements Choos
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         nullify();
     }
 

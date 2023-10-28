@@ -3,7 +3,6 @@ package com.dci.intellij.dbn.object.common;
 import com.dci.intellij.dbn.browser.DatabaseBrowserManager;
 import com.dci.intellij.dbn.browser.model.BrowserTreeEventListener;
 import com.dci.intellij.dbn.browser.model.BrowserTreeNode;
-import com.dci.intellij.dbn.browser.model.BrowserTreeNodeBase;
 import com.dci.intellij.dbn.browser.model.LoadInProgressTreeNode;
 import com.dci.intellij.dbn.browser.ui.ToolTipProvider;
 import com.dci.intellij.dbn.common.dispose.Failsafe;
@@ -28,7 +27,7 @@ import static com.dci.intellij.dbn.common.dispose.Failsafe.guarded;
 import static com.dci.intellij.dbn.common.util.Compactables.compact;
 import static com.dci.intellij.dbn.common.util.Lists.filter;
 
-abstract class DBObjectTreeNodeBase extends BrowserTreeNodeBase implements DBObject, ToolTipProvider {
+abstract class DBObjectTreeNodeBase implements DBObject, ToolTipProvider {
     protected static final List<BrowserTreeNode> EMPTY_TREE_NODE_LIST = Collections.unmodifiableList(new ArrayList<>(0));
 
     private static final WeakRefCache<DBObjectTreeNodeBase, List<BrowserTreeNode>> possibleTreeChildren = WeakRefCache.weakKey();
@@ -156,7 +155,7 @@ abstract class DBObjectTreeNodeBase extends BrowserTreeNodeBase implements DBObj
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         possibleTreeChildren.remove(this);
         visibleTreeChildren.remove(this);
 

@@ -157,9 +157,4 @@ public class AutoCommitLabel extends DBNPanelImpl implements Disposable {
     public VirtualFile getVirtualFile() {
         return WeakRef.get(virtualFile);
     }
-
-    @Override
-    protected void disposeInner() {
-
-    }
 }

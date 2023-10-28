@@ -162,6 +162,4 @@ public class VoidDynamicContent extends StatefulDisposableBase implements Dynami
         return false;
     }
 
-    @Override
-    protected void disposeInner() {}
 }

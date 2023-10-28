@@ -153,36 +153,39 @@ public class DatasetEditorTable extends ResultSetTable<DatasetEditorModel> {
 
     @Override
     public void editingStopped(ChangeEvent e) {
-        DatasetTableCellEditor cellEditor = getCellEditor();
-        if (cellEditor != null && cellEditor.isEditable()) {
+        try {
+            DatasetTableCellEditor cellEditor = getCellEditor();
+            if (cellEditor == null || !cellEditor.isEditable()) return;
+
             int rowIndex = editingRow;
             int columnIndex = editingColumn;
 
             DatasetEditorModelCell cell = cellEditor.getCell();
-            if (cell != null) {
-                String editorTextValue = cellEditor.getCellEditorTextValue();
-                Pair<Object, Throwable> result = Pair.create();
-                try {
-                    result.first(cellEditor.getCellEditorValue());
-                } catch (Throwable t) {
-                    conditionallyLog(t);
-                    result.first(editorTextValue);
-                    result.second(t);
-                }
+            if (cell == null) return;
 
-                performUpdate(rowIndex, columnIndex, () -> {
-                    cell.setTemporaryUserValue(editorTextValue);
-                    Throwable exception = result.second();
-                    Object value = result.first();
-                    if (exception == null) {
-                        setValueAt(value, rowIndex, columnIndex);
-                    } else {
-                        setValueAt(value, exception.getMessage(), rowIndex, columnIndex);
-                    }
-                });
+            String editorTextValue = cellEditor.getCellEditorTextValue();
+            Pair<Object, Throwable> result = Pair.create();
+            try {
+                result.first(cellEditor.getCellEditorValue());
+            } catch (Throwable t) {
+                conditionallyLog(t);
+                result.first(editorTextValue);
+                result.second(t);
             }
+
+            performUpdate(rowIndex, columnIndex, () -> {
+                cell.setTemporaryUserValue(editorTextValue);
+                Throwable exception = result.second();
+                Object value = result.first();
+                if (exception == null) {
+                    setValueAt(value, rowIndex, columnIndex);
+                } else {
+                    setValueAt(value, exception.getMessage(), rowIndex, columnIndex);
+                }
+            });
+        } finally {
+            removeEditor();
         }
-        removeEditor();
     }
 
     public void performUpdate(int rowIndex, int columnIndex, Runnable runnable) {

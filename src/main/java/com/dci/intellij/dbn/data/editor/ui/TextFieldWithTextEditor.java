@@ -105,11 +105,4 @@ public class TextFieldWithTextEditor extends TextFieldWithButtons {
         }
     }
 
-    /********************************************************
-     *                    Disposable                        *
-     ********************************************************/
-
-    @Override
-    protected void disposeInner() {
-    }
 }

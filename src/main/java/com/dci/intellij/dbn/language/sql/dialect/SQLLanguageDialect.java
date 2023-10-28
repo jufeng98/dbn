@@ -12,14 +12,16 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class SQLLanguageDialect extends DBLanguageDialect {
-    private final Latent<ChameleonElementType> psqlChameleonElementType = Latent.basic(() -> {
+    private final Latent<ChameleonElementType> psqlChameleonElementType = Latent.basic(() -> createPsqlChameleonElementType());
+
+    @Nullable
+    private ChameleonElementType createPsqlChameleonElementType() {
         DBLanguageDialectIdentifier chameleonDialectIdentifier = getChameleonDialectIdentifier();
-        if (chameleonDialectIdentifier != null) {
-            DBLanguageDialect plsqlDialect = DBLanguageDialect.get(chameleonDialectIdentifier);
-            return new ChameleonElementType(plsqlDialect, SQLLanguageDialect.this);
-        }
-        return null;
-    });
+        if (chameleonDialectIdentifier == null) return null;
+
+        DBLanguageDialect plsqlDialect = DBLanguageDialect.get(chameleonDialectIdentifier);
+        return new ChameleonElementType(plsqlDialect, SQLLanguageDialect.this);
+    }
 
     public SQLLanguageDialect(@NonNls @NotNull DBLanguageDialectIdentifier identifier) {
         super(identifier, SQLLanguage.INSTANCE);

@@ -67,7 +67,7 @@ public abstract class DBObjectRelationImpl<S extends DBObject, T extends DBObjec
 
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         nullify();
     }
 }

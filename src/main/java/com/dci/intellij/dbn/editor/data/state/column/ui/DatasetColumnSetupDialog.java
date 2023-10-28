@@ -48,8 +48,7 @@ public class DatasetColumnSetupDialog extends DBNDialog<DatasetColumnSetupForm> 
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         datasetEditor = null;
-        super.disposeInner();
     }
 }

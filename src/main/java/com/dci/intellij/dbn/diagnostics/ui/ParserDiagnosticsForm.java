@@ -53,7 +53,7 @@ public class ParserDiagnosticsForm extends DBNFormBase {
         detailsLabel.setText("No result selected");
         stateTransitionLabel.setText("");
 
-        ActionToolbar actionToolbar = Actions.createActionToolbar(actionsPanel,"", false, "DBNavigator.ActionGroup.ParserDiagnostics");
+        ActionToolbar actionToolbar = Actions.createActionToolbar(actionsPanel, "DBNavigator.ActionGroup.ParserDiagnostics", "", false);
         actionsPanel.add(actionToolbar.getComponent());
 
         ActionToolbar filterActionToolbar = Actions.createActionToolbar(filtersPanel,"", true,

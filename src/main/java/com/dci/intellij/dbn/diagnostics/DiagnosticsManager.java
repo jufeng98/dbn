@@ -161,7 +161,9 @@ public class DiagnosticsManager extends ProjectComponentBase implements Persiste
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         metadataInterfaceDiagnostics.clear();
+        connectivityDiagnostics.clear();
+        super.disposeInner();
     }
 }

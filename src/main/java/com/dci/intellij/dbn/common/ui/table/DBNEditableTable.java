@@ -96,7 +96,7 @@ public class DBNEditableTable<T extends DBNEditableTableModel> extends DBNTableW
     public Component prepareEditor(TableCellEditor editor, int rowIndex, int columnIndex) {
         Component component = super.prepareEditor(editor, rowIndex, columnIndex);
         if (component instanceof JTextField) {
-            final JTextField textField = (JTextField) component;
+            JTextField textField = (JTextField) component;
             textField.setBorder(Borders.EMPTY_BORDER);
 
             //selectCell(rowIndex, columnIndex);

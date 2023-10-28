@@ -55,7 +55,7 @@ public class RenameExecutionResultDialog extends DBNDialog<RenameExecutionResult
 
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         executionResult = null;
         super.disposeInner();
     }

@@ -405,7 +405,7 @@ public class CachedResultSet extends StatefulDisposableBase implements ResultSet
 
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         nullify();
     }
 }

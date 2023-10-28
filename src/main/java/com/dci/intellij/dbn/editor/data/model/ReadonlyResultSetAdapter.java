@@ -2,6 +2,7 @@ package com.dci.intellij.dbn.editor.data.model;
 
 import com.dci.intellij.dbn.common.dispose.AlreadyDisposedException;
 import com.dci.intellij.dbn.common.util.Lists;
+import com.dci.intellij.dbn.connection.Resources;
 import com.dci.intellij.dbn.connection.Savepoints;
 import com.dci.intellij.dbn.connection.jdbc.DBNConnection;
 import com.dci.intellij.dbn.connection.jdbc.DBNResultSet;
@@ -32,31 +33,33 @@ public class ReadonlyResultSetAdapter extends ResultSetAdapter {
 
     @Override
     public synchronized void scroll(final int rowIndex) throws SQLException {
-        if (!isInsertMode()) {
-            DatasetEditorModelRow modelRow = getModel().getRowAtResultSetIndex(rowIndex);
-            if (modelRow == null) {
-                throw new SQLException("Could not scroll to row index " + rowIndex);
-            }
+        if (isInsertMode()) return;
+        if (isObsolete()) return;
 
-            currentRow = new Row();
-            List<DatasetEditorModelCell> modelCells = modelRow.getCells();
-            for (DatasetEditorModelCell modelCell : modelCells) {
-                DatasetEditorColumnInfo columnInfo = modelCell.getColumnInfo();
-                if (columnInfo.isPrimaryKey()) {
-                    currentRow.addKeyCell(columnInfo, modelCell.getUserValue());
-                }
+        DatasetEditorModelRow modelRow = getModel().getRowAtResultSetIndex(rowIndex);
+        if (modelRow == null) {
+            throw new SQLException("Could not scroll to row index " + rowIndex);
+        }
+
+        currentRow = new Row();
+        List<DatasetEditorModelCell> modelCells = modelRow.getCells();
+        for (DatasetEditorModelCell modelCell : modelCells) {
+            DatasetEditorColumnInfo columnInfo = modelCell.getColumnInfo();
+            if (columnInfo.isPrimaryKey()) {
+                currentRow.addKeyCell(columnInfo, modelCell.getUserValue());
             }
         }
     }
 
     @Override
     public synchronized void updateRow() throws SQLException {
-        if (!isInsertMode())  {
-            if (isUseSavePoints()) {
-                Savepoints.run(connection, () -> this.executeUpdate());
-            } else {
-                executeUpdate();
-            }
+        if (isInsertMode()) return;
+        if (isObsolete()) return;
+
+        if (isUseSavePoints()) {
+            Savepoints.run(connection, () -> this.executeUpdate());
+        } else {
+            executeUpdate();
         }
     }
 
@@ -68,44 +71,52 @@ public class ReadonlyResultSetAdapter extends ResultSetAdapter {
 
     @Override
     public synchronized void startInsertRow() {
-        if (!isInsertMode())  {
-            setInsertMode(true);
-            currentRow = new Row();
-        }
+        if (isInsertMode()) return;
+        if (isObsolete()) return;
+
+        setInsertMode(true);
+        currentRow = new Row();
     }
 
     @Override
     public synchronized void cancelInsertRow() {
-        if (isInsertMode())  {
-            setInsertMode(false);
-            currentRow = null;
-        }
+        if (!isInsertMode()) return;
+        if (isObsolete()) return;
+
+        setInsertMode(false);
+        currentRow = null;
     }
 
     @Override
     public synchronized void insertRow() throws SQLException {
-        if (isInsertMode())  {
-            if (isUseSavePoints()) {
-                Savepoints.run(connection, () -> {
-                    executeInsert();
-                    setInsertMode(false);
-                });
-            } else {
+        if (!isInsertMode()) return;
+        if (isObsolete()) return;
+
+        if (isUseSavePoints()) {
+            Savepoints.run(connection, () -> {
                 executeInsert();
                 setInsertMode(false);
-            }
+            });
+        } else {
+            executeInsert();
+            setInsertMode(false);
         }
     }
 
     @Override
     public synchronized void deleteRow() throws SQLException {
-        if (!isInsertMode())  {
-            if (isUseSavePoints()) {
-                Savepoints.run(connection, () -> executeDelete());
-            } else {
-                executeDelete();
-            }
+        if (isInsertMode()) return;
+        if (isObsolete()) return;
+
+        if (isUseSavePoints()) {
+            Savepoints.run(connection, () -> executeDelete());
+        } else {
+            executeDelete();
         }
+    }
+
+    private boolean isObsolete() {
+        return Resources.isObsolete(connection);
     }
 
     @Override
@@ -126,7 +137,7 @@ public class ReadonlyResultSetAdapter extends ResultSetAdapter {
 
     private void executeUpdate() throws SQLException {
         List<Cell> keyCells = currentRow.getKeyCells();
-        if (keyCells.size() == 0) {
+        if (keyCells.isEmpty()) {
             throw new SQLException("No primary key defined for table");
         }
 
@@ -170,7 +181,7 @@ public class ReadonlyResultSetAdapter extends ResultSetAdapter {
 
     private void executeInsert() throws SQLException {
         List<Cell> changedCells = currentRow.getChangedCells();
-        if (changedCells.size() == 0) {
+        if (changedCells.isEmpty()) {
             throw AlreadyDisposedException.INSTANCE;
         }
 
@@ -282,7 +293,7 @@ public class ReadonlyResultSetAdapter extends ResultSetAdapter {
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         currentRow = null;
         connection = null;
         super.disposeInner();

@@ -79,7 +79,7 @@ public class SessionDetailsTableModel extends StatefulDisposableBase implements 
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         nullify();
     }
 }

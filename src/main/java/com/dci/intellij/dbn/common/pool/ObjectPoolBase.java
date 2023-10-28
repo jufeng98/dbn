@@ -161,7 +161,7 @@ public abstract class ObjectPoolBase<O, E extends Throwable> extends StatefulDis
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         available.clear();
         Disposer.disposeCollection(objects);
     }

@@ -230,11 +230,11 @@ public class Icons {
     public static final Icon ARRAY_CELL_EDIT_ADD    = load("/img/CellEditAdd.png");
     public static final Icon ARRAY_CELL_EDIT_REMOVE = load("/img/CellEditRemove.png");
 
-    public static final Icon CALENDAR_CELL_EDIT_NEXT_MONTH = load("/img/CalendarNextMonth.png");
-    public static final Icon CALENDAR_CELL_EDIT_NEXT_YEAR = load("/img/CalendarNextYear.png");
-    public static final Icon CALENDAR_CELL_EDIT_PREVIOUS_MONTH = load("/img/CalendarPreviousMonth.png");
-    public static final Icon CALENDAR_CELL_EDIT_PREVIOUS_YEAR = load("/img/CalendarPreviousYear.png");
-    public static final Icon CALENDAR_CELL_EDIT_CLEAR_TIME = load("/img/CalendarResetTime.png");
+    public static final Icon CALENDAR_NEXT_MONTH = load("/img/CalendarNextMonth.png");
+    public static final Icon CALENDAR_NEXT_YEAR = load("/img/CalendarNextYear.png");
+    public static final Icon CALENDAR_PREVIOUS_MONTH = load("/img/CalendarPreviousMonth.png");
+    public static final Icon CALENDAR_PREVIOUS_YEAR = load("/img/CalendarPreviousYear.png");
+    public static final Icon CALENDAR_CLEAR_TIME = load("/img/CalendarResetTime.png");
 
     public static final Icon EXEC_MESSAGES_INFO             = load("/img/common/Info.png");
     public static final Icon EXEC_MESSAGES_INFO_INACTIVE    = load("/img/common/InfoInactive.png");

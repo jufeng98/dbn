@@ -82,7 +82,7 @@ public class ConnectionFilterSettingsDialog extends DBNDialog<DBNContentWithHead
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         filterSettings.disposeUIResources();
     }
 }

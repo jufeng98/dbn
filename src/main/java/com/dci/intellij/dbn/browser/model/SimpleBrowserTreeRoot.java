@@ -2,6 +2,7 @@ package com.dci.intellij.dbn.browser.model;
 
 import com.dci.intellij.dbn.code.sql.color.SQLTextAttributesKeys;
 import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.dispose.StatefulDisposableBase;
 import com.dci.intellij.dbn.common.project.ProjectRef;
 import com.dci.intellij.dbn.common.util.Commons;
 import com.dci.intellij.dbn.connection.ConnectionBundle;
@@ -15,11 +16,11 @@ import com.intellij.openapi.vcs.FileStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.Icon;
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class SimpleBrowserTreeRoot extends BrowserTreeNodeBase implements BrowserTreeNode {
+public final class SimpleBrowserTreeRoot extends StatefulDisposableBase implements BrowserTreeNode {
     private final List<ConnectionBundle> rootChildren = new ArrayList<>();
     private final ProjectRef project;
 
@@ -196,7 +197,7 @@ public final class SimpleBrowserTreeRoot extends BrowserTreeNodeBase implements 
 
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         rootChildren.clear();
     }
 }

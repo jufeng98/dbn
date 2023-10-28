@@ -16,7 +16,5 @@ public abstract class DisposablePropertyHolder<T extends Property.IntBase> exten
         disposeInner();
     }
 
-    protected abstract void disposeInner();
-
     protected abstract T getDisposedProperty();
 }

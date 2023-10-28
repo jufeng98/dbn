@@ -51,6 +51,7 @@ import com.intellij.openapi.fileEditor.*;
 import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -69,6 +70,7 @@ import static com.dci.intellij.dbn.editor.data.model.RecordStatus.INSERTING;
 import static com.dci.intellij.dbn.editor.data.model.RecordStatus.MODIFIED;
 
 @Slf4j
+@Getter
 public class DatasetEditor extends DisposableUserDataHolderBase implements
         FileEditor,
         DatabaseContextBase,
@@ -115,10 +117,6 @@ public class DatasetEditor extends DisposableUserDataHolderBase implements
     @NotNull
     public DBDataset getDataset() {
         return dataset.ensure();
-    }
-
-    public DataEditorSettings getSettings() {
-        return settings;
     }
 
     @NotNull
@@ -465,10 +463,6 @@ public class DatasetEditor extends DisposableUserDataHolderBase implements
         Dialogs.show(() -> new DatasetRecordEditorDialog(getProject(), row));
     }
 
-    public DatasetEditorStatusHolder getStatus() {
-        return status;
-    }
-
     public boolean isInserting() {
         return getTableModel().is(INSERTING);
     }
@@ -539,23 +533,22 @@ public class DatasetEditor extends DisposableUserDataHolderBase implements
         if (connection.getConnectionId() == connectionId && sessionId == SessionId.MAIN) {
             boolean connected = connection.isConnected(SessionId.MAIN);
             boolean statusChanged = getStatus().set(CONNECTED, connected);
+            if (!statusChanged) return;
 
-            if (statusChanged) {
-                Dispatch.run(() -> {
-                    DatasetEditorTable editorTable = getEditorTable();
-                    if (connected) {
-                        editorTable.updateBackground(false);
-                        UserInterface.repaint(editorTable);
-                        if (!isReadonlyData()) {
-                            loadData(CON_STATUS_CHANGE_LOAD_INSTRUCTIONS);
-                        }
-                    } else {
-                        editorTable.cancelEditing();
-                        editorTable.updateBackground(true);
-                        UserInterface.repaint(editorTable);
+            Dispatch.run(() -> {
+                DatasetEditorTable editorTable = getEditorTable();
+                if (connected) {
+                    editorTable.updateBackground(false);
+                    UserInterface.repaint(editorTable);
+                    if (!isReadonlyData()) {
+                        loadData(CON_STATUS_CHANGE_LOAD_INSTRUCTIONS);
                     }
-                });
-            }
+                } else {
+                    editorTable.cancelEditing();
+                    editorTable.updateBackground(true);
+                    UserInterface.repaint(editorTable);
+                }
+            });
         }
     };
 
@@ -646,13 +639,13 @@ public class DatasetEditor extends DisposableUserDataHolderBase implements
     @Nullable
     public static DatasetEditor get(DataContext dataContext) {
         DatasetEditor datasetEditor = DataKeys.DATASET_EDITOR.getData(dataContext);
-        if (datasetEditor == null) {
-            FileEditor fileEditor = Lookups.getFileEditor(dataContext);
-            if (fileEditor instanceof DatasetEditor) {
-                return (DatasetEditor) fileEditor;
-            }
+        if (datasetEditor != null) return datasetEditor;
+
+        FileEditor fileEditor = Lookups.getFileEditor(dataContext);
+        if (fileEditor instanceof DatasetEditor) {
+            return (DatasetEditor) fileEditor;
         }
-        return datasetEditor;
+        return null;
     }
 
     @Nullable

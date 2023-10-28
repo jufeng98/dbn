@@ -153,4 +153,12 @@ public class Lists {
             };
         };
     }
+
+    public static boolean isInBounds(List<?> list, int index) {
+        return index > 0 && index < list.size();
+    }
+
+    public static boolean isOutOfBounds(List<?> list, int index) {
+        return index < 0 || index >= list.size();
+    }
 }

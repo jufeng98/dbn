@@ -427,7 +427,7 @@ public class VirtualConnectionHandler extends StatefulDisposableBase implements 
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         nullify();
     }
 }

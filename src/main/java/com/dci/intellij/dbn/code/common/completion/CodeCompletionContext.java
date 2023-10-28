@@ -20,7 +20,6 @@ import com.dci.intellij.dbn.language.common.psi.PsiUtil;
 import com.dci.intellij.dbn.language.sql.SQLLanguage;
 import com.dci.intellij.dbn.object.common.DBObject;
 import com.dci.intellij.dbn.options.ProjectSettings;
-import com.dci.intellij.dbn.options.ProjectSettingsManager;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.completion.CompletionType;
@@ -75,7 +74,7 @@ public class CodeCompletionContext {
         int offset = parameters.getOffset();
         userInput = calcUserInput(position, offset);
 
-        ProjectSettings projectSettings = ProjectSettingsManager.getSettings(file.getProject());
+        ProjectSettings projectSettings = ProjectSettings.get(file.getProject());
         codeCompletionSettings = projectSettings.getCodeCompletionSettings();
 
         elementAtCaret = calcElementAtCaret(file, position);

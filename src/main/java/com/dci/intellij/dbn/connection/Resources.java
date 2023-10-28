@@ -3,11 +3,9 @@ package com.dci.intellij.dbn.connection;
 import com.dci.intellij.dbn.common.notification.NotificationGroup;
 import com.dci.intellij.dbn.common.notification.NotificationSupport;
 import com.dci.intellij.dbn.common.routine.ThrowableRunnable;
+import com.dci.intellij.dbn.common.util.UUIDs;
 import com.dci.intellij.dbn.common.util.Unsafe;
-import com.dci.intellij.dbn.connection.jdbc.DBNConnection;
-import com.dci.intellij.dbn.connection.jdbc.DBNResource;
-import com.dci.intellij.dbn.connection.jdbc.DBNStatement;
-import com.dci.intellij.dbn.connection.jdbc.ResourceStatus;
+import com.dci.intellij.dbn.connection.jdbc.*;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -170,7 +168,7 @@ public final class Resources {
 
     public static void rollback(DBNConnection connection, @Nullable Savepoint savepoint) throws SQLException {
         try {
-            if (connection == null || savepoint == null || connection.isAutoCommit()) return;
+            if (savepoint == null || isObsolete(connection) || connection.isAutoCommit()) return;
             String savepointId = getSavepointIdentifier(savepoint);
             invokeResourceAction(
                     connection,
@@ -193,16 +191,17 @@ public final class Resources {
         }
     }
 
-    public static @Nullable Savepoint createSavepoint(DBNConnection connection) {
+    @Nullable
+    public static Savepoint createSavepoint(DBNConnection connection) {
         try {
-            if (connection == null || connection.isAutoCommit()) return null;
+            if (isObsolete(connection) || connection.isAutoCommit()) return null;
             AtomicReference<Savepoint> savepoint = new AtomicReference<>();
             invokeResourceAction(
                     connection,
                     ResourceStatus.CREATING_SAVEPOINT,
-                    () -> savepoint.set(connection.setSavepoint()),
+                    () -> savepoint.set(connection.setSavepoint(UUIDs.compact())),
                     () -> "[DBN] Creating savepoint on " + connection,
-                    () -> "[DBN] Done creating savepoint on " + connection,
+                    () -> "[DBN] Done creating savepoint '" + getSavepointIdentifier(savepoint.get()) + "' on " + connection,
                     () -> "[DBN] Failed to create savepoint on " + connection);
             return savepoint.get();
         } catch (SQLRecoverableException e) {
@@ -221,7 +220,7 @@ public final class Resources {
 
     public static void releaseSavepoint(DBNConnection connection, @Nullable Savepoint savepoint) {
         try {
-            if (connection == null || savepoint == null || connection.isAutoCommit()) return;
+            if (savepoint == null || isObsolete(connection) || connection.isAutoCommit()) return;
             String savepointId = getSavepointIdentifier(savepoint);
             invokeResourceAction(
                     connection,
@@ -269,7 +268,7 @@ public final class Resources {
 
     public static void setAutoCommit(DBNConnection connection, boolean autoCommit) {
         try {
-            if (connection == null) return;
+            if (isObsolete(connection)) return;
             invokeResourceAction(
                     connection,
                     ResourceStatus.CHANGING_AUTO_COMMIT, () -> connection.setAutoCommit(autoCommit),
@@ -314,13 +313,13 @@ public final class Resources {
             @NotNull Supplier<String> successMessage,
             @NotNull Supplier<String> errorMessage) throws E{
 
-        if (!resource.is(transientStatus)) {
-            try {
-                resource.set(transientStatus, true);
-                invokeResourceAction(action, startMessage, successMessage, errorMessage);
-            } finally {
-                resource.set(transientStatus, false);
-            }
+        if (resource.is(transientStatus)) return;
+
+        try {
+            resource.set(transientStatus, true);
+            invokeResourceAction(action, startMessage, successMessage, errorMessage);
+        } finally {
+            resource.set(transientStatus, false);
         }
     }
 
@@ -354,5 +353,9 @@ public final class Resources {
                 return "UNKNOWN";
             }
         }
+    }
+
+    public static boolean isObsolete(@Nullable Resource resource) {
+        return resource == null || resource.isObsolete();
     }
 }

@@ -114,7 +114,7 @@ public abstract class ExecutionInput extends StatefulDisposableBase implements S
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         nullify();
     }
 

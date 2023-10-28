@@ -8,6 +8,8 @@ import com.dci.intellij.dbn.connection.Resources;
 import com.dci.intellij.dbn.diagnostics.Diagnostics;
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.sql.*;
 import java.util.concurrent.atomic.AtomicLong;
@@ -34,10 +36,26 @@ public class DBNStatement<T extends Statement> extends DBNResource<T> implements
     }
 
     @Override
+    @Nullable
     public DBNConnection getConnection() {
-        return Failsafe.nn(connection.get());
+        return connection.get();
     }
 
+    @NotNull
+    public DBNConnection ensureConnection() {
+        return Failsafe.nn(getConnection());
+    }
+
+    @Override
+    public boolean isObsolete() {
+        if (isClosed()) return true;
+
+        DBNConnection connection = getConnection();
+        if (connection == null) return true;
+        if (connection.isClosed()) return true;
+
+        return false;
+    }
 
     @Override
     public boolean isCancelledInner() throws SQLException {
@@ -65,7 +83,7 @@ public class DBNStatement<T extends Statement> extends DBNResource<T> implements
         try {
             super.close();
         } finally {
-            DBNConnection connection = this.connection.get();
+            DBNConnection connection = getConnection();
             if (connection != null) {
                 connection.release(this);
             }
@@ -73,7 +91,7 @@ public class DBNStatement<T extends Statement> extends DBNResource<T> implements
     }
 
     public void park() {
-        DBNConnection connection = this.connection.get();
+        DBNConnection connection = getConnection();
         if (connection != null) {
             connection.park(this);
         }
@@ -105,13 +123,13 @@ public class DBNStatement<T extends Statement> extends DBNResource<T> implements
     protected Object wrap(Object object) {
         if (object instanceof ResultSet) {
             ResultSet resultSet = (ResultSet) object;
-            return new DBNResultSet(resultSet, getConnection());
+            return new DBNResultSet(resultSet, ensureConnection());
         }
         return object;
     }
 
     protected <R> R managed(ThrowableCallable<R, SQLException> callable) throws SQLException {
-        DBNConnection connection = getConnection();
+        DBNConnection connection = ensureConnection();
         connection.updateLastAccess();
         try {
             connection.set(ACTIVE, true);

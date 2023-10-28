@@ -1,7 +1,7 @@
 package com.dci.intellij.dbn.object.common;
 
 import com.dci.intellij.dbn.browser.model.BrowserTreeNode;
-import com.dci.intellij.dbn.browser.model.BrowserTreeNodeBase;
+import com.dci.intellij.dbn.common.dispose.StatefulDisposableBase;
 import com.dci.intellij.dbn.common.routine.Consumer;
 import com.dci.intellij.dbn.connection.ConnectionId;
 import com.dci.intellij.dbn.connection.SchemaId;
@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Getter
-public class DBVirtualObjectBundle extends BrowserTreeNodeBase implements DBObjectBundle{
+public class DBVirtualObjectBundle extends StatefulDisposableBase implements DBObjectBundle{
     private final VirtualConnectionHandler connection;
     private final DBDataTypeBundle dataTypes;
 
@@ -316,10 +316,5 @@ public class DBVirtualObjectBundle extends BrowserTreeNodeBase implements DBObje
     @Override
     public PsiFile getFakeObjectFile() {
         return null;
-    }
-
-    @Override
-    protected void disposeInner() {
-
     }
 }

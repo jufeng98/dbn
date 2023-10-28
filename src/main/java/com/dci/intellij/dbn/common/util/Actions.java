@@ -12,9 +12,9 @@ import java.util.UUID;
 public class Actions {
     public static final AnAction SEPARATOR = Separator.getInstance();
 
-    public static ActionToolbar createActionToolbar(@NotNull JComponent component, String place, boolean horizontal, String actionGroupName){
+    public static ActionToolbar createActionToolbar(@NotNull JComponent component, String name, String place, boolean horizontal){
         ActionManager actionManager = ActionManager.getInstance();
-        ActionGroup actionGroup = (ActionGroup) actionManager.getAction(actionGroupName);
+        ActionGroup actionGroup = (ActionGroup) actionManager.getAction(name);
         ActionToolbar toolbar = actionManager.createActionToolbar(adjustPlace(place), actionGroup, horizontal);
         toolbar.setTargetComponent(component);
         return toolbar;

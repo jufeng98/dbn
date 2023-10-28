@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import static com.dci.intellij.dbn.common.ui.util.UserInterface.createToolbarDecorator;
@@ -50,7 +49,7 @@ public class EditableStringListForm extends DBNFormBase {
         return editableStringList.getStringValues();
     }
 
-    public void setStringValues(Collection<String> stringValues) {
+    public void setStringValues(List<String> stringValues) {
         editableStringList.setStringValues(stringValues);
     }
 }

@@ -125,7 +125,7 @@ class DBObjectLookupScanner extends StatefulDisposableBase implements DBObjectLi
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         nullify();
     }
 }

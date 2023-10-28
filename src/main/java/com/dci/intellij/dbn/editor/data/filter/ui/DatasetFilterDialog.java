@@ -137,7 +137,7 @@ public class DatasetFilterDialog extends DBNDialog<DatasetFilterForm> {
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         filterGroup.disposeUIResources();
     }
 }

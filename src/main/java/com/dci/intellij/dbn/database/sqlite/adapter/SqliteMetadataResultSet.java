@@ -61,7 +61,7 @@ public class SqliteMetadataResultSet<T extends SqliteMetadataResultSetRow>
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         nullify();
     }
 }

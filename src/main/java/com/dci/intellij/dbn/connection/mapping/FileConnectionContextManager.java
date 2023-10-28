@@ -536,12 +536,5 @@ public class FileConnectionContextManager extends ProjectComponentBase implement
             mappings.put(fileUrl, mapping);
         }
     }
-
-
-    @Override
-    protected void disposeInner() {
-        super.disposeInner();
-    }
-
 }
 

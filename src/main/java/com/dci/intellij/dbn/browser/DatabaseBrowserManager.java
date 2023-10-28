@@ -387,7 +387,7 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
 
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         toolWindowForm.set(null);
         super.disposeInner();
     }

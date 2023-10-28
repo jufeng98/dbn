@@ -10,7 +10,6 @@ import com.dci.intellij.dbn.connection.config.tns.TnsImportData;
 import com.dci.intellij.dbn.connection.config.ui.ConnectionBundleSettingsForm;
 import com.dci.intellij.dbn.options.ConfigId;
 import com.dci.intellij.dbn.options.ProjectSettings;
-import com.dci.intellij.dbn.options.ProjectSettingsManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.help.HelpManager;
 import com.intellij.openapi.options.ConfigurationException;
@@ -64,7 +63,7 @@ public class ProjectSettingsDialog extends DBNDialog<ProjectSettingsForm> {
         setResizable(true);
         //setHorizontalStretch(1.5f);
 
-        ProjectSettings projectSettings = ProjectSettingsManager.getSettings(project);
+        ProjectSettings projectSettings = ProjectSettings.get(project);
         this.projectSettings = projectSettings.clone();
         this.projectSettings.createCustomComponent();
         setDefaultSize(1300, 900);

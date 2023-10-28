@@ -76,7 +76,7 @@ public abstract class DBNFormBase
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         JComponent component = getComponent();
         DataManager.removeDataProvider(component);
         ComponentDisposer.dispose(component);

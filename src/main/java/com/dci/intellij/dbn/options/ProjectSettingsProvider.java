@@ -46,10 +46,7 @@ public class ProjectSettingsProvider extends ConfigurableProvider{
     @Override
     public Configurable createConfigurable() {
         Project project = getProject();
-        ProjectSettings projectSettings = project.isDefault() ?
-                DefaultProjectSettingsManager.getInstance().getDefaultProjectSettings() :
-                ProjectSettingsManager.getInstance(project).getProjectSettings();
-
+        ProjectSettings projectSettings = ProjectSettings.get(project);
         return projectSettings.clone();
     }
 

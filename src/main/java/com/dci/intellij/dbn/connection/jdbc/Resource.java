@@ -8,5 +8,7 @@ public interface Resource extends PropertyHolder<ResourceStatus> {
 
     String getResourceId();
 
+    boolean isObsolete();
+
     void statusChanged(ResourceStatus status);
 }

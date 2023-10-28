@@ -224,7 +224,7 @@ public class SessionBrowserCurrentSqlPanel extends DBNFormBase {
 
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         Editors.releaseEditor(viewer);
         virtualFile = null;
         super.disposeInner();

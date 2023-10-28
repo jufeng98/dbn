@@ -340,7 +340,7 @@ public class ResultSetRecordViewerForm extends DBNFormBase {
 
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         super.disposeInner();
         table = null;
         row = null;

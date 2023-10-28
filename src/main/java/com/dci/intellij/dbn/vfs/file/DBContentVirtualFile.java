@@ -77,13 +77,8 @@ public abstract class DBContentVirtualFile extends DBVirtualFileBase implements 
 
     @Override
     public boolean isValid() {
-        if (!super.isValid()) return false;
-
         DBEditableObjectVirtualFile mainDatabaseFile = this.mainDatabaseFile.get();
-        boolean valid = mainDatabaseFile != null && mainDatabaseFile.isValid();
-
-        if (!valid) invalidate();
-        return valid;
+        return mainDatabaseFile != null && mainDatabaseFile.isValid();
     }
 
     @NotNull

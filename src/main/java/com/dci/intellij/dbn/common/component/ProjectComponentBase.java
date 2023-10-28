@@ -37,17 +37,17 @@ public abstract class ProjectComponentBase extends StatefulDisposableBase implem
         return project.ensure();
     }
 
-    @Override
-    protected void disposeInner() {
-        nullify();
-    }
-
     protected void closeProject(boolean exitApp) {
         if (exitApp) {
             ApplicationManager.getApplication().exit();
         } else {
             Projects.closeProject(getProject());
         }
+    }
+
+    @Override
+    public void disposeInner() {
+        nullify();
     }
 
     @Override

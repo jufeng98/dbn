@@ -60,9 +60,9 @@ public class TextEditorDialog extends DBNDialog<TextEditorForm> {
         String text = getForm().getText();
         Progress.modal(getProject(), null, false,
                 "Updating data",
-                "Updating value value from text editor",
+                "Updating value from text editor",
                 progress -> {
-            UserValueHolder userValueHolder = textEditorAdapter.getUserValueHolder();
+            UserValueHolder<String> userValueHolder = textEditorAdapter.getUserValueHolder();
             userValueHolder.updateUserValue(text, false);
             textEditorAdapter.afterUpdate();
         });

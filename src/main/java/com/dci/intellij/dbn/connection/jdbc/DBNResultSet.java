@@ -97,6 +97,17 @@ public class DBNResultSet extends DBNResource<ResultSet> implements ResultSet, C
     }
 
     @Override
+    public boolean isObsolete() {
+        if (isClosed()) return true;
+
+        DBNConnection connection = getConnection();
+        if (connection == null) return true;
+        if (connection.isClosed()) return true;
+
+        return false;
+    }
+
+    @Override
     public boolean isClosedInner() throws SQLException {
         return Resources.isClosed(inner);
     }

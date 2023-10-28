@@ -32,6 +32,8 @@ public abstract class DBLanguage<D extends DBLanguageDialect> extends Language i
         return fileElementType.get();
     }
 
+    protected abstract D[] createLanguageDialects();
+
     protected abstract IFileElementType createFileElementType();
 
     private SharedTokenTypeBundle createSharedTokenTypes() {
@@ -42,7 +44,6 @@ public abstract class DBLanguage<D extends DBLanguageDialect> extends Language i
         return sharedTokenTypes.get();
     }
 
-    protected abstract D[] createLanguageDialects();
     public abstract D getMainLanguageDialect();
 
     public D getLanguageDialect(Project project, VirtualFile virtualFile) {

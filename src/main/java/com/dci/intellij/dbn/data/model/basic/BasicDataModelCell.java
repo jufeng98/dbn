@@ -13,19 +13,21 @@ import com.dci.intellij.dbn.data.value.LargeObjectValue;
 import com.dci.intellij.dbn.editor.data.model.RecordStatus;
 import com.dci.intellij.dbn.object.type.DBObjectType;
 import com.intellij.openapi.project.Project;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import static com.dci.intellij.dbn.common.dispose.Failsafe.nd;
 
+@Getter
 public class BasicDataModelCell<
         R extends BasicDataModelRow<M, ? extends BasicDataModelCell<R, M>>,
         M extends BasicDataModel<R, ? extends BasicDataModelCell<R, M>>>
         extends PropertyHolderBase.IntStore<RecordStatus>
         implements DataModelCell<R, M> {
 
-    protected R row;
-    protected int index;
-    protected Object userValue;
+    private R row;
+    private final int index;
+    private Object userValue;
     private String presentableValue;
 
     public BasicDataModelCell(Object userValue, R row, int index) {
@@ -64,8 +66,6 @@ public class BasicDataModelCell<
         state.setTextContentType(getColumnInfo().getName(), contentType.getName());
     }
 
-
-
     @Override
     @NotNull
     public R getRow() {
@@ -83,21 +83,21 @@ public class BasicDataModelCell<
         setUserValue(userValue);
     }
 
-    @Override
-    public Object getUserValue() {
-        return userValue;
-    }
-
     public boolean isLobValue() {
         return userValue instanceof LargeObjectValue;
     }
+
     public boolean isArrayValue() {
         return userValue instanceof ArrayValue;
     }
 
     @Override
     public String getPresentableValue() {
-        if (userValue != null) {
+        if (userValue == null) {
+            if (presentableValue != null) {
+                presentableValue = null;
+            }
+        } else {
             if (presentableValue == null) {
                 Formatter formatter = getFormatter();
                 presentableValue = formatter.formatObject(userValue);
@@ -131,11 +131,6 @@ public class BasicDataModelCell<
     @Override
     public ColumnInfo getColumnInfo() {
         return getModel().getColumnInfo(index);
-    }
-
-    @Override
-    public int getIndex() {
-        return index;
     }
 
     public String toString() {

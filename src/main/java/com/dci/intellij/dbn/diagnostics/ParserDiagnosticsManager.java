@@ -248,8 +248,4 @@ public class ParserDiagnosticsManager extends ProjectComponentBase implements Pe
         }
         indexResults();
     }
-
-    @Override
-    protected void disposeInner() {
-    }
 }

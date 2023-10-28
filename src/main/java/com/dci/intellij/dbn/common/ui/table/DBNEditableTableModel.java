@@ -46,7 +46,7 @@ public abstract class DBNEditableTableModel extends StatefulDisposableBase imple
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         nullify();
     }
 }

@@ -9,7 +9,6 @@ import com.dci.intellij.dbn.execution.script.options.ScriptExecutionSettings;
 import com.dci.intellij.dbn.execution.statement.options.StatementExecutionSettings;
 import com.dci.intellij.dbn.options.ConfigId;
 import com.dci.intellij.dbn.options.ProjectSettings;
-import com.dci.intellij.dbn.options.ProjectSettingsManager;
 import com.dci.intellij.dbn.options.TopLevelConfig;
 import com.intellij.openapi.project.Project;
 import lombok.EqualsAndHashCode;
@@ -28,7 +27,7 @@ public class ExecutionEngineSettings extends CompositeProjectConfiguration<Proje
     }
 
     public static ExecutionEngineSettings getInstance(@NotNull Project project) {
-        return ProjectSettingsManager.getSettings(project).getExecutionEngineSettings();
+        return ProjectSettings.get(project).getExecutionEngineSettings();
     }
 
     @NotNull

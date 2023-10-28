@@ -198,7 +198,7 @@ public class MySqlArgumentsResultSet extends StatefulDisposableBase implements R
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         nullify();
     }
 }

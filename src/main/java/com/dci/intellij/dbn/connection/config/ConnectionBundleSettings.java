@@ -8,7 +8,6 @@ import com.dci.intellij.dbn.connection.ConnectionManager;
 import com.dci.intellij.dbn.connection.config.ui.ConnectionBundleSettingsForm;
 import com.dci.intellij.dbn.options.ConfigId;
 import com.dci.intellij.dbn.options.ProjectSettings;
-import com.dci.intellij.dbn.options.ProjectSettingsManager;
 import com.dci.intellij.dbn.options.TopLevelConfig;
 import com.intellij.openapi.project.Project;
 import lombok.EqualsAndHashCode;
@@ -38,7 +37,7 @@ public class ConnectionBundleSettings extends BasicProjectConfiguration<ProjectS
     }
 
     public static ConnectionBundleSettings getInstance(@NotNull Project project) {
-        return ProjectSettingsManager.getSettings(project).getConnectionSettings();
+        return ProjectSettings.get(project).getConnectionSettings();
     }
 
     public ConnectionSettings getConnectionSettings(ConnectionId connectionId) {

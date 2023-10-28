@@ -49,7 +49,7 @@ public class StatementExecutionResultForm extends ExecutionResultFormBase<Statem
 
     public StatementExecutionResultForm(@NotNull StatementExecutionCursorResult executionResult) {
         super(executionResult);
-        ActionToolbar actionToolbar = Actions.createActionToolbar(actionsPanel, "", false, "DBNavigator.ActionGroup.StatementExecutionResult");
+        ActionToolbar actionToolbar = Actions.createActionToolbar(actionsPanel, "DBNavigator.ActionGroup.StatementExecutionResult", "", false);
 
         actionsPanel.add(actionToolbar.getComponent());
 

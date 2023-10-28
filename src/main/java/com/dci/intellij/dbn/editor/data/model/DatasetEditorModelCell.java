@@ -90,12 +90,9 @@ public class DatasetEditorModelCell
         try {
             clearError();
             int columnIndex = columnInfo.getResultSetIndex();
-            if (isValueAdapter && userValue == null) {
-                userValue = ValueAdapter.create(genericDataType);
-            }
 
             if (isValueAdapter) {
-                ValueAdapter<?> valueAdapter = (ValueAdapter<?>) userValue;
+                ValueAdapter<?> valueAdapter = ValueAdapter.create(genericDataType);
                 if (valueAdapter != null) {
                     if (newUserValue instanceof ValueAdapter) {
                         ValueAdapter<?> newValueAdapter = (ValueAdapter<?>) newUserValue;
@@ -103,6 +100,7 @@ public class DatasetEditorModelCell
                     }
                     resultSetAdapter.setValue(columnIndex, valueAdapter, newUserValue);
                 }
+                setUserValue(valueAdapter);
             } else {
                 DBDataType dataType = columnInfo.getDataType();
                 resultSetAdapter.setValue(columnIndex, dataType, newUserValue);
@@ -155,6 +153,7 @@ public class DatasetEditorModelCell
     }
 
     private boolean userValueChanged(Object newUserValue) {
+        Object userValue = getUserValue();
         if (userValue instanceof ValueAdapter) {
             ValueAdapter<?> valueAdapter = (ValueAdapter<?>) userValue;
             try {
@@ -340,42 +339,41 @@ public class DatasetEditorModelCell
 
     boolean notifyError(DatasetEditorError error, boolean showPopup) {
         error.setNotified(true);
-        if(!Commons.match(this.error, error, err -> err.getMessage())) {
-            clearError();
-            this.error = error;
-            notifyCellUpdated();
-            if (showPopup) {
-                scrollToVisible();
-            }
+        if (Commons.match(this.error, error, err -> err.getMessage())) return false;
 
-            DatasetEditorTable table = getEditorTable();
-            if (isEditing()) {
-                DatasetTableCellEditor cellEditor = table.getCellEditor();
-                if (cellEditor != null) {
-                    cellEditor.highlight(DatasetTableCellEditor.HIGHLIGHT_TYPE_ERROR);
-                }
-            }
-            error.addChangeListener(this);
-            if (showPopup) {
-                table.showErrorPopup(this);
-            }
-            return true;
+        clearError();
+        this.error = error;
+        notifyCellUpdated();
+        if (showPopup) {
+            scrollToVisible();
         }
-        return false;
+
+        DatasetEditorTable table = getEditorTable();
+        if (isEditing()) {
+            DatasetTableCellEditor cellEditor = table.getCellEditor();
+            if (cellEditor != null) {
+                cellEditor.highlight(DatasetTableCellEditor.HIGHLIGHT_TYPE_ERROR);
+            }
+        }
+        error.addChangeListener(this);
+        if (showPopup) {
+            table.showErrorPopup(this);
+        }
+        return true;
     }
 
     private void clearError() {
-        if (error != null ) {
-            error.markDirty();
-            error = null;
-        }
+        if (error == null) return;
+
+        error.markDirty();
+        error = null;
     }
 
     public void revertChanges() {
-        if (is(MODIFIED)) {
-            updateUserValue(originalUserValue, false);
-            set(MODIFIED, false);
-        }
+        if (!is(MODIFIED)) return;
+
+        updateUserValue(originalUserValue, false);
+        set(MODIFIED, false);
     }
 
     public DBColumn getColumn() {

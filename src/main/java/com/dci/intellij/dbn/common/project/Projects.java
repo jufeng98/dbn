@@ -64,4 +64,5 @@ public final class Projects {
     public static Project getDefaultProject() {
         return ProjectManager.getInstance().getDefaultProject();
     }
+
 }

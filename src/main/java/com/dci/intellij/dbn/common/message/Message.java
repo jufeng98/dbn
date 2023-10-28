@@ -26,7 +26,7 @@ public class Message extends StatefulDisposableBase {
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         nullify();
     }
 }

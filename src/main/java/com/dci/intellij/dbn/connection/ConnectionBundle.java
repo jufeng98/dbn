@@ -2,12 +2,11 @@ package com.dci.intellij.dbn.connection;
 
 import com.dci.intellij.dbn.browser.DatabaseBrowserManager;
 import com.dci.intellij.dbn.browser.model.BrowserTreeNode;
-import com.dci.intellij.dbn.browser.model.BrowserTreeNodeBase;
 import com.dci.intellij.dbn.browser.ui.DatabaseBrowserTree;
 import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.dispose.Disposed;
 import com.dci.intellij.dbn.common.dispose.Disposer;
-import com.dci.intellij.dbn.common.dispose.StatefulDisposable;
+import com.dci.intellij.dbn.common.dispose.StatefulDisposableBase;
 import com.dci.intellij.dbn.common.event.ProjectEvents;
 import com.dci.intellij.dbn.common.latent.Latent;
 import com.dci.intellij.dbn.common.list.FilteredList;
@@ -31,7 +30,7 @@ import java.util.*;
 
 import static com.intellij.util.containers.ContainerUtil.createConcurrentWeakKeyWeakValueMap;
 
-public class ConnectionBundle extends BrowserTreeNodeBase implements BrowserTreeNode, StatefulDisposable {
+public class ConnectionBundle extends StatefulDisposableBase implements BrowserTreeNode {
     private final ProjectRef project;
 
     private final Latent<Map<ConnectionId, ConnectionHandler>> virtualConnections = Latent.basic(() -> createVirtualConnections());
@@ -337,7 +336,7 @@ public class ConnectionBundle extends BrowserTreeNodeBase implements BrowserTree
 
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         index = Disposed.map();
         nullify();
     }

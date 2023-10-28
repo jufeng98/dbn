@@ -3,10 +3,12 @@ package com.dci.intellij.dbn.common.dispose;
 import com.dci.intellij.dbn.common.util.Unsafe;
 import com.intellij.openapi.Disposable;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 
+@Getter
+@Setter
 public abstract class StatefulDisposableBase implements StatefulDisposable {
-    @Getter
     private boolean disposed;
 
     public StatefulDisposableBase() {
@@ -26,5 +28,4 @@ public abstract class StatefulDisposableBase implements StatefulDisposable {
         Unsafe.warned(() -> disposeInner());
     }
 
-    protected abstract void disposeInner();
 }

@@ -58,13 +58,7 @@ public class ProjectSettingsManager extends ProjectComponentBase implements Pers
         return Components.projectService(project, ProjectSettingsManager.class);
     }
 
-    public static ProjectSettings getSettings(Project project) {
-        if (project.isDefault()) {
-            return DefaultProjectSettingsManager.getInstance().getDefaultProjectSettings();
-        } else {
-            return ProjectSettingsManager.getInstance(project).getProjectSettings();
-        }
-    }
+
 
     public ProjectSettings getProjectSettings() {
         return nd(projectSettings);
@@ -159,7 +153,7 @@ public class ProjectSettingsManager extends ProjectComponentBase implements Pers
                         getProjectSettings().writeConfiguration(element);
 
                         ConnectionBundleSettings.IS_IMPORT_EXPORT_ACTION.set(true);
-                        ProjectSettings defaultProjectSettings = DefaultProjectSettingsManager.getInstance().getDefaultProjectSettings();
+                        ProjectSettings defaultProjectSettings = ProjectSettings.getDefault();
                         defaultProjectSettings.readConfiguration(element);
                         Messages.showInfoDialog(project, "Project settings", "Project settings exported as default");
                     } finally {
@@ -184,7 +178,7 @@ public class ProjectSettingsManager extends ProjectComponentBase implements Pers
                     option -> when(option == 0, () -> {
                         try {
                             Element element = new Element("state");
-                            ProjectSettings defaultProjectSettings = DefaultProjectSettingsManager.getInstance().getDefaultProjectSettings();
+                            ProjectSettings defaultProjectSettings = ProjectSettings.getDefault();
                             defaultProjectSettings.writeConfiguration(element);
 
                             ConnectionBundleSettings.IS_IMPORT_EXPORT_ACTION.set(true);

@@ -218,7 +218,7 @@ public class StatementExecutionVariablesBundle extends StatefulDisposableBase im
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         nullify();
     }
 }

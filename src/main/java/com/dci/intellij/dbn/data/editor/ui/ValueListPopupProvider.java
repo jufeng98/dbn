@@ -22,8 +22,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyEvent;
 import java.util.List;
 
 import static com.dci.intellij.dbn.common.dispose.Disposer.replace;
@@ -151,10 +149,6 @@ public class ValueListPopupProvider implements TextFieldPopupProvider{
             Disposer.dispose(popup);
         }
     }
-
-    @Override public void handleFocusLostEvent(FocusEvent focusEvent) {}
-    @Override public void handleKeyPressedEvent(KeyEvent keyEvent) {}
-    @Override public void handleKeyReleasedEvent(KeyEvent keyEvent) {}
 
     @Override
     public String getDescription() {

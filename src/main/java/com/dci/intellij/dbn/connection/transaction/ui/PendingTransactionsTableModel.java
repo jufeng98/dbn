@@ -84,7 +84,7 @@ public class PendingTransactionsTableModel extends StatefulDisposableBase implem
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         connections.clear();
     }
 }

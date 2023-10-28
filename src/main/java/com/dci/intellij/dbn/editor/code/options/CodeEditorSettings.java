@@ -5,7 +5,6 @@ import com.dci.intellij.dbn.common.options.Configuration;
 import com.dci.intellij.dbn.editor.code.options.ui.CodeEditorSettingsForm;
 import com.dci.intellij.dbn.options.ConfigId;
 import com.dci.intellij.dbn.options.ProjectSettings;
-import com.dci.intellij.dbn.options.ProjectSettingsManager;
 import com.dci.intellij.dbn.options.TopLevelConfig;
 import com.intellij.openapi.project.Project;
 import lombok.EqualsAndHashCode;
@@ -25,7 +24,7 @@ public class CodeEditorSettings extends CompositeProjectConfiguration<ProjectSet
     }
 
     public static CodeEditorSettings getInstance(@NotNull Project project) {
-        return ProjectSettingsManager.getSettings(project).getCodeEditorSettings();
+        return ProjectSettings.get(project).getCodeEditorSettings();
     }
 
     @NotNull

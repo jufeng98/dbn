@@ -206,24 +206,24 @@ public class DatasetRecordEditorColumnForm extends DBNFormBase {
     }
 
     private void updateUserValue(boolean highlightError) {
-        if (editorComponent != null) {
-            JTextField valueTextField = editorComponent.getTextField();
-            if (valueTextField.isEditable())  {
-                try {
-                    Object value = getEditorValue();
-                    UserValueHolder<Object> userValueHolder = editorComponent.getUserValueHolder();
-                    userValueHolder.updateUserValue(value, false);
-                    valueTextField.setForeground(Colors.getTextFieldForeground());
-                } catch (ParseException e1) {
-                    conditionallyLog(e1);
-                    if (highlightError) {
-                        valueTextField.setForeground(JBColor.RED);
-                    }
+        if (editorComponent == null) return;
 
-                    //DBDataType dataType = cell.getColumnInfo().getDataType();
-                    //MessageUtil.showErrorDialog("Can not convert " + valueTextField.getText() + " to " + dataType.getName());
-                }
+        JTextField valueTextField = editorComponent.getTextField();
+        if (!valueTextField.isEditable()) return;
+
+        try {
+            Object value = getEditorValue();
+            UserValueHolder<Object> userValueHolder = editorComponent.getUserValueHolder();
+            userValueHolder.updateUserValue(value, false);
+            valueTextField.setForeground(Colors.getTextFieldForeground());
+        } catch (ParseException e) {
+            conditionallyLog(e);
+            if (highlightError) {
+                valueTextField.setForeground(JBColor.RED);
             }
+
+            //DBDataType dataType = cell.getColumnInfo().getDataType();
+            //MessageUtil.showErrorDialog("Can not convert " + valueTextField.getText() + " to " + dataType.getName());
         }
     }
 
@@ -234,15 +234,15 @@ public class DatasetRecordEditorColumnForm extends DBNFormBase {
     private final KeyListener keyAdapter = new KeyAdapter() {
         @Override
         public void keyPressed(KeyEvent e) {
-            if (!e.isConsumed()) {
-                DatasetRecordEditorForm parentComponent = ensureParentComponent();
-                if (e.getKeyCode() == 38) {//UP
-                    parentComponent.focusPreviousColumnPanel(DatasetRecordEditorColumnForm.this);
-                    e.consume();
-                } else if (e.getKeyCode() == 40) { // DOWN
-                    parentComponent.focusNextColumnPanel(DatasetRecordEditorColumnForm.this);
-                    e.consume();
-                }
+            if (e.isConsumed()) return;
+
+            DatasetRecordEditorForm parentComponent = ensureParentComponent();
+            if (e.getKeyCode() == 38) {//UP
+                parentComponent.focusPreviousColumnPanel(DatasetRecordEditorColumnForm.this);
+                e.consume();
+            } else if (e.getKeyCode() == 40) { // DOWN
+                parentComponent.focusNextColumnPanel(DatasetRecordEditorColumnForm.this);
+                e.consume();
             }
         }
     };
@@ -251,16 +251,16 @@ public class DatasetRecordEditorColumnForm extends DBNFormBase {
     private final FocusListener focusListener = new FocusAdapter() {
         @Override
         public void focusGained(FocusEvent e) {
-            if (e.getOppositeComponent() != null) {
-                JTextField valueTextField = editorComponent.getTextField();
-                DataEditorSettings settings = cell.getRow().getModel().getSettings();
-                if (settings.getGeneralSettings().getSelectContentOnCellEdit().value()) {
-                    valueTextField.selectAll();
-                }
+            if (e.getOppositeComponent() == null) return;
 
-                Rectangle rectangle = new Rectangle(mainPanel.getLocation(), mainPanel.getSize());
-                getParentForm().getColumnsPanel().scrollRectToVisible(rectangle);
+            JTextField valueTextField = editorComponent.getTextField();
+            DataEditorSettings settings = cell.getRow().getModel().getSettings();
+            if (settings.getGeneralSettings().getSelectContentOnCellEdit().value()) {
+                valueTextField.selectAll();
             }
+
+            Rectangle rectangle = new Rectangle(mainPanel.getLocation(), mainPanel.getSize());
+            getParentForm().getColumnsPanel().scrollRectToVisible(rectangle);
         }
 
         @Override

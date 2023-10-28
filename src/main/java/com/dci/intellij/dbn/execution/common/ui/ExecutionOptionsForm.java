@@ -194,7 +194,7 @@ public class ExecutionOptionsForm extends DBNFormBase {
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         super.disposeInner();
         changeListeners.clear();
     }

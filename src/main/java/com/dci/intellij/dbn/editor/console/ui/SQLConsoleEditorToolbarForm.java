@@ -27,7 +27,7 @@ public class SQLConsoleEditorToolbarForm extends DBNToolbarForm {
         super(fileEditor, project);
         this.mainPanel.setBorder(Borders.insetBorder(2));
 
-        ActionToolbar actionToolbar = Actions.createActionToolbar(actionsPanel,"", true, "DBNavigator.ActionGroup.FileEditor");
+        ActionToolbar actionToolbar = Actions.createActionToolbar(actionsPanel, "DBNavigator.ActionGroup.FileEditor", "", true);
         this.actionsPanel.add(actionToolbar.getComponent(), BorderLayout.CENTER);
 
         DBConsoleVirtualFile file = fileEditor.getVirtualFile();

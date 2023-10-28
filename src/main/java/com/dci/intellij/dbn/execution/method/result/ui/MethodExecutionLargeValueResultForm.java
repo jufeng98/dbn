@@ -154,7 +154,7 @@ public class MethodExecutionLargeValueResultForm extends DBNFormBase {
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         Editors.releaseEditor(editor);
         editor = null;
     }

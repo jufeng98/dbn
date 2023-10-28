@@ -94,7 +94,7 @@ public class DBNConnection extends DBNConnectionBase {
                         } catch (SQLException e) {
                             inner.setAutoCommit(value);
                         }
-                    } catch (Throwable e){
+                    } catch (Throwable e) {
                         conditionallyLog(e);
                         log.warn("Unable to set auto-commit to " + value + ". Maybe your database does not support transactions...", e);
                     }
@@ -122,7 +122,7 @@ public class DBNConnection extends DBNConnectionBase {
                         } catch (SQLException e) {
                             inner.setReadOnly(value);
                         }
-                    } catch (Throwable e){
+                    } catch (Throwable e) {
                         conditionallyLog(e);
                         log.warn("Unable to set read-only status to " + value + ". Maybe your database does not support transactions...", e);
                     }

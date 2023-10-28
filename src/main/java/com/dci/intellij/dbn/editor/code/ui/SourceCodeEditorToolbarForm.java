@@ -34,7 +34,7 @@ public class SourceCodeEditorToolbarForm extends DBNToolbarForm {
         this.sourceCodeEditor = WeakRef.of(sourceCodeEditor);
         Editor editor = sourceCodeEditor.getEditor();
 
-        ActionToolbar actionToolbar = Actions.createActionToolbar(actionsPanel,"", true, "DBNavigator.ActionGroup.SourceEditor");
+        ActionToolbar actionToolbar = Actions.createActionToolbar(actionsPanel, "DBNavigator.ActionGroup.SourceEditor", "", true);
         this.actionsPanel.add(actionToolbar.getComponent(), BorderLayout.CENTER);
         this.loadingIconPanel.add(new AsyncProcessIcon("Loading"), BorderLayout.CENTER);
         this.loadingDataPanel.setVisible(false);

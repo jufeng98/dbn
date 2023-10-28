@@ -117,7 +117,7 @@ public class ResultSets extends StatefulDisposableBase {
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         nullify();
     }
 }

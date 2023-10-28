@@ -262,7 +262,7 @@ public class FileConnectionContextRegistry extends StatefulDisposableBase implem
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         mappings.clear();
     }
 }

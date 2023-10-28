@@ -576,6 +576,60 @@
             <separator/>
             <action id="DBNavigator.Actions.Browser.OpenSettings" class="com.dci.intellij.dbn.browser.action.BrowserOptionsAction" text="Browser - Options"/>
         </group>
+
+        <group id="DBNavigator.ActionGroup.Calendar.Controls" text="Calendar Controls">
+            <group id="DBNavigator.ActionGroup.Calendar.LeftControls" text="Calendar Left Controls">
+                <action id="DBNavigator.Actions.Calendar.CalendarPreviousMonth" class="com.dci.intellij.dbn.data.editor.ui.calendar.CalendarPreviousMonthAction" text="Calendar - Previous Month">
+                    <keyboard-shortcut keymap="$default" first-keystroke="ctrl LEFT"/>
+                </action>
+                <action id="DBNavigator.Actions.Calendar.CalendarPreviousYear" class="com.dci.intellij.dbn.data.editor.ui.calendar.CalendarPreviousYearAction" text="Calendar - Previous Year">
+                    <keyboard-shortcut keymap="$default" first-keystroke="ctrl DOWN"/>
+                </action>
+            </group>
+            <group id="DBNavigator.ActionGroup.Calendar.RightControls" text="Calendar Right Controls">
+                <action id="DBNavigator.Actions.Calendar.CalendarNextMonth" class="com.dci.intellij.dbn.data.editor.ui.calendar.CalendarNextMonthAction" text="Calendar - Next Month">
+                    <keyboard-shortcut keymap="$default" first-keystroke="ctrl RIGHT"/>
+                </action>
+                <action id="DBNavigator.Actions.Calendar.CalendarNextYear" class="com.dci.intellij.dbn.data.editor.ui.calendar.CalendarNextYearAction" text="Calendar - Next Year">
+                    <keyboard-shortcut keymap="$default" first-keystroke="ctrl UP"/>
+                </action>
+            </group>
+            <group id="DBNavigator.ActionGroup.Calendar.BottomControls" text="Calendar Bottom Controls">
+                <action id="DBNavigator.Actions.Calendar.CalendarResetTime" class="com.dci.intellij.dbn.data.editor.ui.calendar.CalendarResetTimeAction" text="Calendar - Reset Time"/>
+            </group>
+        </group>
+        <group id="DBNavigator.ActionGroup.ArrayEditor.Controls" text="Array Editor Controls">
+            <group id="DBNavigator.ActionGroup.Arrays.LeftControls" text="Arrays Left Controls">
+                <action id="DBNavigator.Actions.Arrays.AddRecord" class="com.dci.intellij.dbn.data.editor.ui.array.ArrayEditorAddAction" text="Array Editor - Add Record">
+                    <keyboard-shortcut keymap="$default" first-keystroke="ctrl PLUS"/>
+                </action>
+                <action id="DBNavigator.Actions.Arrays.RemoveRecord" class="com.dci.intellij.dbn.data.editor.ui.array.ArrayEditorRemoveAction" text="Array Editor - Remove Record">
+                    <keyboard-shortcut keymap="$default" first-keystroke="ctrl MINUS"/>
+                </action>
+            </group>
+            <group id="DBNavigator.ActionGroup.Arrays.RightControls" text="Arrays Right Controls">
+                <action id="DBNavigator.Actions.Arrays.Delete" class="com.dci.intellij.dbn.data.editor.ui.array.ArrayEditorDeleteAction" text="Array Editor - Delete">
+                    <keyboard-shortcut keymap="$default" first-keystroke="ctrl DELETE"/>
+                </action>
+                <action id="DBNavigator.Actions.Arrays.Revert" class="com.dci.intellij.dbn.data.editor.ui.array.ArrayEditorRevertAction" text="Array Editor - Revert">
+                    <keyboard-shortcut keymap="$default" first-keystroke="ESCAPE"/>
+                </action>
+                <action id="DBNavigator.Actions.Arrays.Accept" class="com.dci.intellij.dbn.data.editor.ui.array.ArrayEditorAcceptAction" text="Array Editor - Accept">
+                    <keyboard-shortcut keymap="$default" first-keystroke="ctrl ENTER"/>
+                </action>
+            </group>
+        </group>
+        <group id="DBNavigator.ActionGroup.TextEditor.Controls" text="Text Editor Controls">
+            <action id="DBNavigator.Actions.TextEditor.Delete" class="com.dci.intellij.dbn.data.editor.ui.text.TextEditorDeleteAction" text="Text Editor - Delete">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl DELETE"/>
+            </action>
+            <action id="DBNavigator.Actions.TextEditor.Revert" class="com.dci.intellij.dbn.data.editor.ui.text.TextEditorRevertAction" text="Text Editor - Revert">
+                <keyboard-shortcut keymap="$default" first-keystroke="ESCAPE"/>
+            </action>
+            <action id="DBNavigator.Actions.TextEditor.Accept" class="com.dci.intellij.dbn.data.editor.ui.text.TextEditorAcceptAction" text="Text Editor - Accept">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl ENTER"/>
+            </action>
+        </group>
     </actions>
     <projectListeners>
         <listener topic="com.intellij.openapi.fileEditor.FileEditorManagerListener" class="com.dci.intellij.dbn.editor.code.SourceCodeEditorListener"/>

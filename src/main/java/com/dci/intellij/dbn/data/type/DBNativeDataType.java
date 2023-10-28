@@ -249,7 +249,7 @@ public class DBNativeDataType extends StatefulDisposableBase implements DynamicC
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         nullify();
     }
 }

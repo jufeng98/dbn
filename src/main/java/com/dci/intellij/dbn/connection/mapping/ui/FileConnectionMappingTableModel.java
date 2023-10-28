@@ -77,7 +77,7 @@ public class FileConnectionMappingTableModel extends DBNMutableTableModel<FileCo
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         super.disposeInner();
         mappings.clear();
     }

@@ -105,7 +105,7 @@ public final class StatementExecutionQueue extends StatefulDisposableBase {
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         nullify();
     }
 }

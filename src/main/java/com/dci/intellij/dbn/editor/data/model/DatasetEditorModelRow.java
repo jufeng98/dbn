@@ -95,14 +95,9 @@ public class DatasetEditorModelRow
         // try fast match by primary key
         DatasetEditorModel model = getModel();
         if (model.getDataset() instanceof DBTable) {
-            DBTable table = (DBTable) model.getDataset();
-            List<DBColumn> uniqueColumns = table.getPrimaryKeyColumns();
-            uniqueColumns.removeIf(c -> c.isIdentity());
-            if (uniqueColumns.size() == 0) {
-                uniqueColumns = table.getUniqueKeyColumns();
-            }
-            if (uniqueColumns.size() > 0) {
-                for (DBColumn uniqueColumn : uniqueColumns) {
+            List<DBColumn> uniqueKeyColumns = model.getUniqueKeyColumns();
+            if (!uniqueKeyColumns.isEmpty()) {
+                for (DBColumn uniqueColumn : uniqueKeyColumns) {
                     int index = model.getHeader().indexOfColumn(uniqueColumn);
                     DatasetEditorModelCell localCell = getCellAtIndex(index);
                     DatasetEditorModelCell remoteCell = (DatasetEditorModelCell) row.getCellAtIndex(index);
@@ -138,40 +133,41 @@ public class DatasetEditorModelRow
         checkDisposed();
 
         DBObject messageObject = error.getMessageObject();
-        if (messageObject != null) {
-            if (messageObject instanceof DBColumn) {
-                DBColumn column = (DBColumn) messageObject;
+        if (messageObject == null) return;
+
+        if (messageObject instanceof DBColumn) {
+            DBColumn column = (DBColumn) messageObject;
+            DatasetEditorModelCell cell = getCellForColumn(column);
+            if (cell != null) {
+                boolean isErrorNew = cell.notifyError(error, true);
+                if (isErrorNew && startEditing) cell.edit();
+            }
+        } else if (messageObject instanceof DBConstraint) {
+            DBConstraint constraint = (DBConstraint) messageObject;
+            DatasetEditorModelCell firstCell = null;
+            boolean isErrorNew = false;
+            for (DBColumn column : constraint.getColumns()) {
                 DatasetEditorModelCell cell = getCellForColumn(column);
                 if (cell != null) {
-                    boolean isErrorNew = cell.notifyError(error, true);
-                    if (isErrorNew && startEditing) cell.edit();
+                    isErrorNew = cell.notifyError(error, false);
+                    if (firstCell == null) firstCell = cell;
                 }
-            } else if (messageObject instanceof DBConstraint) {
-                DBConstraint constraint = (DBConstraint) messageObject;
-                DatasetEditorModelCell firstCell = null;
-                boolean isErrorNew = false;
-                for (DBColumn column : constraint.getColumns()) {
-                    DatasetEditorModelCell cell = getCellForColumn(column);
-                    if (cell != null) {
-                        isErrorNew = cell.notifyError(error, false);
-                        if (firstCell == null) firstCell = cell;
-                    }
-                }
-                if (isErrorNew && showPopup) {
-                    DatasetEditorTable table = getModel().getEditorTable();
-                    table.showErrorPopup(firstCell);
-                    error.setNotified(true);
-                }
+            }
+            if (isErrorNew && showPopup) {
+                DatasetEditorTable table = getModel().getEditorTable();
+                table.showErrorPopup(firstCell);
+                error.setNotified(true);
             }
         }
     }
 
     public void revertChanges() {
-        if (is(RecordStatus.MODIFIED)) {
-            for (DatasetEditorModelCell cell : getCells()) {
-                cell.revertChanges();
-            }
+        if (isNot(RecordStatus.MODIFIED)) return;
+
+        for (DatasetEditorModelCell cell : getCells()) {
+            cell.revertChanges();
         }
+        set(RecordStatus.MODIFIED, false);
     }
 
 
@@ -198,15 +194,15 @@ public class DatasetEditorModelRow
     public boolean isEmptyData() {
         for (DatasetEditorModelCell cell : getCells()) {
             Object userValue = cell.getUserValue();
-            if (userValue != null) {
-                if (userValue instanceof String) {
-                    String stringUserValue = (String) userValue;
-                    if (Strings.isNotEmpty(stringUserValue)) {
-                        return false;
-                    }
-                } else {
+            if (userValue == null) continue;
+
+            if (userValue instanceof String) {
+                String stringUserValue = (String) userValue;
+                if (Strings.isNotEmpty(stringUserValue)) {
                     return false;
                 }
+            } else {
+                return false;
             }
         }
         return true;

@@ -237,7 +237,7 @@ public class DBObjectPsiAbstraction extends StatefulDisposableBase implements Ps
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         nullify();
     }
 }

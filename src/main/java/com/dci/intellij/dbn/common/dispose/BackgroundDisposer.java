@@ -1,14 +1,10 @@
 package com.dci.intellij.dbn.common.dispose;
 
-import com.dci.intellij.dbn.common.compatibility.Compatibility;
-import com.dci.intellij.dbn.common.event.ApplicationEvents;
+import com.dci.intellij.dbn.common.component.ApplicationMonitor;
 import com.dci.intellij.dbn.common.thread.Background;
 import com.dci.intellij.dbn.common.thread.ThreadMonitor;
 import com.dci.intellij.dbn.common.thread.ThreadProperty;
 import com.dci.intellij.dbn.diagnostics.Diagnostics;
-import com.intellij.ide.AppLifecycleListener;
-import com.intellij.openapi.application.ApplicationListener;
-import com.intellij.openapi.application.ApplicationManager;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -26,26 +22,10 @@ import static com.dci.intellij.dbn.common.thread.ThreadMonitor.isDisposerProcess
 public final class BackgroundDisposer {
     private final BlockingQueue<Runnable> queue = new LinkedBlockingQueue<>();
     private volatile boolean running;
-    private volatile boolean exiting = false;
 
     private static final BackgroundDisposer INSTANCE = new BackgroundDisposer();
 
-    private BackgroundDisposer() {
-        ApplicationEvents.subscribe(null, AppLifecycleListener.TOPIC, new AppLifecycleListener() {
-            @Override
-            public void appWillBeClosed(boolean isRestart) {
-                INSTANCE.setExiting(true);
-            }
-        });
-
-        ApplicationManager.getApplication().addApplicationListener(new ApplicationListener() {
-            @Override
-            @Compatibility
-            public void applicationExiting() {
-                INSTANCE.setExiting(true);
-            }
-        });
-    }
+    private BackgroundDisposer() {}
 
     public static void queue(Runnable runnable) {
         if (isDisposerProcess() || Diagnostics.isBackgroundDisposerDisabled()) {
@@ -56,14 +36,18 @@ public final class BackgroundDisposer {
 
     }
 
+    private boolean isCancelled() {
+        return ApplicationMonitor.isAppExiting();
+    }
+
     private void push(Runnable runnable) {
-        if (exiting) return;
+        if (isCancelled()) return;
         queue.add(runnable);
         
-        if (running || exiting) return;
+        if (running || isCancelled()) return;
 
         synchronized (this) {
-            if (running || exiting) return;
+            if (running || isCancelled()) return;
             running = true;
             start();
         }
@@ -80,7 +64,7 @@ public final class BackgroundDisposer {
     }
 
     private void dispose() throws InterruptedException {
-        while (!exiting) {
+        while (!isCancelled()) {
             Runnable task = queue.poll(10, TimeUnit.SECONDS);
             if (task == null) continue;
             try {

@@ -134,7 +134,7 @@ public final class DBDataTypeBundle extends StatefulDisposableBase implements Un
 
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         nativeDataTypes.reset();
         Disposer.dispose(dataTypes);
     }

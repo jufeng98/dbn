@@ -92,6 +92,10 @@ public final class Dispatch {
         return new Alarm(parentDisposable);
     }
 
+    public static void delayed(int delayMillis, @NotNull Runnable runnable) {
+        alarmRequest(new Alarm(), delayMillis, false, runnable);
+    }
+
     public static void alarmRequest(@NotNull Alarm alarm, int delayMillis, boolean cancelRequests, @NotNull Runnable runnable) {
         run(true, () -> {
             if (!alarm.isDisposed()) {

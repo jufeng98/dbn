@@ -1,6 +1,7 @@
 package com.dci.intellij.dbn.editor.data.model;
 
 import com.dci.intellij.dbn.common.dispose.Failsafe;
+import com.dci.intellij.dbn.connection.Resources;
 import com.dci.intellij.dbn.connection.Savepoints;
 import com.dci.intellij.dbn.connection.jdbc.DBNResultSet;
 import com.dci.intellij.dbn.data.type.DBDataType;
@@ -21,100 +22,111 @@ public class EditableResultSetAdapter extends ResultSetAdapter {
 
     @Override
     public void scroll(int rowIndex) throws SQLException {
-        if (!isInsertMode()) {
-            DBNResultSet resultSet = getResultSet();
-            if (isUseSavePoints()) {
-                Savepoints.run(resultSet, () -> absolute(resultSet, rowIndex));
-            } else {
-                absolute(resultSet, rowIndex);
-            }
+        if (isInsertMode()) return;
+        if (isObsolete()) return;
+
+        DBNResultSet resultSet = getResultSet();
+        if (isUseSavePoints()) {
+            Savepoints.run(resultSet, () -> absolute(resultSet, rowIndex));
+        } else {
+            absolute(resultSet, rowIndex);
         }
     }
 
     @Override
     public void updateRow() throws SQLException {
-        if (!isInsertMode())  {
-            DBNResultSet resultSet = getResultSet();
-            if (isUseSavePoints()) {
-                Savepoints.run(resultSet, () -> updateRow(resultSet));
-            } else {
-                updateRow(resultSet);
-            }
+        if (isInsertMode()) return;
+        if (isObsolete()) return;
+
+        DBNResultSet resultSet = getResultSet();
+        if (isUseSavePoints()) {
+            Savepoints.run(resultSet, () -> updateRow(resultSet));
+        } else {
+            updateRow(resultSet);
         }
     }
 
     @Override
     public void refreshRow() throws SQLException {
-        if (!isInsertMode())  {
-            DBNResultSet resultSet = getResultSet();
-            if (isUseSavePoints()) {
-                Savepoints.run(resultSet, () -> refreshRow(resultSet));
-            } else {
-                refreshRow(resultSet);
-            }
+        if (isInsertMode()) return;
+        if (isObsolete()) return;
+
+        DBNResultSet resultSet = getResultSet();
+        if (isUseSavePoints()) {
+            Savepoints.run(resultSet, () -> refreshRow(resultSet));
+        } else {
+            refreshRow(resultSet);
         }
     }
 
     @Override
     public void startInsertRow() throws SQLException {
-        if (!isInsertMode())  {
-            DBNResultSet resultSet = getResultSet();
-            if (isUseSavePoints()) {
-                Savepoints.run(resultSet, () -> {
-                    moveToInsertRow(resultSet);
-                    setInsertMode(true);
-                });
-            } else {
+        if (isInsertMode()) return;
+        if (isObsolete()) return;
+
+        DBNResultSet resultSet = getResultSet();
+        if (isUseSavePoints()) {
+            Savepoints.run(resultSet, () -> {
                 moveToInsertRow(resultSet);
                 setInsertMode(true);
-            }
+            });
+        } else {
+            moveToInsertRow(resultSet);
+            setInsertMode(true);
         }
     }
 
     @Override
     public void cancelInsertRow() throws SQLException {
-        if (isInsertMode())  {
-            DBNResultSet resultSet = getResultSet();
-            if (isUseSavePoints()) {
-                Savepoints.run(resultSet, () -> {
-                    moveToCurrentRow(resultSet);
-                    setInsertMode(false);
-                });
-            } else {
+        if (!isInsertMode()) return;
+        if (isObsolete()) return;
+
+        DBNResultSet resultSet = getResultSet();
+        if (isUseSavePoints()) {
+            Savepoints.run(resultSet, () -> {
                 moveToCurrentRow(resultSet);
                 setInsertMode(false);
-            }
+            });
+        } else {
+            moveToCurrentRow(resultSet);
+            setInsertMode(false);
         }
     }
 
     @Override
     public void insertRow() throws SQLException {
-        if (isInsertMode())  {
-            DBNResultSet resultSet = getResultSet();
-            if (isUseSavePoints()) {
-                Savepoints.run(resultSet, () -> {
-                    insertRow(resultSet);
-                    moveToCurrentRow(resultSet);
-                    setInsertMode(false);
-                });
-            } else {
+        if (!isInsertMode()) return;
+        if (isObsolete()) return;
+
+        DBNResultSet resultSet = getResultSet();
+        if (isUseSavePoints()) {
+            Savepoints.run(resultSet, () -> {
                 insertRow(resultSet);
                 moveToCurrentRow(resultSet);
                 setInsertMode(false);
-            }
+            });
+        } else {
+            insertRow(resultSet);
+            moveToCurrentRow(resultSet);
+            setInsertMode(false);
         }
     }
 
     @Override
     public void deleteRow() throws SQLException {
-        if (!isInsertMode())  {
-            DBNResultSet resultSet = getResultSet();
-            if (isUseSavePoints()) {
-                Savepoints.run(resultSet, () -> deleteRow(resultSet));
-            } else {
-                deleteRow(resultSet);
-            }
+        if (isInsertMode()) return;
+        if (isObsolete()) return;
+
+        DBNResultSet resultSet = getResultSet();
+        if (isUseSavePoints()) {
+            Savepoints.run(resultSet, () -> deleteRow(resultSet));
+        } else {
+            deleteRow(resultSet);
         }
+    }
+
+    private boolean isObsolete() {
+        return Resources.isObsolete(resultSet);
     }
 
     @Override
@@ -146,7 +158,7 @@ public class EditableResultSetAdapter extends ResultSetAdapter {
     }
 
     @Override
-    protected void disposeInner() {
+    public void disposeInner() {
         resultSet = null;
         super.disposeInner();
     }
