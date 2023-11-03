@@ -3,6 +3,7 @@ package com.dci.intellij.dbn.common.latent;
 
 import com.dci.intellij.dbn.common.color.Colors;
 import com.dci.intellij.dbn.common.latent.impl.*;
+import com.dci.intellij.dbn.common.routine.ParametricCallable;
 
 import java.util.concurrent.TimeUnit;
 
@@ -21,8 +22,8 @@ public interface Latent<T> {
         return new MutableLatent<>(mutableLoader, loader);
     }
 
-    static <T, M> Latent<T> timed(long interval, TimeUnit intervalUnit, Loader<T> loader) {
-        return new TimedLatent<>(interval, intervalUnit, loader);
+    static <P, T> Latent<T> reloadable(long interval, TimeUnit intervalUnit, P param, ParametricCallable<P, T, RuntimeException> callable) {
+        return new ReloadableLatent<>(interval, intervalUnit, () -> callable.call(param));
     }
 
     static <T> WeakRefLatent<T> weak(Loader<T> loader) {

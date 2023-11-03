@@ -67,7 +67,6 @@ import static com.dci.intellij.dbn.common.dispose.Failsafe.nd;
 import static com.dci.intellij.dbn.editor.data.DatasetEditorStatus.*;
 import static com.dci.intellij.dbn.editor.data.DatasetLoadInstruction.*;
 import static com.dci.intellij.dbn.editor.data.model.RecordStatus.INSERTING;
-import static com.dci.intellij.dbn.editor.data.model.RecordStatus.MODIFIED;
 
 @Slf4j
 @Getter
@@ -186,13 +185,9 @@ public class DatasetEditor extends DisposableUserDataHolderBase implements
         }
     }
 
-    public DatasetEditorState getEditorState() {
-        return editorState;
-    }
-
     @Override
     public boolean isModified() {
-        return getTableModel().is(MODIFIED);
+        return getTableModel().isModified();
     }
 
     @Override
@@ -670,8 +665,8 @@ public class DatasetEditor extends DisposableUserDataHolderBase implements
     }
 
     @Override
-    public void dispose() {
-        super.dispose();
+    public void disposeInner() {
+        super.disposeInner();
         editorForm = null;
     }
 }

@@ -33,6 +33,7 @@ import com.intellij.ui.treeStructure.treetable.TreeTableCellRenderer;
 import com.intellij.ui.treeStructure.treetable.TreeTableModel;
 import com.intellij.ui.treeStructure.treetable.TreeTableTree;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -280,12 +281,11 @@ public class ExplainPlanTreeTable extends TreeTable implements StatefulDisposabl
      *                    Disposable                        *
      ********************************************************/
     @Getter
+    @Setter
     private boolean disposed;
 
     @Override
-    public void dispose() {
-        if (disposed) return;
-        disposed = true;
+    public void disposeInner() {
         nullify();
     }
 }

@@ -3,6 +3,7 @@ package com.dci.intellij.dbn.common.dispose;
 import com.dci.intellij.dbn.common.latent.Latent;
 import com.dci.intellij.dbn.common.latent.Loader;
 import com.dci.intellij.dbn.common.options.Configuration;
+import com.dci.intellij.dbn.common.ui.component.DBNComponent;
 import com.dci.intellij.dbn.connection.DatabaseEntity;
 import com.dci.intellij.dbn.data.model.DataModel;
 import com.intellij.openapi.components.NamedComponent;
@@ -14,6 +15,7 @@ import com.intellij.util.ReflectionUtil;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -45,15 +47,19 @@ public final class Nullifier {
             AutoCloseable.class,
             NamedComponent.class,
             EventListener.class,
-            DataModel.class
+            DataModel.class,
+            TreePath.class,
+            EventListener.class,
+            DBNComponent.class
     };
 
     public static void clearCollection(Collection<?> collection) {
-        if (collection != null && !collection.isEmpty()) {
-            boolean cleared = silent(collection, c -> c.clear());
-            if (!cleared && collection instanceof List) {
-                silent(collection, c -> nullify((List<?>) c));
-            }
+        if (collection == null) return;
+        if (collection.isEmpty()) return;
+
+        boolean cleared = silent(collection, c -> c.clear());
+        if (!cleared && collection instanceof List) {
+            silent(collection, c -> nullify((List<?>) c));
         }
     }
 
@@ -68,9 +74,9 @@ public final class Nullifier {
     }
 
     public static void nullify(Object object) {
-        if (!(object instanceof Component)) {
-            BackgroundDisposer.queue(() -> nullifyFields(object));
-        }
+        if (object instanceof Component) return;
+
+        BackgroundDisposer.queue(() -> nullifyFields(object));
     }
 
     private static void nullifyFields(Object object) {
@@ -88,20 +94,20 @@ public final class Nullifier {
     private static void nullifyField(Object object, Field field) throws IllegalAccessException {
         field.setAccessible(true);
         Object fieldValue = field.get(object);
-        if ( fieldValue != null) {
-            if (fieldValue instanceof Collection<?>) {
-                Collection collection = (Collection) fieldValue;
-                clearCollection(collection);
-            } else if (fieldValue instanceof Map) {
-                Map map = (Map) fieldValue;
-                clearMap(map);
-            } else if (fieldValue instanceof Latent){
-                Latent latent = (Latent) fieldValue;
-                latent.reset();
-                nullify(latent);
-            } else {
-                field.set(object, null);
-            }
+        if (fieldValue == null) return;
+
+        if (fieldValue instanceof Collection<?>) {
+            Collection collection = (Collection) fieldValue;
+            clearCollection(collection);
+        } else if (fieldValue instanceof Map) {
+            Map map = (Map) fieldValue;
+            clearMap(map);
+        } else if (fieldValue instanceof Latent){
+            Latent latent = (Latent) fieldValue;
+            latent.reset();
+            nullify(latent);
+        } else {
+            field.set(object, null);
         }
     }
 
@@ -123,14 +129,11 @@ public final class Nullifier {
         }
 
         Sticky sticky = field.getAnnotation(Sticky.class);
-        if (sticky != null) {
-            return false;
-        }
+        if (sticky != null) return false;
 
         for (Class<?> nullifiableClass : NULLIFIABLE_CLASSES) {
-            if (nullifiableClass.isAssignableFrom(field.getType())) {
-                return true;
-            }
+            Class<?> fieldType = field.getType();
+            if (nullifiableClass.isAssignableFrom(fieldType)) return true;
         }
         return false;
     }

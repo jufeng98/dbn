@@ -23,6 +23,7 @@ import static com.dci.intellij.dbn.diagnostics.Diagnostics.conditionallyLog;
 public class DBNResultSet extends DBNResource<ResultSet> implements ResultSet, CloseableResource {
     private WeakRef<DBNStatement> statement;
     private WeakRef<DBNConnection> connection;
+    private ResultSetMetaData metaData;
 
     @Getter
     @Setter
@@ -319,7 +320,12 @@ public class DBNResultSet extends DBNResource<ResultSet> implements ResultSet, C
 
     @Override
     public ResultSetMetaData getMetaData() throws SQLException {
-        return handled(() -> inner.getMetaData());
+        return handled(() -> {
+            if (metaData == null) {
+                metaData = inner.getMetaData();
+            }
+            return metaData;
+        });
     }
 
     @Override

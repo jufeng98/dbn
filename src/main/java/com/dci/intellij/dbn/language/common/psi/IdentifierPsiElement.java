@@ -11,7 +11,10 @@ import com.dci.intellij.dbn.language.common.element.impl.LeafElementType;
 import com.dci.intellij.dbn.language.common.element.impl.QualifiedIdentifierVariant;
 import com.dci.intellij.dbn.language.common.element.util.ElementTypeAttribute;
 import com.dci.intellij.dbn.language.common.element.util.IdentifierType;
-import com.dci.intellij.dbn.language.common.psi.lookup.*;
+import com.dci.intellij.dbn.language.common.psi.lookup.IdentifierLookupAdapter;
+import com.dci.intellij.dbn.language.common.psi.lookup.LookupAdapters;
+import com.dci.intellij.dbn.language.common.psi.lookup.ObjectDefinitionLookupAdapter;
+import com.dci.intellij.dbn.language.common.psi.lookup.PsiLookupAdapter;
 import com.dci.intellij.dbn.language.common.resolve.AliasObjectResolver;
 import com.dci.intellij.dbn.language.common.resolve.SurroundingVirtualObjectResolver;
 import com.dci.intellij.dbn.language.common.resolve.UnderlyingObjectResolver;
@@ -336,12 +339,12 @@ public abstract class IdentifierPsiElement extends LeafPsiElement<IdentifierElem
                     if (elementType.isObject()) {
                         resolveWithScopeParentLookup(objectType, elementType);
                     } else if (elementType.isAlias()) {
-                        PsiLookupAdapter lookupAdapter = new AliasDefinitionLookupAdapter(this, objectType, refText);
+                        PsiLookupAdapter lookupAdapter = LookupAdapters.aliasDefinition(this, objectType, refText);
                         BasePsiElement referencedElement = lookupAdapter.findInParentScopeOf(this);
                         if (updateReference(null, elementType, referencedElement)) return;
 
                     } else if (elementType.isVariable()) {
-                        PsiLookupAdapter lookupAdapter = new VariableDefinitionLookupAdapter(this, DBObjectType.ANY, refText);
+                        PsiLookupAdapter lookupAdapter = LookupAdapters.variableDefinition(this, DBObjectType.ANY, refText);
                         BasePsiElement referencedElement = lookupAdapter.findInParentScopeOf(this);
                         if (updateReference(null, elementType, referencedElement)) return;
 
@@ -423,12 +426,12 @@ public abstract class IdentifierPsiElement extends LeafPsiElement<IdentifierElem
             }
 
         } else if (elementType.isAlias()) {
-            PsiLookupAdapter lookupAdapter = new AliasDefinitionLookupAdapter(this, objectType, refText);
+            PsiLookupAdapter lookupAdapter = LookupAdapters.aliasDefinition(this, objectType, refText);
             BasePsiElement referencedElement = lookupAdapter.findInParentScopeOf(this);
             updateReference(null, elementType, referencedElement);
         } else if (elementType.isVariable()) {
             if (elementType.isReference()) {
-                PsiLookupAdapter lookupAdapter = new VariableDefinitionLookupAdapter(this, DBObjectType.ANY, refText);
+                PsiLookupAdapter lookupAdapter = LookupAdapters.variableDefinition(this, DBObjectType.ANY, refText);
                 BasePsiElement referencedElement = lookupAdapter.findInParentScopeOf(this);
                 updateReference(null, elementType, referencedElement);
             }
@@ -504,20 +507,14 @@ public abstract class IdentifierPsiElement extends LeafPsiElement<IdentifierElem
 
     @Nullable
     private PsiElement doResolve() {
-        if (isResolving()) {
-            return ref.getReference();
-        }
+        if (isResolving()) return ref.getReference();
 
-        if (isDefinition() && (isAlias() || (isVariable() && !isSubject()))) {
-            // alias definitions do not have references.
-            // underlying object is determined on runtime
-            return null;
-        }
+        // alias definitions do not have references.
+        // underlying object is determined on runtime
+        if (isDefinition() && (isAlias() || (isVariable() && !isSubject()))) return null;
 
         ConnectionHandler connection = getConnection();
-        if ((connection == null || connection.isVirtual()) && isObject() && isDefinition()) {
-            return null;
-        }
+        if ((connection == null || connection.isVirtual()) && isObject() && isDefinition()) return null;
 
         ref = nvl(ref, () -> new PsiResolveResult(this));
 
@@ -619,17 +616,17 @@ public abstract class IdentifierPsiElement extends LeafPsiElement<IdentifierElem
 
     public void findQualifiedUsages(Consumer<BasePsiElement> consumer) {
         BasePsiElement scopePsiElement = getEnclosingScopeElement();
-        if (scopePsiElement != null) {
-            IdentifierLookupAdapter identifierLookupAdapter = new IdentifierLookupAdapter(this, null, null, null, getChars());
-            identifierLookupAdapter.collectInElement(scopePsiElement, basePsiElement -> {
-                QualifiedIdentifierPsiElement qualifiedIdentifierPsiElement =
-                        (QualifiedIdentifierPsiElement) basePsiElement.findEnclosingElement(QualifiedIdentifierPsiElement.class);
+        if (scopePsiElement == null) return;
 
-                if (qualifiedIdentifierPsiElement != null && qualifiedIdentifierPsiElement.getElementsCount() > 1) {
-                    consumer.accept(qualifiedIdentifierPsiElement);
-                }
-            });
-        }
+        IdentifierLookupAdapter identifierLookupAdapter = new IdentifierLookupAdapter(this, null, null, null, getChars());
+        identifierLookupAdapter.collectInElement(scopePsiElement, basePsiElement -> {
+            QualifiedIdentifierPsiElement qualifiedIdentifierPsiElement =
+                    (QualifiedIdentifierPsiElement) basePsiElement.findEnclosingElement(QualifiedIdentifierPsiElement.class);
+
+            if (qualifiedIdentifierPsiElement != null && qualifiedIdentifierPsiElement.getElementsCount() > 1) {
+                consumer.accept(qualifiedIdentifierPsiElement);
+            }
+        });
     }
 
     @Nullable

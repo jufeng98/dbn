@@ -28,6 +28,7 @@ public abstract class ValueAdapter<T> {
         REGISTRY.put(GenericDataType.ARRAY, ArrayValue.class);
         REGISTRY.put(GenericDataType.BLOB, BlobValue.class);
         REGISTRY.put(GenericDataType.CLOB, ClobValue.class);
+        REGISTRY.put(GenericDataType.NCLOB, NClobValue.class);
         REGISTRY.put(GenericDataType.XMLTYPE, XmlTypeValue.class);
     }
 

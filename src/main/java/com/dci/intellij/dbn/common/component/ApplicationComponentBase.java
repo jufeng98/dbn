@@ -1,17 +1,15 @@
 package com.dci.intellij.dbn.common.component;
 
 
-import org.jetbrains.annotations.NotNull;
+import com.dci.intellij.dbn.common.dispose.StatefulDisposableBase;
+import lombok.Getter;
 
-public abstract class ApplicationComponentBase implements ApplicationComponent {
+@Getter
+public abstract class ApplicationComponentBase extends StatefulDisposableBase implements ApplicationComponent {
     private final String componentName;
 
     public ApplicationComponentBase(String componentName) {
         this.componentName = componentName;
     }
 
-    @NotNull
-    public final String getComponentName() {
-        return componentName;
-    }
 }

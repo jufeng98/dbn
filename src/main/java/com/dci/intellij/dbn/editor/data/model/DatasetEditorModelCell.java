@@ -3,6 +3,7 @@ package com.dci.intellij.dbn.editor.data.model;
 
 import com.dci.intellij.dbn.common.event.ProjectEvents;
 import com.dci.intellij.dbn.common.locale.Formatter;
+import com.dci.intellij.dbn.common.ref.WeakRefCache;
 import com.dci.intellij.dbn.common.thread.Dispatch;
 import com.dci.intellij.dbn.common.util.Commons;
 import com.dci.intellij.dbn.common.util.Messages;
@@ -18,7 +19,6 @@ import com.dci.intellij.dbn.editor.data.ui.table.cell.DatasetTableCellEditor;
 import com.dci.intellij.dbn.object.DBColumn;
 import com.dci.intellij.dbn.object.DBDataset;
 import com.intellij.openapi.project.Project;
-import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.event.ChangeEvent;
@@ -31,18 +31,17 @@ import java.util.Objects;
 import static com.dci.intellij.dbn.diagnostics.Diagnostics.conditionallyLog;
 import static com.dci.intellij.dbn.editor.data.model.RecordStatus.*;
 
-@Getter
 public class DatasetEditorModelCell
         extends ResultSetDataModelCell<DatasetEditorModelRow, DatasetEditorModel>
         implements ChangeListener {
 
-    private Object originalUserValue;
-    private String temporaryUserValue;
-    private DatasetEditorError error;
+    private static final WeakRefCache<DatasetEditorModelCell, Object> originalUserValues = WeakRefCache.weakKey();
+    private static final WeakRefCache<DatasetEditorModelCell, String> temporaryUserValues = WeakRefCache.weakKey();
+    private static final WeakRefCache<DatasetEditorModelCell, DatasetEditorError> errors = WeakRefCache.weakKey();
+    private static final Object NULL = new Object();
 
     public DatasetEditorModelCell(DatasetEditorModelRow row, ResultSet resultSet, DatasetEditorColumnInfo columnInfo) throws SQLException {
         super(row, resultSet, columnInfo);
-        originalUserValue = getUserValue();
     }
 
     @Override
@@ -68,6 +67,7 @@ public class DatasetEditorModelCell
         boolean valueChanged = userValueChanged(newUserValue);
         if (!valueChanged && !hasError()) return;
 
+        initOriginalValue();
         DatasetEditorColumnInfo columnInfo = getColumnInfo();
         GenericDataType genericDataType = columnInfo.getDataType().getGenericDataType();
         boolean isValueAdapter = ValueAdapter.supports(genericDataType);
@@ -140,12 +140,19 @@ public class DatasetEditorModelCell
 
         if (row.isNot(INSERTING) && !connection.isAutoCommit()) {
             reset();
-            set(MODIFIED, true);
+            setModified(true);
 
             row.reset();
-            row.set(RecordStatus.MODIFIED, true);
-            row.getModel().set(MODIFIED, true);
+            row.setModified(true);
+            row.getModel().setModified(true);
         }
+    }
+
+    private void initOriginalValue() {
+        if (originalUserValues.contains(this)) return;
+
+        Object value = getUserValue();
+        originalUserValues.set(this, value == null ? NULL : value);
     }
 
     protected DBDataset getDataset() {
@@ -189,11 +196,11 @@ public class DatasetEditorModelCell
             setUserValue(userValue);
             if (row.isNot(INSERTING) && !connection.isAutoCommit()) {
                 reset();
-                set(MODIFIED, true);
+                setModified(true);
 
                 row.reset();
-                row.set(MODIFIED, true);
-                row.getModel().set(MODIFIED, true);
+                row.setModified(true);
+                row.getModel().setModified(true);
             }
         }
     }
@@ -202,7 +209,8 @@ public class DatasetEditorModelCell
         if (Commons.match(getUserValue(), remoteCell.getUserValue())){
             return true;
         }
-        if (lenient && (getRow().is(INSERTED) || getRow().is(MODIFIED)) && getUserValue() == null && remoteCell.getUserValue() != null) {
+        DatasetEditorModelRow row = getRow();
+        if (lenient && (row.is(INSERTED) || row.isModified()) && getUserValue() == null && remoteCell.getUserValue() != null) {
             return true;
         }
         return false;
@@ -276,17 +284,31 @@ public class DatasetEditorModelCell
         return super.getModel();
     }
 
+    public Object getOriginalUserValue() {
+        Object value = originalUserValues.get(this);
+        return value == NULL ? null : value;
+    }
+
     void setOriginalUserValue(Object value) {
+        Object originalUserValue = getOriginalUserValue();
+
         if (originalUserValue == null) {
-            set(MODIFIED, value != null);
+            setModified(value != null);
         } else {
-            set(MODIFIED, !originalUserValue.equals(value));
+            setModified(!originalUserValue.equals(value));
         }
-        this.originalUserValue = value;
+
+        originalUserValues.set(this, value == null ? NULL : value);
+    }
+
+    public String getTemporaryUserValue() {
+        return temporaryUserValues.get(this);
     }
 
     public void setTemporaryUserValue(String temporaryUserValue) {
-        this.temporaryUserValue = temporaryUserValue;
+        if (temporaryUserValue == null)
+            temporaryUserValues.remove(this); else
+            temporaryUserValues.set(this, temporaryUserValue);
     }
 
     public boolean isEditing() {
@@ -331,6 +353,7 @@ public class DatasetEditorModelCell
      *                        ERROR                          *
      *********************************************************/
     public boolean hasError() {
+        DatasetEditorError error = getError();
         if (error != null && error.isDirty()) {
             error = null;
         }
@@ -339,10 +362,10 @@ public class DatasetEditorModelCell
 
     boolean notifyError(DatasetEditorError error, boolean showPopup) {
         error.setNotified(true);
-        if (Commons.match(this.error, error, err -> err.getMessage())) return false;
+        if (Commons.match(getError(), error, err -> err.getMessage())) return false;
 
         clearError();
-        this.error = error;
+        setError(error);
         notifyCellUpdated();
         if (showPopup) {
             scrollToVisible();
@@ -363,20 +386,37 @@ public class DatasetEditorModelCell
     }
 
     private void clearError() {
+        DatasetEditorError error = getError();
         if (error == null) return;
 
         error.markDirty();
-        error = null;
+        setError(null);
+    }
+
+    public DatasetEditorError getError() {
+        return errors.get(this);
+    }
+
+    private void setError(DatasetEditorError error) {
+        if (error == null) errors.remove(this); else errors.set(this, error);
     }
 
     public void revertChanges() {
-        if (!is(MODIFIED)) return;
+        if (!isModified()) return;
 
-        updateUserValue(originalUserValue, false);
-        set(MODIFIED, false);
+        updateUserValue(getOriginalUserValue(), false);
+        setModified(false);
     }
 
     public DBColumn getColumn() {
         return getColumnInfo().getColumn();
+    }
+
+    @Override
+    public void disposeInner() {
+        super.disposeInner();
+        temporaryUserValues.remove(this);
+        originalUserValues.remove(this);
+        errors.remove(this);
     }
 }

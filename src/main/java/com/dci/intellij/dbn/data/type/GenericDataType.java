@@ -9,6 +9,7 @@ public enum GenericDataType implements Presentable, Constant<GenericDataType> {
     NUMERIC("Numeric"),
     DATE_TIME("Date/Time"),
     CLOB("Character Large Object"),
+    NCLOB("National Character Large Object"),
     BLOB("Byte Large Object"),
     ROWID("Row ID"),
     REF("Ref"),
@@ -43,7 +44,7 @@ public enum GenericDataType implements Presentable, Constant<GenericDataType> {
     }
 
     public boolean isLOB() {
-        return is(BLOB, CLOB, XMLTYPE);
+        return is(BLOB, CLOB, NCLOB, XMLTYPE);
     }
 
 

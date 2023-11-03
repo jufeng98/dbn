@@ -36,7 +36,7 @@ import static com.dci.intellij.dbn.object.type.DBObjectType.*;
 
 public class DatabaseObjectFactory extends ProjectComponentBase {
 
-    public static final String COMPONENT_NAME = "DBNavigator.Project.DatabaseObjectFactoryManager";
+    public static final String COMPONENT_NAME = "DBNavigator.Project.DatabaseObjectFactory";
 
     private DatabaseObjectFactory(Project project) {
         super(project, COMPONENT_NAME);

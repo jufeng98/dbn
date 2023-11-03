@@ -139,11 +139,18 @@ public final class Disposer {
     public static void disposeMap(@Nullable Map<?, ?> map) {
         if (map == null || map.isEmpty()) return;
 
-        for (Object object : map.values()) {
-            if (object instanceof Disposable) {
-                Disposable disposable = (Disposable) object;
+        for (Map.Entry entry : map.entrySet()) {
+            Object key = entry.getKey();
+            Object value = entry.getValue();
+            if (key instanceof Disposable) {
+                Disposable disposable = (Disposable) key;
                 dispose(disposable);
             }
+            if (value instanceof Disposable) {
+                Disposable disposable = (Disposable) value;
+                dispose(disposable);
+            }
+
         }
         Nullifier.clearMap(map);
     }

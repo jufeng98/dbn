@@ -1,68 +1,56 @@
 package com.dci.intellij.dbn.object.common;
 
-import com.dci.intellij.dbn.common.dispose.Failsafe;
-import com.dci.intellij.dbn.common.latent.Latent;
 import com.dci.intellij.dbn.common.ref.WeakRefCache;
-import com.dci.intellij.dbn.language.common.PsiElementRef;
 import com.dci.intellij.dbn.navigation.psi.DBObjectPsiDirectory;
 import com.dci.intellij.dbn.navigation.psi.DBObjectPsiFile;
-import com.dci.intellij.dbn.object.lookup.DBObjectRef;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import org.jetbrains.annotations.NotNull;
+import lombok.experimental.UtilityClass;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
-public final class DBObjectPsiCache {
-    private static final WeakRefCache<DBObject, DBObjectPsiCache> psiCaches = WeakRefCache.weakKey();
+import static com.dci.intellij.dbn.common.util.Unsafe.cast;
 
-    private DBObjectRef<?> objectRef;
-    private PsiElementRef<PsiElement> psiElementRef;
+@UtilityClass
+public class DBObjectPsiCache {
+    private static final WeakRefCache<DBObject, PsiFile> psiFiles = WeakRefCache.weakKey();
+    private static final WeakRefCache<DBObject, PsiElement> psiElements = WeakRefCache.weakKey();
+    private static final WeakRefCache<DBObject, PsiDirectory> psiDirectories = WeakRefCache.weakKey();
 
-    private final Latent<PsiFile> psiFile = Latent.basic(() -> new DBObjectPsiFile(objectRef));
-    private final Latent<PsiElement> psiElement = Latent.basic(() -> new DBObjectPsiElement(objectRef));
-    private final Latent<PsiDirectory> psiDirectory = Latent.basic(() -> new DBObjectPsiDirectory(objectRef));
-
-    public DBObjectPsiCache() {
+    public static void clear(DBObject object) {
+        psiFiles.remove(object);
+        psiElements.remove(object);
+        psiDirectories.remove(object);
     }
 
-    public DBObjectPsiCache(@NotNull PsiElement psiElement) {
-        psiElementRef = PsiElementRef.of(psiElement);
+    public static void map(DBObject object, PsiElement psiElement) {
+        if (psiElement instanceof PsiDirectory) {
+            psiDirectories.set(object, (PsiDirectory) psiElement);
+            return;
+        }
+
+        if (psiElement instanceof PsiFile) {
+            psiFiles.set(object, (PsiFile) psiElement);
+            return;
+        }
+
+        psiElements.set(object, psiElement);
     }
 
-    public DBObjectPsiCache(DBObjectRef<?> objectRef) {
-        this.objectRef = objectRef;
+    @Contract("null -> null;!null -> !null;")
+    public static <T extends PsiElement> T asPsiElement(@Nullable DBObject object) {
+        return object == null ? null : cast(psiElements.computeIfAbsent(object, o -> new DBObjectPsiElement(o.ref())));
     }
 
-    public static DBObjectPsiCache of(DBObject object) {
-        return psiCaches.get(object, o -> new DBObjectPsiCache(o.ref()));
-    }
-
-    public PsiFile getPsiFile() {
-        return psiFile.get();
-    }
-
-    @Nullable
-    public PsiElement getPsiElement() {
-        return psiElementRef == null ? psiElement.get() : PsiElementRef.get(psiElementRef);
-    }
-
-    public PsiDirectory getPsiDirectory() {
-        return psiDirectory.get();
-    }
-
-    public static PsiDirectory asPsiDirectory(@Nullable DBObject object) {
-        return object == null ? null : Failsafe.nn(object).getPsiCache().getPsiDirectory();
-    }
-
-    @Nullable
-    public static PsiElement asPsiElement(@Nullable DBObject object) {
-        return object == null ? null : Failsafe.nn(object).getPsiCache().getPsiElement();
-    }
-
-    @Nullable
+    @Contract("null -> null;!null -> !null;")
     public static PsiFile asPsiFile(@Nullable DBObject object) {
-        return object == null ? null : Failsafe.nn(object).getPsiCache().getPsiFile();
+        return object == null ? null : psiFiles.computeIfAbsent(object, o -> new DBObjectPsiFile(o.ref()));
+    }
+
+    @Contract("null -> null;!null -> !null;")
+    public static PsiDirectory asPsiDirectory(@Nullable DBObject object) {
+        return object == null ? null : psiDirectories.computeIfAbsent(object, o -> new DBObjectPsiDirectory(o.ref()));
     }
 
 }

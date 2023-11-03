@@ -10,6 +10,7 @@ import com.intellij.openapi.editor.colors.EditorColorsListener;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.colors.EditorColorsScheme;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,6 +18,7 @@ import javax.swing.*;
 import java.awt.event.MouseEvent;
 
 @Getter
+@Setter
 public abstract class DBNTableGutter<T extends DBNTableWithGutter> extends JList implements StatefulDisposable, EditorColorsListener {
     private boolean disposed;
     private final WeakRef<T> table;
@@ -67,9 +69,7 @@ public abstract class DBNTableGutter<T extends DBNTableWithGutter> extends JList
     }
 
     @Override
-    public void dispose() {
-        if (disposed) return;
-        disposed = true;
+    public void disposeInner() {
         nullify();
     }
 }

@@ -20,7 +20,6 @@ import com.dci.intellij.dbn.language.common.element.cache.ElementLookupContext;
 import com.dci.intellij.dbn.language.common.element.util.ElementTypeAttribute;
 import com.dci.intellij.dbn.language.common.psi.BasePsiElement;
 import com.dci.intellij.dbn.language.common.psi.PsiUtil;
-import com.dci.intellij.dbn.language.common.psi.lookup.IdentifierDefinitionLookupAdapter;
 import com.dci.intellij.dbn.language.common.psi.lookup.LookupAdapters;
 import com.dci.intellij.dbn.language.common.psi.lookup.PsiLookupAdapter;
 import com.dci.intellij.dbn.language.sql.SQLLanguage;
@@ -52,6 +51,7 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.testFramework.LightVirtualFile;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -402,7 +402,7 @@ public abstract class DBLanguagePsiFile extends PsiFileImpl implements DatabaseC
     public void lookupVariableDefinition(int offset, Consumer<BasePsiElement> consumer) {
         BasePsiElement scope = PsiUtil.lookupElementAtOffset(this, ElementTypeAttribute.SCOPE_DEMARCATION, offset);
         while (scope != null) {
-            PsiLookupAdapter lookupAdapter = new IdentifierDefinitionLookupAdapter(null, DBObjectType.ARGUMENT, null);
+            PsiLookupAdapter lookupAdapter = LookupAdapters.identifierDefinition(DBObjectType.ARGUMENT);
             scope.collectPsiElements(lookupAdapter, 0, consumer);
 
             lookupAdapter = LookupAdapters.variableDefinition(DBObjectType.ANY);
@@ -423,13 +423,11 @@ public abstract class DBLanguagePsiFile extends PsiFileImpl implements DatabaseC
      *                    Disposable                        *
      ********************************************************/
     @Getter
+    @Setter
     private boolean disposed;
 
     @Override
-    public void dispose() {
-        if (disposed) return;
-        disposed = true;
-
+    public void disposeInner() {
         markInvalidated();
         nullify();
 

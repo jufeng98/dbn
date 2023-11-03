@@ -117,4 +117,10 @@ public class DatasetEditorStatusBarWidget extends ProjectComponentBase implement
     public JComponent getComponent() {
         return component;
     }
+
+    @Override
+    public void dispose() {
+        CustomStatusBarWidget.super.dispose();
+        disposeInner();
+    }
 }

@@ -17,6 +17,7 @@ import com.intellij.navigation.ItemPresentation;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,9 +26,11 @@ import java.util.Collections;
 import java.util.List;
 
 @Getter
+@Setter
 public class DBVirtualObjectBundle extends StatefulDisposableBase implements DBObjectBundle{
     private final VirtualConnectionHandler connection;
     private final DBDataTypeBundle dataTypes;
+    private boolean disposed;
 
     public DBVirtualObjectBundle(@NotNull VirtualConnectionHandler connection) {
         this.connection = connection;
@@ -316,5 +319,10 @@ public class DBVirtualObjectBundle extends StatefulDisposableBase implements DBO
     @Override
     public PsiFile getFakeObjectFile() {
         return null;
+    }
+
+    @Override
+    public void disposeInner() {
+
     }
 }

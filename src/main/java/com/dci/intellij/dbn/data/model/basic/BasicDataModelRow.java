@@ -3,10 +3,10 @@ package com.dci.intellij.dbn.data.model.basic;
 import com.dci.intellij.dbn.common.collections.CompactArrayList;
 import com.dci.intellij.dbn.common.dispose.Disposed;
 import com.dci.intellij.dbn.common.dispose.Disposer;
-import com.dci.intellij.dbn.common.property.DisposablePropertyHolder;
 import com.dci.intellij.dbn.data.model.DataModelCell;
 import com.dci.intellij.dbn.data.model.DataModelRow;
 import com.dci.intellij.dbn.editor.data.model.RecordStatus;
+import com.dci.intellij.dbn.editor.data.model.RecordStatusHolder;
 import com.intellij.openapi.project.Project;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,7 +22,7 @@ import static com.dci.intellij.dbn.common.dispose.Failsafe.nd;
 public class BasicDataModelRow<
         M extends BasicDataModel<? extends BasicDataModelRow<M, C>, C>,
         C extends DataModelCell<? extends BasicDataModelRow<M, C>, M>>
-        extends DisposablePropertyHolder<RecordStatus>
+        extends RecordStatusHolder
         implements DataModelRow<M, C> {
 
     private M model;
@@ -74,10 +74,5 @@ public class BasicDataModelRow<
     public void disposeInner() {
         cells = Disposer.replace(cells, Disposed.list());
         nullify();
-    }
-
-    @Override
-    protected RecordStatus getDisposedProperty() {
-        return RecordStatus.DISPOSED;
     }
 }

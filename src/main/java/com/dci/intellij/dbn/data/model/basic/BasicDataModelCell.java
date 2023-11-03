@@ -2,7 +2,6 @@ package com.dci.intellij.dbn.data.model.basic;
 
 import com.dci.intellij.dbn.common.dispose.Nullifier;
 import com.dci.intellij.dbn.common.locale.Formatter;
-import com.dci.intellij.dbn.common.property.PropertyHolderBase;
 import com.dci.intellij.dbn.data.editor.text.TextContentType;
 import com.dci.intellij.dbn.data.model.ColumnInfo;
 import com.dci.intellij.dbn.data.model.DataModelCell;
@@ -11,6 +10,7 @@ import com.dci.intellij.dbn.data.type.DBDataType;
 import com.dci.intellij.dbn.data.value.ArrayValue;
 import com.dci.intellij.dbn.data.value.LargeObjectValue;
 import com.dci.intellij.dbn.editor.data.model.RecordStatus;
+import com.dci.intellij.dbn.editor.data.model.RecordStatusHolder;
 import com.dci.intellij.dbn.object.type.DBObjectType;
 import com.intellij.openapi.project.Project;
 import lombok.Getter;
@@ -22,7 +22,7 @@ import static com.dci.intellij.dbn.common.dispose.Failsafe.nd;
 public class BasicDataModelCell<
         R extends BasicDataModelRow<M, ? extends BasicDataModelCell<R, M>>,
         M extends BasicDataModel<R, ? extends BasicDataModelCell<R, M>>>
-        extends PropertyHolderBase.IntStore<RecordStatus>
+        extends RecordStatusHolder
         implements DataModelCell<R, M> {
 
     private R row;
@@ -144,7 +144,7 @@ public class BasicDataModelCell<
     }
 
     @Override
-    public void dispose() {
+    public void disposeInner() {
         row = null;
         Nullifier.nullify(this);
 

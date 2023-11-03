@@ -63,9 +63,4 @@ public class DatabaseLoaderManager extends ProjectComponentBase {
 
         return editors;
     }
-
-    @Override
-    public void disposeInner() {
-        super.disposeInner();
-    }
 }

@@ -2,11 +2,13 @@ package com.dci.intellij.dbn.database.common.logging;
 
 import com.dci.intellij.dbn.data.value.ClobValue;
 import com.dci.intellij.dbn.database.common.statement.CallableStatementOutput;
+import lombok.Getter;
 
 import java.sql.CallableStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 
+@Getter
 public class ExecutionLogOutput implements CallableStatementOutput{
     private String log;
 
@@ -20,7 +22,4 @@ public class ExecutionLogOutput implements CallableStatementOutput{
         log = new ClobValue(statement, 1).read();
     }
 
-    public String getLog() {
-        return log;
-    }
 }

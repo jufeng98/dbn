@@ -545,6 +545,7 @@ public class DBObjectListImpl<T extends DBObject> extends DynamicContentBase<T> 
     @Override
     public void disposeInner() {
         super.disposeInner();
+        quickFilterCache.remove(this);
         changeSignature();
     }
 

@@ -10,7 +10,6 @@ import com.dci.intellij.dbn.language.common.element.cache.ElementTypeLookupCache
 import com.dci.intellij.dbn.language.common.element.parser.ParserContext;
 import com.dci.intellij.dbn.language.common.element.path.LanguageNode;
 import com.dci.intellij.dbn.language.common.element.path.ParserNode;
-import com.dci.intellij.dbn.language.common.element.util.ElementTypeAttribute;
 import com.dci.intellij.dbn.language.common.element.util.ElementTypeDefinitionException;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +20,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
+import static com.dci.intellij.dbn.language.common.element.util.ElementTypeAttribute.STATEMENT;
 
 @Getter
 @Setter
@@ -103,18 +104,17 @@ public abstract class LeafElementType extends ElementTypeBase implements Indexab
                 }
             } else if (elementType instanceof IterationElementType) {
                 IterationElementType iterationElementType = (IterationElementType) elementType;
+
                 TokenElementType[] separatorTokens = iterationElementType.getSeparatorTokens();
-                if (separatorTokens == null) {
-                    ElementTypeLookupCache<?> lookupCache = iterationElementType.getIteratedElementType().getLookupCache();
-                    lookupCache.captureFirstPossibleLeafs(context.reset(), possibleLeafs);
-                } else {
-                    possibleLeafs.addAll(Arrays.asList(separatorTokens));
-                }
+                if (separatorTokens != null) possibleLeafs.addAll(Arrays.asList(separatorTokens));
+
+                ElementTypeLookupCache<?> lookupCache = iterationElementType.getIteratedElementType().getLookupCache();
+                lookupCache.captureFirstPossibleLeafs(context.reset(), possibleLeafs);
+
             } else if (elementType instanceof QualifiedIdentifierElementType) {
                 QualifiedIdentifierElementType qualifiedIdentifierElementType = (QualifiedIdentifierElementType) elementType;
-                if (this == qualifiedIdentifierElementType.getSeparatorToken()) {
-                    break;
-                }
+                if (this == qualifiedIdentifierElementType.getSeparatorToken()) break;
+
             } else if (elementType instanceof ChameleonElementType) {
                 ChameleonElementType chameleonElementType = (ChameleonElementType) elementType;
                 ElementTypeBundle elementTypeBundle = chameleonElementType.getParentLanguage().getParserDefinition().getParser().getElementTypes();
@@ -123,9 +123,8 @@ public abstract class LeafElementType extends ElementTypeBase implements Indexab
             }
             if (pathNode != null) {
                 ElementType pathElementType = pathNode.getElement();
-                if (pathElementType != null && pathElementType.is(ElementTypeAttribute.STATEMENT) && context.isBreakOnAttribute(ElementTypeAttribute.STATEMENT)){
-                    break;
-                }
+                if (pathElementType != null && pathElementType.is(STATEMENT) && context.isBreakOnAttribute(STATEMENT)) break;
+
                 position = pathNode.getIndexInParent() + 1;
                 pathNode = pathNode.getParent();
             }

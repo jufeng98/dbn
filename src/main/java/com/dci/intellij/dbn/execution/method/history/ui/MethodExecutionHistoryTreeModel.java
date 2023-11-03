@@ -11,6 +11,7 @@ import com.dci.intellij.dbn.object.DBMethod;
 import com.dci.intellij.dbn.object.lookup.DBObjectRef;
 import com.dci.intellij.dbn.object.type.DBObjectType;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -192,11 +193,11 @@ public abstract class MethodExecutionHistoryTreeModel extends DefaultTreeModel i
      *                    Disposable                        *
      ********************************************************/
     @Getter
+    @Setter
     private boolean disposed;
 
     @Override
-    public void dispose() {
-        if (disposed) return;
-        disposed = true;
+    public void disposeInner() {
+        //executionInputs.clear();
     }
 }

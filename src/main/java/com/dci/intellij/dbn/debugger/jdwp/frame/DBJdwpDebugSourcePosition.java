@@ -1,6 +1,8 @@
 package com.dci.intellij.dbn.debugger.jdwp.frame;
 
 import com.dci.intellij.dbn.common.compatibility.Compatibility;
+import com.dci.intellij.dbn.object.common.DBObjectPsiCache;
+import com.dci.intellij.dbn.object.common.DBSchemaObject;
 import com.dci.intellij.dbn.vfs.file.DBSourceCodeVirtualFile;
 import com.intellij.debugger.SourcePosition;
 import com.intellij.openapi.editor.Editor;
@@ -25,7 +27,8 @@ public class DBJdwpDebugSourcePosition extends SourcePosition {
         VirtualFile virtualFile = file.getVirtualFile();
         if (virtualFile instanceof DBSourceCodeVirtualFile) {
             DBSourceCodeVirtualFile sourceCodeVirtualFile = (DBSourceCodeVirtualFile) virtualFile;
-            return sourceCodeVirtualFile.getObject().getPsiCache().getPsiFile();
+            DBSchemaObject object = sourceCodeVirtualFile.getObject();
+            return DBObjectPsiCache.asPsiFile(object);
         }
         return file;
     }

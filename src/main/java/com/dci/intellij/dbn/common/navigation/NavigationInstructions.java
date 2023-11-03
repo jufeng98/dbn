@@ -2,6 +2,8 @@ package com.dci.intellij.dbn.common.navigation;
 
 import com.dci.intellij.dbn.common.property.PropertyHolderBase;
 
+import static com.dci.intellij.dbn.common.navigation.NavigationInstruction.*;
+
 public class NavigationInstructions extends PropertyHolderBase.IntStore<NavigationInstruction> {
 
     public static final NavigationInstructions NONE = new NavigationInstructions();
@@ -15,23 +17,23 @@ public class NavigationInstructions extends PropertyHolderBase.IntStore<Navigati
     }
 
     public boolean isOpen() {
-        return is(NavigationInstruction.OPEN);
+        return is(OPEN);
     }
 
     public boolean isFocus() {
-        return is(NavigationInstruction.FOCUS);
+        return is(FOCUS);
     }
 
     public boolean isScroll() {
-        return is(NavigationInstruction.SCROLL);
+        return is(SCROLL);
     }
 
     public boolean isSelect() {
-        return is(NavigationInstruction.SELECT);
+        return is(SELECT);
     }
 
     public boolean isReset() {
-        return is(NavigationInstruction.RESET);
+        return is(RESET);
     }
 
     public NavigationInstructions with(NavigationInstruction instruction) {
@@ -49,6 +51,6 @@ public class NavigationInstructions extends PropertyHolderBase.IntStore<Navigati
 
     @Override
     protected NavigationInstruction[] properties() {
-        return NavigationInstruction.VALUES;
+        return VALUES;
     }
 }

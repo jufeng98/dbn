@@ -1,6 +1,5 @@
 package com.dci.intellij.dbn.editor.data.model;
 
-import com.dci.intellij.dbn.common.property.PropertyHolder;
 import com.dci.intellij.dbn.common.util.Messages;
 import com.dci.intellij.dbn.common.util.Strings;
 import com.dci.intellij.dbn.connection.ConnectionHandler;
@@ -21,10 +20,9 @@ import java.sql.SQLException;
 import java.util.List;
 
 import static com.dci.intellij.dbn.diagnostics.Diagnostics.conditionallyLog;
+import static com.dci.intellij.dbn.editor.data.model.RecordStatus.DELETED;
 
-public class DatasetEditorModelRow
-        extends ResultSetDataModelRow<DatasetEditorModel, DatasetEditorModelCell>
-        implements PropertyHolder<RecordStatus>{
+public class DatasetEditorModelRow extends ResultSetDataModelRow<DatasetEditorModel, DatasetEditorModelCell> {
 
     public DatasetEditorModelRow(DatasetEditorModel model, ResultSet resultSet, int resultSetRowIndex) throws SQLException {
         super(model, resultSet, resultSetRowIndex);
@@ -53,7 +51,7 @@ public class DatasetEditorModelRow
 
         inherit(oldRow);
         setIndex(oldRow.getIndex());
-        if (oldRow.is(RecordStatus.MODIFIED)) {
+        if (oldRow.isModified()) {
             for (int i=1; i<getCells().size(); i++) {
                 DatasetEditorModelCell oldCell = oldRow.getCellAtIndex(i);
                 DatasetEditorModelCell newCell = getCellAtIndex(i);
@@ -84,7 +82,7 @@ public class DatasetEditorModelRow
             resultSetAdapter.deleteRow();
 
             reset();
-            set(RecordStatus.DELETED, true);
+            set(DELETED, true);
         } catch (SQLException e) {
             conditionallyLog(e);
             Messages.showErrorDialog(getProject(), "Cannot delete record", "Could not delete row at index " + getIndex() + ".\nCause: " + e.getMessage());
@@ -162,23 +160,23 @@ public class DatasetEditorModelRow
     }
 
     public void revertChanges() {
-        if (isNot(RecordStatus.MODIFIED)) return;
+        if (!isModified()) return;
 
         for (DatasetEditorModelCell cell : getCells()) {
             cell.revertChanges();
         }
-        set(RecordStatus.MODIFIED, false);
+        setModified(false);
     }
 
 
     @Override
     public int getResultSetRowIndex() {
-        return is(RecordStatus.DELETED) ? -1 : super.getResultSetRowIndex();
+        return is(DELETED) ? -1 : super.getResultSetRowIndex();
     }
 
     @Override
     public void shiftResultSetRowIndex(int delta) {
-        assert isNot(RecordStatus.DELETED);
+        assert isNot(DELETED);
         super.shiftResultSetRowIndex(delta);
     }
 

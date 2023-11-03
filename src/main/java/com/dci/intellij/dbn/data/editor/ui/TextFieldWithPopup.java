@@ -222,6 +222,7 @@ public class TextFieldWithPopup<T extends JComponent> extends TextFieldWithButto
 
     @Override
     public void disposeInner() {
+        super.disposeInner();
         parentComponent = null;
     }
 }

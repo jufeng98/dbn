@@ -10,6 +10,7 @@ import com.dci.intellij.dbn.object.common.DBObject;
 import com.dci.intellij.dbn.object.common.DBObjectBundle;
 import com.intellij.ui.SpeedSearchBase;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -140,14 +141,12 @@ public class DatabaseBrowserTreeSpeedSearch extends SpeedSearchBase<JTree> imple
     };
 
     @Getter
+    @Setter
     private boolean disposed;
 
 
     @Override
-    public void dispose() {
-        if (disposed) return;
-        disposed = true;
-
+    public void disposeInner() {
         getComponent().getModel().removeTreeModelListener(treeModelListener);
         elements.set(EMPTY_ARRAY);
         nullify();

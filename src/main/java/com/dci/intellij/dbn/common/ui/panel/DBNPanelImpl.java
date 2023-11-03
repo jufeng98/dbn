@@ -10,11 +10,7 @@ public abstract class DBNPanelImpl extends JBPanel implements DBNPanel{
     private boolean disposed;
 
     @Override
-    public final void dispose() {
-        if (disposed) return;
-        disposed = true;
-
-        disposeInner();
+    public void disposeInner() {
         nullify();
     }
 }

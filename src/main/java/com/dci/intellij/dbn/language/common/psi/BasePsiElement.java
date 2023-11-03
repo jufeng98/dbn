@@ -33,6 +33,7 @@ import com.dci.intellij.dbn.object.common.DBObject;
 import com.dci.intellij.dbn.object.common.DBObjectPsiElement;
 import com.dci.intellij.dbn.object.common.DBSchemaObject;
 import com.dci.intellij.dbn.object.common.DBVirtualObject;
+import com.dci.intellij.dbn.object.factory.VirtualObjectFactory;
 import com.dci.intellij.dbn.object.type.DBObjectType;
 import com.dci.intellij.dbn.vfs.file.DBConsoleVirtualFile;
 import com.dci.intellij.dbn.vfs.file.DBEditableObjectVirtualFile;
@@ -641,7 +642,10 @@ public abstract class BasePsiElement<T extends ElementType> extends ASTWrapperPs
 
         return underlyingObjectCache.compute(this, (k, v) -> {
             if (v != null && v.isValid()) return v;
-            return new DBVirtualObject(k);
+
+            Project project = getProject();
+            VirtualObjectFactory factory = VirtualObjectFactory.getInstance(project);
+            return factory.createVirtualObject(k);
         });
     }
 

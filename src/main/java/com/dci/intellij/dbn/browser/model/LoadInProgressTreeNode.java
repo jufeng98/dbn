@@ -168,7 +168,7 @@ public class LoadInProgressTreeNode extends StatefulDisposableBase implements Br
         return null;
     }
 
-    public class List extends ArrayList<BrowserTreeNode> implements Disposable {
+    public static class List extends ArrayList<BrowserTreeNode> implements Disposable {
         @Override
         public void dispose() {
             if (size() > 0) {
@@ -185,5 +185,10 @@ public class LoadInProgressTreeNode extends StatefulDisposableBase implements Br
 
         BrowserTreeNode parent = WeakRef.get(this.parent);
         return parent == null || parent.isDisposed();
+    }
+
+    @Override
+    public void disposeInner() {
+
     }
 }

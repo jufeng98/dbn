@@ -28,7 +28,6 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 
 import static com.dci.intellij.dbn.diagnostics.Diagnostics.conditionallyLog;
-import static com.dci.intellij.dbn.editor.data.model.RecordStatus.MODIFIED;
 
 @Slf4j
 public class DatasetEditorTableActionGroup extends DefaultActionGroup {
@@ -47,7 +46,7 @@ public class DatasetEditorTableActionGroup extends DefaultActionGroup {
         HideColumnAction hideColumnAction = new HideColumnAction();
         add(hideColumnAction);
         addSeparator();
-        if (cell != null && cell.is(MODIFIED) && !cell.isLobValue()) {
+        if (cell != null && cell.isModified() && !cell.isLobValue()) {
             DataRevertAction revertChangesAction = new DataRevertAction(cell);
             add(revertChangesAction);
         }
@@ -238,7 +237,7 @@ public class DatasetEditorTableActionGroup extends DefaultActionGroup {
         private final String text;
         private final boolean like;
         private CreateClipboardFilterAction(String text, boolean like) {
-            super("Filter by clipboard value" + (like ? " (like)" : ""));
+            super("Filter by Clipboard Value" + (like ? " (like)" : ""));
             this.text = text;
             this.like = like;
         }

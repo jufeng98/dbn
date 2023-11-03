@@ -488,12 +488,6 @@ public abstract class DBObjectImpl<M extends DBObjectMetadata> extends DBObjectT
 
     @Override
     @NotNull
-    public DBObjectPsiCache getPsiCache() {
-        return DBObjectPsiCache.of(this);
-    }
-
-    @Override
-    @NotNull
     public DBObjectVirtualFile<?> getVirtualFile() {
         return DBObjectVirtualFile.of(this);
     }
@@ -730,6 +724,7 @@ public abstract class DBObjectImpl<M extends DBObjectMetadata> extends DBObjectT
     @Override
     public void disposeInner() {
         super.disposeInner();
+        DBObjectPsiCache.clear(this);
         DBObjectListContainer childObjects = DBObjectImpl.childObjects.remove(this);
         Disposer.dispose(childObjects);
         nullify();

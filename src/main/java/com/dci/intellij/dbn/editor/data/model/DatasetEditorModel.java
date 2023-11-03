@@ -239,7 +239,7 @@ public class DatasetEditorModel
 
     private void snapshotChanges() {
         for (DatasetEditorModelRow row : getRows()) {
-            if (row.is(DELETED) || row.is(MODIFIED) || row.is(INSERTED)) {
+            if (row.is(DELETED) || row.isModified() || row.is(INSERTED)) {
                 changedRows.add(row);
             }
         }
@@ -256,7 +256,7 @@ public class DatasetEditorModel
                 row.updateStatusFromRow(changedRow);
             }
         }
-        set(MODIFIED, true);
+        setModified(true);
     }
 
     private DatasetEditorModelRow lookupChangedRow(DatasetEditorModelRow row) {
@@ -281,7 +281,7 @@ public class DatasetEditorModel
 
     private void clearChanges() {
         changedRows.clear();
-        set(MODIFIED, false);
+        setModified(false);
     }
 
     @Override
@@ -378,7 +378,7 @@ public class DatasetEditorModel
                         notifyRowUpdated(index);
                     }
                 }
-                set(MODIFIED, true);
+                setModified(true);
             }
             DBNConnection conn = getResultConnection();
             conn.notifyDataChanges(dataset.getVirtualFile());
@@ -453,7 +453,7 @@ public class DatasetEditorModel
 
             row.reset();
             row.set(INSERTED, true);
-            set(MODIFIED, true);
+            setModified(true);
             set(INSERTING, false);
             if (rebuild) load(true, true);
         } catch (SQLException e) {
@@ -517,7 +517,7 @@ public class DatasetEditorModel
         for (DatasetEditorModelRow row : getRows()) {
             row.revertChanges();
         }
-        set(MODIFIED, false);
+        setModified(false);
     }
 
     public boolean isResultSetUpdatable() {

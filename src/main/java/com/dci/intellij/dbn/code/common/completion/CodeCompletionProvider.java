@@ -18,7 +18,6 @@ import com.dci.intellij.dbn.language.common.element.parser.Branch;
 import com.dci.intellij.dbn.language.common.element.path.AstNode;
 import com.dci.intellij.dbn.language.common.element.util.ElementTypeAttribute;
 import com.dci.intellij.dbn.language.common.psi.*;
-import com.dci.intellij.dbn.language.common.psi.lookup.AliasDefinitionLookupAdapter;
 import com.dci.intellij.dbn.language.common.psi.lookup.LookupAdapters;
 import com.dci.intellij.dbn.language.common.psi.lookup.PsiLookupAdapter;
 import com.dci.intellij.dbn.object.DBSchema;
@@ -298,7 +297,7 @@ public class CodeCompletionProvider extends CompletionProvider<CompletionParamet
 
                 for (int i = 0; i< aliasNames.length; i++) {
                     while (true) {
-                        PsiLookupAdapter lookupAdapter = new AliasDefinitionLookupAdapter(null, DBObjectType.ANY, aliasNames[i]);
+                        PsiLookupAdapter lookupAdapter = LookupAdapters.aliasDefinition(DBObjectType.ANY);
                         boolean isExisting = scope != null && lookupAdapter.findInScope(scope) != null;
                         boolean isKeyword = aliasElement.getLanguageDialect().isReservedWord(aliasNames[i]);
                         if (isKeyword || isExisting) {

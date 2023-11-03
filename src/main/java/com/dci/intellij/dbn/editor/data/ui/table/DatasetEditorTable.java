@@ -66,7 +66,8 @@ import java.util.EventObject;
 
 import static com.dci.intellij.dbn.diagnostics.Diagnostics.conditionallyLog;
 import static com.dci.intellij.dbn.editor.data.DatasetLoadInstruction.*;
-import static com.dci.intellij.dbn.editor.data.model.RecordStatus.*;
+import static com.dci.intellij.dbn.editor.data.model.RecordStatus.INSERTING;
+import static com.dci.intellij.dbn.editor.data.model.RecordStatus.UPDATING;
 
 public class DatasetEditorTable extends ResultSetTable<DatasetEditorModel> {
     private static final DatasetLoadInstructions SORT_LOAD_INSTRUCTIONS = new DatasetLoadInstructions(USE_CURRENT_FILTER, PRESERVE_CHANGES, DELIBERATE_ACTION);
@@ -365,7 +366,7 @@ public class DatasetEditorTable extends ResultSetTable<DatasetEditorModel> {
                     text.append("<br>");
                 }
 
-                if (editorTableCell.is(MODIFIED) && !(editorTableCell.getUserValue() instanceof ValueAdapter)) {
+                if (editorTableCell.isModified() && !(editorTableCell.getUserValue() instanceof ValueAdapter)) {
                     text.append("<br>Original value: <b>");
                     text.append(editorTableCell.getOriginalUserValue());
                     text.append("</b>");
@@ -376,11 +377,13 @@ public class DatasetEditorTable extends ResultSetTable<DatasetEditorModel> {
                 return text.toString();
             }
 
-            if (editorTableCell.is(MODIFIED) && !e.isControlDown()) {
-                if (editorTableCell.getUserValue() instanceof ArrayValue) {
-                    return "Array value has changed";
-                } else  if (editorTableCell.getUserValue() instanceof LargeObjectValue) {
-                    return "LOB content has changed";
+            if (editorTableCell.isModified() && !e.isControlDown()) {
+                Object userValue = editorTableCell.getUserValue();
+                if (userValue instanceof ArrayValue) {
+                    return "ARRAY value has changed";
+                } else  if (userValue instanceof LargeObjectValue) {
+                    LargeObjectValue largeObjectValue = (LargeObjectValue) userValue;
+                    return largeObjectValue.getGenericDataType() + " content has changed";
                 } else {
                     return "<html>Original value: <b>" + editorTableCell.getOriginalUserValue() + "</b></html>";
                 }

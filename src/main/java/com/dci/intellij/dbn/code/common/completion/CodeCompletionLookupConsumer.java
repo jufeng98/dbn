@@ -14,15 +14,14 @@ import com.dci.intellij.dbn.object.common.DBObject;
 import com.dci.intellij.dbn.object.common.DBObjectPsiElement;
 import com.dci.intellij.dbn.object.type.DBObjectType;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.Collection;
 
 import static com.dci.intellij.dbn.common.dispose.Failsafe.guarded;
 
+@Getter
 public class CodeCompletionLookupConsumer implements CancellableConsumer<Object> {
     private final CodeCompletionContext context;
-    private @Getter @Setter @Deprecated boolean addParenthesis;
 
     CodeCompletionLookupConsumer(CodeCompletionContext context) {
         this.context = context;
@@ -95,21 +94,22 @@ public class CodeCompletionLookupConsumer implements CancellableConsumer<Object>
 
     private void consumeArray(Object[] array) {
         checkCancelled();
-        if (array != null && array.length > 0) {
-            for (Object element : array) {
-                checkCancelled();
-                accept(element);
-            }
+        if (array == null) return;
+
+        for (Object element : array) {
+            checkCancelled();
+            accept(element);
         }
     }
 
     private void consumeCollection(Collection<Object> objects) {
         checkCancelled();
-        if (objects != null && !objects.isEmpty()) {
-            for (Object element : objects) {
-                checkCancelled();
-                accept(element);
-            }
+        if (objects == null) return;
+        if (objects.isEmpty()) return;
+
+        for (Object element : objects) {
+            checkCancelled();
+            accept(element);
         }
     }
 
@@ -117,9 +117,5 @@ public class CodeCompletionLookupConsumer implements CancellableConsumer<Object>
         if (context.getResult().isStopped() || context.getQueue().isFinished()) {
             throw new CodeCompletionCancelledException();
         }
-    }
-
-    public CodeCompletionContext getContext() {
-        return context;
     }
 }

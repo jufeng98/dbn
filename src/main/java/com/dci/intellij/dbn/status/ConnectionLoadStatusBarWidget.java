@@ -24,4 +24,13 @@ public class ConnectionLoadStatusBarWidget extends ProjectComponentBase implemen
     public void install(@NotNull StatusBar statusBar) {
 
     }
+
+    @Override
+    public void dispose() {
+        if (isDisposed()) return;
+        setDisposed(true);
+
+        StatusBarWidget.super.dispose();
+        disposeInner();
+    }
 }

@@ -7,11 +7,11 @@ import com.dci.intellij.dbn.common.util.TimeUtil;
 
 import java.util.concurrent.TimeUnit;
 
-public class TimedLatent<T, M> extends BasicLatent<T> implements Latent<T> {
+public class ReloadableLatent<T, M> extends BasicLatent<T> implements Latent<T> {
     private long timestamp;
     private final long intervalMillis;
 
-    public TimedLatent(long interval, TimeUnit intervalUnit, Loader<T> loader) {
+    public ReloadableLatent(long interval, TimeUnit intervalUnit, Loader<T> loader) {
         super(loader);
         intervalMillis = intervalUnit.toMillis(interval);
     }
