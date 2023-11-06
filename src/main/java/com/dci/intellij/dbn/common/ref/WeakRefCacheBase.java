@@ -4,8 +4,11 @@ import lombok.SneakyThrows;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+
+import static com.dci.intellij.dbn.common.dispose.Failsafe.nd;
 
 abstract class WeakRefCacheBase<K, V> implements WeakRefCache<K, V> {
     private final Map<K, V> cache = createCache();
@@ -15,6 +18,11 @@ abstract class WeakRefCacheBase<K, V> implements WeakRefCache<K, V> {
     @Override
     public V get(K key) {
         return cache.get(key);
+    }
+
+    @Override
+    public V ensure(K key) {
+        return nd(get(key));
     }
 
     @Override
@@ -43,5 +51,20 @@ abstract class WeakRefCacheBase<K, V> implements WeakRefCache<K, V> {
     @Override
     public V remove(K key) {
         return cache.remove(key);
+    }
+
+    @Override
+    public boolean contains(K key) {
+        return cache.containsKey(key);
+    }
+
+    @Override
+    public Set<K> keys() {
+        return cache.keySet();
+    }
+
+    @Override
+    public void clear() {
+        cache.clear();
     }
 }

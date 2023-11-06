@@ -136,9 +136,6 @@ public interface DBObject extends
 
     boolean isParentOf(DBObject object);
 
-    @NotNull
-    DBObjectPsiCache getPsiCache();
-
     void refresh(DBObjectType objectType);
 
     @Override

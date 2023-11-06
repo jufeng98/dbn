@@ -34,11 +34,11 @@ public class DatasetEditorTableCellRenderer extends BasicTableCellRenderer {
         boolean loading = datasetEditorTable.isLoading();
         boolean inserting = datasetEditorTable.isInserting();
 
+        boolean modified = cell.is(MODIFIED);
+        boolean updating = cell.is(UPDATING);
         boolean deletedRow = row.is(DELETED);
         boolean insertRow = row.is(INSERTING);
         boolean caretRow = !insertRow && table.getCellSelectionEnabled() && table.getSelectedRow() == rowIndex && table.getSelectedRowCount() == 1;
-        boolean modified = cell.is(MODIFIED);
-        boolean updating = cell.is(UPDATING);
         boolean auditColumn = columnInfo != null && columnInfo.isAuditColumn();
         boolean primaryKey = columnInfo != null && columnInfo.isPrimaryKey();
         boolean foreignKey = columnInfo != null && columnInfo.isForeignKey();

@@ -1,5 +1,6 @@
 package com.dci.intellij.dbn.common.ui.tab;
 
+import com.dci.intellij.dbn.common.compatibility.Workaround;
 import com.dci.intellij.dbn.common.dispose.Disposer;
 import com.dci.intellij.dbn.common.dispose.StatefulDisposable;
 import com.dci.intellij.dbn.common.ui.form.DBNForm;
@@ -9,12 +10,16 @@ import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.ui.tabs.TabInfo;
 import com.intellij.ui.tabs.impl.JBEditorTabs;
 import com.intellij.util.containers.ContainerUtil;
+import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.util.Map;
 import java.util.Objects;
 
+@Getter
+@Setter
 public class TabbedPane extends JBEditorTabs implements StatefulDisposable {
     private boolean disposed;
     private final Map<TabInfo, String> tabInfos = ContainerUtil.createConcurrentWeakMap();
@@ -22,7 +27,7 @@ public class TabbedPane extends JBEditorTabs implements StatefulDisposable {
     public TabbedPane(@NotNull DBNForm form) {
         super(form.ensureProject(), ActionManager.getInstance(), IdeFocusManager.findInstance(), form);
         setTabDraggingEnabled(true);
-        Disposer.register(form, () -> customDispose());
+        Disposer.register(form, () -> disposeInner());
     }
 
     public void select(JComponent component, boolean requestFocus) {
@@ -92,10 +97,11 @@ public class TabbedPane extends JBEditorTabs implements StatefulDisposable {
         return selectedInfo.getText();
     }
 
-    private void customDispose() {
+    @Workaround //
+    public void disposeInner() {
         if (disposed && !super.isDisposed()) return;
-
         disposed = true;
+
         for (TabInfo tabInfo : tabInfos.keySet()) {
             Object object = tabInfo.getObject();
             tabInfo.setObject(null);

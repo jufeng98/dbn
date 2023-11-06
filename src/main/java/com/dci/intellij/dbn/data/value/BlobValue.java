@@ -111,23 +111,21 @@ public class BlobValue extends LargeObjectValue {
 
     @Override
     public String read(int maxSize) throws SQLException {
-        if (blob == null) {
-            return null;
-        } else {
-            long totalLength = blob.length();
-            int size = (int) (maxSize == 0 ? totalLength : Math.min(maxSize, totalLength));
-            try {
-                byte[] buffer = new byte[size];
-                inputStream = blob.getBinaryStream();
-                inputStream.read(buffer, 0, size);
-                return new String(buffer);
-            } catch (IOException e) {
-                conditionallyLog(e);
-                throw new SQLException("Could not read value from BLOB.");
-            } finally {
-                if (totalLength <= size) {
-                    release();
-                }
+        if (blob == null) return null;
+
+        long totalLength = blob.length();
+        int size = (int) (maxSize == 0 ? totalLength : Math.min(maxSize, totalLength));
+        try {
+            byte[] buffer = new byte[size];
+            inputStream = blob.getBinaryStream();
+            inputStream.read(buffer, 0, size);
+            return new String(buffer);
+        } catch (IOException e) {
+            conditionallyLog(e);
+            throw new SQLException("Could not read value from BLOB.");
+        } finally {
+            if (totalLength <= size) {
+                release();
             }
         }
     }

@@ -10,12 +10,12 @@ import com.dci.intellij.dbn.common.list.FilteredList;
 import com.dci.intellij.dbn.common.locale.Formatter;
 import com.dci.intellij.dbn.common.locale.options.RegionalSettingsListener;
 import com.dci.intellij.dbn.common.project.ProjectRef;
-import com.dci.intellij.dbn.common.property.DisposablePropertyHolder;
 import com.dci.intellij.dbn.common.thread.Dispatch;
 import com.dci.intellij.dbn.common.ui.util.Listeners;
 import com.dci.intellij.dbn.data.find.DataSearchResult;
 import com.dci.intellij.dbn.data.model.*;
 import com.dci.intellij.dbn.editor.data.model.RecordStatus;
+import com.dci.intellij.dbn.editor.data.model.RecordStatusHolder;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -30,7 +30,7 @@ import java.util.List;
 public class BasicDataModel<
         R extends DataModelRow<? extends BasicDataModel<R, C>, C>,
         C extends DataModelCell<R, ? extends BasicDataModel<R, C>>>
-        extends DisposablePropertyHolder<RecordStatus>
+        extends RecordStatusHolder
         implements DataModel<R,C> {
 
     private final ProjectRef project;
@@ -360,10 +360,5 @@ public class BasicDataModel<
     public void disposeInner() {
         rows = Disposer.replace(rows, Disposed.list());
         nullify();
-    }
-
-    @Override
-    protected RecordStatus getDisposedProperty() {
-        return RecordStatus.DISPOSED;
     }
 }

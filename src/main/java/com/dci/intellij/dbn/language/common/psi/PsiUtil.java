@@ -10,7 +10,8 @@ import com.dci.intellij.dbn.language.common.DBLanguageDialect;
 import com.dci.intellij.dbn.language.common.element.ElementType;
 import com.dci.intellij.dbn.language.common.element.util.ElementTypeAttribute;
 import com.dci.intellij.dbn.language.common.psi.lookup.IdentifierLookupAdapter;
-import com.dci.intellij.dbn.language.common.psi.lookup.ObjectLookupAdapter;
+import com.dci.intellij.dbn.language.common.psi.lookup.LookupAdapters;
+import com.dci.intellij.dbn.language.common.psi.lookup.PsiLookupAdapter;
 import com.dci.intellij.dbn.object.DBSchema;
 import com.dci.intellij.dbn.object.type.DBObjectType;
 import com.intellij.lang.Language;
@@ -79,7 +80,7 @@ public class PsiUtil {
             }
 
             if (objectPsiElement != null) {
-                SetCollector<BasePsiElement> virtualObjectPsiElements = SetCollector.create();
+                SetCollector<BasePsiElement> virtualObjectPsiElements = SetCollector.linked();
                 scope.collectVirtualObjectPsiElements(objectType, virtualObjectPsiElements);
                 for (BasePsiElement virtualObjectPsiElement : virtualObjectPsiElements.elements()) {
                     if (virtualObjectPsiElement.containsPsiElement(objectPsiElement))
@@ -104,7 +105,7 @@ public class PsiUtil {
             PsiElement child = children.next();
             if (child instanceof BasePsiElement) {
                 BasePsiElement basePsiElement = (BasePsiElement) child;
-                ObjectLookupAdapter lookupInput = new ObjectLookupAdapter(null, objectType);
+                PsiLookupAdapter lookupInput = LookupAdapters.object(objectType);
                 BasePsiElement objectPsiElement = lookupInput.findInScope(basePsiElement);
                 if (objectPsiElement instanceof IdentifierPsiElement) {
                     return (IdentifierPsiElement) objectPsiElement;

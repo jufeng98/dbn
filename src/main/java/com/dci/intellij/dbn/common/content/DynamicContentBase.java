@@ -12,6 +12,7 @@ import com.dci.intellij.dbn.common.list.FilteredList;
 import com.dci.intellij.dbn.common.notification.NotificationGroup;
 import com.dci.intellij.dbn.common.notification.NotificationSupport;
 import com.dci.intellij.dbn.common.property.DisposablePropertyHolder;
+import com.dci.intellij.dbn.common.property.PropertyHolderBase;
 import com.dci.intellij.dbn.common.thread.Background;
 import com.dci.intellij.dbn.common.thread.Synchronized;
 import com.dci.intellij.dbn.common.thread.ThreadMonitor;
@@ -37,8 +38,9 @@ import static com.dci.intellij.dbn.diagnostics.Diagnostics.conditionallyLog;
 
 @Slf4j
 public abstract class DynamicContentBase<T extends DynamicContentElement>
-        extends DisposablePropertyHolder<DynamicContentProperty>
-        implements DynamicContent<T>,
+        extends PropertyHolderBase.IntStore<DynamicContentProperty>
+        implements DisposablePropertyHolder<DynamicContentProperty>,
+                   DynamicContent<T>,
                    NotificationSupport {
 
     protected static final List<?> EMPTY_CONTENT = Collections.unmodifiableList(new ArrayList<>(0));
@@ -431,7 +433,7 @@ public abstract class DynamicContentBase<T extends DynamicContentElement>
     }
 
     @Override
-    protected DynamicContentProperty getDisposedProperty() {
+    public DynamicContentProperty getDisposedProperty() {
         return DISPOSED;
     }
 }

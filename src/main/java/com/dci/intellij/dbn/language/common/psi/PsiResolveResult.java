@@ -11,6 +11,7 @@ import com.dci.intellij.dbn.object.common.DBObject;
 import com.dci.intellij.dbn.object.common.DBObjectPsiElement;
 import com.dci.intellij.dbn.object.type.DBObjectType;
 import com.intellij.psi.PsiElement;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,6 +20,7 @@ import java.util.Objects;
 import static com.dci.intellij.dbn.common.util.Commons.match;
 import static com.dci.intellij.dbn.language.common.psi.PsiResolveStatus.*;
 
+@Getter
 public final class PsiResolveResult extends PropertyHolderBase.IntStore<PsiResolveStatus> {
     private ConnectionId connectionId;
     private SchemaId schemaId;
@@ -208,40 +210,32 @@ public final class PsiResolveResult extends PropertyHolderBase.IntStore<PsiResol
 
     @NotNull
     public DBObjectType getObjectType() {
-        if (isNot(RESOLVING_OBJECT_TYPE)) {
-            set(RESOLVING_OBJECT_TYPE, true);
-            try {
-                PsiElement referencedElement = getReference();
-                if (referencedElement instanceof DBObjectPsiElement) {
-                    DBObjectPsiElement objectPsiElement = (DBObjectPsiElement) referencedElement;
-                    return objectPsiElement.getObjectType();
-                }
-                if (referencedElement instanceof IdentifierPsiElement) {
-                    IdentifierPsiElement identifierPsiElement = (IdentifierPsiElement) referencedElement;
-                    return identifierPsiElement.getObjectType();
-                }
+        if (is(RESOLVING_OBJECT_TYPE)) return DBObjectType.UNKNOWN;
+        set(RESOLVING_OBJECT_TYPE, true);
 
-                if (referencedElement instanceof BasePsiElement) {
-                    BasePsiElement basePsiElement = (BasePsiElement) referencedElement;
-                    DBObject object = basePsiElement.getUnderlyingObject();
-                    if (object != null) {
-                        return object.getObjectType();
-                    }
-                }
-            } finally {
-                set(RESOLVING_OBJECT_TYPE, false);
+        try {
+            PsiElement referencedElement = getReference();
+            if (referencedElement instanceof DBObjectPsiElement) {
+                DBObjectPsiElement objectPsiElement = (DBObjectPsiElement) referencedElement;
+                return objectPsiElement.getObjectType();
             }
+            if (referencedElement instanceof IdentifierPsiElement) {
+                IdentifierPsiElement identifierPsiElement = (IdentifierPsiElement) referencedElement;
+                return identifierPsiElement.getObjectType();
+            }
+
+            if (referencedElement instanceof BasePsiElement) {
+                BasePsiElement basePsiElement = (BasePsiElement) referencedElement;
+                DBObject object = basePsiElement.getUnderlyingObject();
+                if (object != null) {
+                    return object.getObjectType();
+                }
+            }
+        } finally {
+            set(RESOLVING_OBJECT_TYPE, false);
         }
 
         return DBObjectType.UNKNOWN;
-    }
-
-    /*********************************************************
-     *                   Getters/Setters                     *
-     *********************************************************/
-
-    public CharSequence getText() {
-        return text;
     }
 
     private IdentifierPsiElement getElement() {
@@ -301,13 +295,5 @@ public final class PsiResolveResult extends PropertyHolderBase.IntStore<PsiResol
             return context.getSchemaId();
         }
         return null;
-    }
-
-    public int getResolveAttempts() {
-        return resolveAttempts;
-    }
-
-    public Object getSignature() {
-        return signature;
     }
 }

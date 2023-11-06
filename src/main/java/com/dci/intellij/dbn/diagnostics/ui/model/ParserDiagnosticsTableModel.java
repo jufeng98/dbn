@@ -6,6 +6,8 @@ import com.dci.intellij.dbn.diagnostics.data.ParserDiagnosticsDeltaResult;
 import com.dci.intellij.dbn.diagnostics.data.ParserDiagnosticsEntry;
 import com.dci.intellij.dbn.diagnostics.data.ParserDiagnosticsFilter;
 import com.intellij.openapi.Disposable;
+import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -113,7 +115,14 @@ public class ParserDiagnosticsTableModel implements DBNReadonlyTableModel<Parser
         return "";
     }
 
+
+
+    @Getter
+    @Setter
+    private boolean disposed;
+
     @Override
-    public void dispose() {
+    public void disposeInner() {
+
     }
 }

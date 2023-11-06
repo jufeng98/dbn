@@ -4,10 +4,7 @@ import com.dci.intellij.dbn.data.type.GenericDataType;
 import com.dci.intellij.dbn.database.common.DatabaseNativeDataTypes;
 
 import java.math.BigDecimal;
-import java.sql.Blob;
-import java.sql.Clob;
-import java.sql.Timestamp;
-import java.sql.Types;
+import java.sql.*;
 import java.util.Collection;
 
 public class OracleNativeDataTypes extends DatabaseNativeDataTypes {
@@ -66,7 +63,7 @@ public class OracleNativeDataTypes extends DatabaseNativeDataTypes {
 
         createLargeValueDefinition("BLOB", Blob.class, OracleTypes.BLOB, GenericDataType.BLOB);
         createLargeValueDefinition("CLOB", Clob.class, OracleTypes.CLOB, GenericDataType.CLOB);
-        createLargeValueDefinition("NCLOB", Clob.class, OracleTypes.CLOB, GenericDataType.CLOB);
+        createLargeValueDefinition("NCLOB", NClob.class, OracleTypes.NCLOB, GenericDataType.NCLOB);
         createLargeValueDefinition("XMLTYPE", Clob.class, Types.SQLXML, GenericDataType.XMLTYPE, true, "XML");
 
         createBasicDefinition("BFILE", Object.class, OracleTypes.BFILE, GenericDataType.FILE);

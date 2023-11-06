@@ -19,6 +19,7 @@ import com.intellij.openapi.util.UserDataHolder;
 import com.intellij.util.keyFMap.KeyFMap;
 import com.intellij.util.ui.UIUtil;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,6 +35,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static com.dci.intellij.dbn.common.dispose.ComponentDisposer.removeListeners;
 import static com.dci.intellij.dbn.common.dispose.Disposer.replace;
 import static com.dci.intellij.dbn.common.dispose.Failsafe.nd;
 import static com.dci.intellij.dbn.diagnostics.Diagnostics.conditionallyLog;
@@ -335,7 +337,7 @@ public abstract class DBNTable<T extends DBNTableModel> extends JTable implement
     }
 
     protected DBNTableGutter<?> createTableGutter() {
-        return null; // do not instructions gutter by default
+        return null; // do not create gutter by default
     }
 
     public final DBNTableGutter<?> getTableGutter() {
@@ -450,16 +452,15 @@ public abstract class DBNTable<T extends DBNTableModel> extends JTable implement
      *                    Disposable                        *
      ********************************************************/
     @Getter
+    @Setter
     private boolean disposed;
 
-    public void dispose(){
-        if (disposed) return;
-        disposed = true;
-
+    public void disposeInner(){
         Disposer.dispose(super.getModel());
         listenerList = new EventListenerList();
         columnModel = new DefaultTableColumnModel();
         selectionModel = new DefaultListSelectionModel();
+        removeListeners(this);
         nullify();
     }
 }

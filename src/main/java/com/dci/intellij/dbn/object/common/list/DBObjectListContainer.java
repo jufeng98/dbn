@@ -417,6 +417,11 @@ public final class DBObjectListContainer implements StatefulDisposable, Unlisted
     }
 
     @Override
+    public void setDisposed(boolean disposed) {
+        //
+    }
+
+    @Override
     public void disposeInner() {
         this.objects = Disposer.replace(this.objects, DISPOSED_OBJECTS);
         this.relations = Disposer.replace(this.relations, DISPOSED_RELATIONS);

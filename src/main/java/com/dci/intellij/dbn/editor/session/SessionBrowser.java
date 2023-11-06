@@ -416,10 +416,10 @@ public class SessionBrowser extends DisposableUserDataHolderBase implements File
 
 
     @Override
-    public void dispose() {
+    public void disposeInner() {
         stopRefreshTimer();
         browserForm = null;
-        super.dispose();
+        super.disposeInner();
     }
 }
 

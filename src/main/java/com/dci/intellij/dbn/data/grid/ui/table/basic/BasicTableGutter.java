@@ -101,13 +101,11 @@ public class BasicTableGutter<T extends BasicTable> extends DBNTableGutter<T> {
     };
 
     @Override
-    public void dispose() {
-        if (isDisposed()) return;
-
+    public void disposeInner() {
         getTable().getSelectionModel().removeListSelectionListener(tableSelectionListener);
         removeListSelectionListener(gutterSelectionListener);
         tableSelectionListener = null;
         gutterSelectionListener = null;
-        super.dispose();
+        super.disposeInner();
     }
 }

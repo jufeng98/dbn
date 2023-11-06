@@ -1,6 +1,5 @@
 package com.dci.intellij.dbn.navigation.object;
 
-import com.dci.intellij.dbn.common.consumer.ConcurrentSetCollector;
 import com.dci.intellij.dbn.common.consumer.SetCollector;
 import com.dci.intellij.dbn.common.dispose.Failsafe;
 import com.dci.intellij.dbn.common.dispose.StatefulDisposableBase;
@@ -34,7 +33,7 @@ public class DBObjectLookupModel extends StatefulDisposableBase implements Choos
     private final ConnectionRef selectedConnection;
     private final DBObjectRef<DBSchema> selectedSchema;
     private final ObjectsLookupSettings settings;
-    private final @Getter SetCollector<DBObject> data = ConcurrentSetCollector.create();
+    private final @Getter SetCollector<DBObject> data = SetCollector.concurrent();
 
     public DBObjectLookupModel(@NotNull Project project, @Nullable ConnectionHandler selectedConnection, DBSchema selectedSchema) {
         this.project = ProjectRef.of(project);

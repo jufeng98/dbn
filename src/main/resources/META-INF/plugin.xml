@@ -332,6 +332,7 @@
         <projectService serviceImplementation="com.dci.intellij.dbn.object.common.loader.DatabaseLoaderManager"/>
         <projectService serviceImplementation="com.dci.intellij.dbn.object.common.operation.DatabaseOperationManager"/>
         <projectService serviceImplementation="com.dci.intellij.dbn.object.factory.DatabaseObjectFactory"/>
+        <projectService serviceImplementation="com.dci.intellij.dbn.object.factory.VirtualObjectFactory"/>
         <projectService serviceImplementation="com.dci.intellij.dbn.object.filter.name.ObjectNameFilterManager"/>
         <projectService serviceImplementation="com.dci.intellij.dbn.object.filter.quick.ObjectQuickFilterManager"/>
         <projectService serviceImplementation="com.dci.intellij.dbn.object.dependency.ObjectDependencyManager"/>

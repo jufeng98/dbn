@@ -47,7 +47,7 @@ public class Lists {
     }
 
     @NotNull
-    public static <S, T> List<T> convert(@NotNull List<S> list, Function<S, T> mapper) {
+    public static <S, T> List<T> convert(@NotNull Collection<S> list, Function<S, T> mapper) {
         List<T> result = new ArrayList<>();
         for (S s : list) {
             T value = mapper.apply(s);

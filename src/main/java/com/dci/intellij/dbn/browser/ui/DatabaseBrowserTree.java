@@ -397,12 +397,4 @@ public final class DatabaseBrowserTree extends DBNTree implements Borderless {
             }
         };
     }
-
-    /********************************************************
-     *                    Disposable                        *
-     *******************************************************  */
-    @Override
-    public void disposeInner() {
-        super.disposeInner();
-    }
 }

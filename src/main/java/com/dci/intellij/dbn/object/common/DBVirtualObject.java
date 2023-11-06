@@ -3,19 +3,18 @@ package com.dci.intellij.dbn.object.common;
 import com.dci.intellij.dbn.code.common.lookup.LookupItemBuilder;
 import com.dci.intellij.dbn.code.common.lookup.ObjectLookupItemBuilder;
 import com.dci.intellij.dbn.common.dispose.Disposer;
-import com.dci.intellij.dbn.common.dispose.Failsafe;
-import com.dci.intellij.dbn.common.latent.Latent;
-import com.dci.intellij.dbn.common.ref.WeakRef;
+import com.dci.intellij.dbn.common.ref.WeakRefCache;
 import com.dci.intellij.dbn.common.routine.Consumer;
+import com.dci.intellij.dbn.common.util.Commons;
 import com.dci.intellij.dbn.common.util.Lists;
 import com.dci.intellij.dbn.common.util.Strings;
+import com.dci.intellij.dbn.common.util.TimeUtil;
 import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.connection.ConnectionId;
 import com.dci.intellij.dbn.connection.ConnectionManager;
 import com.dci.intellij.dbn.database.common.metadata.DBObjectMetadata;
 import com.dci.intellij.dbn.language.common.DBLanguage;
 import com.dci.intellij.dbn.language.common.DBLanguagePsiFile;
-import com.dci.intellij.dbn.language.common.PsiElementRef;
 import com.dci.intellij.dbn.language.common.element.util.ElementTypeAttribute;
 import com.dci.intellij.dbn.language.common.element.util.IdentifierCategory;
 import com.dci.intellij.dbn.language.common.psi.BasePsiElement;
@@ -44,59 +43,35 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 import static com.dci.intellij.dbn.common.content.DynamicContentProperty.*;
 import static com.dci.intellij.dbn.common.dispose.Failsafe.nd;
 import static com.dci.intellij.dbn.common.dispose.Failsafe.nn;
+import static com.dci.intellij.dbn.common.util.Commons.nvl;
 import static com.dci.intellij.dbn.common.util.Documents.getDocument;
 import static com.dci.intellij.dbn.common.util.Documents.getEditors;
+import static com.dci.intellij.dbn.common.util.Lists.convert;
+import static com.dci.intellij.dbn.language.common.psi.lookup.LookupAdapters.*;
 import static com.dci.intellij.dbn.object.common.sorting.DBObjectComparator.compareName;
 import static com.dci.intellij.dbn.object.common.sorting.DBObjectComparator.compareType;
+import static com.dci.intellij.dbn.object.type.DBObjectType.COLUMN;
+import static com.dci.intellij.dbn.object.type.DBObjectType.DATASET;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class DBVirtualObject extends DBRootObjectImpl implements PsiReference {
     private static final PsiLookupAdapter CHR_STAR_LOOKUP_ADAPTER = new TokenTypeLookupAdapter(element -> element.getLanguage().getSharedTokenTypes().getChrStar());
     private static final PsiLookupAdapter COL_INDEX_LOOKUP_ADAPTER = new TokenTypeLookupAdapter(element -> element.getLanguage().getSharedTokenTypes().getInteger());
-    private static final ObjectReferenceLookupAdapter DATASET_LOOKUP_ADAPTER = new ObjectReferenceLookupAdapter(null, DBObjectType.DATASET, null);
+    private static final ObjectReferenceLookupAdapter DATASET_LOOKUP_ADAPTER = new ObjectReferenceLookupAdapter(null, DATASET, null);
+
+    private static final WeakRefCache<DBVirtualObject, BasePsiElement> underlyingPsiElements = WeakRefCache.weakKey();
+    private static final WeakRefCache<DBVirtualObject, BasePsiElement> relevantPsiElements = WeakRefCache.weakKey();
 
     private volatile boolean loadingChildren;
-    private PsiElementRef<BasePsiElement> relevantPsiElement;
-    private final DBObjectPsiCache psiCache;
     private final Map<String, ObjectLookupItemBuilder> lookupItemBuilder = new ConcurrentHashMap<>();
-
-    private final Latent<Boolean> valid = Latent.timed(10, TimeUnit.SECONDS, () -> {
-        boolean valid = Failsafe.guarded(true, this, o -> o.checkValid());
-        if (!valid) Disposer.dispose(this);
-        return valid;
-    });
-
-    private boolean checkValid() {
-        if (isDisposed()) return false;
-
-        BasePsiElement underlyingPsiElement = getUnderlyingPsiElement();
-        if (underlyingPsiElement == null) return false;
-
-        boolean psiElementValid = underlyingPsiElement.isValid();
-        if (!psiElementValid) return false;
-
-        DBObjectType objectType = getObjectType();
-        if (objectType.matches(DBObjectType.DATASET) || objectType.matches(DBObjectType.TYPE)) return true; // no special checks
-
-        BasePsiElement relevantPsiElement = getRelevantPsiElement();
-        if (!Strings.equalsIgnoreCase(getName(), relevantPsiElement.getText())) return false;
-
-        if (relevantPsiElement instanceof IdentifierPsiElement) {
-            IdentifierPsiElement identifierPsiElement = (IdentifierPsiElement) relevantPsiElement;
-            return identifierPsiElement.getObjectType() == objectType;
-        }
-        return true;
-
-    }
+    private boolean valid = true;
+    private long validCheckTimestamap = 0;
 
     public DBVirtualObject(@NotNull BasePsiElement psiElement) {
         super(
@@ -104,8 +79,7 @@ public class DBVirtualObject extends DBRootObjectImpl implements PsiReference {
             psiElement.getElementType().getVirtualObjectType(),
             psiElement.getText());
 
-        psiCache = new DBObjectPsiCache(psiElement);
-        relevantPsiElement = PsiElementRef.of(psiElement);
+        underlyingPsiElements.set(this, psiElement);
         String name = resolveName();
         ref = new DBObjectRef<>(this, name);
     }
@@ -126,7 +100,7 @@ public class DBVirtualObject extends DBRootObjectImpl implements PsiReference {
     private String resolveObjectName(@NotNull BasePsiElement psiElement) {
         BasePsiElement relevantPsiElement = psiElement.findFirstPsiElement(ElementTypeAttribute.SUBJECT);
         if (relevantPsiElement != null) {
-            this.relevantPsiElement = PsiElementRef.of(relevantPsiElement);
+            relevantPsiElements.set(this, relevantPsiElement);
             return relevantPsiElement.getText();
         }
         return "";
@@ -135,10 +109,10 @@ public class DBVirtualObject extends DBRootObjectImpl implements PsiReference {
     private String resolveDatasetName(@NotNull BasePsiElement psiElement) {
         if (psiElement instanceof LeafPsiElement) {
             LeafPsiElement leafPsiElement = (LeafPsiElement) psiElement;
-            ObjectLookupAdapter lookupAdapter = new ObjectLookupAdapter(leafPsiElement, IdentifierCategory.REFERENCE, DBObjectType.DATASET);
+            ObjectLookupAdapter lookupAdapter = new ObjectLookupAdapter(leafPsiElement, IdentifierCategory.REFERENCE, DATASET);
             BasePsiElement dataset = lookupAdapter.findInParentScopeOf(psiElement);
             if (dataset != null) {
-                this.relevantPsiElement = PsiElementRef.of(dataset);
+                relevantPsiElements.set(this, dataset);
                 return dataset.getText();
             } else {
                 return  "UNKNOWN";
@@ -146,7 +120,7 @@ public class DBVirtualObject extends DBRootObjectImpl implements PsiReference {
         }
 
         List<String> tableNames = new ArrayList<>();
-        ObjectLookupAdapter lookupAdapter = new ObjectLookupAdapter(null, IdentifierCategory.REFERENCE, DBObjectType.DATASET);
+        ObjectLookupAdapter lookupAdapter = new ObjectLookupAdapter(null, IdentifierCategory.REFERENCE, DATASET);
         lookupAdapter.collectInElement(psiElement, basePsiElement -> {
             if (basePsiElement instanceof IdentifierPsiElement) {
                 IdentifierPsiElement identifierPsiElement = (IdentifierPsiElement) basePsiElement;
@@ -169,20 +143,17 @@ public class DBVirtualObject extends DBRootObjectImpl implements PsiReference {
     }
 
     private String resolveColumnName(BasePsiElement psiElement) {
-        PsiLookupAdapter lookupAdapter = LookupAdapters.alias(DBObjectType.COLUMN);
-        BasePsiElement specificPsiElement = lookupAdapter.findInElement(psiElement);
-
-        if (specificPsiElement == null) {
-            lookupAdapter = LookupAdapters.object(DBObjectType.COLUMN);
-            specificPsiElement = lookupAdapter.findInElement(psiElement);
-        }
+        BasePsiElement specificPsiElement = Commons.coalesce(psiElement,
+                e -> aliasDefinition(COLUMN).findInElement(e),
+                e -> aliasReference(COLUMN).findInElement(e),
+                e -> identifierReference(COLUMN).findInElement(e));
 
         if (specificPsiElement != null) {
-            this.relevantPsiElement = PsiElementRef.of(specificPsiElement);
+            relevantPsiElements.set(this, specificPsiElement);
             return specificPsiElement.getText();
         }
 
-        specificPsiElement = WeakRef.get(this.relevantPsiElement);
+        specificPsiElement = relevantPsiElements.get(this);
         if (specificPsiElement != null) {
             String text = specificPsiElement.getText();
             if (!text.contains("\\s*")) {
@@ -198,12 +169,6 @@ public class DBVirtualObject extends DBRootObjectImpl implements PsiReference {
     }
 
     @NotNull
-    @Override
-    public DBObjectPsiCache getPsiCache() {
-        return psiCache;
-    }
-
-    @NotNull
     public LookupItemBuilder getLookupItemBuilder(DBLanguage language) {
         return lookupItemBuilder.computeIfAbsent(language.getID(), id -> new ObjectLookupItemBuilder(ref(), language));
     }
@@ -211,7 +176,37 @@ public class DBVirtualObject extends DBRootObjectImpl implements PsiReference {
     @Override
     public boolean isValid() {
         if (isDisposed()) return false;
-        return valid.get();
+        if (!valid) return false;
+
+        if (TimeUtil.isOlderThan(validCheckTimestamap, 10, SECONDS)) {
+            valid = checkValid();
+            if (!valid) Disposer.dispose(this);
+        }
+
+        return valid;
+    }
+
+    private boolean checkValid() {
+        validCheckTimestamap = System.currentTimeMillis();
+        if (isDisposed()) return false;
+
+        BasePsiElement underlyingPsiElement = getUnderlyingPsiElement();
+        if (underlyingPsiElement == null) return false;
+
+        boolean psiElementValid = underlyingPsiElement.isValid();
+        if (!psiElementValid) return false;
+
+        DBObjectType objectType = getObjectType();
+        if (objectType.matches(DATASET) || objectType.matches(DBObjectType.TYPE)) return true; // no special checks
+
+        BasePsiElement relevantPsiElement = getRelevantPsiElement();
+        if (!Strings.equalsIgnoreCase(getName(), relevantPsiElement.getText())) return false;
+
+        if (relevantPsiElement instanceof IdentifierPsiElement) {
+            IdentifierPsiElement identifierPsiElement = (IdentifierPsiElement) relevantPsiElement;
+            return identifierPsiElement.getObjectType() == objectType;
+        }
+        return true;
     }
 
     @Override
@@ -278,7 +273,7 @@ public class DBVirtualObject extends DBRootObjectImpl implements PsiReference {
         if (objectList == null) {
             if (!objectType.isChildOf(getObjectType())) return null;
 
-            objectList = childObjects.createObjectList(objectType, this, MUTABLE, VIRTUAL);
+            objectList = childObjects.createObjectList(objectType, this, MUTABLE, VIRTUAL, MASTER);
             if (objectList == null) return null; // not supported (?)
 
             loadChildObjects(objectType, objectList);
@@ -300,20 +295,19 @@ public class DBVirtualObject extends DBRootObjectImpl implements PsiReference {
         if (underlyingPsiElement == null) return;
 
         DBObjectType objectType = getObjectType();
-        List<DBObject> objects = new ArrayList<>();
+        Set<DBObject> objects = new LinkedHashSet<>();
         PsiLookupAdapter lookupAdapter = LookupAdapters.virtualObject(objectType, childObjectType);
         underlyingPsiElement.collectPsiElements(lookupAdapter, 100, element -> {
-            BasePsiElement child = (BasePsiElement) element;
             // handle STAR column
-            if (childObjectType == DBObjectType.COLUMN) {
-                LeafPsiElement starPsiElement = (LeafPsiElement) CHR_STAR_LOOKUP_ADAPTER.findInElement(child);
+            if (childObjectType == COLUMN) {
+                LeafPsiElement starPsiElement = (LeafPsiElement) CHR_STAR_LOOKUP_ADAPTER.findInElement(element);
                 if (starPsiElement != null) loadAllColumns(starPsiElement, objects);
 
-                LeafPsiElement indexPsiElement = (LeafPsiElement) COL_INDEX_LOOKUP_ADAPTER.findInElement(child);
+                LeafPsiElement indexPsiElement = (LeafPsiElement) COL_INDEX_LOOKUP_ADAPTER.findInElement(element);
                 if (indexPsiElement != null) loadColumns(indexPsiElement, objects);
             }
 
-            DBObject object = child.getUnderlyingObject();
+            DBObject object = element.getUnderlyingObject();
             if (object != null && Strings.isNotEmpty(object.getName()) && object.getObjectType().isChildOf(objectType) && !objectList.contains(object)) {
                 if (object instanceof DBVirtualObject) {
                     DBVirtualObject virtualObject = (DBVirtualObject) object;
@@ -324,35 +318,42 @@ public class DBVirtualObject extends DBRootObjectImpl implements PsiReference {
 
         });
 
-        objectList.setElements(objects);
+        objectList.setElements(convert(objects, o -> delegate(o)));
         objectList.set(MASTER, false);
     }
 
-    private void loadAllColumns(LeafPsiElement starPsiElement, List<DBObject> objects) {
-        if (starPsiElement.getParent() instanceof QualifiedIdentifierPsiElement) {
-            QualifiedIdentifierPsiElement qualifiedIdentifierPsiElement = (QualifiedIdentifierPsiElement) starPsiElement.getParent();
+    private void loadAllColumns(LeafPsiElement starPsiElement, Collection<DBObject> objects) {
+        PsiElement parent = starPsiElement.getParent();
+        if (parent instanceof QualifiedIdentifierPsiElement) {
+            QualifiedIdentifierPsiElement qualifiedIdentifierPsiElement = (QualifiedIdentifierPsiElement) parent;
             int index = qualifiedIdentifierPsiElement.getIndexOf(starPsiElement);
             if (index <= 0) return;
 
             IdentifierPsiElement parentPsiElement = qualifiedIdentifierPsiElement.getLeafAtIndex(index - 1);
             DBObject object = parentPsiElement.getUnderlyingObject();
-            if (object != null && object.getObjectType().matches(DBObjectType.DATASET)) {
-                List<DBObject> columns = object.collectChildObjects(DBObjectType.COLUMN);
-                objects.addAll(columns);
-            }
+            if (object == null) return;
+            if (!object.getObjectType().matches(DATASET)) return;
+
+            objects.addAll(object.collectChildObjects(COLUMN));
         } else {
             BasePsiElement underlyingPsiElement = nn(getUnderlyingPsiElement());
             DATASET_LOOKUP_ADAPTER.collectInElement(underlyingPsiElement, basePsiElement -> {
                 DBObject object = basePsiElement.getUnderlyingObject();
-                if (object != null && object != this && object.getObjectType().matches(DBObjectType.DATASET)) {
-                    List<DBObject> columns = object.collectChildObjects(DBObjectType.COLUMN);
-                    objects.addAll(columns);
-                }
+                if (object == null || object == this) return;
+                if (!object.getObjectType().matches(DATASET)) return;
+
+                objects.addAll(object.collectChildObjects(COLUMN));
             });
         }
     }
-    private void loadColumns(LeafPsiElement indexPsiElement, List<DBObject> objects) {
-        BasePsiElement<?> columnPsiElement = indexPsiElement.findEnclosingVirtualObjectElement(DBObjectType.COLUMN);
+
+    private static DBObject delegate(DBObject object) {
+        return object instanceof DBVirtualObject || object instanceof DBObjectDelegate ? object : new DBObjectDelegate(object);
+    }
+
+
+    private void loadColumns(LeafPsiElement indexPsiElement, Collection<DBObject> objects) {
+        BasePsiElement<?> columnPsiElement = indexPsiElement.findEnclosingVirtualObjectElement(COLUMN);
         if (columnPsiElement == null) return;
 
         String text = columnPsiElement.getText();
@@ -369,18 +370,18 @@ public class DBVirtualObject extends DBRootObjectImpl implements PsiReference {
             IdentifierPsiElement parentPsiElement = qualifiedIdentifierPsiElement.getLeafAtIndex(index - 1);
             DBObject object = parentPsiElement.getUnderlyingObject();
             if (object == null || object == this) return;
-            if (!object.getObjectType().matches(DBObjectType.DATASET)) return;
+            if (!object.getObjectType().matches(DATASET)) return;
 
-            List<DBObject> columns = object.collectChildObjects(DBObjectType.COLUMN);
+            List<DBObject> columns = object.collectChildObjects(COLUMN);
             if (columns.size() > columnIndex) objects.add(columns.get(columnIndex));
         } else {
             BasePsiElement underlyingPsiElement = nn(getUnderlyingPsiElement());
             DATASET_LOOKUP_ADAPTER.collectInElement(underlyingPsiElement, basePsiElement -> {
                 DBObject object = basePsiElement.getUnderlyingObject();
                 if (object == null || object == this) return;
-                if (!object.getObjectType().matches(DBObjectType.DATASET)) return;
+                if (!object.getObjectType().matches(DATASET)) return;
 
-                List<DBObject> columns = object.collectChildObjects(DBObjectType.COLUMN);
+                List<DBObject> columns = object.collectChildObjects(COLUMN);
                 if (columns.size() > columnIndex) objects.add(columns.get(columnIndex));
             });
         }
@@ -469,15 +470,14 @@ public class DBVirtualObject extends DBRootObjectImpl implements PsiReference {
         return getUnderlyingPsiElement();
     }
 
-    @Nullable
     public BasePsiElement getUnderlyingPsiElement() {
-        return (BasePsiElement) getPsiCache().getPsiElement();
+        return underlyingPsiElements.ensure(this);
     }
 
-    @NotNull
     private BasePsiElement getRelevantPsiElement() {
-        BasePsiElement basePsiElement = PsiElementRef.get(relevantPsiElement);
-        return nn(basePsiElement);
+        BasePsiElement relevant = relevantPsiElements.get(this);
+        BasePsiElement underlying = underlyingPsiElements.ensure(this);
+        return nvl(relevant, underlying);
     }
 
     @Override

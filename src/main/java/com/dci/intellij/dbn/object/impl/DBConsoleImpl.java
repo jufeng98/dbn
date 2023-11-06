@@ -6,7 +6,6 @@ import com.dci.intellij.dbn.database.common.metadata.DBObjectMetadata;
 import com.dci.intellij.dbn.object.DBConsole;
 import com.dci.intellij.dbn.object.common.DBObject;
 import com.dci.intellij.dbn.object.common.DBObjectImpl;
-import com.dci.intellij.dbn.object.common.DBObjectPsiCache;
 import com.dci.intellij.dbn.object.type.DBObjectType;
 import com.dci.intellij.dbn.vfs.DBConsoleType;
 import com.dci.intellij.dbn.vfs.file.DBConsoleVirtualFile;
@@ -54,12 +53,6 @@ public class DBConsoleImpl extends DBObjectImpl<DBObjectMetadata> implements DBC
             case DEBUG: return Icons.DBO_CONSOLE_DEBUG;
         }
         return super.getIcon();
-    }
-
-    @NotNull
-    @Override
-    public DBObjectPsiCache getPsiCache() {
-        return super.getPsiCache();
     }
 
     @Override

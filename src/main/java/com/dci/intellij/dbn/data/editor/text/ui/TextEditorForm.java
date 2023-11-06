@@ -8,6 +8,7 @@ import com.dci.intellij.dbn.data.editor.text.TextContentType;
 import com.dci.intellij.dbn.data.editor.text.actions.TextContentTypeComboBoxAction;
 import com.dci.intellij.dbn.data.editor.ui.DataEditorComponent;
 import com.dci.intellij.dbn.data.editor.ui.UserValueHolder;
+import com.dci.intellij.dbn.data.type.GenericDataType;
 import com.dci.intellij.dbn.data.value.LargeObjectValue;
 import com.dci.intellij.dbn.language.common.DBLanguage;
 import com.dci.intellij.dbn.language.common.DBLanguageDialect;
@@ -143,17 +144,19 @@ public class TextEditorForm extends DBNFormBase {
 
     @Nullable
     public String readUserValue() {
+        GenericDataType dataType = GenericDataType.LITERAL;
         try {
             Object userValue = userValueHolder.getUserValue();
             if (userValue instanceof String) {
                 return (String) userValue;
             } else if (userValue instanceof LargeObjectValue) {
                 LargeObjectValue largeObjectValue = (LargeObjectValue) userValue;
+                dataType = largeObjectValue.getGenericDataType();
                 return largeObjectValue.read();
             }
         } catch (SQLException e) {
             conditionallyLog(e);
-            Messages.showErrorDialog(getProject(), "Could not load LOB content from database.", e);
+            Messages.showErrorDialog(getProject(), "Could not load " + dataType + " content from database.", e);
         }
         return null;
     }

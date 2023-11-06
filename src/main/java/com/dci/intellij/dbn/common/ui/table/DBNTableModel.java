@@ -14,7 +14,6 @@ public interface DBNTableModel<R> extends TableModel, StatefulDisposable {
         throw new UnsupportedOperationException();
     };
 
-
     default void checkRowBounds(int rowIndex) {
         if (rowIndex < 0 || rowIndex >= getRowCount()) throw new OutdatedContentException(this);
     }

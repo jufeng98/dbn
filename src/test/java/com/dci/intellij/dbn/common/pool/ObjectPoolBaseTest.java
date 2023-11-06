@@ -116,6 +116,7 @@ public class ObjectPoolBaseTest {
     private static class TestObject extends StatefulDisposableBase {
         private final long timestamp = System.currentTimeMillis();
         private final int index;
+        private boolean disposed;
 
         private TestObject(int index) {
             this.index = index;
@@ -124,6 +125,11 @@ public class ObjectPoolBaseTest {
         @Override
         public String toString() {
             return "Object " + index;
+        }
+
+        @Override
+        public void disposeInner() {
+
         }
     }
 }

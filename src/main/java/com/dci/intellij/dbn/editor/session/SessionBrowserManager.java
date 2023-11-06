@@ -92,7 +92,7 @@ public class SessionBrowserManager extends ProjectComponentBase implements Persi
                     DBSessionBrowserVirtualFile sessionBrowserFile = (DBSessionBrowserVirtualFile) file;
                     openFiles.remove(sessionBrowserFile);
 
-                    if (openFiles.size() == 0 && timestampUpdater != null) {
+                    if (openFiles.isEmpty() && timestampUpdater != null) {
                         Disposer.dispose(timestampUpdater);
                     }
                 }

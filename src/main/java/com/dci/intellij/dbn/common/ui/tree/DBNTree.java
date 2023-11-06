@@ -8,6 +8,7 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.treeStructure.Tree;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,6 +16,8 @@ import javax.swing.*;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
+
+import static com.dci.intellij.dbn.common.dispose.ComponentDisposer.removeListeners;
 
 public class DBNTree extends Tree implements DBNComponent {
     public static final DefaultTreeCellRenderer DEFAULT_CELL_RENDERER = new DefaultTreeCellRenderer();
@@ -76,20 +79,15 @@ public class DBNTree extends Tree implements DBNComponent {
      *                    Disposable                        *
      ********************************************************/
     @Getter
+    @Setter
     private boolean disposed;
 
     @Override
-    public final void dispose() {
-        if (disposed) return;
-        disposed = true;
-
+    public void disposeInner() {
         getUI().uninstallUI(this);
         setSelectionModel(null);
-        disposeInner();
+        clearToggledPaths();
+        removeListeners(this);
         nullify();
     }
-
-    public void disposeInner(){
-        clearToggledPaths();
-    };
 }

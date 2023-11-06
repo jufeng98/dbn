@@ -12,6 +12,8 @@ import com.dci.intellij.dbn.diagnostics.Diagnostics;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,7 +27,6 @@ public abstract class DBNDialog<F extends DBNForm> extends DialogWrapper impleme
     private F form;
     private final ProjectRef project;
     private boolean rememberSelection;
-    private boolean disposed;
     private Dimension defaultSize;
     private final Listeners<DBNDialogListener> listeners = Listeners.create(getDisposable());
 
@@ -135,10 +136,10 @@ public abstract class DBNDialog<F extends DBNForm> extends DialogWrapper impleme
         rememberSelectionCheckBox.addActionListener(e -> rememberSelection = rememberSelectionCheckBox.isSelected());
     }
 
-    @Override
-    public boolean isDisposed() {
-        return disposed;
-    }
+
+    @Getter
+    @Setter
+    private boolean disposed;
 
     @Override
     public final void dispose() {
@@ -150,5 +151,10 @@ public abstract class DBNDialog<F extends DBNForm> extends DialogWrapper impleme
         Disposer.dispose(form);
         disposeInner();
         //nullify();
+    }
+
+    @Override
+    public void disposeInner() {
+
     }
 }

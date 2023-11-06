@@ -14,19 +14,19 @@ public class ObjectLookupAdapter extends IdentifierLookupAdapter {
         super(lookupIssuer, IdentifierType.OBJECT, IdentifierCategory.ALL, objectType, null);
     }
 
-    public ObjectLookupAdapter(LeafPsiElement lookupIssuer, DBObjectType objectType, CharSequence identifierName) {
+    public ObjectLookupAdapter(@Nullable LeafPsiElement lookupIssuer, DBObjectType objectType, CharSequence identifierName) {
         super(lookupIssuer, IdentifierType.OBJECT, IdentifierCategory.ALL, objectType, identifierName);
     }
 
-    public ObjectLookupAdapter(LeafPsiElement lookupIssuer, IdentifierCategory identifierCategory, DBObjectType objectType) {
+    public ObjectLookupAdapter(@Nullable LeafPsiElement lookupIssuer, IdentifierCategory identifierCategory, DBObjectType objectType) {
         super(lookupIssuer, IdentifierType.OBJECT, identifierCategory, objectType, null);
     }
 
-    public ObjectLookupAdapter(LeafPsiElement lookupIssuer, IdentifierCategory identifierCategory, DBObjectType objectType, CharSequence identifierName) {
+    public ObjectLookupAdapter(@Nullable LeafPsiElement lookupIssuer, IdentifierCategory identifierCategory, DBObjectType objectType, CharSequence identifierName) {
         super(lookupIssuer, IdentifierType.OBJECT, identifierCategory, objectType, identifierName);
     }
 
-    public ObjectLookupAdapter(LeafPsiElement lookupIssuer, @Nullable IdentifierCategory identifierCategory, @NotNull DBObjectType objectType, CharSequence identifierName, ElementTypeAttribute attribute) {
+    public ObjectLookupAdapter(@Nullable LeafPsiElement lookupIssuer, @Nullable IdentifierCategory identifierCategory, @NotNull DBObjectType objectType, CharSequence identifierName, ElementTypeAttribute attribute) {
         super(lookupIssuer, IdentifierType.OBJECT, identifierCategory, objectType, identifierName, attribute);
     }
 

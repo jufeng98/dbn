@@ -41,4 +41,9 @@ public abstract class DBNMutableTableModel<R> extends StatefulDisposableBase imp
         TableModelEvent event = new TableModelEvent(this);
         listeners.notify(l -> l.tableChanged(event));
     }
+
+    @Override
+    public void disposeInner() {
+        nullify();
+    }
 }
