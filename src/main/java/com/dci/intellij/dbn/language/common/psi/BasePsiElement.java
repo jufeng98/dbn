@@ -266,6 +266,10 @@ public abstract class BasePsiElement<T extends ElementType> extends ASTWrapperPs
         return Read.call(this, e -> e.getSuperText());
     }
 
+    public CharSequence getChars() {
+        return getNode().getChars();
+    }
+
     private String getSuperText() {
         return super.getText();
     }

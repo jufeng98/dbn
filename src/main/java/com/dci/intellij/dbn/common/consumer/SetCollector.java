@@ -2,19 +2,44 @@ package com.dci.intellij.dbn.common.consumer;
 
 import com.dci.intellij.dbn.common.util.Commons;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 public class SetCollector<T> implements Consumer<T> {
     private Set<T> elements;
 
-    protected SetCollector() {}
+    SetCollector() {}
 
-
-    public static <T> SetCollector<T> create() {
+    public static <T> SetCollector<T> basic() {
         return new SetCollector<>();
+    }
+
+    public static <T> SetCollector<T> concurrent() {
+        return new SetCollector<>() {
+            @Override
+            protected Set<T> createSet() {
+                return Collections.newSetFromMap(new ConcurrentHashMap<>());
+            }
+        };
+    }
+
+    public static <T> SetCollector<T> linked() {
+        return new SetCollector<>() {
+            @Override
+            protected Set<T> createSet() {
+                return new LinkedHashSet<>();
+            }
+        };
+    }
+
+    public static <T> SetCollector<T> sorted(Comparator<T> comparator) {
+        return new SetCollector<>() {
+            @Override
+            protected Set<T> createSet() {
+                return new TreeSet<>(comparator);
+            }
+        };
     }
 
     @Override

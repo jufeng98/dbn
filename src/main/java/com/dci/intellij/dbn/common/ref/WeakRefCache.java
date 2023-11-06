@@ -7,6 +7,8 @@ import java.util.function.Function;
 public interface WeakRefCache<K, V> {
     V get(K key);
 
+    V ensure(K key);
+
     V get(K key, Function<K, V> loader);
 
     V compute(K key, BiFunction<K, V, V> loader);

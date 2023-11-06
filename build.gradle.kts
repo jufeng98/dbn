@@ -22,7 +22,6 @@ dependencies {
   implementation("org.apache.poi:poi-ooxml:5.2.3")
   implementation("org.apache.poi:poi-ooxml-schemas:4.1.2")
   implementation("com.github.mwiede:jsch:0.2.11")
-  compileOnly("com.oracle.database.jdbc:ojdbc8:21.9.0.0")
 }
 
 sourceSets{

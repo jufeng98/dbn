@@ -35,7 +35,6 @@ import javax.swing.*;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import static com.dci.intellij.dbn.common.dispose.Failsafe.guarded;
 import static com.dci.intellij.dbn.common.thread.ThreadMonitor.isDispatchThread;
 import static com.dci.intellij.dbn.common.util.Commons.nvl;
 import static com.dci.intellij.dbn.diagnostics.Diagnostics.conditionallyLog;
@@ -394,16 +393,14 @@ public abstract class IdentifierPsiElement extends LeafPsiElement<IdentifierElem
             if (!elementType.isLocalReference() && activeConnection != null && !activeConnection.isVirtual()) {
                 String objectName = refText.toString();
                 Set<DBObject> parentObjects = identifyPotentialParentObjects(objectType, null, this, this);
-                if (parentObjects != null && parentObjects.size() > 0) {
-                    for (DBObject parentObject : parentObjects) {
-                        DBObject childObject = parentObject.getChildObject(objectType, objectName, false);
+                for (DBObject parentObject : parentObjects) {
+                    DBObject childObject = parentObject.getChildObject(objectType, objectName, false);
 
-                        if (childObject == null && objectType.isOverloadable()) {
-                            childObject = parentObject.getChildObject(objectType, objectName, (short) 1, false);
-                        }
-
-                        if (updateReference(null, elementType, childObject)) return;
+                    if (childObject == null && objectType.isOverloadable()) {
+                        childObject = parentObject.getChildObject(objectType, objectName, (short) 1, false);
                     }
+
+                    if (updateReference(null, elementType, childObject)) return;
                 }
 
                 DBObjectBundle objectBundle = activeConnection.getObjectBundle();
@@ -502,11 +499,6 @@ public abstract class IdentifierPsiElement extends LeafPsiElement<IdentifierElem
     @Override
     @Nullable
     public PsiElement resolve() {
-        return guarded(null,  this, e -> e.doResolve());
-    }
-
-    @Nullable
-    private PsiElement doResolve() {
         if (isResolving()) return ref.getReference();
 
         // alias definitions do not have references.

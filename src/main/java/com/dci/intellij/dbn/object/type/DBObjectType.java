@@ -140,6 +140,7 @@ public enum DBObjectType implements DynamicContentType<DBObjectType> {
     private Set<DBObjectType> parents;
     private Set<DBObjectType> genericParents;
     private Set<DBObjectType> children;
+    private Set<DBObjectType> genericChildren;
     private Set<DBObjectType> thisAsSet;
     private Set<DBObjectType> familyTypes;
 
@@ -169,6 +170,7 @@ public enum DBObjectType implements DynamicContentType<DBObjectType> {
         this.parents = emptySet();
         this.genericParents = emptySet();
         this.children = emptySet();
+        this.genericChildren = emptySet();
         this.thisAsSet = EnumSet.of(this);
     }
 
@@ -225,11 +227,11 @@ public enum DBObjectType implements DynamicContentType<DBObjectType> {
     }
 
     public boolean isParentOf(DBObjectType objectType) {
-        return objectType.parents.contains(this) || objectType.genericParents.contains(this);
+        return objectType.parents.contains(this) || objectType.genericParents.contains(this.getGenericType());
     }
 
     public boolean isChildOf(DBObjectType objectType) {
-        return objectType.children.contains(this);
+        return objectType.children.contains(this) || objectType.genericChildren.contains(this.getGenericType());
     }
 
     public boolean isOverloadable() {
@@ -250,9 +252,7 @@ public enum DBObjectType implements DynamicContentType<DBObjectType> {
 
     public boolean matchesOneOf(DBObjectType ... objectTypes) {
         for (DBObjectType objectType : objectTypes) {
-            if (matches(objectType)) {
-                return true;
-            }
+            if (matches(objectType)) return true;
         }
 
         return false;
@@ -260,12 +260,8 @@ public enum DBObjectType implements DynamicContentType<DBObjectType> {
 
     @Override
     public boolean matches(DBObjectType objectType) {
-        if (this == objectType) {
-            return true;
-        }
-        if (this == ANY || objectType == ANY) {
-            return true;
-        }
+        if (this == objectType) return true;
+        if (this == ANY || objectType == ANY) return true;
 
         DBObjectType local = this.inheritedType;
         while (local != null) {
@@ -540,6 +536,7 @@ public enum DBObjectType implements DynamicContentType<DBObjectType> {
         parents.add(parent);
         genericParents.add(parent.getGenericType());
         parent.children.add(this);
+        parent.genericChildren.add(this.getGenericType());
     }
 
     private void setInheritedType(DBObjectType inheritedType) {

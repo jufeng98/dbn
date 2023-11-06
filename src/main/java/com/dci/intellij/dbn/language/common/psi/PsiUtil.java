@@ -80,7 +80,7 @@ public class PsiUtil {
             }
 
             if (objectPsiElement != null) {
-                SetCollector<BasePsiElement> virtualObjectPsiElements = SetCollector.create();
+                SetCollector<BasePsiElement> virtualObjectPsiElements = SetCollector.linked();
                 scope.collectVirtualObjectPsiElements(objectType, virtualObjectPsiElements);
                 for (BasePsiElement virtualObjectPsiElement : virtualObjectPsiElements.elements()) {
                     if (virtualObjectPsiElement.containsPsiElement(objectPsiElement))

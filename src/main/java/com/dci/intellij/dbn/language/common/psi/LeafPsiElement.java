@@ -101,9 +101,24 @@ public abstract class LeafPsiElement<T extends LeafElementType> extends BasePsiE
     }
 
     public static Set<DBObject> identifyPotentialParentObjects(DBObjectType objectType, @Nullable ObjectTypeFilter filter, @NotNull BasePsiElement sourceScope, LeafPsiElement lookupIssuer) {
-        SetCollector<DBObject> parentObjects = SetCollector.create();
+        SetCollector<DBObject> parentObjects = SetCollector.linked();
         Set<DBObjectType> parentTypes = objectType.getGenericParents();
-        if (parentTypes.size() > 0) {
+        if (!parentTypes.isEmpty()) {
+            Consumer<BasePsiElement> parentObjectPsiElements = parentObjectPsiElement -> {
+                if (parentObjectPsiElement.containsPsiElement(sourceScope)) return;
+
+                DBObject parentObject = parentObjectPsiElement.getUnderlyingObject();
+                collectObject(parentObjects, parentObject);
+            };
+            for (DBObjectType parentObjectType : parentTypes) {
+                PsiLookupAdapter lookupAdapter = new ObjectLookupAdapter(lookupIssuer, parentObjectType, null);
+                lookupAdapter.setAssertResolved(true);
+
+                if (!objectType.isSchemaObject() && parentObjectType.isSchemaObject())
+                    lookupAdapter.collectInScope(sourceScope, parentObjectPsiElements); else
+                    lookupAdapter.collectInParentScopeOf(sourceScope, parentObjectPsiElements);
+            }
+
             if (objectType.isSchemaObject()) {
                 ConnectionHandler connection = sourceScope.getConnection();
 
@@ -120,21 +135,6 @@ public abstract class LeafPsiElement<T extends LeafElementType> extends BasePsiE
                         collectObject(parentObjects, publicSchema);
                     }
                 }
-            }
-
-            Consumer<BasePsiElement> parentObjectPsiElements = parentObjectPsiElement -> {
-                if (!parentObjectPsiElement.containsPsiElement(sourceScope)) {
-                    DBObject parentObject = parentObjectPsiElement.getUnderlyingObject();
-                    collectObject(parentObjects, parentObject);
-                }
-            };
-            for (DBObjectType parentObjectType : parentTypes) {
-                PsiLookupAdapter lookupAdapter = new ObjectLookupAdapter(lookupIssuer, parentObjectType, null);
-                lookupAdapter.setAssertResolved(true);
-
-                if (!objectType.isSchemaObject() && parentObjectType.isSchemaObject())
-                        lookupAdapter.collectInScope(sourceScope, parentObjectPsiElements); else
-                        lookupAdapter.collectInParentScopeOf(sourceScope, parentObjectPsiElements);
             }
         }
 

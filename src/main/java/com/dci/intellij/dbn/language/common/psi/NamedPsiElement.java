@@ -8,6 +8,7 @@ import com.dci.intellij.dbn.language.common.psi.lookup.PsiLookupAdapter;
 import com.dci.intellij.dbn.vfs.file.DBSourceCodeVirtualFile;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
+import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.Nullable;
@@ -21,7 +22,7 @@ public class NamedPsiElement extends SequencePsiElement<NamedElementType> {
 
     @Nullable
     public String createSubjectList() {
-        SetCollector<IdentifierPsiElement> subjects = SetCollector.create();
+        SetCollector<IdentifierPsiElement> subjects = SetCollector.linked();
         collectSubjectPsiElements(subjects);
         return subjects.isNotEmpty() ? Naming.createNamesList(subjects.elements(), 3) : null;
     }
@@ -100,8 +101,7 @@ public class NamedPsiElement extends SequencePsiElement<NamedElementType> {
     @Nullable
     @Override
     public BasePsiElement findPsiElement(PsiLookupAdapter lookupAdapter, int scopeCrossCount) {
-        // TODO small performance impact (removing this freezes the UI though)
-        //ProgressIndicatorProvider.checkCanceled();
+        ProgressManager.checkCanceled();
         return super.findPsiElement(lookupAdapter, scopeCrossCount);
     }
 

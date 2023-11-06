@@ -311,11 +311,13 @@ public class DBObjectRef<T extends DBObject> implements Comparable<DBObjectRef<?
     public ConnectionId getConnectionId() {
         if (parent instanceof ConnectionId) {
             return (ConnectionId) parent;
+        }
 
-        } else if (parent instanceof DBObjectRef)  {
+        if (parent instanceof DBObjectRef)  {
             DBObjectRef parentRef = (DBObjectRef) parent;
             return parentRef.getConnectionId();
         }
+
         T object = getObject();
         return object == null ? null : object.getConnectionId();
     }
