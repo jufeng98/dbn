@@ -72,7 +72,7 @@ public class SQLFoldingBuilder extends DBLanguageFoldingBuilder {
         }
         if (psiElement instanceof BasePsiElement) {
             BasePsiElement basePsiElement = (BasePsiElement) psiElement;
-            SetCollector<IdentifierPsiElement> subjects = SetCollector.create();
+            SetCollector<IdentifierPsiElement> subjects = SetCollector.linked();
 
             basePsiElement.collectSubjectPsiElements(subjects);
             StringBuilder buffer = new StringBuilder(" ");

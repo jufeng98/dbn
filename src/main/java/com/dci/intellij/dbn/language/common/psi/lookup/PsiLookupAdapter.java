@@ -23,9 +23,8 @@ public abstract class PsiLookupAdapter {
         AtomicReference<BasePsiElement> psiElement = new AtomicReference<>();
         PsiScopeVisitor.visit(source, scope -> {
             BasePsiElement result = scope.findPsiElement(PsiLookupAdapter.this, 10);
-            if (result == source) {
-                result = null;
-            }
+            if (result == scope) result = null;
+
             psiElement.set(result);
             return result != null;
         });

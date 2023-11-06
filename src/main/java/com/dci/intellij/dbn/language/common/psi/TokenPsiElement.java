@@ -11,7 +11,7 @@ import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.Icon;
+import javax.swing.*;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -23,10 +23,7 @@ public class TokenPsiElement extends LeafPsiElement<TokenElementType> {
     @Override
     @Nullable
     public BasePsiElement findPsiElement(PsiLookupAdapter lookupAdapter, int scopeCrossCount) {
-        if (lookupAdapter.matches(this)) {
-            return this;
-        }
-        return null;
+        return lookupAdapter.matches(this) ? this : null;
     }
     @Override
     public void collectPsiElements(PsiLookupAdapter lookupAdapter, int scopeCrossCount, @NotNull Consumer<BasePsiElement> consumer) {}
