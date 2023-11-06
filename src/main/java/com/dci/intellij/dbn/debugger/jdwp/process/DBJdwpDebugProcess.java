@@ -22,9 +22,12 @@ import com.dci.intellij.dbn.debugger.common.config.DBRunConfig;
 import com.dci.intellij.dbn.debugger.common.process.DBDebugProcess;
 import com.dci.intellij.dbn.debugger.common.process.DBDebugProcessStatus;
 import com.dci.intellij.dbn.debugger.common.process.DBDebugProcessStatusHolder;
+import com.dci.intellij.dbn.debugger.common.process.DBProgramRunner;
 import com.dci.intellij.dbn.debugger.jdwp.DBJdwpBreakpointHandler;
 import com.dci.intellij.dbn.debugger.jdwp.DBJdwpSourcePath;
 import com.dci.intellij.dbn.debugger.jdwp.ManagedThreadCommand;
+import com.dci.intellij.dbn.debugger.jdwp.config.DBJdwpRunConfig;
+import com.dci.intellij.dbn.debugger.jdwp.config.DBMethodJdwpRunConfig;
 import com.dci.intellij.dbn.debugger.jdwp.frame.DBJdwpDebugStackFrame;
 import com.dci.intellij.dbn.debugger.jdwp.frame.DBJdwpDebugSuspendContext;
 import com.dci.intellij.dbn.editor.DBContentType;
@@ -249,9 +252,13 @@ public abstract class DBJdwpDebugProcess<T extends ExecutionInput>
                     targetConnection.setAutoCommit(false);
                     targetConnection.beforeClose(() -> releaseSession(targetConnection));
 
-                    DatabaseDebuggerInterface debuggerInterface = getDebuggerInterface();
-                    console.info("Initializing debug session on address " + localTcpHost + ":" + localTcpPort);
-                    debuggerInterface.initializeJdwpSession(targetConnection, localTcpHost, String.valueOf(localTcpPort));
+
+//                    DBJdwpRunConfig jdwpRunConfig = (DBJdwpRunConfig) runProfile;
+                    if(!DBProgramRunner.isCloudDatabaseDefaultValue(getConnection())){
+                        DatabaseDebuggerInterface debuggerInterface = getDebuggerInterface();
+                        console.info("Initializing debug session on address " + localTcpHost + ":" + localTcpPort);
+                        debuggerInterface.initializeJdwpSession(targetConnection, localTcpHost, String.valueOf(localTcpPort));
+                    }
                     console.system("Debug session initialized (JDWP)");
                     set(BREAKPOINT_SETTING_ALLOWED, true);
 

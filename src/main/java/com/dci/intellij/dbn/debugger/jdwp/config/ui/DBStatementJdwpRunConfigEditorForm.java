@@ -15,6 +15,7 @@ public class DBStatementJdwpRunConfigEditorForm extends DBProgramRunConfiguratio
     private JPanel mainPanel;
     private JPanel hintPanel;
     private JPanel configPanel;
+    private JCheckBox isCloudDatabaseCheckBox;
 
     private final DBJdwpDebugAttributesForm configForm = new DBJdwpDebugAttributesForm(this);
 
@@ -45,6 +46,8 @@ public class DBStatementJdwpRunConfigEditorForm extends DBProgramRunConfiguratio
 
     @Override
     public void readConfiguration(DBStatementJdwpRunConfig configuration) {
+        isCloudDatabaseCheckBox.setSelected(configuration.isTcpDriverTunneling());
+        isCloudDatabaseCheckBox.setEnabled(false);
         configForm.readConfiguration(configuration);
     }
 }

@@ -99,7 +99,6 @@ tasks {
   publishPlugin {
     token.set(System.getenv("PUBLISH_TOKEN"))
   }
-
   runIde {
         systemProperties["idea.auto.reload.plugins"] = true
         jvmArgs = listOf(

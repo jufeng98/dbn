@@ -5,13 +5,13 @@ import com.intellij.debugger.impl.DebuggerSession;
 import com.intellij.xdebugger.XDebugSession;
 import org.jetbrains.annotations.NotNull;
 
-public class DBStatementJdwpProcessStarter extends DBJdwpProcessStarter {
-    DBStatementJdwpProcessStarter(ConnectionHandler connection) {
+public class DBMethodJdwpLocalProcessStarter extends DBJdwpLocalProcessStarter {
+    DBMethodJdwpLocalProcessStarter(ConnectionHandler connection) {
         super(connection);
     }
 
     @Override
     protected DBJdwpDebugProcess createDebugProcess(@NotNull XDebugSession session, DebuggerSession debuggerSession, String hostname, int tcpPort) {
-        return new DBStatementJdwpDebugProcess(session, debuggerSession, getConnection(), hostname, tcpPort);
+        return new DBMethodJdwpDebugProcess(session,debuggerSession,getConnection(),hostname,tcpPort);
     }
 }
