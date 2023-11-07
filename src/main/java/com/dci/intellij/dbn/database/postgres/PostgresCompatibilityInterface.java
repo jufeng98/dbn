@@ -3,8 +3,7 @@ package com.dci.intellij.dbn.database.postgres;
 import com.dci.intellij.dbn.common.util.Strings;
 import com.dci.intellij.dbn.database.DatabaseFeature;
 import com.dci.intellij.dbn.database.DatabaseObjectTypeId;
-import com.dci.intellij.dbn.database.interfaces.DatabaseCompatibilityInterface;
-import com.dci.intellij.dbn.database.interfaces.DatabaseInterfaces;
+import com.dci.intellij.dbn.database.common.DatabaseCompatibilityInterfaceImpl;
 import com.dci.intellij.dbn.editor.session.SessionStatus;
 import com.dci.intellij.dbn.language.common.QuoteDefinition;
 import com.dci.intellij.dbn.language.common.QuotePair;
@@ -15,16 +14,12 @@ import java.util.List;
 import static com.dci.intellij.dbn.database.DatabaseFeature.*;
 import static com.dci.intellij.dbn.database.DatabaseObjectTypeId.*;
 
-public class PostgresCompatibilityInterface extends DatabaseCompatibilityInterface {
+public class PostgresCompatibilityInterface extends DatabaseCompatibilityInterfaceImpl {
 
     public static final QuoteDefinition IDENTIFIER_QUOTE_DEFINITION = new QuoteDefinition(new QuotePair('"', '"'));
 
-    public PostgresCompatibilityInterface(DatabaseInterfaces parent) {
-        super(parent);
-    }
-
     @Override
-    protected List<DatabaseObjectTypeId> getSupportedObjectTypes() {
+    public List<DatabaseObjectTypeId> getSupportedObjectTypes() {
         return Arrays.asList(
                 CONSOLE,
                 CHARSET,
@@ -45,7 +40,7 @@ public class PostgresCompatibilityInterface extends DatabaseCompatibilityInterfa
     }
 
     @Override
-    protected List<DatabaseFeature> getSupportedFeatures() {
+    public List<DatabaseFeature> getSupportedFeatures() {
         return Arrays.asList(
                 SESSION_BROWSING,
                 SESSION_KILL,

@@ -12,7 +12,8 @@ import lombok.Getter;
 @Getter
 public class OracleDatabaseInterfaces extends DatabaseInterfacesBase {
     private final DatabaseMessageParserInterface messageParserInterface = new OracleMessageParserInterface();
-    private final DatabaseCompatibilityInterface compatibilityInterface = new OracleCompatibilityInterface(this);
+    private final DatabaseCompatibilityInterface compatibilityInterface = new OracleCompatibilityInterface();
+    private final DatabaseEnvironmentInterface environmentInterface = new OracleEnvironmentInterface();
     private final DatabaseMetadataInterface metadataInterface = new OracleMetadataInterface(this);
     private final DatabaseDebuggerInterface debuggerInterface = new OracleDebuggerInterface(this);
     private final DatabaseDataDefinitionInterface dataDefinitionInterface = new OracleDataDefinitionInterface(this);

@@ -2,8 +2,7 @@ package com.dci.intellij.dbn.database.oracle;
 
 import com.dci.intellij.dbn.database.DatabaseFeature;
 import com.dci.intellij.dbn.database.DatabaseObjectTypeId;
-import com.dci.intellij.dbn.database.interfaces.DatabaseCompatibilityInterface;
-import com.dci.intellij.dbn.database.interfaces.DatabaseInterfaces;
+import com.dci.intellij.dbn.database.common.DatabaseCompatibilityInterfaceImpl;
 import com.dci.intellij.dbn.editor.session.SessionStatus;
 import com.dci.intellij.dbn.language.common.QuoteDefinition;
 import com.dci.intellij.dbn.language.common.QuotePair;
@@ -17,12 +16,8 @@ import static com.dci.intellij.dbn.database.DatabaseFeature.*;
 import static com.dci.intellij.dbn.diagnostics.Diagnostics.conditionallyLog;
 
 @Slf4j
-public class OracleCompatibilityInterface extends DatabaseCompatibilityInterface {
+public class OracleCompatibilityInterface extends DatabaseCompatibilityInterfaceImpl {
     public static final QuoteDefinition IDENTIFIER_QUOTE_DEFINITION = new QuoteDefinition(new QuotePair('"', '"'));
-
-    public OracleCompatibilityInterface(DatabaseInterfaces parent) {
-        super(parent);
-    }
 
     @Override
     public boolean supportsObjectType(DatabaseObjectTypeId objectTypeId) {
@@ -30,12 +25,12 @@ public class OracleCompatibilityInterface extends DatabaseCompatibilityInterface
     }
 
     @Override
-    protected List<DatabaseObjectTypeId> getSupportedObjectTypes() {
+    public List<DatabaseObjectTypeId> getSupportedObjectTypes() {
         return Collections.emptyList(); // default implementation not used (all object types are supported)
     }
 
     @Override
-    protected List<DatabaseFeature> getSupportedFeatures() {
+    public List<DatabaseFeature> getSupportedFeatures() {
         return Arrays.asList(
                 OBJECT_INVALIDATION,
                 OBJECT_DEPENDENCIES,

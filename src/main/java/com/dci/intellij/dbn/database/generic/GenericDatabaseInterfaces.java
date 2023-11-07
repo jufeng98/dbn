@@ -1,6 +1,7 @@
 package com.dci.intellij.dbn.database.generic;
 
 import com.dci.intellij.dbn.connection.DatabaseType;
+import com.dci.intellij.dbn.database.common.DatabaseEnvironmentInterfaceImpl;
 import com.dci.intellij.dbn.database.common.DatabaseInterfacesBase;
 import com.dci.intellij.dbn.database.common.DatabaseNativeDataTypes;
 import com.dci.intellij.dbn.database.interfaces.*;
@@ -11,7 +12,8 @@ import lombok.Getter;
 @Getter
 public final class GenericDatabaseInterfaces extends DatabaseInterfacesBase {
     private final DatabaseMessageParserInterface messageParserInterface = new GenericMessageParserInterface();
-    private final DatabaseCompatibilityInterface compatibilityInterface = new GenericCompatibilityInterface(this);
+    private final DatabaseCompatibilityInterface compatibilityInterface = new GenericCompatibilityInterface();
+    private final DatabaseEnvironmentInterface environmentInterface = new DatabaseEnvironmentInterfaceImpl();
     private final DatabaseMetadataInterface metadataInterface = new GenericMetadataInterface(this);
     private final DatabaseDataDefinitionInterface dataDefinitionInterface = new GenericDataDefinitionInterface(this);
     private final DatabaseExecutionInterface executionInterface = new GenericExecutionInterface();
