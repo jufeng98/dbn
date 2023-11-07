@@ -1,8 +1,5 @@
 package com.dci.intellij.dbn.debugger.jdwp.config;
 
-import com.dci.intellij.dbn.common.options.AbstractConfiguration;
-import com.dci.intellij.dbn.common.options.BasicConfiguration;
-import com.dci.intellij.dbn.connection.config.ConnectionDebuggerSettings;
 import com.dci.intellij.dbn.debugger.DBDebuggerType;
 import com.dci.intellij.dbn.debugger.DatabaseDebuggerManager;
 import com.dci.intellij.dbn.debugger.common.config.DBRunConfigCategory;
@@ -19,15 +16,12 @@ import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.WriteExternalException;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Delegate;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 
 @Getter
 @Setter
-public class DBStatementJdwpRunConfig extends DBStatementRunConfig implements DBJdwpRunConfig {
-    @Delegate(excludes = {BasicConfiguration.class, AbstractConfiguration.class})
-    private ConnectionDebuggerSettings debuggerConfig = new ConnectionDebuggerSettings();
+public class DBStatementJdwpRunConfig extends DBStatementRunConfig implements DBJdwpRunConfig{
 
     public DBStatementJdwpRunConfig(Project project, DBStatementJdwpRunConfigFactory factory, String name, DBRunConfigCategory category) {
         super(project, factory, name, category);
@@ -58,12 +52,10 @@ public class DBStatementJdwpRunConfig extends DBStatementRunConfig implements DB
     @Override
     public void readExternal(@NotNull Element element) throws InvalidDataException {
         super.readExternal(element);
-        debuggerConfig.readConfiguration(element);
     }
 
     @Override
     public void writeExternal(@NotNull Element element) throws WriteExternalException {
         super.writeExternal(element);
-        debuggerConfig.writeConfiguration(element);
     }
 }

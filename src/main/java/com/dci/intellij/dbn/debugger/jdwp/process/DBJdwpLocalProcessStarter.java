@@ -3,8 +3,7 @@ package com.dci.intellij.dbn.debugger.jdwp.process;
 import com.dci.intellij.dbn.common.dispose.Failsafe;
 import com.dci.intellij.dbn.common.util.Strings;
 import com.dci.intellij.dbn.connection.ConnectionHandler;
-import com.dci.intellij.dbn.debugger.common.config.DBRunConfig;
-import com.dci.intellij.dbn.debugger.jdwp.config.DBJdwpRunConfig;
+import com.dci.intellij.dbn.connection.config.ConnectionDebuggerSettings;
 import com.intellij.debugger.DebugEnvironment;
 import com.intellij.debugger.DebuggerManagerEx;
 import com.intellij.debugger.DefaultDebugEnvironment;
@@ -36,6 +35,39 @@ public abstract class DBJdwpLocalProcessStarter extends DBJdwpProcessStarter {
         super(connection);
     }
 
+    /**
+     * local database start's implementation: set up the ip host and port in  intellij
+     * debugger framework , also setting up that we want to use listen connector and make the
+     * debugger listen till the database connect using sockets
+     * @param session session to be passed to {@link XDebugProcess#XDebugProcess} constructor
+     */
+    @NotNull
+    @Override
+    public final XDebugProcess start(@NotNull XDebugSession session) throws ExecutionException {
+        Executor executor = DefaultDebugExecutor.getDebugExecutorInstance();
+        RunProfile runProfile = session.getRunProfile();
+        runProfile = assertNotNull(runProfile, "Invalid run profile");
+
+
+        ExecutionEnvironment environment = ExecutionEnvironmentBuilder.create(session.getProject(), executor, runProfile).build();
+        ConnectionDebuggerSettings debuggerSettings = getConnection().getSettings().getDebuggerSettings();
+        Range<Integer> portRange = debuggerSettings.getTcpPortRange();
+        String tcpHost = resolveTcpHost(debuggerSettings.getTcpHostAddress());
+        int tcpPort = findFreePort(tcpHost, portRange.getFrom(), portRange.getTo());
+
+        RemoteConnection remoteConnection = new RemoteConnection(true, tcpHost, Integer.toString(tcpPort), true);
+
+        RunProfileState state = Failsafe.nn(runProfile.getState(executor, environment));
+
+        DebugEnvironment debugEnvironment = new DefaultDebugEnvironment(environment, state, remoteConnection, true);
+        DebuggerManagerEx debuggerManagerEx = DebuggerManagerEx.getInstanceEx(session.getProject());
+        DebuggerSession debuggerSession = debuggerManagerEx.attachVirtualMachine(debugEnvironment);
+        assertNotNull(debuggerSession, "Could not initialize JDWP listener");
+
+        return createDebugProcess(session, debuggerSession, tcpHost, tcpPort);
+
+    }
+
     private static int findFreePort(String host, int minPortNumber, int maxPortNumber) throws ExecutionException {
         InetAddress inetAddress;
         try {
@@ -54,43 +86,7 @@ public abstract class DBJdwpLocalProcessStarter extends DBJdwpProcessStarter {
         throw new ExecutionException("Could not find any free port on host '" + host + "' in the range " + minPortNumber + " - " + maxPortNumber);
     }
 
-    /**
-     * local database start's implementation: set up the ip host and port in  intellij
-     * debugger framework , also setting up that we want to use listen connector and make the
-     * debugger listen till the database connect using sockets
-     * @param session session to be passed to {@link XDebugProcess#XDebugProcess} constructor
-     * @return
-     * @throws ExecutionException
-     */
-    @NotNull
-    @Override
-    public final XDebugProcess start(@NotNull XDebugSession session) throws ExecutionException {
-        Executor executor = DefaultDebugExecutor.getDebugExecutorInstance();
-        RunProfile runProfile = session.getRunProfile();
-        assertNotNull(runProfile, "Invalid run profile");
-
-
-        ExecutionEnvironment environment = ExecutionEnvironmentBuilder.create(session.getProject(), executor, runProfile).build();
-        DBJdwpRunConfig jdwpRunConfig = (DBJdwpRunConfig) runProfile;
-        Range<Integer> portRange = jdwpRunConfig.getTcpPortRange();
-        String tcpHost = resolveTcpHost(jdwpRunConfig);
-        int freePort = findFreePort(tcpHost,portRange.getFrom(), portRange.getTo());
-
-        RemoteConnection remoteConnection = new RemoteConnection(true, tcpHost, Integer.toString(freePort), true);
-
-        RunProfileState state = Failsafe.nn(runProfile.getState(executor, environment));
-
-        DebugEnvironment debugEnvironment = new DefaultDebugEnvironment(environment, state, remoteConnection, true);
-        DebuggerManagerEx debuggerManagerEx = DebuggerManagerEx.getInstanceEx(session.getProject());
-        DebuggerSession debuggerSession = debuggerManagerEx.attachVirtualMachine(debugEnvironment);
-        assertNotNull(debuggerSession, "Could not initialize JDWP listener");
-
-        return createDebugProcess(session, debuggerSession, tcpHost, freePort);
-
-    }
-
-    private static String resolveTcpHost(DBJdwpRunConfig jdwpRunConfig) {
-        String tcpHost = jdwpRunConfig.getTcpHostAddress();
+    private static String resolveTcpHost(String tcpHost) {
         try {
             tcpHost = Strings.isEmptyOrSpaces(tcpHost) ?
                     Inet4Address.getLocalHost().getHostAddress() :
