@@ -20,7 +20,8 @@ public class Strings extends com.intellij.openapi.util.text.StringUtil {
         List<String> tokens = new ArrayList<>();
         StringTokenizer tokenizer = new StringTokenizer(string, separator);
         while (tokenizer.hasMoreTokens()) {
-            tokens.add(tokenizer.nextToken().trim());
+            String token = tokenizer.nextToken().trim();
+            if (!token.isEmpty()) tokens.add(token);
         }
         return tokens;
     }

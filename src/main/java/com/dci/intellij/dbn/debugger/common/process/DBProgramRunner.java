@@ -38,9 +38,6 @@ import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -53,8 +50,6 @@ import static com.intellij.openapi.ui.DialogWrapper.OK_EXIT_CODE;
 
 public abstract class DBProgramRunner<T extends ExecutionInput> extends GenericProgramRunner {
     public static final String INVALID_RUNNER_ID = "DBNInvalidRunner";
-    public static final String CLOUD_DATABASE_PATTERN = ".+\\.ade\\..+\\.oraclecloud\\.com";
-    public static String hostnames = System.getProperty("cloud.hostnames");
 
     @Nullable
     @Override
@@ -284,9 +279,8 @@ public abstract class DBProgramRunner<T extends ExecutionInput> extends GenericP
                     "Error initializing environment: {0}", e);
         }
     }
+/*
     public static  boolean isCloudDatabaseDefaultValue(ConnectionHandler conn)  {
-
-        String databaseHost = conn.getDatabaseInfo().getHost();
         try{
             boolean isCloud = databaseHost.matches(CLOUD_DATABASE_PATTERN);
             if(!isCloud && hostnames != null && !hostnames.isEmpty()){
@@ -302,6 +296,8 @@ public abstract class DBProgramRunner<T extends ExecutionInput> extends GenericP
 
         return  true;
     }
+*/
+
     protected abstract DBDebugProcessStarter createProcessStarter(ConnectionHandler connection);
 
     protected abstract void promptExecutionDialog(T executionInput, Runnable callback);

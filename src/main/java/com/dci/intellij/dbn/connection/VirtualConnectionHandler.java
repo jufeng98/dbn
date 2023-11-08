@@ -427,6 +427,11 @@ public class VirtualConnectionHandler extends StatefulDisposableBase implements 
     }
 
     @Override
+    public boolean isCloudDatabase() {
+        return false;
+    }
+
+    @Override
     public void disposeInner() {
         nullify();
     }

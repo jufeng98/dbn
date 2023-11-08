@@ -600,6 +600,12 @@ public class ConnectionHandlerImpl extends StatefulDisposableBase implements Con
     }
 
     @Override
+    public boolean isCloudDatabase() {
+        String databaseHost = getDatabaseInfo().getHost();
+        return getInterfaces().getEnvironmentInterface().isCloudDatabase(databaseHost);
+    }
+
+    @Override
     public void updateLastAccess() {
         getConnectionPool().updateLastAccess();
     }
