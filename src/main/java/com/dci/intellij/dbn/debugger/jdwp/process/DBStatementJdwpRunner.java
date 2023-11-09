@@ -20,7 +20,10 @@ public class DBStatementJdwpRunner extends DBProgramRunner<StatementExecutionInp
 
     @Override
     protected DBDebugProcessStarter createProcessStarter(ConnectionHandler connection) {
-        return new DBStatementJdwpProcessStarter(connection);
+        if(connection.isCloudDatabase()|| connection.getSettings().getDebuggerSettings().isTcpDriverTunneling()){
+            return new DBStatementJdwpCloudProcessStarter(connection);
+        }
+        return new DBStatementJdwpLocalProcessStarter(connection);
     }
 
     @Override

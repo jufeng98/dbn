@@ -39,9 +39,7 @@ public class DBMethodJdwpRunConfigEditorForm extends DBProgramRunConfigurationEd
     private JPanel methodArgumentsPanel;
     private JPanel selectMethodActionPanel;
     private JPanel hintPanel;
-    private JPanel configPanel;
     private MethodExecutionInputForm inputForm;
-    private final DBJdwpDebugAttributesForm configForm = new DBJdwpDebugAttributesForm(this);
 
     public DBMethodJdwpRunConfigEditorForm(DBMethodJdwpRunConfig configuration) {
         super(configuration.getProject());
@@ -58,8 +56,6 @@ public class DBMethodJdwpRunConfigEditorForm extends DBProgramRunConfigurationEd
             selectMethodActionPanel.add(actionToolbar.getComponent(), BorderLayout.WEST);
             hintPanel.setVisible(false);
         }
-
-        configPanel.add(configForm.getMainPanel());
     }
 
     @NotNull
@@ -119,13 +115,11 @@ public class DBMethodJdwpRunConfigEditorForm extends DBProgramRunConfigurationEd
             inputForm.updateExecutionInput();
             configuration.setExecutionInput(getExecutionInput());
         }
-        configForm.writeConfiguration(configuration);
     }
 
     @Override
     public void readConfiguration(DBMethodJdwpRunConfig configuration) {
         setExecutionInput(configuration.getExecutionInput(), false);
-        configForm.readConfiguration(configuration);
     }
 
     public void setExecutionInput(@Nullable MethodExecutionInput executionInput, boolean touchForm) {

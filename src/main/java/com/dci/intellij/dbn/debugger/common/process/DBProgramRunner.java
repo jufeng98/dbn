@@ -279,6 +279,24 @@ public abstract class DBProgramRunner<T extends ExecutionInput> extends GenericP
                     "Error initializing environment: {0}", e);
         }
     }
+/*
+    public static  boolean isCloudDatabaseDefaultValue(ConnectionHandler conn)  {
+        try{
+            boolean isCloud = databaseHost.matches(CLOUD_DATABASE_PATTERN);
+            if(!isCloud && hostnames != null && !hostnames.isEmpty()){
+                String [] hostnamesArray = hostnames.split(",");
+                isCloud = Arrays.asList(hostnamesArray).contains(databaseHost);
+            }
+            if ( !isCloud &&( databaseHost.equals("localhost") || databaseHost.equals("127.0.0.1") ||databaseHost.equals( InetAddress.getLocalHost().getHostAddress()))) {
+                return isCloud = false;
+            }
+        } catch (UnknownHostException ex) {
+            ex.printStackTrace();
+        }
+
+        return  true;
+    }
+*/
 
     protected abstract DBDebugProcessStarter createProcessStarter(ConnectionHandler connection);
 

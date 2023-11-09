@@ -35,25 +35,22 @@ public class DatabaseSession implements Comparable<DatabaseSession>, Presentable
     @Nullable
     @Override
     public Icon getIcon() {
-        return guarded(Icons.SESSION_CUSTOM, () -> {
-            if (isPool()) {
+        return guarded(Icons.SESSION_CUSTOM, this, s -> {
+            if (s.isPool()) {
                 return Icons.SESSION_POOL;
             } else {
-                DBNConnection connection = getConnection().getConnectionPool().getSessionConnection(id);
+                DBNConnection connection = s.getConnection().getConnectionPool().getSessionConnection(s.getId());
                 if (connection == null || !connection.isValid()) {
-                    return
-                            isMain() ?  Icons.SESSION_MAIN :
-                            isDebug() ? Icons.SESSION_DEBUG :
+                    return s.isMain() ?  Icons.SESSION_MAIN :
+                           s.isDebug() ? Icons.SESSION_DEBUG :
                                             Icons.SESSION_CUSTOM;
                 } else if (connection.hasDataChanges()) {
-                    return
-                            isMain() ? Icons.SESSION_MAIN_TRANSACTIONAL :
-                            isDebug() ? Icons.SESSION_DEBUG_TRANSACTIONAL :
+                    return s.isMain() ? Icons.SESSION_MAIN_TRANSACTIONAL :
+                           s.isDebug() ? Icons.SESSION_DEBUG_TRANSACTIONAL :
                                         Icons.SESSION_CUSTOM_TRANSACTIONAL;
                 } else {
-                    return
-                            isMain() ? Icons.SESSION_MAIN :
-                            isDebug() ? Icons.SESSION_DEBUG :
+                    return s.isMain() ? Icons.SESSION_MAIN :
+                           s.isDebug() ? Icons.SESSION_DEBUG :
                                         Icons.SESSION_CUSTOM;
                 }
             }

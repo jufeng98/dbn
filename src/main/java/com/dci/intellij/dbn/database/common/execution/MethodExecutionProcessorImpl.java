@@ -97,6 +97,7 @@ public abstract class MethodExecutionProcessorImpl implements MethodExecutionPro
             Resources.cancel(context.getStatement());
             throw e;
         } finally {
+
             release(context);
         }
     }

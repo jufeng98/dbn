@@ -109,7 +109,7 @@ public class ConnectionUrlSettingsForm extends DBNFormBase {
     }
 
     public String getTnsProfile() {
-        return Safe.call(tnsProfileComboBox.getSelectedValue(), v -> v.getName(), null);
+        return Safe.call(tnsProfileComboBox.getSelectedValue(), v -> v.getName());
     }
 
     public String getUrl() {

@@ -46,7 +46,7 @@ public class ParserDiagnosticsForm extends DBNFormBase {
         super(null, project);
         manager = ParserDiagnosticsManager.get(ensureProject());
 
-        diagnosticsTable = new ParserDiagnosticsTable(this, ParserDiagnosticsTableModel.EMPTY);
+        diagnosticsTable = new ParserDiagnosticsTable(this, new ParserDiagnosticsTableModel(null, null));
         diagnosticsTable.accommodateColumnsSize();
         diagnosticsTableScrollPane.setViewportView(diagnosticsTable);
 

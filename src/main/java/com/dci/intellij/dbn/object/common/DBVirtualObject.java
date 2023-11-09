@@ -228,8 +228,8 @@ public class DBVirtualObject extends DBRootObjectImpl implements PsiReference {
             if (object != null) return object;
         }
 
-        BasePsiElement relevantPsiElement = getRelevantPsiElement();
-        DBObject underlyingObject = relevantPsiElement.getUnderlyingObject();
+        BasePsiElement underlyingPsiElement = getUnderlyingPsiElement();
+        DBObject underlyingObject = underlyingPsiElement.getUnderlyingObject();
         if (underlyingObject != null && underlyingObject != this) {
             DBObject object = underlyingObject.getChildObject(type, name, overload, lookupHidden);
             if (object != null) return object;
@@ -241,8 +241,8 @@ public class DBVirtualObject extends DBRootObjectImpl implements PsiReference {
     @Override
     public void collectChildObjects(DBObjectType objectType, Consumer consumer) {
         super.collectChildObjects(objectType, consumer);
-        BasePsiElement relevantPsiElement = getRelevantPsiElement();
-        DBObject underlyingObject = relevantPsiElement.getUnderlyingObject();
+        BasePsiElement underlyingPsiElement = getUnderlyingPsiElement();
+        DBObject underlyingObject = underlyingPsiElement.getUnderlyingObject();
         if (underlyingObject != null && underlyingObject != this) {
             underlyingObject.collectChildObjects(objectType, consumer);
         }
@@ -308,7 +308,7 @@ public class DBVirtualObject extends DBRootObjectImpl implements PsiReference {
             }
 
             DBObject object = element.getUnderlyingObject();
-            if (object != null && Strings.isNotEmpty(object.getName()) && object.getObjectType().isChildOf(objectType) && !objectList.contains(object)) {
+            if (object != null && object != this && Strings.isNotEmpty(object.getName()) && object.getObjectType().isChildOf(objectType) && !objectList.contains(object)) {
                 if (object instanceof DBVirtualObject) {
                     DBVirtualObject virtualObject = (DBVirtualObject) object;
                     virtualObject.setParentObject(this);

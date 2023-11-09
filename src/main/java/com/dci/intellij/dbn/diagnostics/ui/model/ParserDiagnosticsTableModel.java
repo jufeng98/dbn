@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ParserDiagnosticsTableModel implements DBNReadonlyTableModel<ParserDiagnosticsEntry>, Disposable {
-    public static final ParserDiagnosticsTableModel EMPTY = new ParserDiagnosticsTableModel(null, null);
     public static final String[] INITIAL_COLUMNS = {"#", "File", "Error Count", "Warning Count"};
     public static final String[] DELTA_COLUMNS = {"#", "File", "Previous Errors", "Previous Warnings", "Errors", "Warnings", "Transition"};
 

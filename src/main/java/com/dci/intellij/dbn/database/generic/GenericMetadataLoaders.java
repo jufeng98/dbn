@@ -261,7 +261,7 @@ public interface GenericMetadataLoaders {
         return DatabaseInterfaceInvoker.cached(key, () -> {
             ConnectionHandler connection = ConnectionHandler.local();
             DatabaseCompatibilityInterface compatibilityInterface = connection.getCompatibilityInterface();
-            CachedResultSet resultSet = compatibilityInterface.attempt(feature, loader);
+            CachedResultSet resultSet = compatibilityInterface.attemptFeatureInvocation(feature, loader);
             return Commons.nvl(resultSet, CachedResultSet.EMPTY);
         });
     }

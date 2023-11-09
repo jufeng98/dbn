@@ -14,9 +14,6 @@ public class DBStatementJdwpRunConfigEditorForm extends DBProgramRunConfiguratio
     private JPanel headerPanel;
     private JPanel mainPanel;
     private JPanel hintPanel;
-    private JPanel configPanel;
-
-    private final DBJdwpDebugAttributesForm configForm = new DBJdwpDebugAttributesForm(this);
 
     public DBStatementJdwpRunConfigEditorForm(DBStatementJdwpRunConfig configuration) {
         super(configuration.getProject());
@@ -28,8 +25,6 @@ public class DBStatementJdwpRunConfigEditorForm extends DBProgramRunConfiguratio
         } else {
             hintPanel.setVisible(false);
         }
-
-        configPanel.add(configForm.getMainPanel());
     }
 
     @NotNull
@@ -39,12 +34,8 @@ public class DBStatementJdwpRunConfigEditorForm extends DBProgramRunConfiguratio
     }
 
     @Override
-    public void writeConfiguration(DBStatementJdwpRunConfig configuration) throws ConfigurationException {
-        configForm.writeConfiguration(configuration);
-    }
+    public void writeConfiguration(DBStatementJdwpRunConfig configuration) throws ConfigurationException {}
 
     @Override
-    public void readConfiguration(DBStatementJdwpRunConfig configuration) {
-        configForm.readConfiguration(configuration);
-    }
+    public void readConfiguration(DBStatementJdwpRunConfig configuration) {}
 }

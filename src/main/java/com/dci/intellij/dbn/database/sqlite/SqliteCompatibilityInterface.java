@@ -5,8 +5,7 @@ import com.dci.intellij.dbn.connection.DatabaseAttachmentHandler;
 import com.dci.intellij.dbn.data.sorting.SortDirection;
 import com.dci.intellij.dbn.database.DatabaseFeature;
 import com.dci.intellij.dbn.database.DatabaseObjectTypeId;
-import com.dci.intellij.dbn.database.interfaces.DatabaseCompatibilityInterface;
-import com.dci.intellij.dbn.database.interfaces.DatabaseInterfaces;
+import com.dci.intellij.dbn.database.common.DatabaseCompatibilityInterfaceImpl;
 import com.dci.intellij.dbn.editor.session.SessionStatus;
 import com.dci.intellij.dbn.language.common.QuoteDefinition;
 import com.dci.intellij.dbn.language.common.QuotePair;
@@ -23,19 +22,15 @@ import static com.dci.intellij.dbn.database.DatabaseFeature.OBJECT_SOURCE_EDITIN
 import static com.dci.intellij.dbn.database.DatabaseObjectTypeId.*;
 import static com.dci.intellij.dbn.diagnostics.Diagnostics.conditionallyLog;
 
-class SqliteCompatibilityInterface extends DatabaseCompatibilityInterface {
+class SqliteCompatibilityInterface extends DatabaseCompatibilityInterfaceImpl {
 
     private static final QuoteDefinition IDENTIFIER_QUOTE_DEFINITION = new QuoteDefinition(
             new QuotePair('"', '"'),
             new QuotePair('[', ']'),
             new QuotePair('`', '`'));
 
-    SqliteCompatibilityInterface(DatabaseInterfaces parent) {
-        super(parent);
-    }
-
     @Override
-    protected List<DatabaseObjectTypeId> getSupportedObjectTypes() {
+    public List<DatabaseObjectTypeId> getSupportedObjectTypes() {
         return Arrays.asList(
                 CONSOLE,
                 SCHEMA,
@@ -49,7 +44,7 @@ class SqliteCompatibilityInterface extends DatabaseCompatibilityInterface {
     }
 
     @Override
-    protected List<DatabaseFeature> getSupportedFeatures() {
+    public List<DatabaseFeature> getSupportedFeatures() {
         return Arrays.asList(
                 CONNECTION_ERROR_RECOVERY,
                 OBJECT_SOURCE_EDITING);

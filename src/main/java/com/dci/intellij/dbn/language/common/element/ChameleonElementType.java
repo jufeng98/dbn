@@ -1,6 +1,7 @@
 package com.dci.intellij.dbn.language.common.element;
 
 import com.dci.intellij.dbn.code.common.style.formatting.FormattingDefinition;
+import com.dci.intellij.dbn.common.thread.Read;
 import com.dci.intellij.dbn.language.common.*;
 import com.dci.intellij.dbn.language.common.element.cache.ElementTypeLookupCache;
 import com.dci.intellij.dbn.language.common.element.impl.LeafElementType;
@@ -50,7 +51,7 @@ public class ChameleonElementType extends ILazyParseableElementType implements E
     protected ASTNode doParseContents(@NotNull final ASTNode chameleon, @NotNull final PsiElement psi) {
         Project project = psi.getProject();
         DBLanguageDialect languageDialect = getLanguageDialect();
-        PsiBuilder builder = createBuilder(chameleon, project, languageDialect);
+        PsiBuilder builder = Read.call(() -> createBuilder(chameleon, project, languageDialect));
         PsiParser parser = languageDialect.getParserDefinition().getParser();
         return parser.parse(this, builder).getFirstChildNode();
     }

@@ -1,16 +1,15 @@
 package com.dci.intellij.dbn.execution.method.history.ui;
 
+import com.dci.intellij.dbn.common.ui.tree.DBNColoredTreeCellRenderer;
 import com.dci.intellij.dbn.common.ui.tree.DBNTree;
 import com.dci.intellij.dbn.execution.method.MethodExecutionInput;
 import com.intellij.openapi.Disposable;
-import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.util.ui.tree.TreeUtil;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
@@ -19,7 +18,6 @@ import javax.swing.tree.TreeSelectionModel;
 import java.util.Collections;
 import java.util.List;
 
-import static com.dci.intellij.dbn.common.dispose.Failsafe.guarded;
 import static com.dci.intellij.dbn.common.util.Commons.nvl;
 
 @Getter
@@ -84,21 +82,19 @@ public class MethodExecutionHistoryTree extends DBNTree implements Disposable {
         return null;
     }
 
-    private static class TreeCellRenderer extends ColoredTreeCellRenderer {
+    private static class TreeCellRenderer extends DBNColoredTreeCellRenderer {
         @Override
-        public void customizeCellRenderer(@NotNull JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
-            guarded(() -> {
-                MethodExecutionHistoryTreeNode node = (MethodExecutionHistoryTreeNode) value;
-                setIcon(node.getIcon());
-                append(nvl(node.getName(), ""), SimpleTextAttributes.REGULAR_ATTRIBUTES);
-                if (node instanceof MethodExecutionHistoryTreeModel.MethodTreeNode) {
-                    MethodExecutionHistoryTreeModel.MethodTreeNode methodTreeNode = (MethodExecutionHistoryTreeModel.MethodTreeNode) node;
-                    short overload = methodTreeNode.getOverload();
-                    if (overload > 0) {
-                        append(" #" + overload, SimpleTextAttributes.GRAY_ATTRIBUTES);
-                    }
+        public void customizeCellRenderer(DBNTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+            MethodExecutionHistoryTreeNode node = (MethodExecutionHistoryTreeNode) value;
+            setIcon(node.getIcon());
+            append(nvl(node.getName(), ""), SimpleTextAttributes.REGULAR_ATTRIBUTES);
+            if (node instanceof MethodExecutionHistoryTreeModel.MethodTreeNode) {
+                MethodExecutionHistoryTreeModel.MethodTreeNode methodTreeNode = (MethodExecutionHistoryTreeModel.MethodTreeNode) node;
+                short overload = methodTreeNode.getOverload();
+                if (overload > 0) {
+                    append(" #" + overload, SimpleTextAttributes.GRAY_ATTRIBUTES);
                 }
-            });
+            }
         }
     }
 

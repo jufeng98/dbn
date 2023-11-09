@@ -1,5 +1,8 @@
-/classes/
-/tools/
 /.idea/
+/.gradle/
+/classes/
+/gradle/
+/build/
+/tools/
 /dist/
 /out/

@@ -205,6 +205,8 @@ public interface ConnectionHandler extends StatefulDisposable, EnvironmentTypePr
     default void resetCompatibilityMonitor() {
     }
 
+    boolean isCloudDatabase();
+
     @Nullable
     static ConnectionHandler get(ConnectionId connectionId) {
         if (connectionId == null) return null;

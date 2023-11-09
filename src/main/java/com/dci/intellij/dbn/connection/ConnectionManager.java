@@ -212,7 +212,7 @@ public class ConnectionManager extends ProjectComponentBase implements Persisten
 
         Progress.modal(project, null, false,
                 "Connecting to database",
-                "Trying to connecting to " + connectionName,
+                "Trying to connect to " + connectionName,
                 progress -> {
             try {
                 DBNConnection connection = ConnectionUtil.connect(connectionSettings, null, authentication, SessionId.TEST, false, null);

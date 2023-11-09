@@ -16,13 +16,13 @@ public class Strings extends com.intellij.openapi.util.text.StringUtil {
     private static final Map<String, String> UPPER_CASE_STRING_CACHE = new ConcurrentHashMap<>();
 
     @NotNull
-    public static List<String> tokenize(@NotNull String string, @NotNull String separator) {
-        List<String> tokens = new ArrayList<>();
-        StringTokenizer tokenizer = new StringTokenizer(string, separator);
-        while (tokenizer.hasMoreTokens()) {
-            tokens.add(tokenizer.nextToken().trim());
-        }
-        return tokens;
+    public static List<String> tokenize(@Nullable String string, @NotNull String separator) {
+        if (isEmptyOrSpaces(string)) return Collections.emptyList();
+        return Arrays
+                .stream(string.split(separator))
+                .map(t -> t.trim())
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toList());
     }
 
     public static String concatenate(Collection<String> tokens, String separator) {

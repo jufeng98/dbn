@@ -39,14 +39,14 @@ public class Callback{
 
     public void surround(ThrowableRunnable<Exception> action) {
         try {
-            guarded(() -> before.run());
+            guarded(before, b -> b.run());
             guarded(action);
-            guarded(() -> success.run());
+            guarded(success, s -> s.run());
         } catch (Exception e) {
             conditionallyLog(e);
-            if (failure != null) guarded(() -> failure.accept(e));
+            if (failure != null) guarded(failure, f -> f.accept(e));
         } finally {
-            guarded(() -> after.run());
+            guarded(after, a -> a.run());
         }
     }
 

@@ -1,6 +1,7 @@
 package com.dci.intellij.dbn.database.postgres;
 
 import com.dci.intellij.dbn.connection.DatabaseType;
+import com.dci.intellij.dbn.database.common.DatabaseEnvironmentInterfaceImpl;
 import com.dci.intellij.dbn.database.common.DatabaseInterfacesBase;
 import com.dci.intellij.dbn.database.common.DatabaseNativeDataTypes;
 import com.dci.intellij.dbn.database.interfaces.*;
@@ -12,7 +13,8 @@ import lombok.Getter;
 @Getter
 public class PostgresDatabaseInterfaces extends DatabaseInterfacesBase {
     private final DatabaseMessageParserInterface messageParserInterface = new PostgresMessageParserInterface();
-    private final DatabaseCompatibilityInterface compatibilityInterface = new PostgresCompatibilityInterface(this);
+    private final DatabaseCompatibilityInterface compatibilityInterface = new PostgresCompatibilityInterface();
+    private final DatabaseEnvironmentInterface environmentInterface = new DatabaseEnvironmentInterfaceImpl();
     private final DatabaseMetadataInterface metadataInterface = new PostgresMetadataInterface(this);
     private final DatabaseDataDefinitionInterface dataDefinitionInterface = new PostgresDataDefinitionInterface(this);
     private final DatabaseExecutionInterface executionInterface = new PostgresExecutionInterface();

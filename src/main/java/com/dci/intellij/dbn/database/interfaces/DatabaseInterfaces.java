@@ -17,6 +17,8 @@ public interface DatabaseInterfaces {
 
     DatabaseMessageParserInterface getMessageParserInterface();
 
+    DatabaseEnvironmentInterface getEnvironmentInterface();
+
     DatabaseCompatibilityInterface getCompatibilityInterface();
 
     DatabaseMetadataInterface getMetadataInterface();
