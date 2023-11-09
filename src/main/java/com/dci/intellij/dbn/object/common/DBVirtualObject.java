@@ -308,7 +308,7 @@ public class DBVirtualObject extends DBRootObjectImpl implements PsiReference {
             }
 
             DBObject object = element.getUnderlyingObject();
-            if (object != null && Strings.isNotEmpty(object.getName()) && object.getObjectType().isChildOf(objectType) && !objectList.contains(object)) {
+            if (object != null && object != this && Strings.isNotEmpty(object.getName()) && object.getObjectType().isChildOf(objectType) && !objectList.contains(object)) {
                 if (object instanceof DBVirtualObject) {
                     DBVirtualObject virtualObject = (DBVirtualObject) object;
                     virtualObject.setParentObject(this);
