@@ -1,19 +1,19 @@
 package com.dci.intellij.dbn.object.filter.name.ui;
 
-import com.dci.intellij.dbn.common.ui.tree.DBNColoredTreeCellRenderer;
-import com.dci.intellij.dbn.common.ui.tree.DBNTree;
 import com.dci.intellij.dbn.object.filter.name.CompoundFilterCondition;
 import com.dci.intellij.dbn.object.filter.name.FilterCondition;
 import com.dci.intellij.dbn.object.filter.name.ObjectNameFilter;
 import com.dci.intellij.dbn.object.filter.name.SimpleNameFilterCondition;
+import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.SimpleTextAttributes;
 
+import javax.swing.*;
 import java.util.List;
 
-class FilterSettingsTreeCellRenderer extends DBNColoredTreeCellRenderer {
+class FilterSettingsTreeCellRenderer extends ColoredTreeCellRenderer {
     @Override
-    public void customizeCellRenderer(DBNTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+    public void customizeCellRenderer(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
         if (value instanceof ObjectNameFilter) {
             ObjectNameFilter condition = (ObjectNameFilter) value;
             append(condition.getObjectType().getName().toUpperCase(), SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
