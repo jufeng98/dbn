@@ -2,12 +2,11 @@ package com.dci.intellij.dbn.debugger.jdwp.process;
 
 import com.dci.intellij.dbn.common.dispose.Failsafe;
 import com.dci.intellij.dbn.connection.ConnectionHandler;
-import com.dci.intellij.dbn.connection.config.ConnectionPropertiesSettings;
 import com.dci.intellij.dbn.connection.ConnectionUtil;
-import com.dci.intellij.dbn.debugger.common.config.DBRunConfig;
-import com.dci.intellij.dbn.debugger.jdwp.config.DBJdwpRunConfig;
+import com.dci.intellij.dbn.connection.config.ConnectionDatabaseSettings;
+import com.dci.intellij.dbn.connection.config.ConnectionPropertiesSettings;
+import com.dci.intellij.dbn.debugger.jdwp.process.tunnel.NSTunnelConnectionInitializer;
 import com.dci.intellij.dbn.debugger.jdwp.process.tunnel.NSTunnelConnectionProxy;
-import com.dci.intellij.dbn.debugger.jdwp.process.tunnel.NSTunnelIO;
 import com.intellij.debugger.DebugEnvironment;
 import com.intellij.debugger.DebuggerManagerEx;
 import com.intellij.debugger.DefaultDebugEnvironment;
@@ -20,7 +19,7 @@ import com.intellij.execution.configurations.RunProfileState;
 import com.intellij.execution.executors.DefaultDebugExecutor;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.runners.ExecutionEnvironmentBuilder;
-import com.intellij.util.Range;
+import com.intellij.openapi.project.Project;
 import com.intellij.xdebugger.XDebugProcess;
 import com.intellij.xdebugger.XDebugSession;
 import com.jetbrains.jdi.GenericAttachingConnector;
@@ -28,7 +27,7 @@ import com.jetbrains.jdi.SocketTransportService;
 import com.jetbrains.jdi.VirtualMachineManagerImpl;
 import com.sun.jdi.connect.AttachingConnector;
 import com.sun.jdi.connect.spi.Connection;
-//import oracle.net.ns.NSTunnelConnection;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -40,49 +39,57 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.Properties;
 
+@Slf4j
 public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
 
-    private  String jdwpHostPort = null;
+    private String jdwpHostPort = null;
     private NSTunnelConnectionProxy debugConnection = null;
-    ByteBuffer readBuffer = ByteBuffer.allocate(320000);
-    ByteBuffer writeBuffer = ByteBuffer.allocate(320000);
+    private final ByteBuffer readBuffer = ByteBuffer.allocate(320000);
+    private final ByteBuffer writeBuffer = ByteBuffer.allocate(320000);
 
     DBJdwpCloudProcessStarter(ConnectionHandler connection) {
         super(connection);
     }
 
-    void connect() throws IOException {
-        if (debugConnection != null
-              && debugConnection.isOpen()) {
-                debugConnection.close();
-            }
+    void connect() throws ExecutionException {
+        closeCurrentConnection();
 
         Properties props = new Properties();
-        String URL = getConnection().getSettings().getDatabaseSettings().getConnectionUrl();
+        ConnectionDatabaseSettings databaseSettings = getConnection().getSettings().getDatabaseSettings();
+        String URL = databaseSettings.getConnectionUrl();
 //        debugConnection = NSTunnelConnection.newInstance(URL, props);
+
         try {
-            Driver driver = ConnectionUtil.resolveDriver(getConnection().getSettings().getDatabaseSettings());
+            Driver driver = ConnectionUtil.resolveDriver(databaseSettings);
             if (driver == null) {
                 throw new IOException("Could not find driver for Cloud NSTunnelConnection class loading");
             }
-            debugConnection = NSTunnelIO.newInstance(driver.getClass().getClassLoader(), URL, props);
+            debugConnection = NSTunnelConnectionInitializer.newInstance(driver.getClass().getClassLoader(), URL, props);
             if (debugConnection == null) {
-                throw new IOException("Could not load tunneling object.  Does the current driver support Cloud NS?");
+                throw new IOException("Could not load tunneling object. Does the current driver support Cloud NS?");
             }
-            System.out.println("Connect = " + debugConnection.tunnelAddress());
-        } catch (final Exception e) {
-        	if (e instanceof IOException) {
-        	    throw (IOException) e;
-        	}
-        	else {
-        	    throw new IOException(e);
-        	}
+
+            log.info("Connected " + debugConnection.tunnelAddress());
+
+            jdwpHostPort = debugConnection.tunnelAddress();
+            ConnectionPropertiesSettings connectionSettings = getConnection().getSettings().getPropertiesSettings();
+            connectionSettings.getProperties().put("jdwpHostPort", jdwpHostPort);
+
+        } catch (Throwable e) {
+            throw new ExecutionException("Failed to connect debugger. Cause: " + e.getMessage(), e);
         }
+    }
 
-
-       jdwpHostPort = debugConnection.tunnelAddress();
-       ConnectionPropertiesSettings connectionSettings  =  getConnection().getSettings().getPropertiesSettings();
-       connectionSettings.getProperties().put("jdwpHostPort",jdwpHostPort);
+    private void closeCurrentConnection() {
+        try {
+            if (debugConnection != null && debugConnection.isOpen()) {
+                debugConnection.close();
+            }
+        } catch (Throwable e) {
+            log.warn("Failed to close existing debug connection", e);
+        } finally {
+            debugConnection = null;
+        }
     }
 
 
@@ -91,38 +98,34 @@ public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
      * the behavior of attach connector to use the NSTunnelConnection instead of establish new connection
      * between debugger and database
      * @param session session to be passed to {@link XDebugProcess#XDebugProcess} constructor
-     * @return
-     * @throws ExecutionException
      */
+    @NotNull
     @Override
-    public @NotNull XDebugProcess start(@NotNull XDebugSession session) throws ExecutionException {
+    public XDebugProcess start(@NotNull XDebugSession session) throws ExecutionException {
         fixSocketConnectors();
-        try {
-            connect();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        connect();
+
         Executor executor = DefaultDebugExecutor.getDebugExecutorInstance();
         RunProfile runProfile = session.getRunProfile();
         assertNotNull(runProfile,"invalid run profile");
 
 
-
-        ExecutionEnvironment environment = ExecutionEnvironmentBuilder.create(session.getProject(),executor,runProfile).build();
-        String debugHostName = extractHost(jdwpHostPort);
+        Project project = session.getProject();
+        ExecutionEnvironment environment = ExecutionEnvironmentBuilder.create(project, executor, runProfile).build();
+        String host = extractHost(jdwpHostPort);
         String port = extractPort(jdwpHostPort);
-        RemoteConnection remoteConnection = new RemoteConnection(true,debugHostName,port,false);
-
+        DBJdwpTcpConfig tcpConfig = new DBJdwpTcpConfig(host, Integer.parseInt(port), true);
+        RemoteConnection remoteConnection = new RemoteConnection(true, host, port, false);
 
         RunProfileState state = Failsafe.nn(runProfile.getState(executor, environment));
 
         DebugEnvironment debugEnvironment = new DefaultDebugEnvironment(environment, state, remoteConnection, true);
-        DebuggerManagerEx debuggerManagerEx = DebuggerManagerEx.getInstanceEx(session.getProject());
+        DebuggerManagerEx debuggerManagerEx = DebuggerManagerEx.getInstanceEx(project);
         DebuggerSession debuggerSession = debuggerManagerEx.attachVirtualMachine(debugEnvironment);
         assertNotNull(debuggerSession, "Could not initialize JDWP listener");
 
 
-        return createDebugProcess(session, debuggerSession, debugHostName, Integer.valueOf(port) );
+        return createDebugProcess(session, debuggerSession, tcpConfig);
 
     }
     public static String extractHost(String input) {

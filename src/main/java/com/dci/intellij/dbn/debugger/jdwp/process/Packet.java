@@ -1,15 +1,12 @@
 package com.dci.intellij.dbn.debugger.jdwp.process;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInput;
-import java.io.DataInputStream;
-import java.io.DataOutput;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.io.*;
+
+@Getter
+@Setter
 public abstract class Packet {
 	/* common header fields */
 	private int length;
@@ -26,54 +23,6 @@ public abstract class Packet {
 
 	/* variable length data */
 	private byte[] data;
-
-	public final int getLength() {
-		return length;
-	}
-
-	public final void setLength(int length) {
-		this.length = length;
-	}
-
-	public final int getId() {
-		return id;
-	}
-
-	public final void setId(int id) {
-		this.id = id;
-	}
-
-	public void setFlags(byte flags) {
-		this.flags = flags;
-	}
-
-	public byte getFlags() {
-		return flags;
-	}
-
-	protected void setErrorCommand1(byte errorCommand1) {
-		this.errorCommand1 = errorCommand1;
-	}
-
-	protected byte getErrorCommand1() {
-		return this.errorCommand1;
-	}
-
-	protected byte getErrorCommand2() {
-		return errorCommand2;
-	}
-
-	protected void setErrorCommand2(byte errorCommand2) {
-		this.errorCommand2 = errorCommand2;
-	}
-
-	protected byte[] getData() {
-		return data;
-	}
-
-	protected void setData(byte[] data) {
-		this.data = data;
-	}
 
 	public static Packet read(InputStream is) throws IOException {
 		DataInputStream dis = new DataInputStream(new BufferedInputStream(is));

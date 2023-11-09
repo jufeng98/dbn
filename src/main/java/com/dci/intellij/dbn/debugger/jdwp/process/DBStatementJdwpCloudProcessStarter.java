@@ -11,7 +11,7 @@ public class DBStatementJdwpCloudProcessStarter extends DBJdwpCloudProcessStarte
     }
 
     @Override
-    protected DBJdwpDebugProcess createDebugProcess(@NotNull XDebugSession session, DebuggerSession debuggerSession, String hostname, int tcpPort) {
-        return new DBStatementJdwpDebugProcess(session,debuggerSession,getConnection(),hostname,tcpPort);
+    protected DBJdwpDebugProcess createDebugProcess(@NotNull XDebugSession session, DebuggerSession debuggerSession, DBJdwpTcpConfig tcpConfig) {
+        return new DBStatementJdwpDebugProcess(session,debuggerSession,getConnection(), tcpConfig);
     }
 }

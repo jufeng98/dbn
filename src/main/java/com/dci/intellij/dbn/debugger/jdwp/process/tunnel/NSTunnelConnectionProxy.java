@@ -15,29 +15,29 @@ import java.nio.ByteBuffer;
  */
 public interface NSTunnelConnectionProxy {
     
-    public static final String CONNECTION_PROPERTY_THIN_DEBUG_JDWP = "oracle.jdbc.debugJDWP";
+    String CONNECTION_PROPERTY_THIN_DEBUG_JDWP = "oracle.jdbc.debugJDWP";
     
 	/**
 	 * Close the tunnel.  Discard this instance after closing; don't reuse
 	 */
-	public void close() throws IOException;
-	public boolean isOpen() throws IOException;
+    void close() throws IOException;
+	boolean isOpen() throws IOException;
 	/**
 	 * @return get address of the tunnel endpoint.  This must be passed to the
 	 * driver.
 	 */
-	public String tunnelAddress();
+    String tunnelAddress();
 	
 	/**
 	 * Read the next buffer worth of tunnel data into b. 
 	 * @param b
 	 * @return number of bytes read
 	 */
-	public int read(ByteBuffer b) throws IOException;
+    int read(ByteBuffer b) throws IOException;
 	/**
 	 * Writes the buffer using its internal position and length params.
 	 * @param b
 	 */
-	public void write(ByteBuffer b) throws IOException;
+    void write(ByteBuffer b) throws IOException;
 	
 }

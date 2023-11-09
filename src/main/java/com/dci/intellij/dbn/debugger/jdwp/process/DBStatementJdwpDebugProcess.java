@@ -21,8 +21,8 @@ import java.util.Objects;
 import static com.dci.intellij.dbn.diagnostics.Diagnostics.conditionallyLog;
 
 public class DBStatementJdwpDebugProcess extends DBJdwpDebugProcess<StatementExecutionInput> {
-    DBStatementJdwpDebugProcess(@NotNull XDebugSession session, @NotNull DebuggerSession debuggerSession, ConnectionHandler connection, String hostname, int tcpPort) {
-        super(session, debuggerSession, connection, hostname, tcpPort);
+    DBStatementJdwpDebugProcess(@NotNull XDebugSession session, @NotNull DebuggerSession debuggerSession, ConnectionHandler connection, DBJdwpTcpConfig tcpConfig) {
+        super(session, debuggerSession, connection, tcpConfig);
     }
 
     @Override

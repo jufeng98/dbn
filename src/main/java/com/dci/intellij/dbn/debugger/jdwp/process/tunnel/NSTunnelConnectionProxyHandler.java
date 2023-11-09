@@ -8,23 +8,22 @@ import java.util.Map;
 
 public class NSTunnelConnectionProxyHandler implements InvocationHandler {
 
-	private Object realNSTunnelConnection;
-	private Map<String, Method> methodsByName = new HashMap<>();
+	private final Object realNSTunnelConnection;
+	private final Map<String, Method> methodsByName = new HashMap<>();
 	
-	public NSTunnelConnectionProxyHandler(Object realNSTunnelConection) {
-		this.realNSTunnelConnection = realNSTunnelConection;
+	public NSTunnelConnectionProxyHandler(Object realNSTunnelConnection) {
+		this.realNSTunnelConnection = realNSTunnelConnection;
 		for(Method method : this.realNSTunnelConnection.getClass().getDeclaredMethods()) {
             this.methodsByName.put(method.getName(), method);
         }
 	}
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+		// TODO this assumes none of the methods are overloaded (i.e. same name but different parameters)
 		Method realMethod = this.methodsByName.get(method.getName());
 		realMethod.setAccessible(true);
-		Object result = null;
 		try {
-		    result = realMethod.invoke(this.realNSTunnelConnection, args);
-		    return result;
+		    return realMethod.invoke(this.realNSTunnelConnection, args);
 		} catch (Throwable t) {
 		    // for some reason, method.invoke doesn't recognize that NetException potentally
 		    // thrown by the NSTunnelConnection as being an instance of IOException which

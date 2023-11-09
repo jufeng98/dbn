@@ -73,18 +73,17 @@ public abstract class DBJdwpDebugProcess<T extends ExecutionInput>
     private final DBBreakpointHandler<DBJdwpDebugProcess>[] breakpointHandlers;
     private final DBDebugConsoleLogger console;
     private final String declaredBlockIdentifier;
-    private final int localTcpPort;
-    private final String localTcpHost;
+    private final DBJdwpTcpConfig tcpConfig;
+
 
     protected DBNConnection targetConnection;
     private transient XSuspendContext lastSuspendContext;
 
-    protected DBJdwpDebugProcess(@NotNull final XDebugSession session, DebuggerSession debuggerSession, ConnectionHandler connection, String tcpHost, int tcpPort) {
+    protected DBJdwpDebugProcess(@NotNull XDebugSession session, DebuggerSession debuggerSession, ConnectionHandler connection, DBJdwpTcpConfig tcpConfig) {
         super(session, debuggerSession);
         this.console = new DBDebugConsoleLogger(session);
         this.connection = ConnectionRef.of(connection);
-        this.localTcpPort = tcpPort;
-        this.localTcpHost = tcpHost;
+        this.tcpConfig = tcpConfig;
 
         Project project = session.getProject();
         DatabaseDebuggerManager debuggerManager = DatabaseDebuggerManager.getInstance(project);
@@ -250,10 +249,13 @@ public abstract class DBJdwpDebugProcess<T extends ExecutionInput>
                     targetConnection.beforeClose(() -> releaseSession(targetConnection));
 
 
-                    if (!connection.isCloudDatabase()) {
+                    if (tcpConfig.isLocal()) {
+                        String tcpHost = tcpConfig.getHost();
+                        int tcpPort = tcpConfig.getPort();
+                        console.info("Initializing debug session on address " + tcpHost + ":" + tcpPort);
+
                         DatabaseDebuggerInterface debuggerInterface = getDebuggerInterface();
-                        console.info("Initializing debug session on address " + localTcpHost + ":" + localTcpPort);
-                        debuggerInterface.initializeJdwpSession(targetConnection, localTcpHost, String.valueOf(localTcpPort));
+                        debuggerInterface.initializeJdwpSession(targetConnection, tcpHost, String.valueOf(tcpPort));
                     }
                     console.system("Debug session initialized (JDWP)");
                     set(BREAKPOINT_SETTING_ALLOWED, true);

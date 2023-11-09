@@ -54,6 +54,7 @@ public abstract class DBJdwpLocalProcessStarter extends DBJdwpProcessStarter {
         Range<Integer> portRange = debuggerSettings.getTcpPortRange();
         String tcpHost = resolveTcpHost(debuggerSettings.getTcpHostAddress());
         int tcpPort = findFreePort(tcpHost, portRange.getFrom(), portRange.getTo());
+        DBJdwpTcpConfig tcpConfig = new DBJdwpTcpConfig(tcpHost, tcpPort);
 
         RemoteConnection remoteConnection = new RemoteConnection(true, tcpHost, Integer.toString(tcpPort), true);
 
@@ -64,7 +65,7 @@ public abstract class DBJdwpLocalProcessStarter extends DBJdwpProcessStarter {
         DebuggerSession debuggerSession = debuggerManagerEx.attachVirtualMachine(debugEnvironment);
         assertNotNull(debuggerSession, "Could not initialize JDWP listener");
 
-        return createDebugProcess(session, debuggerSession, tcpHost, tcpPort);
+        return createDebugProcess(session, debuggerSession, tcpConfig);
 
     }
 

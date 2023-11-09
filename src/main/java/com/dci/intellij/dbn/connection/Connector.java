@@ -15,7 +15,6 @@ import com.dci.intellij.dbn.connection.jdbc.DBNConnection;
 import com.dci.intellij.dbn.connection.ssh.SshTunnelConnector;
 import com.dci.intellij.dbn.connection.ssh.SshTunnelManager;
 import com.dci.intellij.dbn.connection.ssl.SslConnectionManager;
-import com.dci.intellij.dbn.debugger.jdwp.process.DBJdwpCloudProcessStarter;
 import com.dci.intellij.dbn.debugger.jdwp.process.tunnel.NSTunnelConnectionProxy;
 import com.dci.intellij.dbn.diagnostics.Diagnostics;
 import com.intellij.openapi.project.Project;
@@ -129,20 +128,18 @@ class Connector {
                 properties.put(Property.APPLICATION_NAME, appName);
             }
 
+            // PROPERTIES
+            Map<String, String> configProperties = connectionSettings.getPropertiesSettings().getProperties();
             if (databaseType == DatabaseType.ORACLE) {
                 properties.put(Property.SESSION_PROGRAM, appName);
                 // i check if we have got jdwpHostPort if yes i get a connection using CONNECTION_PROPERTY_THIN_DEBUG_JDWP property
-                Map<String, String> configProp = connectionSettings.getPropertiesSettings().getProperties();
-                if (configProp.containsKey("jdwpHostPort") && connectionType == ConnectionType.DEBUG) {
-                    properties.put(NSTunnelConnectionProxy.CONNECTION_PROPERTY_THIN_DEBUG_JDWP,configProp.get("jdwpHostPort") );
-                    configProp.remove("jdwpHostPort");
+                // TODO jdwpHostPort may remain resident if this stage is not reached for any reason... (maybe add transient properties container to settings)
+                String jdwpHostPort = configProperties.remove("jdwpHostPort");
+                if (Strings.isNotEmpty(jdwpHostPort)) {
+                    properties.put(NSTunnelConnectionProxy.CONNECTION_PROPERTY_THIN_DEBUG_JDWP, jdwpHostPort);
                 }
             }
-
-            Map<String, String> configProperties = databaseSettings.getParent().getPropertiesSettings().getProperties();
-            if (configProperties != null) {
-                properties.putAll(configProperties);
-            }
+            properties.putAll(configProperties);
 
             // DRIVER
             Driver driver = ConnectionUtil.resolveDriver(databaseSettings);

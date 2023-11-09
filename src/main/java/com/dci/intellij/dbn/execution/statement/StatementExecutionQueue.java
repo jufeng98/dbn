@@ -99,9 +99,7 @@ public final class StatementExecutionQueue extends StatefulDisposableBase {
     public void cancelExecution(StatementExecutionProcessor processor) {
         processor.getExecutionContext().set(QUEUED, false);
         processors.remove(processor);
-        if (processors.size() == 0) {
-            executing = false;
-        }
+        if (processors.isEmpty()) executing = false;
     }
 
     @Override
