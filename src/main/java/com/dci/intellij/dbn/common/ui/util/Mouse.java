@@ -134,7 +134,7 @@ public class Mouse {
 
         private void consume(MouseEvent e, @Nullable Consumer<MouseEvent> consumer) {
             if (consumer == null) return;
-            guarded(() -> consumer.accept(e));
+            guarded(consumer, c -> c.accept(e));
         }
     }
 }

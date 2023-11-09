@@ -38,12 +38,12 @@ public abstract class DialogWithTimeout extends DBNDialog<DialogWithTimeoutForm>
     private class TimeoutTask extends TimerTask {
         @Override
         public void run() {
-            guarded(() -> {
-                if (secondsLeft > 0) {
-                    secondsLeft = secondsLeft -1;
-                    getForm().updateTimeLeft(secondsLeft);
-                    if (secondsLeft == 0) {
-                        Dispatch.run(() -> doDefaultAction());
+            guarded(DialogWithTimeout.this, d -> {
+                if (d.secondsLeft > 0) {
+                    d.secondsLeft = d.secondsLeft -1;
+                    d.getForm().updateTimeLeft(secondsLeft);
+                    if (d.secondsLeft == 0) {
+                        Dispatch.run(() -> d.doDefaultAction());
                     }
                 }
             });

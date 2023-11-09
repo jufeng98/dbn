@@ -168,11 +168,11 @@ public abstract class BasicTextEditorImpl<T extends VirtualFile> extends Statefu
     }
 
     @Override
-    public void setState(@NotNull FileEditorState fileEditorState) {
-        guarded(() -> {
-            if (fileEditorState instanceof BasicTextEditorState) {
-                BasicTextEditorState state = (BasicTextEditorState) fileEditorState;
-                state.applyToEditor(getTextEditor());
+    public void setState(@NotNull FileEditorState state) {
+        guarded(state, s -> {
+            if (s instanceof BasicTextEditorState) {
+                BasicTextEditorState editorState = (BasicTextEditorState) s;
+                editorState.applyToEditor(getTextEditor());
             }
         });
     }

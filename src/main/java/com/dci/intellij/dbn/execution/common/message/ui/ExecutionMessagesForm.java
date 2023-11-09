@@ -7,6 +7,7 @@ import com.dci.intellij.dbn.common.ui.form.DBNFormBase;
 import com.dci.intellij.dbn.common.ui.misc.DBNScrollPane;
 import com.dci.intellij.dbn.common.ui.util.Borders;
 import com.dci.intellij.dbn.common.util.Actions;
+import com.dci.intellij.dbn.common.util.Safe;
 import com.dci.intellij.dbn.connection.config.ConnectionConfigListener;
 import com.dci.intellij.dbn.execution.common.message.action.*;
 import com.dci.intellij.dbn.execution.common.message.ui.tree.MessagesTree;
@@ -52,7 +53,7 @@ public class ExecutionMessagesForm extends DBNFormBase {
 
         ProjectEvents.subscribe(
                 ConnectionConfigListener.TOPIC,
-                ConnectionConfigListener.whenRemoved(id -> messagesTree.removeMessages(id)));
+                ConnectionConfigListener.whenRemoved(id -> Safe.run(messagesTree, t -> t.removeMessages(id))));
     }
 
     public void resetMessagesStatus() {

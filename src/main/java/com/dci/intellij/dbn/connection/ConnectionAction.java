@@ -51,7 +51,7 @@ public abstract class ConnectionAction implements DatabaseContextBase{
         ConnectionHandler connection = getConnection();
         if (connection.isVirtual() || connection.canConnect()) {
             if (interactive || connection.isValid()) {
-                guarded(() -> execute());
+                guarded(this, a -> a.execute());
             } else {
                 String connectionName = connection.getName();
                 Throwable connectionException = connection.getConnectionStatus().getConnectionException();

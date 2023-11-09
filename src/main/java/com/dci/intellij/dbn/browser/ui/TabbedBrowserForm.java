@@ -49,16 +49,16 @@ public class TabbedBrowserForm extends DatabaseBrowserForm{
             public void configurationChanged(Project project) {
                 EnvironmentVisibilitySettings visibilitySettings = getEnvironmentSettings(project).getVisibilitySettings();
                 for (TabInfo tabInfo : listTabs()) {
-                    guarded(() -> {
-                        SimpleBrowserForm browserForm = (SimpleBrowserForm) tabInfo.getObject();
+                    guarded(tabInfo, ti -> {
+                        SimpleBrowserForm browserForm = (SimpleBrowserForm) ti.getObject();
                         ConnectionHandler connection = browserForm.getConnection();
                         if (connection == null) return;
 
                         JBColor environmentColor = connection.getEnvironmentType().getColor();
                         if (visibilitySettings.getConnectionTabs().value()) {
-                            tabInfo.setTabColor(environmentColor);
+                            ti.setTabColor(environmentColor);
                         } else {
-                            tabInfo.setTabColor(null);
+                            ti.setTabColor(null);
                         }
                     });
                 }

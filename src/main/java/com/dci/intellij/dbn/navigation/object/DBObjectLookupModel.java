@@ -140,7 +140,7 @@ public class DBObjectLookupModel extends StatefulDisposableBase implements Choos
     @Override
     @NotNull
     public Object[] getElementsByName(@NotNull String name, boolean checkBoxState, @NotNull String pattern) {
-        return guarded(EMPTY_ARRAY, () -> data.elements().
+        return guarded(EMPTY_ARRAY, data, d -> d.elements().
                 stream().
                 filter(object -> Objects.equals(object.getName(), name)).
                 sorted(Comparator.comparing(DBObject::getQualifiedName)).

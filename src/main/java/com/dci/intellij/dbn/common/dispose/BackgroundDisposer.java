@@ -68,7 +68,7 @@ public final class BackgroundDisposer {
             Runnable task = queue.poll(10, TimeUnit.SECONDS);
             if (task == null) continue;
             try {
-                guarded(() -> task.run());
+                guarded(task, t -> t.run());
             } catch (Exception e) {
                 log.error("Background disposer failed", e);
             }

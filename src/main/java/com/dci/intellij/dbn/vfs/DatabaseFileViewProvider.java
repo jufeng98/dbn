@@ -57,8 +57,8 @@ public class DatabaseFileViewProvider extends SingleRootFileViewProvider {
             if (virtualFile instanceof DBConsoleVirtualFile) {
                 // do not use psi facade
             } else  if (virtualFile instanceof DBObjectVirtualFile) {
-                return guarded(null, () -> {
-                    DBObjectVirtualFile objectFile = (DBObjectVirtualFile) virtualFile;
+                return guarded(null, virtualFile, f -> {
+                    DBObjectVirtualFile objectFile = (DBObjectVirtualFile) f;
                     DBObject object = objectFile.getObject();
                     return DBObjectPsiCache.asPsiFile(object);
                 });

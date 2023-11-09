@@ -4,6 +4,8 @@ import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.dispose.StatefulDisposable;
 import com.dci.intellij.dbn.common.file.util.VirtualFiles;
 import com.dci.intellij.dbn.common.message.MessageType;
+import com.dci.intellij.dbn.common.ui.tree.DBNColoredTreeCellRenderer;
+import com.dci.intellij.dbn.common.ui.tree.DBNTree;
 import com.dci.intellij.dbn.common.util.Commons;
 import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.execution.common.message.ui.tree.node.*;
@@ -14,25 +16,23 @@ import com.dci.intellij.dbn.object.common.DBSchemaObject;
 import com.dci.intellij.dbn.object.lookup.DBObjectRef;
 import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.util.ui.UIUtil;
-import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
 
 import static com.dci.intellij.dbn.diagnostics.Diagnostics.conditionallyLog;
 
-public class MessagesTreeCellRenderer extends ColoredTreeCellRenderer {
+public class MessagesTreeCellRenderer extends DBNColoredTreeCellRenderer {
     public static final JBColor HIGHLIGHT_BACKGROUND = new JBColor(0xE0EFFF, 0x364135);
     public static final SimpleTextAttributes HIGHLIGHT_REGULAR_ATTRIBUTES = SimpleTextAttributes.REGULAR_ATTRIBUTES.derive(SimpleTextAttributes.STYLE_PLAIN, null, HIGHLIGHT_BACKGROUND, null);
     public static final SimpleTextAttributes HIGHLIGHT_GRAY_ATTRIBUTES = SimpleTextAttributes.GRAY_ATTRIBUTES.derive(SimpleTextAttributes.STYLE_PLAIN, null, HIGHLIGHT_BACKGROUND, null);
     public static final SimpleTextAttributes HIGHLIGHT_ERROR_ATTRIBUTES = SimpleTextAttributes.ERROR_ATTRIBUTES.derive(SimpleTextAttributes.STYLE_PLAIN, null, HIGHLIGHT_BACKGROUND, null);
 
     @Override
-    public void customizeCellRenderer(@NotNull JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+    public void customizeCellRenderer(DBNTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
         try {
             if (value instanceof StatefulDisposable) {
                 StatefulDisposable disposable = (StatefulDisposable) value;
@@ -127,10 +127,9 @@ public class MessagesTreeCellRenderer extends ColoredTreeCellRenderer {
 
 
                 MessageType messageType = message.getType();
-                icon =
-                        messageType == MessageType.ERROR ? (isOrphan ? Icons.EXEC_MESSAGES_ERROR_INACTIVE : Icons.EXEC_MESSAGES_ERROR) :
-                                messageType == MessageType.WARNING ? (isOrphan ? Icons.EXEC_MESSAGES_WARNING_INACTIVE : Icons.EXEC_MESSAGES_WARNING) :
-                                        messageType == MessageType.INFO ? (isOrphan ? Icons.EXEC_MESSAGES_INFO_INACTIVE : Icons.EXEC_MESSAGES_INFO) : null;
+                icon = messageType == MessageType.ERROR ? (isOrphan ? Icons.EXEC_MESSAGES_ERROR_INACTIVE : Icons.EXEC_MESSAGES_ERROR) :
+                       messageType == MessageType.WARNING ? (isOrphan ? Icons.EXEC_MESSAGES_WARNING_INACTIVE : Icons.EXEC_MESSAGES_WARNING) :
+                       messageType == MessageType.INFO ? (isOrphan ? Icons.EXEC_MESSAGES_INFO_INACTIVE : Icons.EXEC_MESSAGES_INFO) : null;
 
                 append(message.getText(), isOrphan ?
                         greyAttributes :
@@ -156,10 +155,9 @@ public class MessagesTreeCellRenderer extends ColoredTreeCellRenderer {
 
 
                 MessageType messageType = message.getType();
-                icon =
-                        messageType == MessageType.ERROR ? Icons.EXEC_MESSAGES_ERROR :
-                                messageType == MessageType.WARNING ? Icons.EXEC_MESSAGES_WARNING_INACTIVE :
-                                        messageType == MessageType.INFO ? Icons.EXEC_MESSAGES_INFO : null;
+                icon = messageType == MessageType.ERROR ? Icons.EXEC_MESSAGES_ERROR :
+                       messageType == MessageType.WARNING ? Icons.EXEC_MESSAGES_WARNING_INACTIVE :
+                       messageType == MessageType.INFO ? Icons.EXEC_MESSAGES_INFO : null;
 
                 append(message.getText(), regularAttributes);
                 ConnectionHandler connection = message.getConnection();
