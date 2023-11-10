@@ -18,34 +18,31 @@ public class Exceptions {
 
     @NotNull
     public static SQLException toSqlException(@NotNull Throwable e) {
-        if (e instanceof SQLException) {
-            return (SQLException) e;
-        } else {
-            return new SQLException(nvl(e.getMessage(), e.getClass().getSimpleName()), e);
-        }
+        if (e instanceof SQLException) return (SQLException) e;
+        return new SQLException(throwableMessage(e), e);
     }
 
     @NotNull
     public static SQLException toSqlException(@NotNull Throwable e, String s) {
-        return e instanceof SQLException ?
-                (SQLException) e :
-                new SQLException(s + ": [" + e.getClass().getSimpleName() + "] " + e.getMessage(), e);
+        if (e instanceof SQLException) return (SQLException) e;
+        return new SQLException(s + ": [" + e.getClass().getSimpleName() + "] " + e.getMessage(), e);
     }
 
     @NotNull
     public static SQLTimeoutException toSqlTimeoutException(@NotNull Throwable e, String s) {
-        return e instanceof SQLTimeoutException ?
-                (SQLTimeoutException) e :
-                new SQLTimeoutException(s + ": [" + e.getClass().getSimpleName() + "] " + e.getMessage(), e);
+        if (e instanceof SQLTimeoutException) return (SQLTimeoutException) e;
+        return new SQLTimeoutException(s + ": [" + e.getClass().getSimpleName() + "] " + e.getMessage(), e);
     }
 
     @NotNull
     public static RuntimeException toRuntimeException(@NotNull Throwable e) {
-        if (e instanceof RuntimeException) {
-            return (RuntimeException) e;
-        } else {
-            return new RuntimeException(e.getMessage(), e);
-        }
+        if (e instanceof RuntimeException) return (RuntimeException) e;
+        return new RuntimeException(throwableMessage(e), e);
+    }
+
+    @NotNull
+    private static String throwableMessage(@NotNull Throwable e) {
+        return nvl(e.getMessage(), e.getClass().getSimpleName());
     }
 
     public static <T> T unsupported() {
