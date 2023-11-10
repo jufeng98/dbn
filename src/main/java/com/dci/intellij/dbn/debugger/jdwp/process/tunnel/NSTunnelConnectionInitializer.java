@@ -2,6 +2,7 @@ package com.dci.intellij.dbn.debugger.jdwp.process.tunnel;
 
 import lombok.SneakyThrows;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Properties;
@@ -23,7 +24,11 @@ public class NSTunnelConnectionInitializer {
 
 	@SneakyThrows
 	private static Object invokeStaticNew(Class<?> tunnelClass, String url, Properties props) {
-		Method method = tunnelClass.getMethod("newInstance", String.class, Properties.class);
-		return method.invoke(null, url, props);
+		try {
+			Method method = tunnelClass.getMethod("newInstance", String.class, Properties.class);
+			return method.invoke(null, url, props);
+		} catch (InvocationTargetException e) {
+			throw e.getTargetException();
+		}
 	}
 }
