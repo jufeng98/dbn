@@ -121,7 +121,7 @@ public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
     @NotNull
     @Override
     public XDebugProcess start(@NotNull XDebugSession session) throws ExecutionException {
-        fixSocketConnectors();
+        initConnector();
         connect();
 
         Executor executor = DefaultDebugExecutor.getDebugExecutorInstance();
@@ -158,7 +158,7 @@ public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
         return input.substring(portStartIndex);
     }
 
-    private void fixSocketConnectors() throws ExecutionException {
+    private void initConnector() throws ExecutionException {
         VirtualMachineManager vmManager = getVirtualMachineManager();
         List<AttachingConnector> connectors = vmManager.attachingConnectors();
 
@@ -186,7 +186,7 @@ public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
         }
     }
 
-    private void patchConnector(AttachingConnector connector, TransportService transportService) throws ExecutionException {
+    private static void patchConnector(AttachingConnector connector, TransportService transportService) throws ExecutionException {
         try {
             Class<?> connectorClass = Commons.coalesce(
                     () -> Classes.classForName("com.jetbrains.jdi.GenericAttachingConnector"),
@@ -246,7 +246,7 @@ public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
         debugConnection.read(readBuffer);
         byte[] hello_read = new byte[hello.length];
         readBuffer.get(hello_read);
-        if (Arrays.compare(hello, hello_read) == 0) {
+        if (Arrays.compare(hello, hello_read) == 0) { // TODO java 8 compatibility issue
             System.out.println("handshake not done");
         }
         writePackets(hello);
