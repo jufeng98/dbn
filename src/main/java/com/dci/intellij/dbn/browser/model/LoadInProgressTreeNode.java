@@ -6,6 +6,8 @@ import com.dci.intellij.dbn.common.load.LoadInProgressIcon;
 import com.dci.intellij.dbn.common.ref.WeakRef;
 import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.connection.ConnectionId;
+import com.dci.intellij.dbn.object.common.DBObject;
+import com.dci.intellij.dbn.object.common.list.DBObjectList;
 import com.dci.intellij.dbn.object.type.DBObjectType;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.openapi.Disposable;
@@ -184,7 +186,23 @@ public class LoadInProgressTreeNode extends StatefulDisposableBase implements Br
         if (super.isDisposed()) return true;
 
         BrowserTreeNode parent = WeakRef.get(this.parent);
-        return parent == null || parent.isDisposed();
+        if (parent == null || parent.isDisposed()) {
+            setDisposed(true);
+        }
+
+        if (parent instanceof DBObject) {
+            DBObject object = (DBObject) parent;
+            if (object.isTreeStructureLoaded()) {
+                setDisposed(true);
+            }
+        } else if (parent instanceof DBObjectList) {
+            DBObjectList objectList = (DBObjectList) parent;
+            if (objectList.isLoaded()) {
+                setDisposed(true);
+            }
+        }
+
+        return super.isDisposed();
     }
 
     @Override

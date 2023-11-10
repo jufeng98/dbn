@@ -20,6 +20,7 @@ public class ConnectionFilterSettingsForm extends CompositeConfigurationEditorFo
     private JPanel objectTypesFilterPanel;
     private JPanel objectNameFiltersPanel;
     private JCheckBox hideEmptySchemasCheckBox;
+    private JCheckBox hideAuditColumnsCheckBox;
     private JCheckBox hidePseudoColumnsCheckBox;
 
     public ConnectionFilterSettingsForm(ConnectionFilterSettings settings) {
@@ -28,9 +29,11 @@ public class ConnectionFilterSettingsForm extends CompositeConfigurationEditorFo
         objectNameFiltersPanel.add(settings.getObjectNameFilterSettings().createComponent(), BorderLayout.CENTER);
 
         hideEmptySchemasCheckBox.setSelected(settings.isHideEmptySchemas());
+        hideAuditColumnsCheckBox.setSelected(settings.isHideAuditColumns());
         hidePseudoColumnsCheckBox.setSelected(settings.isHidePseudoColumns());
 
         registerComponent(hideEmptySchemasCheckBox);
+        registerComponent(hideAuditColumnsCheckBox);
         registerComponent(hidePseudoColumnsCheckBox);
     }
 
@@ -44,7 +47,9 @@ public class ConnectionFilterSettingsForm extends CompositeConfigurationEditorFo
     public void applyFormChanges() throws ConfigurationException {
         ConnectionFilterSettings configuration = getConfiguration();
         boolean notifyFilterListenersSchemas = configuration.isHideEmptySchemas() != hideEmptySchemasCheckBox.isSelected();
-        boolean notifyFilterListenersColumns = configuration.isHidePseudoColumns() != hidePseudoColumnsCheckBox.isSelected();
+        boolean notifyFilterListenersColumns =
+                configuration.isHideAuditColumns() != hideAuditColumnsCheckBox.isSelected() ||
+                configuration.isHidePseudoColumns() != hidePseudoColumnsCheckBox.isSelected();
 
         applyFormChanges(configuration);
 
@@ -67,6 +72,7 @@ public class ConnectionFilterSettingsForm extends CompositeConfigurationEditorFo
     @Override
     public void applyFormChanges(ConnectionFilterSettings configuration) throws ConfigurationException {
         configuration.setHideEmptySchemas(hideEmptySchemasCheckBox.isSelected());
+        configuration.setHideAuditColumns(hideAuditColumnsCheckBox.isSelected());
         configuration.setHidePseudoColumns(hidePseudoColumnsCheckBox.isSelected());
     }
 }

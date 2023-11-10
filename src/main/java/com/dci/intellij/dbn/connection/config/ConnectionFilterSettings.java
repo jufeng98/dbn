@@ -9,8 +9,8 @@ import com.dci.intellij.dbn.connection.config.ui.ConnectionFilterSettingsForm;
 import com.dci.intellij.dbn.object.DBColumn;
 import com.dci.intellij.dbn.object.DBSchema;
 import com.dci.intellij.dbn.object.common.DBObject;
+import com.dci.intellij.dbn.object.filter.generic.CompositeColumnFilter;
 import com.dci.intellij.dbn.object.filter.generic.NonEmptySchemaFilter;
-import com.dci.intellij.dbn.object.filter.generic.NonHiddenColumnsFilter;
 import com.dci.intellij.dbn.object.filter.name.ObjectNameFilterSettings;
 import com.dci.intellij.dbn.object.filter.type.ObjectTypeFilterSettings;
 import com.dci.intellij.dbn.object.type.DBObjectType;
@@ -33,6 +33,7 @@ public class ConnectionFilterSettings extends CompositeProjectConfiguration<Conn
     private final ObjectNameFilterSettings objectNameFilterSettings;
     private boolean hideEmptySchemas = false;
     private boolean hidePseudoColumns = false;
+    private boolean hideAuditColumns = false;
 
     private transient final ConnectionSettings connectionSettings;
     private transient final Latent<Filter<DBSchema>> schemaFilter = Latent.mutable(
@@ -40,7 +41,7 @@ public class ConnectionFilterSettings extends CompositeProjectConfiguration<Conn
             () -> loadSchemaFilter());
 
     private transient final Latent<Filter<DBColumn>> columnFilter = Latent.mutable(
-            () -> hidePseudoColumns,
+            () -> CompositeColumnFilter.signature(hidePseudoColumns, hideAuditColumns),
             () -> loadColumnFilter());
 
     @Nullable
@@ -60,11 +61,12 @@ public class ConnectionFilterSettings extends CompositeProjectConfiguration<Conn
     @Nullable
     private Filter<DBColumn> loadColumnFilter() {
         Filter<DBColumn> filter = getObjectNameFilterSettings().getFilter(DBObjectType.COLUMN);
+        Filter<DBColumn> compositeFilter = CompositeColumnFilter.get(hidePseudoColumns, hideAuditColumns);
         if (filter == null) {
-            return hidePseudoColumns ? NonHiddenColumnsFilter.INSTANCE : null;
+            return compositeFilter;
         } else {
-            if (hidePseudoColumns) {
-                return column -> NonHiddenColumnsFilter.INSTANCE.accepts(column) && filter.accepts(column);
+            if (compositeFilter != null) {
+                return column -> compositeFilter.accepts(column) && filter.accepts(column);
             } else {
                 return filter;
             }
@@ -117,6 +119,7 @@ public class ConnectionFilterSettings extends CompositeProjectConfiguration<Conn
     public void readConfiguration(Element element) {
         hideEmptySchemas = booleanAttribute(element, "hide-empty-schemas", hideEmptySchemas);
         hidePseudoColumns = booleanAttribute(element, "hide-pseudo-columns", hidePseudoColumns);
+        hideAuditColumns = booleanAttribute(element, "hide-audit-columns", hideAuditColumns);
         super.readConfiguration(element);
     }
 
@@ -124,6 +127,7 @@ public class ConnectionFilterSettings extends CompositeProjectConfiguration<Conn
     public void writeConfiguration(Element element) {
         setBooleanAttribute(element, "hide-empty-schemas", hideEmptySchemas);
         setBooleanAttribute(element, "hide-pseudo-columns", hidePseudoColumns);
+        setBooleanAttribute(element, "hide-audit-columns", hideAuditColumns);
         super.writeConfiguration(element);
     }
 

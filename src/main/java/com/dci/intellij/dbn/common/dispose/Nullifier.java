@@ -15,6 +15,7 @@ import com.intellij.util.ReflectionUtil;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.script.ScriptEngine;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.lang.reflect.Field;
@@ -50,7 +51,8 @@ public final class Nullifier {
             DataModel.class,
             TreePath.class,
             EventListener.class,
-            DBNComponent.class
+            DBNComponent.class,
+            ScriptEngine.class
     };
 
     public static void clearCollection(Collection<?> collection) {

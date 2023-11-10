@@ -26,6 +26,7 @@ public class ObjectListActionGroup extends DefaultActionGroup {
             }
         } else if (objectList.getObjectType() == DBObjectType.COLUMN) {
             add(new HidePseudoColumnsToggleAction(connection));
+            add(new HideAuditColumnsToggleAction(connection));
         }
     }
 }

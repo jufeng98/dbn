@@ -8,6 +8,7 @@ import com.dci.intellij.dbn.common.event.ProjectEvents;
 import com.dci.intellij.dbn.common.file.VirtualFileInfo;
 import com.dci.intellij.dbn.common.file.util.FileSearchRequest;
 import com.dci.intellij.dbn.common.file.util.VirtualFiles;
+import com.dci.intellij.dbn.common.thread.Background;
 import com.dci.intellij.dbn.common.thread.Dispatch;
 import com.dci.intellij.dbn.common.thread.Progress;
 import com.dci.intellij.dbn.common.ui.util.Lists;
@@ -62,6 +63,7 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.dci.intellij.dbn.common.component.Components.projectService;
 import static com.dci.intellij.dbn.common.dispose.Checks.isNotValid;
@@ -81,7 +83,7 @@ public class DDLFileAttachmentManager extends ProjectComponentBase implements Pe
 
     public static final String COMPONENT_NAME = "DBNavigator.Project.DDLFileAttachmentManager";
 
-    private final Map<String, DBObjectRef<DBSchemaObject>> mappings = new HashMap<>();
+    private final Map<String, DBObjectRef<DBSchemaObject>> mappings = new ConcurrentHashMap<>();
     private DDLFileAttachmentManager(@NotNull Project project) {
         super(project, COMPONENT_NAME);
 
@@ -544,7 +546,6 @@ public class DDLFileAttachmentManager extends ProjectComponentBase implements Pe
 
     @Override
     public void loadComponentState(@NotNull Element element) {
-        VirtualFileManager virtualFileManager = VirtualFileManager.getInstance();
         for (Element child : element.getChildren()) {
             String fileUrl = stringAttribute(child, "file-url");
             if (StringUtil.isEmpty(fileUrl)) {
@@ -554,17 +555,18 @@ public class DDLFileAttachmentManager extends ProjectComponentBase implements Pe
 
             if (StringUtil.isNotEmpty(fileUrl)) {
                 fileUrl = VirtualFiles.ensureFileUrl(fileUrl);
-
-                VirtualFile virtualFile = virtualFileManager.findFileByUrl(fileUrl);
-                if (virtualFile != null) {
-                    DBObjectRef<DBSchemaObject> objectRef = DBObjectRef.from(child);
-                    if (objectRef != null) {
-                        mappings.put(fileUrl, objectRef);
-                    }
-                }
+                DBObjectRef<DBSchemaObject> objectRef = DBObjectRef.from(child);
+                if (objectRef != null) mappings.put(fileUrl, objectRef);
             }
         }
+        Background.run(getProject(), () -> cleanupFileMappings());
     }
+
+    public void cleanupFileMappings(){
+        VirtualFileManager virtualFileManager = VirtualFileManager.getInstance();
+        mappings.keySet().removeIf(url -> virtualFileManager.findFileByUrl(url) == null);
+    }
+
 
     public void warmUpAttachedDDLFiles(VirtualFile file) {
         if (file instanceof DBEditableObjectVirtualFile) {

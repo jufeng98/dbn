@@ -12,10 +12,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class HidePseudoColumnsToggleAction extends AbstractConnectionToggleAction {
 
-    HidePseudoColumnsToggleAction(ConnectionHandler connection) {
+    public HidePseudoColumnsToggleAction(ConnectionHandler connection) {
         super("Hide pseudo columns", connection);
-
     }
+
     @Override
     public boolean isSelected(@NotNull AnActionEvent e) {
         ConnectionHandler connection = getConnection();
