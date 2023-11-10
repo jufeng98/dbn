@@ -14,7 +14,7 @@ public class MethodExecutionHistoryAction extends ProjectAction {
     protected void actionPerformed(@NotNull AnActionEvent e, @NotNull Project project) {
         ConnectionManager connectionManager = ConnectionManager.getInstance(project);
         ConnectionBundle connectionBundle = connectionManager.getConnectionBundle();
-        if (connectionBundle.size() == 0) {
+        if (connectionBundle.isEmpty()) {
             connectionManager.promptMissingConnection();
             return;
         }

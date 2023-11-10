@@ -301,6 +301,7 @@
         <projectService serviceImplementation="com.dci.intellij.dbn.diagnostics.ParserDiagnosticsManager"/>
         <projectService serviceImplementation="com.dci.intellij.dbn.browser.DatabaseBrowserManager"/>
         <projectService serviceImplementation="com.dci.intellij.dbn.common.environment.EnvironmentManager"/>
+        <projectService serviceImplementation="com.dci.intellij.dbn.common.expression.ExpressionEvaluationManager"/>
         <projectService serviceImplementation="com.dci.intellij.dbn.connection.ConnectionManager"/>
         <projectService serviceImplementation="com.dci.intellij.dbn.connection.mapping.FileConnectionContextManager"/>
         <projectService serviceImplementation="com.dci.intellij.dbn.connection.transaction.DatabaseTransactionManager"/>

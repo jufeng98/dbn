@@ -17,7 +17,7 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
-import static com.dci.intellij.dbn.common.dispose.Checks.allValid;
+import static com.dci.intellij.dbn.common.dispose.Checks.isNotValid;
 import static com.dci.intellij.dbn.common.dispose.Failsafe.guarded;
 
 public abstract class BrowserTreeModel extends StatefulDisposableBase implements TreeModel, StatefulDisposable {
@@ -57,10 +57,11 @@ public abstract class BrowserTreeModel extends StatefulDisposableBase implements
     }
 
     public void notifyListeners(BrowserTreeNode treeNode, final TreeEventType eventType) {
-        if (allValid(this, treeNode)) {
-            TreePath treePath = DatabaseBrowserUtils.createTreePath(treeNode);
-            Trees.notifyTreeModelListeners(this, listeners, treePath, eventType);
-        }
+        if (isNotValid(this)) return;
+        if (isNotValid(treeNode)) return;
+
+        TreePath treePath = DatabaseBrowserUtils.createTreePath(treeNode);
+        Trees.notifyTreeModelListeners(this, listeners, treePath, eventType);
     }
 
     @NotNull
