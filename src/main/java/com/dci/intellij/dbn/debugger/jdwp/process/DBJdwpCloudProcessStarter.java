@@ -25,7 +25,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.xdebugger.XDebugProcess;
 import com.intellij.xdebugger.XDebugSession;
 import com.jetbrains.jdi.SocketTransportService;
-import com.jetbrains.jdi.VirtualMachineManagerImpl;
 import com.sun.jdi.VirtualMachineManager;
 import com.sun.jdi.connect.AttachingConnector;
 import com.sun.jdi.connect.spi.Connection;
@@ -35,6 +34,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.sql.Driver;
@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Properties;
 
 import static com.dci.intellij.dbn.common.util.Lists.first;
+import static com.dci.intellij.dbn.common.util.Unsafe.cast;
 import static com.dci.intellij.dbn.diagnostics.Diagnostics.conditionallyLog;
 
 @Slf4j
@@ -158,7 +159,7 @@ public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
     }
 
     private void fixSocketConnectors() throws ExecutionException {
-        VirtualMachineManager vmManager = VirtualMachineManagerImpl.virtualMachineManager();
+        VirtualMachineManager vmManager = getVirtualMachineManager();
         List<AttachingConnector> connectors = vmManager.attachingConnectors();
 
         AttachingConnector connector = first(connectors, c ->
@@ -171,9 +172,22 @@ public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
         patchConnector(connector, transportService);
     }
 
+    private static VirtualMachineManager getVirtualMachineManager() throws ExecutionException {
+        try {
+            Class<?> managerClass = Commons.coalesce(
+                    () -> Classes.classForName("com.jetbrains.jdi.VirtualMachineManagerImpl"),
+                    () -> Classes.classForName("com.sun.tools.jdi.VirtualMachineManagerImpl"));
+            if (managerClass == null)  throw new IllegalStateException("JDI components not accessible");
+            Method initMethod = managerClass.getMethod("virtualMachineManager");
+
+            return cast(initMethod.invoke(null));
+        } catch (Throwable e) {
+            throw new ExecutionException("Failed to initialise virtual machine", e);
+        }
+    }
+
     private void patchConnector(AttachingConnector connector, TransportService transportService) throws ExecutionException {
         try {
-
             Class<?> connectorClass = Commons.coalesce(
                     () -> Classes.classForName("com.jetbrains.jdi.GenericAttachingConnector"),
                     () -> Classes.classForName("com.sun.tools.jdi.GenericAttachingConnector"));
