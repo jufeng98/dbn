@@ -22,11 +22,12 @@ import com.intellij.execution.runners.ExecutionEnvironmentBuilder;
 import com.intellij.openapi.project.Project;
 import com.intellij.xdebugger.XDebugProcess;
 import com.intellij.xdebugger.XDebugSession;
-import com.jetbrains.jdi.GenericAttachingConnector;
-import com.jetbrains.jdi.SocketTransportService;
-import com.jetbrains.jdi.VirtualMachineManagerImpl;
+import com.sun.jdi.VirtualMachineManager;
 import com.sun.jdi.connect.AttachingConnector;
 import com.sun.jdi.connect.spi.Connection;
+import com.sun.tools.jdi.GenericAttachingConnector;
+import com.sun.tools.jdi.SocketTransportService;
+import com.sun.tools.jdi.VirtualMachineManagerImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
@@ -140,7 +141,7 @@ public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
     }
 
     private void fixSocketConnectors() {
-        VirtualMachineManagerImpl vmm = VirtualMachineManagerImpl.virtualMachineManager();
+        VirtualMachineManager vmm = VirtualMachineManagerImpl.virtualMachineManager();
         Optional<AttachingConnector> curConnector =
                 vmm.attachingConnectors().stream().filter(l -> l.name().equals("com.jetbrains.jdi.SocketAttach")).findFirst();
         curConnector.ifPresentOrElse(

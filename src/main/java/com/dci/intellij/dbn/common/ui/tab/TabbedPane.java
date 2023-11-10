@@ -10,7 +10,6 @@ import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.ui.tabs.TabInfo;
 import com.intellij.ui.tabs.impl.JBEditorTabs;
 import com.intellij.util.containers.ContainerUtil;
-import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,7 +17,6 @@ import javax.swing.*;
 import java.util.Map;
 import java.util.Objects;
 
-@Getter
 @Setter
 public class TabbedPane extends JBEditorTabs implements StatefulDisposable {
     private boolean disposed;

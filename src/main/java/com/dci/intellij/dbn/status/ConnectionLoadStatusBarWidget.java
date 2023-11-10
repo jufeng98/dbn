@@ -37,7 +37,6 @@ public class ConnectionLoadStatusBarWidget extends ProjectComponentBase implemen
         if (isDisposed()) return;
         setDisposed(true);
 
-        StatusBarWidget.super.dispose();
         disposeInner();
     }
 }

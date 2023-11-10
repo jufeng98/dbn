@@ -136,7 +136,6 @@ public class DatasetEditorStatusBarWidget extends ProjectComponentBase implement
 
     @Override
     public void dispose() {
-        CustomStatusBarWidget.super.dispose();
         disposeInner();
     }
 }
