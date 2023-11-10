@@ -28,6 +28,7 @@ import com.sun.jdi.VirtualMachineManager;
 import com.sun.jdi.connect.AttachingConnector;
 import com.sun.jdi.connect.spi.Connection;
 import com.sun.jdi.connect.spi.TransportService;
+import com.sun.tools.jdi.SocketTransportService;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
