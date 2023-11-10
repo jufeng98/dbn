@@ -1,6 +1,8 @@
 package com.dci.intellij.dbn.debugger.jdwp.process;
 
 import com.dci.intellij.dbn.common.dispose.Failsafe;
+import com.dci.intellij.dbn.common.util.Classes;
+import com.dci.intellij.dbn.common.util.Commons;
 import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.connection.ConnectionUtil;
 import com.dci.intellij.dbn.connection.config.ConnectionDatabaseSettings;
@@ -25,9 +27,7 @@ import com.intellij.xdebugger.XDebugSession;
 import com.sun.jdi.VirtualMachineManager;
 import com.sun.jdi.connect.AttachingConnector;
 import com.sun.jdi.connect.spi.Connection;
-import com.sun.tools.jdi.GenericAttachingConnector;
-import com.sun.tools.jdi.SocketTransportService;
-import com.sun.tools.jdi.VirtualMachineManagerImpl;
+import com.sun.jdi.connect.spi.TransportService;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,8 +37,11 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.sql.Driver;
 import java.util.Arrays;
-import java.util.Optional;
+import java.util.List;
 import java.util.Properties;
+
+import static com.dci.intellij.dbn.common.util.Lists.first;
+import static com.dci.intellij.dbn.diagnostics.Diagnostics.conditionallyLog;
 
 @Slf4j
 public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
@@ -53,7 +56,7 @@ public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
     }
 
     void connect() throws ExecutionException {
-        closeCurrentConnection();
+        closeDebugConnection();
 
         Properties props = new Properties();
         ConnectionDatabaseSettings databaseSettings = getConnection().getSettings().getDatabaseSettings();
@@ -65,7 +68,8 @@ public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
             if (driver == null) {
                 throw new IOException("Could not find driver for Cloud NSTunnelConnection class loading");
             }
-            debugConnection = NSTunnelConnectionInitializer.newInstance(driver.getClass().getClassLoader(), URL, props);
+            ClassLoader classLoader = driver.getClass().getClassLoader();
+            debugConnection = NSTunnelConnectionInitializer.newInstance(classLoader, URL, props);
             if (debugConnection == null) {
                 throw new IOException("Could not load tunneling object. Does the current driver support Cloud NS?");
             }
@@ -81,11 +85,22 @@ public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
         }
     }
 
-    private void closeCurrentConnection() {
+    private boolean isDebugConnectionOpen() {
+        if (debugConnection == null) return false;
         try {
-            if (debugConnection != null && debugConnection.isOpen()) {
-                debugConnection.close();
-            }
+            return debugConnection.isOpen();
+        } catch (Throwable e) {
+            conditionallyLog(e);
+            return false;
+        }
+    }
+
+    private void closeDebugConnection() {
+        try {
+            if (debugConnection == null) return;
+            if (!debugConnection.isOpen()) return;
+
+            debugConnection.close();
         } catch (Throwable e) {
             log.warn("Failed to close existing debug connection", e);
         } finally {
@@ -140,73 +155,71 @@ public abstract class DBJdwpCloudProcessStarter extends DBJdwpProcessStarter{
         return input.substring(portStartIndex);
     }
 
-    private void fixSocketConnectors() {
-        VirtualMachineManager vmm = VirtualMachineManagerImpl.virtualMachineManager();
-        Optional<AttachingConnector> curConnector =
-                vmm.attachingConnectors().stream().filter(l -> l.name().equals("com.jetbrains.jdi.SocketAttach")).findFirst();
-        curConnector.ifPresentOrElse(
-                c -> {
+    private void fixSocketConnectors() throws ExecutionException {
+        VirtualMachineManager vmManager = VirtualMachineManagerImpl.virtualMachineManager();
+        List<AttachingConnector> connectors = vmManager.attachingConnectors();
 
-                    Class<? extends GenericAttachingConnector> class1 =
-                            GenericAttachingConnector.class;
-                    Field declaredField = null;
-                    try {
-                        declaredField = class1.getDeclaredField("transportService");
-                    } catch (NoSuchFieldException | SecurityException e) {
-                        // TODO Auto-generated catch block
-                        throw new RuntimeException(e);
-                    }
-                    declaredField.setAccessible(true);
-                    SocketTransportService sts = new SocketTransportService() {
+        AttachingConnector connector = first(connectors, c ->
+                c.name().equals("com.jetbrains.jdi.SocketAttach") ||
+                c.name().equals("com.sun.jdi.SocketAttach"));
 
-                        @Override
-                        public Connection attach(String address, long attachTimeout, long handshakeTimeout) throws IOException {
-                            doHandCheck();
+        if (connector == null) throw new ExecutionException("Failed to initialise socket connector");
 
-                            Connection foo = new Connection() {
+        TransportService transportService = createTransportService();
+        patchConnector(connector, transportService);
+    }
 
+    private void patchConnector(AttachingConnector connector, TransportService transportService) throws ExecutionException {
+        try {
 
-                                @Override
-                                public byte[] readPacket() throws IOException {
-                                    byte[] packet = readPackets();
-                                    return packet;
-                                }
+            Class<?> connectorClass = Commons.coalesce(
+                    () -> Classes.classForName("com.jetbrains.jdi.GenericAttachingConnector"),
+                    () -> Classes.classForName("com.sun.tools.jdi.GenericAttachingConnector"));
 
-                                @Override
-                                public void writePacket(byte[] pkt) throws IOException {
-                                    writePackets(pkt);
-                                }
+            if (connectorClass == null) throw new IllegalStateException("JDI components not accessible");
 
-                                @Override
-                                public void close() throws IOException {
-                                    debugConnection.close();
+            Field declaredField = connectorClass.getDeclaredField("transportService");
+            declaredField.setAccessible(true);
+            declaredField.set(connector, transportService);
+        } catch (Throwable e) {
+            throw new ExecutionException("Failed to initialise transport service", e);
+        }
+    }
 
-                                }
+    @NotNull
+    private TransportService createTransportService() {
+        // TODO jdi backward compatibility (attempt raw implementation of TransportService)
+        return new SocketTransportService() {
+            @Override
+            public Connection attach(String address, long attachTimeout, long handshakeTimeout) throws IOException {
+                doHandCheck();
+                return createConnection();
+            }
+        };
+    }
 
-                                @Override
-                                public boolean isOpen() {
-                                    try {
-                                        return debugConnection.isOpen();
-                                    } catch (IOException e) {
-                                        throw new RuntimeException(e);
-                                    }
-                                }
+    @NotNull
+    private Connection createConnection() {
+        return new Connection() {
+            public byte[] readPacket() throws IOException {
+                return readPackets();
+            }
 
-                            };
-                            return foo;
-                        }
+            @Override
+            public void writePacket(byte[] packet) throws IOException {
+                writePackets(packet);
+            }
 
-                    };
-                    try {
-                        declaredField.set(c, sts);
-                    } catch (IllegalArgumentException | IllegalAccessException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                },
-                () -> {
-                    throw new RuntimeException("Expected to find listening connector");
-                });
+            @Override
+            public void close() {
+                closeDebugConnection();
+            }
+
+            @Override
+            public boolean isOpen() {
+                return isDebugConnectionOpen();
+            }
+        };
     }
 
     void doHandCheck() throws IOException {
