@@ -1,12 +1,10 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
   id("java")
   id("org.jetbrains.kotlin.jvm") version "1.7.20"
   id("org.jetbrains.intellij") version "1.15.0"
 }
 
-group = "com.dci"
+group = "com.dbn"
 version = "3.4.1710.0"
 
 repositories {

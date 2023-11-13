@@ -1,0 +1,52 @@
+package com.dbn.diagnostics.action;
+
+import com.dbn.common.icon.Icons;
+import com.dbn.common.util.Messages;
+import com.dbn.diagnostics.ParserDiagnosticsManager;
+import com.dbn.diagnostics.data.ParserDiagnosticsResult;
+import com.dbn.diagnostics.ui.ParserDiagnosticsForm;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.openapi.project.Project;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import static com.dbn.common.message.MessageCallback.when;
+
+public class ParserDiagnosticsDeleteAction extends AbstractParserDiagnosticsAction {
+    public ParserDiagnosticsDeleteAction() {
+        super("Delete Result", Icons.ACTION_DELETE);
+    }
+
+    @Override
+    protected void actionPerformed(@NotNull AnActionEvent e, @NotNull Project project, @NotNull ParserDiagnosticsForm form) {
+        ParserDiagnosticsResult result = form.getSelectedResult();
+        if (result != null) {
+            Messages.showQuestionDialog(project,
+                    "Delete diagnostics result",
+                    "Are you sure you want to delete the diagnostic result " + result.getName(),
+                    Messages.OPTIONS_YES_NO, 0,
+                    option -> when(option == 0, () -> {
+                        ParserDiagnosticsManager manager = getManager(project);
+                        manager.deleteResult(result);
+                        ParserDiagnosticsResult latestResult = manager.getLatestResult();
+                        form.refreshResults();
+                        form.selectResult(latestResult);
+                    }));
+        }
+
+
+    }
+
+    @Override
+    protected void update(@NotNull AnActionEvent e, @NotNull Presentation presentation, @NotNull Project project, @Nullable ParserDiagnosticsForm form) {
+        presentation.setText("Delete Result");
+        if (form != null) {
+            ParserDiagnosticsResult result = form.getSelectedResult();
+            presentation.setEnabled(result != null);
+        } else {
+            presentation.setEnabled(false);
+        }
+
+    }
+}

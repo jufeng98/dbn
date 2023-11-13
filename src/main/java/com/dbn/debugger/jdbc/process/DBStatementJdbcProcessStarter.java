@@ -1,0 +1,19 @@
+package com.dbn.debugger.jdbc.process;
+
+import com.dbn.connection.ConnectionHandler;
+import com.dbn.debugger.common.process.DBDebugProcessStarter;
+import com.intellij.xdebugger.XDebugProcess;
+import com.intellij.xdebugger.XDebugSession;
+import org.jetbrains.annotations.NotNull;
+
+public class DBStatementJdbcProcessStarter extends DBDebugProcessStarter {
+    DBStatementJdbcProcessStarter(ConnectionHandler connection) {
+        super(connection);
+    }
+
+    @NotNull
+    @Override
+    public XDebugProcess start(@NotNull XDebugSession session) {
+        return new DBStatementJdbcDebugProcess(session, getConnection());
+    }
+}
