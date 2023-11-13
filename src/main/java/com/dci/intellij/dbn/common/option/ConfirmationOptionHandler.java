@@ -1,7 +1,7 @@
 package com.dci.intellij.dbn.common.option;
 
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.options.PersistentConfiguration;
 import com.dci.intellij.dbn.common.options.setting.Settings;
 import com.dci.intellij.dbn.common.util.Titles;

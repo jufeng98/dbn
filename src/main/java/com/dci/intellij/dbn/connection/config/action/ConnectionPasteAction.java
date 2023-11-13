@@ -1,7 +1,7 @@
 package com.dci.intellij.dbn.connection.config.action;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.clipboard.Clipboard;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.connection.config.ui.ConnectionBundleSettingsForm;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;

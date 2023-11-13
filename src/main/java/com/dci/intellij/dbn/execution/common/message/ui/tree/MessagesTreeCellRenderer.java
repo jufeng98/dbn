@@ -1,8 +1,8 @@
 package com.dci.intellij.dbn.execution.common.message.ui.tree;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.dispose.StatefulDisposable;
 import com.dci.intellij.dbn.common.file.util.VirtualFiles;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.message.MessageType;
 import com.dci.intellij.dbn.common.ui.tree.DBNColoredTreeCellRenderer;
 import com.dci.intellij.dbn.common.ui.tree.DBNTree;

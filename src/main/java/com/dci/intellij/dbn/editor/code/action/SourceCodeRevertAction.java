@@ -1,8 +1,8 @@
 package com.dci.intellij.dbn.editor.code.action;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.dispose.Checks;
 import com.dci.intellij.dbn.common.environment.EnvironmentManager;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.option.ConfirmationOptionHandler;
 import com.dci.intellij.dbn.editor.code.SourceCodeEditor;
 import com.dci.intellij.dbn.editor.code.SourceCodeManager;

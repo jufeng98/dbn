@@ -1,7 +1,7 @@
 package com.dci.intellij.dbn.object.type;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.content.DynamicContentType;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.util.Strings;
 import com.dci.intellij.dbn.connection.context.DatabaseContext;
 import com.dci.intellij.dbn.database.DatabaseObjectTypeId;

@@ -1,8 +1,8 @@
 package com.dci.intellij.dbn.editor.session.action;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.action.DataKeys;
 import com.dci.intellij.dbn.common.action.Lookups;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.ui.misc.DBNComboBoxAction;
 import com.dci.intellij.dbn.common.util.Context;
 import com.dci.intellij.dbn.editor.session.SessionBrowser;

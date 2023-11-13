@@ -1,8 +1,8 @@
 package com.dci.intellij.dbn.object.filter.quick.ui;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.dispose.DisposableContainers;
 import com.dci.intellij.dbn.common.filter.Filter;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.text.TextContent;
 import com.dci.intellij.dbn.common.ui.ValueSelector;
 import com.dci.intellij.dbn.common.ui.ValueSelectorOption;

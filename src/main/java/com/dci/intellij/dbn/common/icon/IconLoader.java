@@ -1,6 +1,5 @@
 package com.dci.intellij.dbn.common.icon;
 
-import com.dci.intellij.dbn.common.Icons;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
@@ -12,11 +11,11 @@ import static com.intellij.openapi.util.IconLoader.findIcon;
 
 @Slf4j
 @UtilityClass
-public class IconLoader {
-    public static final Map<String, Icon> REGISTRY = new HashMap<>();
+class IconLoader {
+    static final Map<String, Icon> REGISTRY = new HashMap<>();
 
-    public static Icon load(String path) {
-        return new IconDelegate(path) {
+    static Icon load(String path) {
+        return new LatentIcon(path) {
             @Override
             protected Icon load() {
                 String path = getPath();
@@ -37,7 +36,7 @@ public class IconLoader {
     }
 
 
-    public static Icon load(String key, String path) {
+    static Icon load(String key, String path) {
         Icon icon = load(path);
         REGISTRY.put(key, icon);
         return icon;

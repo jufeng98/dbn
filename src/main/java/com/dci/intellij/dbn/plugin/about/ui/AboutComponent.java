@@ -1,7 +1,7 @@
 package com.dci.intellij.dbn.plugin.about.ui;
 
 import com.dci.intellij.dbn.DatabaseNavigator;
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.ui.form.DBNFormBase;
 import com.dci.intellij.dbn.common.ui.listener.PopupCloseListener;
 import com.dci.intellij.dbn.common.ui.util.Mouse;

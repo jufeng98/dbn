@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.editor.session.ui;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.action.ToggleAction;
 import com.dci.intellij.dbn.common.action.UserDataKeys;
 import com.dci.intellij.dbn.common.color.Colors;

@@ -1,7 +1,7 @@
 package com.dci.intellij.dbn.execution.method.result.action;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.action.ProjectAction;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.options.ConfigId;
 import com.dci.intellij.dbn.options.ProjectSettingsManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;

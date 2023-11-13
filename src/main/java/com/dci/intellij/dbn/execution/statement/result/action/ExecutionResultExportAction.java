@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.execution.statement.result.action;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.util.Dialogs;
 import com.dci.intellij.dbn.data.export.ui.ExportDataDialog;
 import com.dci.intellij.dbn.data.grid.ui.table.resultSet.ResultSetTable;

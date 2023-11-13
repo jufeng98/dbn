@@ -1,7 +1,7 @@
 package com.dci.intellij.dbn.object.dependency.ui;
 
+import com.dci.intellij.dbn.common.icon.CompositeIcon;
 import com.dci.intellij.dbn.common.load.LoadInProgressIcon;
-import com.dci.intellij.dbn.common.ui.MergedIcon;
 import com.dci.intellij.dbn.common.ui.tree.DBNColoredTreeCellRenderer;
 import com.dci.intellij.dbn.common.ui.tree.DBNTree;
 import com.dci.intellij.dbn.common.ui.tree.Trees;
@@ -39,7 +39,7 @@ public class ObjectDependencyTreeCellRenderer extends DBNColoredTreeCellRenderer
             ObjectDependencyTreeModel model = node.getModel();
             Icon dependencyTypeIcon = model.getDependencyType().getSoftIcon();
             Icon icon = node.getParent() == null ? objectIcon :
-                    objectIcon == null ? dependencyTypeIcon : new MergedIcon(dependencyTypeIcon, 1, objectIcon);
+                    objectIcon == null ? dependencyTypeIcon : new CompositeIcon(dependencyTypeIcon, 1, objectIcon);
             setIcon(icon);
 
             setBackground(selected ? UIUtil.getTreeSelectionBackground() : regularAttributes.getBgColor());

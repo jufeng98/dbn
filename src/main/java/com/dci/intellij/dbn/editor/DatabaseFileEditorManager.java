@@ -1,10 +1,10 @@
 package com.dci.intellij.dbn.editor;
 
 import com.dci.intellij.dbn.DatabaseNavigator;
-import com.dci.intellij.dbn.common.CompoundIcons;
 import com.dci.intellij.dbn.common.component.ProjectComponentBase;
 import com.dci.intellij.dbn.common.event.ProjectEvents;
 import com.dci.intellij.dbn.common.file.VirtualFileInfo;
+import com.dci.intellij.dbn.common.icon.OverlaidIcons;
 import com.dci.intellij.dbn.common.load.ProgressMonitor;
 import com.dci.intellij.dbn.common.navigation.NavigationInstructions;
 import com.dci.intellij.dbn.common.thread.*;
@@ -90,7 +90,7 @@ public class DatabaseFileEditorManager extends ProjectComponentBase {
     private static void markEditorsModified(@NotNull Project project, @NotNull DBObjectVirtualFile file, boolean modified) {
         Dispatch.run(() -> {
             Collection<TabInfo> tabInfos = getEditorTabInfos(project, file);
-            Icon icon = modified ? CompoundIcons.addModifiedOverlay(file.getIcon()) : file.getIcon();
+            Icon icon = modified ? OverlaidIcons.addModifiedOverlay(file.getIcon()) : file.getIcon();
             for (TabInfo tabInfo : tabInfos) {
                 tabInfo.setIcon(icon);
             }

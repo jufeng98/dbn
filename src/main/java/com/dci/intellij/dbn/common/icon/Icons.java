@@ -1,6 +1,5 @@
-package com.dci.intellij.dbn.common;
+package com.dci.intellij.dbn.common.icon;
 
-import com.dci.intellij.dbn.common.icon.IconLoader;
 import com.intellij.openapi.util.ScalableIcon;
 import com.intellij.ui.RowIcon;
 import lombok.experimental.UtilityClass;

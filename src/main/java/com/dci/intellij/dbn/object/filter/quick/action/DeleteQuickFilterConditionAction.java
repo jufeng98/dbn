@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.object.filter.quick.action;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.object.filter.quick.ui.ObjectQuickFilterConditionForm;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;

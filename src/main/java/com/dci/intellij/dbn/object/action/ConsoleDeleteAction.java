@@ -1,7 +1,7 @@
 package com.dci.intellij.dbn.object.action;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.action.ProjectAction;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.connection.console.DatabaseConsoleManager;
 import com.dci.intellij.dbn.object.DBConsole;
 import com.intellij.openapi.actionSystem.AnActionEvent;

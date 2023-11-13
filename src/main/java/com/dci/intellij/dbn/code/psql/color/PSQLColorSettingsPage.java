@@ -1,7 +1,7 @@
 package com.dci.intellij.dbn.code.psql.color;
 
 import com.dci.intellij.dbn.code.common.color.DBLColorSettingsPage;
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.language.psql.PSQLLanguage;
 import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.openapi.options.colors.AttributesDescriptor;

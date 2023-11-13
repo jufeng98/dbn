@@ -1,7 +1,7 @@
 package com.dci.intellij.dbn.connection.config.action;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.action.ProjectAction;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.connection.config.ConnectionBundleSettings;
 import com.dci.intellij.dbn.connection.config.ui.ConnectionListModel;
 import com.dci.intellij.dbn.data.sorting.SortDirection;

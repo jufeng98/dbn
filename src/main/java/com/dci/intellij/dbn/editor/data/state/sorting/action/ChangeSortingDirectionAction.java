@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.editor.data.state.sorting.action;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.data.sorting.SortDirection;
 import com.dci.intellij.dbn.data.sorting.SortingInstruction;
 import com.dci.intellij.dbn.editor.data.state.sorting.ui.DatasetSortingColumnForm;

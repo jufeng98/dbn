@@ -1,8 +1,8 @@
 package com.dci.intellij.dbn.connection;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.constant.Constant;
 import com.dci.intellij.dbn.common.constant.ConstantUtil;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.ui.Presentable;
 import lombok.Getter;
 import org.apache.logging.log4j.util.Strings;

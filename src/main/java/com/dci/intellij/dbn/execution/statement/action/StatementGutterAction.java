@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.execution.statement.action;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.util.Documents;
 import com.dci.intellij.dbn.common.util.Editors;
 import com.dci.intellij.dbn.execution.statement.StatementExecutionContext;

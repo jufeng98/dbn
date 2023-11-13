@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.execution.method.result.action;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.thread.Progress;
 import com.dci.intellij.dbn.common.util.Messages;
 import com.dci.intellij.dbn.data.grid.ui.table.resultSet.ResultSetTable;

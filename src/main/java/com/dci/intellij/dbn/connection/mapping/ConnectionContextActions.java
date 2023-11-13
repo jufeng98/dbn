@@ -1,8 +1,8 @@
 package com.dci.intellij.dbn.connection.mapping;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.action.ProjectAction;
 import com.dci.intellij.dbn.common.file.VirtualFileRef;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.project.ProjectRef;
 import com.dci.intellij.dbn.common.ref.WeakRef;
 import com.dci.intellij.dbn.connection.ConnectionHandler;

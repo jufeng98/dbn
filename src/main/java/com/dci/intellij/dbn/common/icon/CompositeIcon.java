@@ -1,17 +1,17 @@
-package com.dci.intellij.dbn.common.ui;
+package com.dci.intellij.dbn.common.icon;
 
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class MergedIcon implements Icon {
+public class CompositeIcon implements Icon {
 
     private final Icon myLeftIcon;
     private final int myHorizontalStrut;
     private final Icon myRightIcon;
 
-    public MergedIcon(@NotNull Icon leftIcon, int horizontalStrut, @NotNull Icon rightIcon) {
+    public CompositeIcon(@NotNull Icon leftIcon, int horizontalStrut, @NotNull Icon rightIcon) {
       myLeftIcon = leftIcon;
       myHorizontalStrut = horizontalStrut;
       myRightIcon = rightIcon;

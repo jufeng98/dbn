@@ -1,7 +1,7 @@
 package com.dci.intellij.dbn.execution.statement.variables.ui;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.dispose.Disposer;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.ui.form.DBNFormBase;
 import com.dci.intellij.dbn.common.ui.listener.ComboBoxSelectionKeyListener;
 import com.dci.intellij.dbn.common.ui.misc.DBNComboBox;

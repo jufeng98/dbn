@@ -7,11 +7,11 @@ import lombok.experimental.Delegate;
 import javax.swing.*;
 
 @Getter
-public abstract class IconDelegate implements Icon {
+abstract class LatentIcon implements Icon {
     private final String path;
     private final Latent<Icon> delegate = Latent.basic(() -> load());
 
-    public IconDelegate(String path) {
+    public LatentIcon(String path) {
         this.path = path;
     }
 

@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.code.common.intention;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.ref.WeakRef;
 import com.dci.intellij.dbn.common.util.Editors;
 import com.dci.intellij.dbn.execution.statement.StatementExecutionManager;

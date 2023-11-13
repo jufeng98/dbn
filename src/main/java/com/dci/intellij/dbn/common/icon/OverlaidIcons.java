@@ -1,4 +1,4 @@
-package com.dci.intellij.dbn.common;
+package com.dci.intellij.dbn.common.icon;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.ui.LayeredIcon;
@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @UtilityClass
-public class CompoundIcons {
+public class OverlaidIcons {
 
     private static final Map<Icon, Icon> modifiedOverlayIcons = new ConcurrentHashMap<>();
 

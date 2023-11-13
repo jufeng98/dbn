@@ -1,8 +1,8 @@
 package com.dci.intellij.dbn.editor.code.action;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.action.GroupPopupAction;
 import com.dci.intellij.dbn.common.action.Lookups;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.ddl.action.DDLFileAttachAction;
 import com.dci.intellij.dbn.ddl.action.DDLFileCreateAction;
 import com.dci.intellij.dbn.ddl.action.DDLFileDetachAction;
