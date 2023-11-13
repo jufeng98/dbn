@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.common.locale.options.ui;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.color.Colors;
 import com.dci.intellij.dbn.common.event.ProjectEvents;
 import com.dci.intellij.dbn.common.locale.DBDateFormat;

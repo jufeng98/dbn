@@ -1,7 +1,7 @@
 package com.dci.intellij.dbn.editor.data.action;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.dispose.Failsafe;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.ref.WeakRef;
 import com.dci.intellij.dbn.data.model.ColumnInfo;
 import com.dci.intellij.dbn.data.sorting.SortDirection;

@@ -3,7 +3,7 @@ package com.dci.intellij.dbn.options;
 import com.dci.intellij.dbn.browser.options.DatabaseBrowserSettings;
 import com.dci.intellij.dbn.code.common.completion.options.CodeCompletionSettings;
 import com.dci.intellij.dbn.code.common.style.options.ProjectCodeStyleSettings;
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.options.CompositeProjectConfiguration;
 import com.dci.intellij.dbn.common.options.Configuration;
 import com.dci.intellij.dbn.common.options.ConfigurationHandle;

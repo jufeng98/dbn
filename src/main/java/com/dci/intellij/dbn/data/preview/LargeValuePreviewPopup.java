@@ -1,9 +1,9 @@
 package com.dci.intellij.dbn.data.preview;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.action.Lookups;
 import com.dci.intellij.dbn.common.action.ToggleAction;
 import com.dci.intellij.dbn.common.color.Colors;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.ref.WeakRef;
 import com.dci.intellij.dbn.common.ui.form.DBNFormBase;
 import com.dci.intellij.dbn.common.ui.listener.PopupCloseListener;

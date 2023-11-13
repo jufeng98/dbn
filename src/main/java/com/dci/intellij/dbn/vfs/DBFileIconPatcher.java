@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.vfs;
 
-import com.dci.intellij.dbn.common.CompoundIcons;
+import com.dci.intellij.dbn.common.icon.OverlaidIcons;
 import com.dci.intellij.dbn.vfs.file.DBEditableObjectVirtualFile;
 import com.intellij.ide.FileIconPatcher;
 import com.intellij.openapi.project.Project;
@@ -16,7 +16,7 @@ public class DBFileIconPatcher implements FileIconPatcher {
             DBEditableObjectVirtualFile objectFile = (DBEditableObjectVirtualFile) file;
             if (!objectFile.isModified()) return baseIcon;
 
-            return CompoundIcons.addModifiedOverlay(baseIcon);
+            return OverlaidIcons.addModifiedOverlay(baseIcon);
         }
         return baseIcon;
     }

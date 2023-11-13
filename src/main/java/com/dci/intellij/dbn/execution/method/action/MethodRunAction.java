@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.execution.method.action;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.debugger.DBDebuggerType;
 import com.dci.intellij.dbn.execution.method.MethodExecutionManager;
 import com.dci.intellij.dbn.object.DBMethod;

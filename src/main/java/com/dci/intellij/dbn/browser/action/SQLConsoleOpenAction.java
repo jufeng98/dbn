@@ -1,9 +1,9 @@
 package com.dci.intellij.dbn.browser.action;
 
 import com.dci.intellij.dbn.browser.DatabaseBrowserManager;
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.action.GroupPopupAction;
 import com.dci.intellij.dbn.common.action.Lookups;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.util.Actions;
 import com.dci.intellij.dbn.common.util.Editors;
 import com.dci.intellij.dbn.connection.ConnectionHandler;

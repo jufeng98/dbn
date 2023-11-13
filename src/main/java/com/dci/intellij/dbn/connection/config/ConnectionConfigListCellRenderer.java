@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.connection.config;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.connection.ConnectivityStatus;
 import com.dci.intellij.dbn.connection.config.ui.ConnectionDatabaseSettingsForm;
 import com.dci.intellij.dbn.connection.config.ui.ConnectionSettingsForm;

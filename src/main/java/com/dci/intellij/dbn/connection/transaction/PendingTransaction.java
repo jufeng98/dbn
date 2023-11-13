@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.connection.transaction;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.ref.WeakRef;
 import com.dci.intellij.dbn.connection.SessionId;
 import com.dci.intellij.dbn.connection.jdbc.DBNConnection;

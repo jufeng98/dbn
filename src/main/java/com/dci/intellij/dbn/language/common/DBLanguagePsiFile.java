@@ -62,6 +62,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
+import static com.dci.intellij.dbn.common.dispose.Failsafe.guarded;
 import static com.dci.intellij.dbn.common.util.Documents.getDocument;
 import static com.dci.intellij.dbn.common.util.Documents.getEditors;
 
@@ -342,7 +343,7 @@ public abstract class DBLanguagePsiFile extends PsiFileImpl implements DatabaseC
         if (underlyingObject == null) return null;
 
         DBObject parentObject = underlyingObject.getParentObject();
-        if (parentObject == null) return underlyingObject.getConnection().getPsiDirectory();
+        if (parentObject == null) return guarded(null, underlyingObject, o -> o.getConnection().getPsiDirectory());
 
         return DBObjectPsiCache.asPsiDirectory(parentObject);
     }

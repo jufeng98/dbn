@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.data.grid.ui.table.resultSet.record;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.color.Colors;
 import com.dci.intellij.dbn.common.ui.form.DBNFormBase;
 import com.dci.intellij.dbn.data.model.ColumnInfo;

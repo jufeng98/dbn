@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.object.factory.ui.common;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.ui.form.DBNFormBase;
 import com.dci.intellij.dbn.common.util.Actions;
 import com.intellij.openapi.actionSystem.ActionToolbar;

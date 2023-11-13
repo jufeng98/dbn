@@ -1,7 +1,7 @@
 package com.dci.intellij.dbn.execution.method.ui;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.Pair;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.thread.Dispatch;
 import com.dci.intellij.dbn.common.ui.dialog.DBNDialog;
 import com.dci.intellij.dbn.common.ui.dialog.DBNDialogRegistry;

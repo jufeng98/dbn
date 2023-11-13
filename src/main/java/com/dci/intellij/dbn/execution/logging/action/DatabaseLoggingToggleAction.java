@@ -1,8 +1,8 @@
 package com.dci.intellij.dbn.execution.logging.action;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.action.Lookups;
 import com.dci.intellij.dbn.common.action.ToggleAction;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.util.Strings;
 import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.connection.mapping.FileConnectionContextManager;

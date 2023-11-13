@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.execution.common.message.action;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.execution.ExecutionManager;
 import com.dci.intellij.dbn.execution.common.message.ui.tree.MessagesTree;
 import com.intellij.openapi.actionSystem.AnActionEvent;

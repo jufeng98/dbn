@@ -139,7 +139,7 @@ public abstract class BasicTextEditorImpl<T extends VirtualFile> extends Statefu
     @Override
     @NotNull
     public JComponent getComponent() {
-        return getTextEditor().getComponent();
+        return guarded(DISPOSED_COMPONENT, this, e -> getTextEditor().getComponent());
     }
 
     @Override

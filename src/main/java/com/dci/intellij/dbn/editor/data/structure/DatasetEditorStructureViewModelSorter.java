@@ -1,7 +1,7 @@
 package com.dci.intellij.dbn.editor.data.structure;
 
 import com.dci.intellij.dbn.browser.model.BrowserTreeNode;
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.util.Safe;
 import com.dci.intellij.dbn.language.psql.structure.PSQLStructureViewElement;
 import com.intellij.ide.util.treeView.smartTree.ActionPresentation;

@@ -1,8 +1,8 @@
 package com.dci.intellij.dbn.connection;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.constant.PseudoConstant;
 import com.dci.intellij.dbn.common.constant.PseudoConstantConverter;
+import com.dci.intellij.dbn.common.icon.Icons;
 
 import javax.swing.*;
 import java.util.UUID;

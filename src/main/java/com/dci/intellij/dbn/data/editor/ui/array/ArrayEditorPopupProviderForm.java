@@ -1,8 +1,8 @@
 package com.dci.intellij.dbn.data.editor.ui.array;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.action.DataKeys;
 import com.dci.intellij.dbn.common.color.Colors;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.ui.misc.DBNScrollPane;
 import com.dci.intellij.dbn.common.ui.util.Borders;
 import com.dci.intellij.dbn.common.ui.util.UserInterface;

@@ -1,7 +1,7 @@
 package com.dci.intellij.dbn.object.impl;
 
 import com.dci.intellij.dbn.browser.ui.HtmlToolTipBuilder;
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.database.common.metadata.def.DBTriggerMetadata;
 import com.dci.intellij.dbn.database.interfaces.DatabaseDataDefinitionInterface;
 import com.dci.intellij.dbn.database.interfaces.DatabaseInterfaceInvoker;

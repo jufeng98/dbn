@@ -3,7 +3,7 @@ package com.dci.intellij.dbn.language.common.psi;
 import com.dci.intellij.dbn.code.common.style.formatting.FormattingAttributes;
 import com.dci.intellij.dbn.code.common.style.formatting.FormattingProviderPsiElement;
 import com.dci.intellij.dbn.code.common.style.presets.CodeStylePreset;
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.language.common.element.ChameleonElementType;
 import com.intellij.extapi.psi.ASTDelegatePsiElement;
 import com.intellij.formatting.Indent;

@@ -10,6 +10,7 @@ import com.dci.intellij.dbn.common.editor.BasicTextEditor;
 import com.dci.intellij.dbn.common.editor.document.OverrideReadonlyFragmentModificationHandler;
 import com.dci.intellij.dbn.common.environment.options.listener.EnvironmentManagerListener;
 import com.dci.intellij.dbn.common.event.ProjectEvents;
+import com.dci.intellij.dbn.common.listener.DBNFileEditorManagerListener;
 import com.dci.intellij.dbn.common.load.ProgressMonitor;
 import com.dci.intellij.dbn.common.navigation.NavigationInstructions;
 import com.dci.intellij.dbn.common.notification.NotificationGroup;
@@ -160,9 +161,9 @@ public class SourceCodeManager extends ProjectComponentBase implements Persisten
 
     @NotNull
     private FileEditorManagerListener fileEditorManagerListener() {
-        return new FileEditorManagerListener() {
+        return new DBNFileEditorManagerListener() {
             @Override
-            public void selectionChanged(@NotNull FileEditorManagerEvent event) {
+            public void whenSelectionChanged(@NotNull FileEditorManagerEvent event) {
                 FileEditor newEditor = event.getNewEditor();
                 if (newEditor instanceof SourceCodeEditor) {
                     SourceCodeEditor sourceCodeEditor = (SourceCodeEditor) newEditor;

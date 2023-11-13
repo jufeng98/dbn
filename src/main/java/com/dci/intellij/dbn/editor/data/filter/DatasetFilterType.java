@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.editor.data.filter;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.ui.Presentable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

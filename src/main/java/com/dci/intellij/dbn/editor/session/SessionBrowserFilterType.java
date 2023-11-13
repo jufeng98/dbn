@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.editor.session;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 
 import javax.swing.*;
 

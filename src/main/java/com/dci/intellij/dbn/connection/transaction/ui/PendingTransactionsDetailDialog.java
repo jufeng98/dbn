@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.connection.transaction.ui;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.ui.dialog.DBNDialog;
 import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.connection.ConnectionRef;
@@ -10,8 +10,7 @@ import com.dci.intellij.dbn.connection.transaction.TransactionAction;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
 

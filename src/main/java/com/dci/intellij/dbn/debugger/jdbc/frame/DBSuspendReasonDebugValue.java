@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.debugger.jdbc.frame;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.database.common.debug.DebuggerRuntimeInfo;
 import com.dci.intellij.dbn.database.interfaces.DatabaseDebuggerInterface;
 import com.intellij.xdebugger.frame.XValueNode;

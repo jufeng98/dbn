@@ -6,6 +6,7 @@ import com.dci.intellij.dbn.common.component.ProjectComponentBase;
 import com.dci.intellij.dbn.common.dispose.Disposer;
 import com.dci.intellij.dbn.common.dispose.Failsafe;
 import com.dci.intellij.dbn.common.event.ProjectEvents;
+import com.dci.intellij.dbn.common.listener.DBNFileEditorManagerListener;
 import com.dci.intellij.dbn.common.notification.NotificationGroup;
 import com.dci.intellij.dbn.common.option.InteractiveOptionBroker;
 import com.dci.intellij.dbn.common.thread.Dispatch;
@@ -71,11 +72,11 @@ public class SessionBrowserManager extends ProjectComponentBase implements Persi
     }
 
     private FileEditorManagerListener fileEditorManagerListener() {
-        return new FileEditorManagerListener() {
+        return new DBNFileEditorManagerListener() {
             @Override
-            public void fileOpened(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
+            public void whenFileOpened(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
                 if (file instanceof DBSessionBrowserVirtualFile) {
-                    boolean schedule = openFiles.size() == 0;
+                    boolean schedule = openFiles.isEmpty();
                     DBSessionBrowserVirtualFile sessionBrowserFile = (DBSessionBrowserVirtualFile) file;
                     openFiles.add(sessionBrowserFile);
 
@@ -87,7 +88,7 @@ public class SessionBrowserManager extends ProjectComponentBase implements Persi
             }
 
             @Override
-            public void fileClosed(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
+            public void whenFileClosed(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
                 if (file instanceof DBSessionBrowserVirtualFile) {
                     DBSessionBrowserVirtualFile sessionBrowserFile = (DBSessionBrowserVirtualFile) file;
                     openFiles.remove(sessionBrowserFile);

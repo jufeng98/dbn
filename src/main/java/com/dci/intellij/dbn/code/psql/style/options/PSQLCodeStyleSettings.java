@@ -4,7 +4,7 @@ import com.dci.intellij.dbn.code.common.style.options.CodeStyleCaseSettings;
 import com.dci.intellij.dbn.code.common.style.options.CodeStyleFormattingSettings;
 import com.dci.intellij.dbn.code.common.style.options.DBLCodeStyleSettings;
 import com.dci.intellij.dbn.code.psql.style.options.ui.PSQLCodeStyleSettingsEditorForm;
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.language.psql.PSQLLanguage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

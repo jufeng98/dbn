@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.execution.method.result.action;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.execution.method.result.ui.MethodExecutionCursorResultForm;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;

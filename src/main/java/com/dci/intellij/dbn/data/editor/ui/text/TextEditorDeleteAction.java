@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.data.editor.ui.text;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.data.editor.ui.TextFieldWithPopup;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.jetbrains.annotations.NotNull;

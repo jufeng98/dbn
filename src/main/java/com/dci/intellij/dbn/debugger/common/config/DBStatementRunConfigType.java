@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.debugger.common.config;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.debugger.DBDebuggerType;
 import com.dci.intellij.dbn.debugger.jdbc.config.DBStatementJdbcRunConfigFactory;
 import com.dci.intellij.dbn.debugger.jdwp.config.DBStatementJdwpRunConfigFactory;

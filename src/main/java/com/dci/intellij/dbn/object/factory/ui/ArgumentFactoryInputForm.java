@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.object.factory.ui;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.ui.form.DBNForm;
 import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.data.type.ui.DataTypeEditor;

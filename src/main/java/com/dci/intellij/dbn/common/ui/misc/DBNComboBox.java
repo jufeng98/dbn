@@ -1,7 +1,7 @@
 package com.dci.intellij.dbn.common.ui.misc;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.color.Colors;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.latent.Loader;
 import com.dci.intellij.dbn.common.property.PropertyHolder;
 import com.dci.intellij.dbn.common.property.PropertyHolderBase;

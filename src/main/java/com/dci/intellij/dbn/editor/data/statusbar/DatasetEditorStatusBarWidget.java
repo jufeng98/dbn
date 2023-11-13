@@ -1,9 +1,10 @@
 package com.dci.intellij.dbn.editor.data.statusbar;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.compatibility.CompatibilityUtil;
 import com.dci.intellij.dbn.common.component.ProjectComponentBase;
 import com.dci.intellij.dbn.common.event.ProjectEvents;
+import com.dci.intellij.dbn.common.icon.Icons;
+import com.dci.intellij.dbn.common.listener.DBNFileEditorManagerListener;
 import com.dci.intellij.dbn.common.thread.Dispatch;
 import com.dci.intellij.dbn.common.ui.util.UserInterface;
 import com.dci.intellij.dbn.common.util.MathResult;
@@ -51,19 +52,19 @@ public class DatasetEditorStatusBarWidget extends ProjectComponentBase implement
     }
 
     FileEditorManagerListener fileEditorManagerListener() {
-        return new FileEditorManagerListener() {
+        return new DBNFileEditorManagerListener() {
             @Override
-            public void selectionChanged(@NotNull FileEditorManagerEvent event) {
+            public void whenSelectionChanged(@NotNull FileEditorManagerEvent event) {
                 update();
             }
 
             @Override
-            public void fileOpened(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
+            public void whenFileOpened(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
                 update();
             }
 
             @Override
-            public void fileClosed(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
+            public void whenFileClosed(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
                 update();
             }
         };

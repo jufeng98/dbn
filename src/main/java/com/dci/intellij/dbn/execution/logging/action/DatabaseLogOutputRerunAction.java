@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.execution.logging.action;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.execution.logging.DatabaseLoggingResult;
 import com.dci.intellij.dbn.execution.logging.LogOutputContext;
 import com.dci.intellij.dbn.execution.script.ScriptExecutionManager;

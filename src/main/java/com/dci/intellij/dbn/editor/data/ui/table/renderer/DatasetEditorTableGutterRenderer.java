@@ -1,7 +1,7 @@
 package com.dci.intellij.dbn.editor.data.ui.table.renderer;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.color.Colors;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.ui.table.DBNTableGutterRendererBase;
 import com.dci.intellij.dbn.data.grid.ui.table.basic.BasicTableGutter;
 import com.dci.intellij.dbn.editor.data.model.DatasetEditorModelRow;

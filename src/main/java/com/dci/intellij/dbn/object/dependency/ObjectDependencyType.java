@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.object.dependency;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.ui.Presentable;
 import lombok.Getter;
 

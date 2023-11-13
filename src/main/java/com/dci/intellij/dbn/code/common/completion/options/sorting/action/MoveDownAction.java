@@ -1,7 +1,7 @@
 package com.dci.intellij.dbn.code.common.completion.options.sorting.action;
 
 import com.dci.intellij.dbn.code.common.completion.options.sorting.CodeCompletionSortingSettings;
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.ui.ListUtil;

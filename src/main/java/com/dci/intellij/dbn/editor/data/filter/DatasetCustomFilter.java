@@ -1,7 +1,7 @@
 package com.dci.intellij.dbn.editor.data.filter;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.dispose.Failsafe;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.options.setting.Settings;
 import com.dci.intellij.dbn.common.options.ui.ConfigurationEditorForm;
 import com.dci.intellij.dbn.data.sorting.SortingState;

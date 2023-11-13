@@ -1,8 +1,8 @@
 package com.dci.intellij.dbn.execution.logging;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.action.DataKeys;
 import com.dci.intellij.dbn.common.dispose.Failsafe;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.util.Commons;
 import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.connection.ConnectionId;

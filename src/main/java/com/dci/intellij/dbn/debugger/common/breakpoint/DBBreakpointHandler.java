@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.debugger.common.breakpoint;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.notification.NotificationSupport;
 import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.database.interfaces.DatabaseDebuggerInterface;

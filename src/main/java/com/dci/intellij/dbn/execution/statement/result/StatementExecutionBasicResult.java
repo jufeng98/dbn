@@ -1,7 +1,7 @@
 package com.dci.intellij.dbn.execution.statement.result;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.dispose.Failsafe;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.message.MessageType;
 import com.dci.intellij.dbn.common.navigation.NavigationInstructions;
 import com.dci.intellij.dbn.connection.ConnectionHandler;

@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.connection.session;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.index.Identifiable;
 import com.dci.intellij.dbn.common.ui.Presentable;
 import com.dci.intellij.dbn.connection.ConnectionHandler;

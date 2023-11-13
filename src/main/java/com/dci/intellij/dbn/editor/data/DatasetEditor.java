@@ -156,7 +156,7 @@ public class DatasetEditor extends DisposableUserDataHolderBase implements
     @Override
     @NotNull
     public JComponent getComponent() {
-        return getEditorForm().getComponent();
+        return guarded(DISPOSED_COMPONENT, this, e -> getEditorForm().getComponent());
     }
 
     @Override

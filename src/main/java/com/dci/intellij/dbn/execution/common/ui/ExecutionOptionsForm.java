@@ -1,8 +1,8 @@
 package com.dci.intellij.dbn.execution.common.ui;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.dispose.Disposer;
 import com.dci.intellij.dbn.common.dispose.Failsafe;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.ui.AutoCommitLabel;
 import com.dci.intellij.dbn.common.ui.ValueSelectorOption;
 import com.dci.intellij.dbn.common.ui.form.DBNForm;

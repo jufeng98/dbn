@@ -1,8 +1,8 @@
 package com.dci.intellij.dbn.browser.model;
 
 import com.dci.intellij.dbn.code.sql.color.SQLTextAttributesKeys;
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.dispose.StatefulDisposableBase;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.project.ProjectRef;
 import com.dci.intellij.dbn.common.util.Commons;
 import com.dci.intellij.dbn.connection.ConnectionBundle;

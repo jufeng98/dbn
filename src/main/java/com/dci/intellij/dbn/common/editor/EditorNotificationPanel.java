@@ -1,7 +1,7 @@
 package com.dci.intellij.dbn.common.editor;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.color.Colors;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.message.MessageType;
 import com.dci.intellij.dbn.common.util.Context;
 import com.intellij.codeInsight.hint.HintUtil;

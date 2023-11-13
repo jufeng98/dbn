@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.editor.data.filter;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.connection.ConnectionId;
 import com.dci.intellij.dbn.data.sorting.SortingState;
 import com.dci.intellij.dbn.object.DBDataset;

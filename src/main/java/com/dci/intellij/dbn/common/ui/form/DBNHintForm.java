@@ -1,7 +1,7 @@
 package com.dci.intellij.dbn.common.ui.form;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.color.Colors;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.message.MessageType;
 import com.dci.intellij.dbn.common.text.MimeType;
 import com.dci.intellij.dbn.common.text.TextContent;

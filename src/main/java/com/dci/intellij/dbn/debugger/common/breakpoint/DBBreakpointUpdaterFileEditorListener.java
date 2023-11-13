@@ -1,9 +1,8 @@
 package com.dci.intellij.dbn.debugger.common.breakpoint;
 
+import com.dci.intellij.dbn.common.listener.DBNFileEditorManagerListener;
 import com.dci.intellij.dbn.vfs.file.DBEditableObjectVirtualFile;
 import com.intellij.openapi.fileEditor.FileEditorManager;
-import com.intellij.openapi.fileEditor.FileEditorManagerEvent;
-import com.intellij.openapi.fileEditor.FileEditorManagerListener;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.xdebugger.XDebuggerManager;
 import com.intellij.xdebugger.breakpoints.XBreakpoint;
@@ -21,9 +20,9 @@ import static com.dci.intellij.dbn.debugger.common.breakpoint.DBBreakpointUtil.s
  * WORKAROUND: Breakpoints do not seem to be registered properly in the XLineBreakpointManager.
  * This way the breakpoints get updated as soon as the file is opened.
  */
-public class DBBreakpointUpdaterFileEditorListener implements FileEditorManagerListener{
+public class DBBreakpointUpdaterFileEditorListener extends DBNFileEditorManagerListener {
     @Override
-    public void fileOpened(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
+    public void whenFileOpened(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
         if (file instanceof DBEditableObjectVirtualFile) {
             DBEditableObjectVirtualFile databaseFile = (DBEditableObjectVirtualFile) file;
             guarded(() -> registerBreakpoints(source, databaseFile));
@@ -44,13 +43,5 @@ public class DBBreakpointUpdaterFileEditorListener implements FileEditorManagerL
                 }
             }
         }
-    }
-
-    @Override
-    public void fileClosed(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
-    }
-
-    @Override
-    public void selectionChanged(@NotNull FileEditorManagerEvent event) {
     }
 }

@@ -1,7 +1,7 @@
 package com.dci.intellij.dbn.browser;
 
 import com.dci.intellij.dbn.browser.ui.BrowserToolWindowForm;
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;

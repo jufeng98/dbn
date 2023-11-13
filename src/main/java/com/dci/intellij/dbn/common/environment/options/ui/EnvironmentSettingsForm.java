@@ -1,11 +1,11 @@
 package com.dci.intellij.dbn.common.environment.options.ui;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.environment.EnvironmentTypeBundle;
 import com.dci.intellij.dbn.common.environment.options.EnvironmentSettings;
 import com.dci.intellij.dbn.common.environment.options.EnvironmentVisibilitySettings;
 import com.dci.intellij.dbn.common.environment.options.listener.EnvironmentManagerListener;
 import com.dci.intellij.dbn.common.event.ProjectEvents;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.options.SettingsChangeNotifier;
 import com.dci.intellij.dbn.common.options.ui.ConfigurationEditorForm;
 import com.intellij.openapi.actionSystem.AnActionEvent;

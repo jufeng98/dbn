@@ -1,8 +1,8 @@
 package com.dci.intellij.dbn.editor.data.record.ui;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.action.ToggleAction;
 import com.dci.intellij.dbn.common.dispose.DisposableContainers;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.ref.WeakRef;
 import com.dci.intellij.dbn.common.ui.form.DBNFormBase;
 import com.dci.intellij.dbn.common.ui.form.DBNHeaderForm;

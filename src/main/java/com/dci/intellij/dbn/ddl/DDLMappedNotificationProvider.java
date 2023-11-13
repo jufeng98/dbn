@@ -3,6 +3,7 @@ package com.dci.intellij.dbn.ddl;
 import com.dci.intellij.dbn.common.compatibility.LegacyEditorNotificationsProvider;
 import com.dci.intellij.dbn.common.dispose.Failsafe;
 import com.dci.intellij.dbn.common.event.ProjectEvents;
+import com.dci.intellij.dbn.common.listener.DBNFileEditorManagerListener;
 import com.dci.intellij.dbn.common.util.Editors;
 import com.dci.intellij.dbn.ddl.options.DDLFileGeneralSettings;
 import com.dci.intellij.dbn.ddl.options.DDLFileSettings;
@@ -71,14 +72,14 @@ public class DDLMappedNotificationProvider extends LegacyEditorNotificationsProv
 
     @NotNull
     private static FileEditorManagerListener fileEditorManagerListener() {
-        return new FileEditorManagerListener() {
+        return new DBNFileEditorManagerListener() {
             @Override
-            public void fileOpened(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
+            public void whenFileOpened(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
                 updateDdlFileHeaders(source.getProject(), file);
             }
 
             @Override
-            public void fileClosed(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
+            public void whenFileClosed(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
                 updateDdlFileHeaders(source.getProject(), file);
             }
 

@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.execution.compiler.action;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.database.DatabaseFeature;
 import com.dci.intellij.dbn.editor.DBContentType;
 import com.dci.intellij.dbn.execution.compiler.CompileType;

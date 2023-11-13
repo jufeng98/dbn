@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.editor.session.action;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.editor.session.SessionBrowser;
 import com.dci.intellij.dbn.editor.session.SessionBrowserFilter;
 import com.dci.intellij.dbn.editor.session.model.SessionBrowserModel;

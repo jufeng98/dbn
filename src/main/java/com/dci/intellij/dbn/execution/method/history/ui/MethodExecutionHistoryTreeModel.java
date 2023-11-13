@@ -1,7 +1,7 @@
 package com.dci.intellij.dbn.execution.method.history.ui;
 
-import com.dci.intellij.dbn.common.Icons;
 import com.dci.intellij.dbn.common.dispose.StatefulDisposable;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.util.Strings;
 import com.dci.intellij.dbn.connection.ConnectionHandler;
 import com.dci.intellij.dbn.connection.ConnectionId;

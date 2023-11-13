@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.language.editor.action;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.action.Lookups;
 import com.dci.intellij.dbn.common.dispose.Checks;
 import com.dci.intellij.dbn.common.ui.misc.DBNComboBoxAction;

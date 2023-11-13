@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.data.export.action;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.ref.WeakRef;
 import com.dci.intellij.dbn.common.util.Dialogs;
 import com.dci.intellij.dbn.data.export.ui.ExportDataDialog;

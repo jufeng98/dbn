@@ -1,6 +1,6 @@
 package com.dci.intellij.dbn.debugger.common.frame;
 
-import com.dci.intellij.dbn.common.Icons;
+import com.dci.intellij.dbn.common.icon.Icons;
 import com.dci.intellij.dbn.common.thread.Background;
 import com.dci.intellij.dbn.common.util.Strings;
 import com.dci.intellij.dbn.debugger.common.evaluation.DBDebuggerEvaluator;
