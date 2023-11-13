@@ -398,11 +398,10 @@ public class DBVirtualObject extends DBRootObjectImpl implements PsiReference {
         BasePsiElement underlyingPsiElement = nd(getUnderlyingPsiElement());
         DBLanguagePsiFile file = underlyingPsiElement.getFile();
         ConnectionHandler connection = file.getConnection();
-        if (connection == null) {
-            ConnectionManager connectionManager = ConnectionManager.getInstance(getProject());
-            return connectionManager.getConnectionBundle().getVirtualConnection(ConnectionId.VIRTUAL_ORACLE);
-        }
-        return connection;
+        if (connection != null) return connection;
+
+        ConnectionManager connectionManager = ConnectionManager.getInstance(getProject());
+        return connectionManager.getConnectionBundle().getVirtualConnection(ConnectionId.VIRTUAL_ORACLE);
     }
 
     public void setParentObject(DBVirtualObject virtualObject) {

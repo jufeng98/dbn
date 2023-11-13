@@ -2,7 +2,10 @@ package com.dci.intellij.dbn.common.dispose;
 
 import com.dci.intellij.dbn.common.util.Unsafe;
 
+import javax.swing.*;
+
 public interface StatefulDisposable extends com.intellij.openapi.Disposable {
+    JPanel DISPOSED_COMPONENT = new JPanel();
 
     boolean isDisposed();
 

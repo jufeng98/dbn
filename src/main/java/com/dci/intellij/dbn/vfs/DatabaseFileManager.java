@@ -7,6 +7,7 @@ import com.dci.intellij.dbn.common.component.ProjectComponentBase;
 import com.dci.intellij.dbn.common.component.ProjectManagerListener;
 import com.dci.intellij.dbn.common.event.ProjectEvents;
 import com.dci.intellij.dbn.common.exception.ProcessDeferredException;
+import com.dci.intellij.dbn.common.listener.DBNFileEditorManagerListener;
 import com.dci.intellij.dbn.common.thread.Dispatch;
 import com.dci.intellij.dbn.common.thread.Progress;
 import com.dci.intellij.dbn.common.thread.ThreadMonitor;
@@ -80,9 +81,9 @@ public class DatabaseFileManager extends ProjectComponentBase implements Persist
 
     @NotNull
     private FileEditorManagerListener fileEditorManagerListener() {
-        return new FileEditorManagerListener() {
+        return new DBNFileEditorManagerListener() {
             @Override
-            public void fileOpened(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
+            public void whenFileOpened(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
                 if (file instanceof DBObjectVirtualFile) {
                     DBObjectVirtualFile databaseFile = (DBObjectVirtualFile) file;
                     openFiles.add(databaseFile);
@@ -90,7 +91,7 @@ public class DatabaseFileManager extends ProjectComponentBase implements Persist
             }
 
             @Override
-            public void fileClosed(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
+            public void whenFileClosed(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
                 if (file instanceof DBObjectVirtualFile) {
                     DBObjectVirtualFile databaseFile = (DBObjectVirtualFile) file;
                     openFiles.remove(databaseFile);
@@ -98,7 +99,7 @@ public class DatabaseFileManager extends ProjectComponentBase implements Persist
             }
 
             @Override
-            public void selectionChanged(@NotNull FileEditorManagerEvent event) {
+            public void whenSelectionChanged(@NotNull FileEditorManagerEvent event) {
 
             }
         };

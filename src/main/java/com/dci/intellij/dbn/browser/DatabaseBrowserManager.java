@@ -15,6 +15,7 @@ import com.dci.intellij.dbn.common.component.ProjectComponentBase;
 import com.dci.intellij.dbn.common.event.ProjectEvents;
 import com.dci.intellij.dbn.common.filter.Filter;
 import com.dci.intellij.dbn.common.latent.Latent;
+import com.dci.intellij.dbn.common.listener.DBNFileEditorManagerListener;
 import com.dci.intellij.dbn.common.options.setting.BooleanSetting;
 import com.dci.intellij.dbn.common.thread.Background;
 import com.dci.intellij.dbn.common.thread.Dispatch;
@@ -205,9 +206,9 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
 
     @NotNull
     private FileEditorManagerListener fileEditorManagerListener() {
-        return new FileEditorManagerListener() {
+        return new DBNFileEditorManagerListener() {
             @Override
-            public void fileOpened(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
+            public void whenFileOpened(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
                 if (!autoscrollFromEditor.value()) return;
                 if (isSkipBrowserAutoscroll(file)) return;
 
@@ -224,7 +225,7 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
             }
 
             @Override
-            public void selectionChanged(@NotNull FileEditorManagerEvent event) {
+            public void whenSelectionChanged(@NotNull FileEditorManagerEvent event) {
                 if (!autoscrollFromEditor.value()) return;
 
                 VirtualFile oldFile = event.getOldFile();

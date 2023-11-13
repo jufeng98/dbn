@@ -2,6 +2,7 @@ package com.dci.intellij.dbn.data.editor.ui;
 
 import com.dci.intellij.dbn.common.dispose.Disposer;
 import com.dci.intellij.dbn.common.event.ProjectEvents;
+import com.dci.intellij.dbn.common.listener.DBNFileEditorManagerListener;
 import com.dci.intellij.dbn.common.ref.WeakRef;
 import com.dci.intellij.dbn.common.thread.Dispatch;
 import com.dci.intellij.dbn.common.ui.form.DBNFormBase;
@@ -47,9 +48,9 @@ public abstract class TextFieldPopupProviderForm extends DBNFormBase implements 
 
     @NotNull
     private FileEditorManagerListener fileEditorManagerListener() {
-        return new FileEditorManagerListener() {
+        return new DBNFileEditorManagerListener() {
             @Override
-            public void selectionChanged(@NotNull FileEditorManagerEvent event) {
+            public void whenSelectionChanged(@NotNull FileEditorManagerEvent event) {
                 hidePopup();
             }
         };

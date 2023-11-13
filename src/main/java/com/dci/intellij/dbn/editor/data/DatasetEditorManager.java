@@ -4,6 +4,7 @@ import com.dci.intellij.dbn.DatabaseNavigator;
 import com.dci.intellij.dbn.common.component.PersistentState;
 import com.dci.intellij.dbn.common.component.ProjectComponentBase;
 import com.dci.intellij.dbn.common.event.ProjectEvents;
+import com.dci.intellij.dbn.common.listener.DBNFileEditorManagerListener;
 import com.dci.intellij.dbn.common.options.setting.Settings;
 import com.dci.intellij.dbn.common.util.Context;
 import com.dci.intellij.dbn.common.util.Dialogs;
@@ -76,9 +77,9 @@ public class DatasetEditorManager extends ProjectComponentBase implements Persis
 
     @NotNull
     private static FileEditorManagerListener fileEditorManagerListener() {
-        return new FileEditorManagerListener() {
+        return new DBNFileEditorManagerListener() {
             @Override
-            public void fileOpened(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
+            public void whenFileOpened(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
                 if (file instanceof DBEditableObjectVirtualFile) {
                     DBEditableObjectVirtualFile editableObjectFile = (DBEditableObjectVirtualFile) file;
                     DBSchemaObject object = editableObjectFile.getObject();
@@ -97,7 +98,7 @@ public class DatasetEditorManager extends ProjectComponentBase implements Persis
             }
 
             @Override
-            public void selectionChanged(@NotNull FileEditorManagerEvent event) {
+            public void whenSelectionChanged(@NotNull FileEditorManagerEvent event) {
                 FileEditor newEditor = event.getNewEditor();
                 if (newEditor instanceof DatasetEditor) {
                     DatasetEditor datasetEditor = (DatasetEditor) newEditor;

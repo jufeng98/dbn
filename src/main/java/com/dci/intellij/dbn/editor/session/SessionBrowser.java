@@ -202,7 +202,7 @@ public class SessionBrowser extends DisposableUserDataHolderBase implements File
     @Override
     @NotNull
     public JComponent getComponent() {
-        return isDisposed() ? new JPanel() : browserForm.getComponent();
+        return guarded(DISPOSED_COMPONENT, this, e -> e.getBrowserForm().getComponent());
     }
 
     @Override

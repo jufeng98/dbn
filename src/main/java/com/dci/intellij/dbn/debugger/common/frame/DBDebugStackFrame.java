@@ -53,19 +53,26 @@ public abstract class DBDebugStackFrame<P extends DBDebugProcess, V extends DBDe
 
     private final Latent<VirtualFile> virtualFile = Latent.basic(() -> resolveVirtualFile());
     private final Latent<XSourcePosition> sourcePosition = Latent.basic(() -> resolveSourcePosition());
+    private final Latent<IdentifierPsiElement> subject = Latent.basic(() -> resolveSubject());
 
-    private final Latent<IdentifierPsiElement> subject = Latent.basic(() -> {
-        Project project = getDebugProcess().getProject();
+    public DBDebugStackFrame(P debugProcess, int frameIndex) {
+        this.debugProcess = debugProcess;
+        this.frameIndex = frameIndex;
+    }
+
+    @Nullable
+    private IdentifierPsiElement resolveSubject() {
+
         XSourcePosition sourcePosition = getSourcePosition();
         VirtualFile virtualFile = getVirtualFile();
         if (virtualFile == null) return null;
 
+        Project project = getProject();
         if (virtualFile instanceof DBEditableObjectVirtualFile) {
             DBEditableObjectVirtualFile databaseFile = (DBEditableObjectVirtualFile) virtualFile;
             SourceCodeManager sourceCodeManager = SourceCodeManager.getInstance(project);
             sourceCodeManager.ensureSourcesLoaded(databaseFile.getObject(), true);
         }
-
 
         Document document = Documents.getDocument(virtualFile);
         DBLanguagePsiFile psiFile = (DBLanguagePsiFile) PsiUtil.getPsiFile(project, document);
@@ -89,11 +96,6 @@ public abstract class DBDebugStackFrame<P extends DBDebugProcess, V extends DBDe
         }
 
         return null;
-    });
-
-    public DBDebugStackFrame(P debugProcess, int frameIndex) {
-        this.debugProcess = debugProcess;
-        this.frameIndex = frameIndex;
     }
 
     protected abstract XSourcePosition resolveSourcePosition();
@@ -167,10 +169,10 @@ public abstract class DBDebugStackFrame<P extends DBDebugProcess, V extends DBDe
             virtualFile = ((DBEditableObjectVirtualFile) virtualFile).getMainContentFile();
         }
 
-        Project project = getDebugProcess().getProject();
         Document document = Documents.getDocument(virtualFile);
         if (document == null) return;
 
+        Project project = getProject();
         DBLanguagePsiFile psiFile = PsiUtil.getPsiFile(project, virtualFile);
         if (psiFile == null) return;
 
@@ -200,6 +202,10 @@ public abstract class DBDebugStackFrame<P extends DBDebugProcess, V extends DBDe
                 valuesMap.put(valueCacheKey, value);
             }
         });
+    }
+
+    private Project getProject() {
+        return getDebugProcess().getProject();
     }
 
     @Override

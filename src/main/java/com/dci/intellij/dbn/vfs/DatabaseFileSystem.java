@@ -108,10 +108,12 @@ public class DatabaseFileSystem extends VirtualFileSystem implements /*NonPhysic
     public VirtualFile findFileByPath(@NotNull @NonNls String path) {
         try {
             return lookupFileByPath(path);
+        } catch (ProcessCanceledException e) {
+            conditionallyLog(e);
         } catch (Throwable e) {
             log.error("Error loading file for given path \"{}\"", path, e);
-            return null;
         }
+        return null;
     }
 
     @Nullable

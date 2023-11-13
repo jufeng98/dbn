@@ -1,20 +1,18 @@
 package com.dci.intellij.dbn.common;
 
+import com.dci.intellij.dbn.common.icon.IconLoader;
 import com.intellij.openapi.util.ScalableIcon;
 import com.intellij.ui.RowIcon;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
-import java.util.HashMap;
-import java.util.Map;
 
-import static com.intellij.openapi.util.IconLoader.findIcon;
+import static com.dci.intellij.dbn.common.icon.IconLoader.load;
 
 @Slf4j
 @UtilityClass
 public class Icons {
-    private static final Map<String, Icon> REGISTERED_ICONS = new HashMap<>();
 
     public static final Icon DBN_SPLASH = load("/img/DBN.png");
     public static final Icon DONATE = load("/img/Donate.png");
@@ -435,32 +433,14 @@ public class Icons {
     public static final Icon SB_FILTER_STATUS                    = load("/img/filter/SessionFilterStatus.png");
     public static final Icon SB_FILTER_USER                      = load("/img/filter/SessionFilterUser.png");
 
-
     public static final Icon DEBUG_INVALID_BREAKPOINT  = load("/img/InvalidBreakpoint.png");
-
-
 
     public static final Icon SPACE                        = load("/img/Space.png");
     public static final Icon TREE_BRANCH                  = load("/img/TreeBranch.png");
     public static final Icon SMALL_TREE_BRANCH            = load("/img/SmallTreeBranch.png");
 
-
-
-
-
-
-    private static Icon load(String path) {
-        ClassLoader classLoader = Icons.class.getClassLoader();
-        String svgPath = path.replace(".png", ".svg");
-
-        try {
-            Icon icon = findIcon(svgPath, classLoader);
-            if (icon != null && icon.getIconWidth() > 1) return icon;
-        } catch (Throwable t) {
-            log.error("Failed to load icon {}", svgPath, t);
-        }
-
-        return findIcon(path, classLoader);
+    public static Icon getIcon(String key) {
+        return IconLoader.REGISTRY.get(key);
     }
 
     public static Icon scaleToWidth(Icon icon, float newWidth) {
@@ -473,16 +453,6 @@ public class Icons {
             }
         }
         return icon;
-    }
-
-    private static Icon load(String key, String path) {
-        Icon icon = load(path);
-        REGISTERED_ICONS.put(key, icon);
-        return icon;
-    }
-
-    public static Icon getIcon(String key) {
-        return REGISTERED_ICONS.get(key);
     }
 
     private static Icon createRowIcon(Icon left, Icon right) {
