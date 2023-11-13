@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.dbn.editor.data.options.ui.DataEditorGeneralSettingsForm">
+  <grid id="27dc6" binding="mainPanel" layout-manager="GridLayoutManager" row-count="7" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+    <margin top="4" left="4" bottom="4" right="4"/>
+    <constraints>
+      <xy x="20" y="20" width="515" height="225"/>
+    </constraints>
+    <properties/>
+    <border type="none" title="General"/>
+    <children>
+      <component id="936fa" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <labelFor value="cc053"/>
+          <text value="Fetch block &amp;size"/>
+        </properties>
+      </component>
+      <hspacer id="f147e">
+        <constraints>
+          <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </hspacer>
+      <vspacer id="dfd5e">
+        <constraints>
+          <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+      <component id="9249b" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <labelFor value="2e59c"/>
+          <text value="Fetch &amp;timeout"/>
+        </properties>
+      </component>
+      <component id="2e59c" class="javax.swing.JTextField" binding="fetchTimeoutTextField">
+        <constraints>
+          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="80" height="-1"/>
+            <maximum-size width="80" height="-1"/>
+          </grid>
+        </constraints>
+        <properties>
+          <margin top="2" left="6" bottom="2" right="6"/>
+        </properties>
+      </component>
+      <component id="cc053" class="javax.swing.JTextField" binding="fetchBlockSizeTextField">
+        <constraints>
+          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="80" height="-1"/>
+            <maximum-size width="80" height="-1"/>
+          </grid>
+        </constraints>
+        <properties>
+          <margin top="2" left="6" bottom="2" right="6"/>
+        </properties>
+      </component>
+      <component id="81189" class="javax.swing.JCheckBox" binding="trimWhitespacesCheckBox">
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="4" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Trim &amp;whitespaces"/>
+          <toolTipText value="Automatically trim whitespaces for literal content after editing"/>
+        </properties>
+      </component>
+      <component id="581a6" class="javax.swing.JCheckBox" binding="convertEmptyToNullCheckBox">
+        <constraints>
+          <grid row="3" column="0" row-span="1" col-span="4" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="&amp;Convert empty strings to null"/>
+        </properties>
+      </component>
+      <component id="c48d5" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="seconds (0 =&gt; no timeout)"/>
+        </properties>
+      </component>
+      <component id="653e" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="4" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="records"/>
+        </properties>
+      </component>
+      <component id="c8632" class="javax.swing.JCheckBox" binding="selectContentOnEditCheckBox">
+        <constraints>
+          <grid row="4" column="0" row-span="1" col-span="4" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Select content on cell &amp;edit"/>
+          <toolTipText value="Automatically select the content of the edited cell when editing is started"/>
+        </properties>
+      </component>
+      <component id="89ab3" class="javax.swing.JCheckBox" binding="largeValuePreviewActiveCheckBox">
+        <constraints>
+          <grid row="5" column="0" row-span="1" col-span="4" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <actionCommand value=""/>
+          <label value="Enable large value preview"/>
+          <text value="Enab&amp;le large value preview"/>
+          <toolTipText value="&lt;html&gt;Show readonly popup for large values not fitting the &lt;br&gt;table cell or values containing line breaks.&lt;/html&gt; "/>
+        </properties>
+      </component>
+    </children>
+  </grid>
+  <inspectionSuppressions>
+    <suppress inspection="NoLabelFor" id="cc053"/>
+  </inspectionSuppressions>
+</form>

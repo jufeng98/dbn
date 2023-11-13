@@ -1,9 +1,9 @@
 <idea-plugin>
     <extensions defaultExtensionNs="com.intellij">
-        <debugger.nodeRenderer order="first" implementation="com.dci.intellij.dbn.debugger.jdwp.frame.DBJdwpNodeRenderer"/>
-        <debugger.positionManagerFactory id="dbJdwpPositionManagerFactory" order="first" implementation="com.dci.intellij.dbn.debugger.jdwp.frame.DBJdwpDebugPositionManagerFactory"/>
+        <debugger.nodeRenderer order="first" implementation="com.dbn.debugger.jdwp.frame.DBJdwpNodeRenderer"/>
+        <debugger.positionManagerFactory id="dbJdwpPositionManagerFactory" order="first" implementation="com.dbn.debugger.jdwp.frame.DBJdwpDebugPositionManagerFactory"/>
 
-        <programRunner implementation="com.dci.intellij.dbn.debugger.jdwp.process.DBMethodJdwpRunner"/>
-        <programRunner implementation="com.dci.intellij.dbn.debugger.jdwp.process.DBStatementJdwpRunner"/>
+        <programRunner implementation="com.dbn.debugger.jdwp.process.DBMethodJdwpRunner"/>
+        <programRunner implementation="com.dbn.debugger.jdwp.process.DBStatementJdwpRunner"/>
     </extensions>
 </idea-plugin>
