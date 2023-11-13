@@ -1,11 +1,7 @@
 package com.dbn.editor.code;
 
-import com.dbn.editor.code.content.SourceCodeContent;
-import com.dbn.editor.code.diff.MergeAction;
-import com.dbn.editor.code.diff.SourceCodeDiffManager;
-import com.dbn.editor.code.options.CodeEditorConfirmationSettings;
-import com.dbn.editor.code.options.CodeEditorSettings;
 import com.dbn.DatabaseNavigator;
+import com.dbn.common.compatibility.Compatibility;
 import com.dbn.common.component.PersistentState;
 import com.dbn.common.component.ProjectComponentBase;
 import com.dbn.common.component.ProjectManagerListener;
@@ -34,7 +30,14 @@ import com.dbn.database.interfaces.DatabaseMetadataInterface;
 import com.dbn.debugger.DatabaseDebuggerManager;
 import com.dbn.editor.DBContentType;
 import com.dbn.editor.EditorProviderId;
+import com.dbn.editor.code.action.SourceCodeSaveAction;
+import com.dbn.editor.code.content.SourceCodeContent;
+import com.dbn.editor.code.diff.MergeAction;
+import com.dbn.editor.code.diff.SourceCodeDiffManager;
+import com.dbn.editor.code.options.CodeEditorConfirmationSettings;
+import com.dbn.editor.code.options.CodeEditorSettings;
 import com.dbn.execution.statement.DataDefinitionChangeListener;
+import com.dbn.execution.statement.action.ExecuteStatementEditorAction;
 import com.dbn.language.common.DBLanguagePsiFile;
 import com.dbn.language.common.psi.BasePsiElement;
 import com.dbn.language.common.psi.PsiUtil;
@@ -46,6 +49,7 @@ import com.dbn.object.type.DBObjectType;
 import com.dbn.vfs.file.DBContentVirtualFile;
 import com.dbn.vfs.file.DBEditableObjectVirtualFile;
 import com.dbn.vfs.file.DBSourceCodeVirtualFile;
+import com.intellij.openapi.actionSystem.ex.AnActionListener;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.editor.Document;
@@ -77,6 +81,7 @@ import static com.dbn.common.navigation.NavigationInstruction.*;
 import static com.dbn.common.util.Commons.list;
 import static com.dbn.common.util.Messages.*;
 import static com.dbn.common.util.Naming.unquote;
+import static com.dbn.common.util.Unsafe.silent;
 import static com.dbn.database.DatabaseFeature.OBJECT_CHANGE_MONITORING;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 import static com.dbn.vfs.file.status.DBFileStatus.LOADING;
@@ -108,7 +113,7 @@ public class SourceCodeManager extends ProjectComponentBase implements Persisten
     @Compatibility
     private void registerShortcutInterceptors(@NotNull Project project) {
         // silent action listener registration (only available since 18.3.x)
-        Unsafe.silent(() -> {
+        silent(() -> {
             ProjectEvents.subscribe(project, this, AnActionListener.TOPIC, new ExecuteStatementEditorAction.ShortcutInterceptor());
             ProjectEvents.subscribe(project, this, AnActionListener.TOPIC, new SourceCodeSaveAction.ShortcutInterceptor());
         });

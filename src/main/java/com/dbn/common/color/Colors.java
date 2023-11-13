@@ -23,7 +23,7 @@ import static com.dbn.common.color.ColorCache.cached;
 import static com.dbn.common.color.ColorSchemes.background;
 import static com.dbn.common.color.ColorSchemes.foreground;
 import static com.dbn.common.dispose.Failsafe.guarded;
-import static com.dci.intellij.dbn.common.util.Commons.nvl;
+import static com.dbn.common.util.Commons.nvl;
 
 @UtilityClass
 public final class Colors {

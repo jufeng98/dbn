@@ -15,7 +15,7 @@ public class DBNFileEditorManagerListener implements FileEditorManagerListener {
     public final void fileOpenedSync(@NotNull FileEditorManager source, @NotNull VirtualFile file, @NotNull Pair<FileEditor[], FileEditorProvider[]> editors) {
     }
 
-    @Override
+    //@Override
     public final void fileOpenedSync(@NotNull FileEditorManager source, @NotNull VirtualFile file, @NotNull List<FileEditorWithProvider> editorsWithProviders) {
     }
 
