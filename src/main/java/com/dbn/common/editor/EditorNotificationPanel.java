@@ -3,21 +3,15 @@ package com.dbn.common.editor;
 import com.dbn.common.color.Colors;
 import com.dbn.common.icon.Icons;
 import com.dbn.common.message.MessageType;
-import com.dbn.common.util.Context;
 import com.intellij.codeInsight.hint.HintUtil;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.ui.HyperlinkAdapter;
 import com.intellij.ui.HyperlinkLabel;
 import com.intellij.util.ui.PlatformColors;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import java.awt.*;
-import java.util.UUID;
 
 public class EditorNotificationPanel extends JPanel{
     protected final JLabel label = new JLabel();
@@ -75,16 +69,7 @@ public class EditorNotificationPanel extends JPanel{
         label.setIcon(icon);
     }
 
-    public HyperlinkLabel createActionLabel(final String text, @NonNls final String actionId) {
-        return createActionLabel(text, new Runnable() {
-            @Override
-            public void run() {
-                executeAction(actionId);
-            }
-        });
-    }
-
-    protected HyperlinkLabel createActionLabel(final String text, final Runnable action) {
+    protected HyperlinkLabel createActionLabel(String text, final Runnable action) {
         HyperlinkLabel label = new HyperlinkLabel(text, PlatformColors.BLUE, getBackground(), PlatformColors.BLUE);
         label.addHyperlinkListener(new HyperlinkAdapter() {
             @Override
@@ -94,19 +79,6 @@ public class EditorNotificationPanel extends JPanel{
         });
         linksPanel.add(label);
         return label;
-    }
-
-    private void executeAction(final String actionId) {
-        AnAction action = ActionManager.getInstance().getAction(actionId);
-        AnActionEvent event = new AnActionEvent(null, Context.getDataContext(this), UUID.randomUUID().toString(),
-                action.getTemplatePresentation(), ActionManager.getInstance(),
-                0);
-        action.beforeActionPerformedUpdate(event);
-        action.update(event);
-
-        if (event.getPresentation().isEnabled() && event.getPresentation().isVisible()) {
-            action.actionPerformed(event);
-        }
     }
 
     @Override

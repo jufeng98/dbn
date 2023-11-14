@@ -28,7 +28,6 @@ public class ProjectSettingsActionGroup extends ActionGroup {
 
     @Override
     public void update(@NotNull AnActionEvent e) {
-        super.update(e);
         //e.getPresentation().setIcon(Icons.ACTION_SETTINGS);
     }
 

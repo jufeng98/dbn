@@ -20,7 +20,6 @@ public class FindAllAction extends DataSearchHeaderAction implements DumbAware {
 
     @Override
     public void update(@NotNull final AnActionEvent e) {
-        super.update(e);
 /*
         Editor editor = getEditorSearchComponent().getEditor();
         Project project = editor.getProject();
