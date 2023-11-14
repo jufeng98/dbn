@@ -20,7 +20,6 @@ import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -136,10 +135,9 @@ public class DatasetFilterManager extends ProjectComponentBase implements Persis
     private void addFilterGroup(@NotNull DatasetFilterGroup filterGroup) {
         ConnectionId connectionId = filterGroup.getConnectionId();
         String datasetName = filterGroup.getDatasetName();
-        Map<String, DatasetFilterGroup> connectionFilters =
-                filters.computeIfAbsent(connectionId, id -> new HashMap<>());
+        Map<String, DatasetFilterGroup> filterGroups = getFilterGroups(connectionId);
 
-        connectionFilters.put(datasetName, filterGroup);
+        filterGroups.put(datasetName, filterGroup);
     }
 
     public DatasetFilterGroup getFilterGroup(@NotNull DBDataset dataset) {
@@ -156,8 +154,13 @@ public class DatasetFilterManager extends ProjectComponentBase implements Persis
     }
 
     @NotNull
+    private Map<String, DatasetFilterGroup> getFilterGroups(ConnectionId connectionId) {
+        return filters.computeIfAbsent(connectionId, id -> new ConcurrentHashMap<>());
+    }
+
+    @NotNull
     public DatasetFilterGroup getFilterGroup(ConnectionId connectionId, String datasetName) {
-        Map<String, DatasetFilterGroup> filterGroups = filters.computeIfAbsent(connectionId, id -> new ConcurrentHashMap<>());
+        Map<String, DatasetFilterGroup> filterGroups = getFilterGroups(connectionId);
         return filterGroups.computeIfAbsent(datasetName, n -> new DatasetFilterGroup(getProject(), connectionId, n));
     }
 

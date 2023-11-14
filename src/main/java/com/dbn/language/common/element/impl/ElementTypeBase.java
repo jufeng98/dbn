@@ -1,8 +1,5 @@
 package com.dbn.language.common.element.impl;
 
-import com.dbn.language.common.element.parser.BranchCheck;
-import com.dbn.language.common.element.parser.ElementTypeParser;
-import com.dbn.language.common.element.path.LanguageNode;
 import com.dbn.code.common.style.formatting.FormattingDefinition;
 import com.dbn.code.common.style.formatting.FormattingDefinitionFactory;
 import com.dbn.code.common.style.formatting.IndentDefinition;
@@ -17,10 +14,15 @@ import com.dbn.language.common.element.ElementTypeBundle;
 import com.dbn.language.common.element.TokenPairTemplate;
 import com.dbn.language.common.element.cache.ElementTypeLookupCache;
 import com.dbn.language.common.element.parser.Branch;
+import com.dbn.language.common.element.parser.BranchCheck;
+import com.dbn.language.common.element.parser.ElementTypeParser;
+import com.dbn.language.common.element.path.LanguageNode;
 import com.dbn.language.common.element.util.ElementTypeAttribute;
 import com.dbn.language.common.element.util.ElementTypeAttributeHolder;
 import com.dbn.language.common.element.util.ElementTypeDefinitionException;
 import com.dbn.object.type.DBObjectType;
+import com.intellij.lang.ASTNode;
+import com.intellij.psi.tree.ICompositeElementType;
 import com.intellij.psi.tree.IElementType;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,7 +42,7 @@ import static com.dbn.common.options.setting.Settings.stringAttribute;
 @Slf4j
 @Getter
 @Setter
-public abstract class ElementTypeBase extends IElementType implements ElementType {
+public abstract class ElementTypeBase extends IElementType implements ElementType, ICompositeElementType {
     private static final FormattingDefinition STATEMENT_FORMATTING = new FormattingDefinition(null, IndentDefinition.NORMAL, SpacingDefinition.MIN_LINE_BREAK, null);
 
     private final String id;
@@ -61,6 +63,11 @@ public abstract class ElementTypeBase extends IElementType implements ElementTyp
 
     private boolean scopeDemarcation;
     private boolean scopeIsolation;
+
+    @Override
+    public @NotNull ASTNode createCompositeNode() {
+        return new BasicCompositeElement(this);
+    }
 
     ElementTypeBase(@NotNull ElementTypeBundle bundle, ElementType parent, String id, @Nullable String description) {
         super(id, bundle.getLanguageDialect(), false);
