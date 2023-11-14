@@ -1,7 +1,9 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
   id("java")
-  id("org.jetbrains.kotlin.jvm") version "1.7.20"
-  id("org.jetbrains.intellij") version "1.15.0"
+  id("org.jetbrains.kotlin.jvm") version "1.9.20"
+  id("org.jetbrains.intellij") version "1.16.0"
 }
 
 group = "com.dbn"
@@ -11,10 +13,10 @@ repositories {
   mavenCentral()
 }
 dependencies {
-  annotationProcessor("org.projectlombok:lombok:1.18.26")
-  testAnnotationProcessor("org.projectlombok:lombok:1.18.26")
+  annotationProcessor("org.projectlombok:lombok:1.18.30")
+  testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
 
-  implementation("org.projectlombok:lombok:1.18.26")
+  implementation("org.projectlombok:lombok:1.18.30")
   implementation("org.dom4j:dom4j:2.1.4")
   implementation("org.apache.poi:poi:5.2.3")
   implementation("org.apache.poi:poi-ooxml:5.2.3")

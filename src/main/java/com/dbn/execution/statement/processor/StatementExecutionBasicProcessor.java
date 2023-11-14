@@ -1,12 +1,6 @@
 package com.dbn.execution.statement.processor;
 
-import com.dbn.connection.*;
-import com.dbn.execution.ExecutionManager;
-import com.dbn.execution.compiler.*;
-import com.dbn.execution.statement.*;
-import com.dbn.execution.statement.variables.StatementExecutionVariablesBundle;
-import com.dbn.language.common.psi.*;
-import com.dbn.common.dispose.Checks;
+import com.dbn.common.dispose.Disposer;
 import com.dbn.common.dispose.Failsafe;
 import com.dbn.common.dispose.StatefulDisposableBase;
 import com.dbn.common.editor.BasicTextEditor;
@@ -30,6 +24,7 @@ import com.dbn.connection.session.DatabaseSession;
 import com.dbn.database.DatabaseFeature;
 import com.dbn.editor.DBContentType;
 import com.dbn.editor.EditorProviderId;
+import com.dbn.execution.ExecutionManager;
 import com.dbn.execution.ExecutionOption;
 import com.dbn.execution.compiler.*;
 import com.dbn.execution.logging.DatabaseLoggingManager;
@@ -37,10 +32,12 @@ import com.dbn.execution.statement.*;
 import com.dbn.execution.statement.result.StatementExecutionBasicResult;
 import com.dbn.execution.statement.result.StatementExecutionResult;
 import com.dbn.execution.statement.result.StatementExecutionStatus;
+import com.dbn.execution.statement.variables.StatementExecutionVariablesBundle;
 import com.dbn.language.common.DBLanguagePsiFile;
 import com.dbn.language.common.PsiElementRef;
 import com.dbn.language.common.PsiFileRef;
 import com.dbn.language.common.element.util.ElementTypeAttribute;
+import com.dbn.language.common.psi.*;
 import com.dbn.object.DBSchema;
 import com.dbn.object.common.DBObject;
 import com.dbn.object.common.DBSchemaObject;
@@ -60,6 +57,8 @@ import javax.swing.*;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 
+import static com.dbn.common.dispose.Checks.isNotValid;
+import static com.dbn.common.dispose.Checks.isValid;
 import static com.dbn.common.navigation.NavigationInstruction.*;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 import static com.dbn.execution.ExecutionStatus.*;
@@ -259,9 +258,7 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
     @Nullable
     @Override
     public StatementExecutionResult getExecutionResult() {
-        if (!Checks.isValid(executionResult)) {
-            executionResult = null;
-        }
+        if (isNotValid(executionResult)) executionResult = null;
         return executionResult;
     }
 
@@ -297,6 +294,8 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
 
             String statementText = initStatementText();
             SQLException executionException = null;
+            StatementExecutionResult executionResult = null;
+
             if (statementText != null) {
                 try {
                     assertNotCancelled();
@@ -314,6 +313,8 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
                         notifyDataManipulationChanges(context);
                         notifySchemaSelectionChanges(context);
                     }
+
+
                 } catch (SQLException e) {
                     conditionallyLog(e);
                     Resources.cancel(context.getStatement());
@@ -329,6 +330,8 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
             }
 
             assertNotCancelled();
+            this.executionResult = executionResult;
+
             if (executionResult != null) {
                 Project project = getProject();
                 ExecutionManager executionManager = ExecutionManager.getInstance(project);
@@ -465,6 +468,9 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
         ConnectionId connectionId = executionInput.getConnectionId();
         StatementExecutionQueue queue = Failsafe.nn(executionManager.getExecutionQueue(connectionId, sessionId));
         queue.cancelExecution(this);
+        Disposer.dispose(executionResult);
+        executionResult = null;
+
         Progress.background(
                 getProject(),
                 getConnection(),
@@ -475,17 +481,20 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
     }
 
     private void consumeLoggerOutput(StatementExecutionContext context) {
+        StatementExecutionResult executionResult = getExecutionResult();
+        if (isNotValid(executionResult)) return;
+
         boolean logging = context.isLogging();
         executionResult.setLoggingActive(logging);
-        if (logging) {
-            Project project = getProject();
-            DBNConnection conn = context.getConnection();
-            ConnectionHandler connection = getTargetConnection();
+        if (!logging) return;
 
-            DatabaseLoggingManager loggingManager = DatabaseLoggingManager.getInstance(project);
-            String logOutput = loggingManager.readLoggerOutput(connection, conn);
-            executionResult.setLoggingOutput(logOutput);
-        }
+        Project project = getProject();
+        DBNConnection conn = context.getConnection();
+        ConnectionHandler connection = getTargetConnection();
+
+        DatabaseLoggingManager loggingManager = DatabaseLoggingManager.getInstance(project);
+        String logOutput = loggingManager.readLoggerOutput(connection, conn);
+        executionResult.setLoggingOutput(logOutput);
     }
 
     private void notifyDataManipulationChanges(StatementExecutionContext context) {
@@ -508,7 +517,8 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
                 resetChanges = true;
             }
         } else{
-            if (executionResult.getUpdateCount() > 0) {
+            StatementExecutionResult executionResult = getExecutionResult();
+            if (isValid(executionResult) && executionResult.getUpdateCount() > 0) {
                 notifyChanges = true;
             } else if (connection.hasPendingTransactions(conn)) {
                 notifyChanges = true;

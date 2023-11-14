@@ -1,7 +1,7 @@
 <idea-plugin url="https://plugins.jetbrains.com/plugin/1800-database-navigator">
     <name>Database Navigator</name>
     <id>DBN</id>
-    <version>3.4.1710.1</version>
+    <version>3.4.2130.1</version>
     <category>Database</category>
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
@@ -29,6 +29,14 @@
     ]]></description>
     <change-notes><![CDATA[
         <ul>
+            <li><b>3.4.2130</b>
+            <ul>
+                <li>Data editor improvements
+                <li>NCLOB data native support
+                <li>Identifier resolver and navigation improvements
+                <li>Memory optimisations
+                <li>Bug fixes and stability improvements
+            </ul>
             <li><b>3.4.1710</b>
             <ul>
                 <li>Addressed IDE freezing issues

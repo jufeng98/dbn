@@ -1,5 +1,6 @@
 package com.dbn.common.listener;
 
+import com.dbn.common.compatibility.Workaround;
 import com.intellij.openapi.fileEditor.*;
 import com.intellij.openapi.fileEditor.ex.FileEditorWithProvider;
 import com.intellij.openapi.util.Pair;
@@ -16,6 +17,7 @@ public class DBNFileEditorManagerListener implements FileEditorManagerListener {
     }
 
     //@Override
+    @Workaround
     public final void fileOpenedSync(@NotNull FileEditorManager source, @NotNull VirtualFile file, @NotNull List<FileEditorWithProvider> editorsWithProviders) {
     }
 
