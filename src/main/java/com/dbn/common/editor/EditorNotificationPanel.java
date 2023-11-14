@@ -69,7 +69,7 @@ public class EditorNotificationPanel extends JPanel{
         label.setIcon(icon);
     }
 
-    protected HyperlinkLabel createActionLabel(String text, final Runnable action) {
+    protected void createActionLabel(String text, final Runnable action) {
         HyperlinkLabel label = new HyperlinkLabel(text, PlatformColors.BLUE, getBackground(), PlatformColors.BLUE);
         label.addHyperlinkListener(new HyperlinkAdapter() {
             @Override
@@ -78,7 +78,6 @@ public class EditorNotificationPanel extends JPanel{
             }
         });
         linksPanel.add(label);
-        return label;
     }
 
     @Override
