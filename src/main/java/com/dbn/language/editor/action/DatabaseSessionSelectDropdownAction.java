@@ -10,6 +10,7 @@ import com.dbn.connection.session.DatabaseSessionBundle;
 import com.dbn.vfs.DBConsoleType;
 import com.dbn.vfs.file.DBConsoleVirtualFile;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.project.DumbAware;
@@ -27,7 +28,7 @@ public class DatabaseSessionSelectDropdownAction extends DBNComboBoxAction imple
 
     @Override
     @NotNull
-    protected DefaultActionGroup createPopupActionGroup(JComponent component) {
+    protected DefaultActionGroup createPopupActionGroup(JComponent component, DataContext dataContext) {
         Project project = Lookups.getProject(component);
         DefaultActionGroup actionGroup = new DefaultActionGroup();
         VirtualFile virtualFile = Lookups.getVirtualFile(component);

@@ -13,12 +13,14 @@ public abstract class CalendarPopupAction extends BasicAction {
         super(text, description, icon);
     }
 
+    @Nullable
     protected CalendarPopupProviderForm getCalendarForm(@NotNull AnActionEvent e) {
         return e.getData(DataKeys.CALENDAR_POPUP_PROVIDER_FORM);
     }
 
+    @Nullable
     CalendarTableModel getCalendarTableModel(@NotNull AnActionEvent e) {
         CalendarPopupProviderForm form = getCalendarForm(e);
-        return form.getCalendarTableModel();
+        return form == null ? null : form.getCalendarTableModel();
     }
 }

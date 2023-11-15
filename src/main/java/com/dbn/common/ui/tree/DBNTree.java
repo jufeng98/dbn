@@ -1,9 +1,10 @@
 package com.dbn.common.ui.tree;
 
+import com.dbn.common.dispose.Disposer;
 import com.dbn.common.ref.WeakRef;
 import com.dbn.common.ui.component.DBNComponent;
 import com.dbn.common.ui.util.Fonts;
-import com.dbn.common.dispose.Disposer;
+import com.dbn.common.ui.util.UserInterface;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.treeStructure.Tree;
@@ -13,15 +14,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+import java.awt.*;
+import java.awt.event.MouseEvent;
 
 import static com.dbn.common.dispose.ComponentDisposer.removeListeners;
 
 public class DBNTree extends Tree implements DBNComponent {
-    public static final DefaultTreeCellRenderer DEFAULT_CELL_RENDERER = new DefaultTreeCellRenderer();
-
     private final WeakRef<DBNComponent> parent;
 
     public DBNTree(@NotNull DBNComponent parent) {
@@ -89,5 +90,20 @@ public class DBNTree extends Tree implements DBNComponent {
         clearToggledPaths();
         removeListeners(this);
         nullify();
+    }
+
+    @Nullable
+    protected Object getTreeNode(MouseEvent event) {
+        TreePath path = Trees.getPathAtMousePosition(this, event);
+        if (path == null) return null;
+
+        Rectangle pathBounds = getPathBounds(path);
+        if (pathBounds == null) return null;
+
+        Point mouseLocation = UserInterface.getRelativeMouseLocation(event.getComponent());
+        if (mouseLocation == null) return null;
+        if (!pathBounds.contains(mouseLocation)) return null;
+
+        return path.getLastPathComponent();
     }
 }

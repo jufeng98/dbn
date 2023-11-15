@@ -28,7 +28,7 @@ public abstract class AbstractFilterComboBoxAction extends DBNComboBoxAction imp
 
     @Override
     @NotNull
-    protected DefaultActionGroup createPopupActionGroup(JComponent component) {
+    protected DefaultActionGroup createPopupActionGroup(@NotNull JComponent component, @NotNull DataContext dataContext) {
         SessionBrowser sessionBrowser = getSessionBrowser(component);
         DefaultActionGroup actionGroup = new DefaultActionGroup();
         actionGroup.add(new SelectFilterValueAction(null));

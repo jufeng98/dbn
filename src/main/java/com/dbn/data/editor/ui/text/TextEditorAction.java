@@ -13,6 +13,7 @@ public abstract class TextEditorAction extends BasicAction {
         super(text, description, icon);
     }
 
+    @Nullable
     protected TextEditorPopupProviderForm getTextEditorForm(@NotNull AnActionEvent e) {
         return e.getData(DataKeys.TEXT_EDITOR_POPUP_PROVIDER_FORM);
     }

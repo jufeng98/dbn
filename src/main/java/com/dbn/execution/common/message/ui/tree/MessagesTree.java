@@ -11,17 +11,19 @@ import com.dbn.common.util.Documents;
 import com.dbn.common.util.Editors;
 import com.dbn.common.util.Strings;
 import com.dbn.connection.ConnectionId;
+import com.dbn.database.DatabaseMessage;
 import com.dbn.editor.DBContentType;
 import com.dbn.editor.EditorProviderId;
 import com.dbn.editor.code.SourceCodeEditor;
 import com.dbn.editor.console.SQLConsoleEditor;
+import com.dbn.execution.common.message.ConsoleMessage;
 import com.dbn.execution.common.message.ui.tree.node.CompilerMessageNode;
 import com.dbn.execution.common.message.ui.tree.node.StatementExecutionMessageNode;
 import com.dbn.execution.compiler.CompilerAction;
 import com.dbn.execution.compiler.CompilerMessage;
-import com.dbn.execution.statement.processor.StatementExecutionProcessor;
 import com.dbn.execution.explain.result.ExplainPlanMessage;
 import com.dbn.execution.statement.StatementExecutionMessage;
+import com.dbn.execution.statement.processor.StatementExecutionProcessor;
 import com.dbn.execution.statement.result.StatementExecutionResult;
 import com.dbn.language.common.psi.ExecutablePsiElement;
 import com.dbn.vfs.file.DBConsoleVirtualFile;
@@ -97,6 +99,27 @@ public class MessagesTree extends DBNTree implements Disposable {
     @Override
     public MessagesTreeModel getModel() {
         return (MessagesTreeModel) super.getModel();
+    }
+
+    @Override
+    public String getToolTipText(MouseEvent event) {
+        Object object = getTreeNode(event);
+        if (object == null) return null;
+
+        if (!(object instanceof MessagesTreeLeafNode)) return null;
+
+        MessagesTreeLeafNode node = (MessagesTreeLeafNode) object;
+        ConsoleMessage message = node.getMessage();
+        if (message instanceof StatementExecutionMessage) {
+            StatementExecutionMessage statementExecutionMessage = (StatementExecutionMessage) message;
+            DatabaseMessage databaseMessage = statementExecutionMessage.getDatabaseMessage();
+            if (databaseMessage == null) return null;
+            String details = databaseMessage.getDetails();
+
+            return "<html><div style='white-space:nowrap'>" + details.replaceAll("\n", "<br>") + "</div></html>";
+        }
+
+        return null;
     }
 
     public void removeMessages(ConnectionId connectionId) {

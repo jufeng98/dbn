@@ -15,6 +15,8 @@ class TextEditorDeleteAction extends TextEditorAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         TextEditorPopupProviderForm form = getTextEditorForm(e);
+        if (form == null) return;
+
         JTextField textField = form.getTextField();
         TextFieldWithPopup editorComponent = form.getEditorComponent();
         editorComponent.getUserValueHolder().updateUserValue(null, false);

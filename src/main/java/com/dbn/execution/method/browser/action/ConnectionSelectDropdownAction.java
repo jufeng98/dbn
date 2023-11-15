@@ -8,6 +8,7 @@ import com.dbn.connection.ConnectionManager;
 import com.dbn.database.DatabaseFeature;
 import com.dbn.execution.method.browser.ui.MethodExecutionBrowserForm;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.project.Project;
@@ -26,7 +27,7 @@ public class ConnectionSelectDropdownAction extends DBNComboBoxAction {
 
     @Override
     @NotNull
-    protected DefaultActionGroup createPopupActionGroup(JComponent component) {
+    protected DefaultActionGroup createPopupActionGroup(@NotNull JComponent component, @NotNull DataContext dataContext) {
         DefaultActionGroup actionGroup = new DefaultActionGroup();
         Project project = Lookups.getProject(component);
         ConnectionManager connectionManager = ConnectionManager.getInstance(project);

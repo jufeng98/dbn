@@ -70,7 +70,16 @@ public abstract class ObjectListShowAction extends DumbAwareAction {
             if (action.isCancelled()) return;
 
             Dispatch.run(() -> {
-                if (objects.size() > 0) {
+                if (objects.isEmpty()) {
+                    JLabel label = new JLabel(getEmptyListMessage(), Icons.EXEC_MESSAGES_INFO, SwingConstants.LEFT);
+                    label.setBorder(JBUI.Borders.empty(3));
+                    JPanel panel = new JPanel(new BorderLayout());
+                    panel.add(label);
+                    panel.setBackground(Colors.LIGHT_BLUE);
+                    ComponentPopupBuilder popupBuilder = JBPopupFactory.getInstance().createComponentPopupBuilder(panel, null);
+                    JBPopup popup = popupBuilder.createPopup();
+                    showPopup(popup);
+                } else {
                     ObjectListActionGroup actionGroup = new ObjectListActionGroup(this, objects, recentObjectList);
                     JBPopup popup = JBPopupFactory.getInstance().createActionGroupPopup(
                             ObjectListShowAction.this.getTitle(),
@@ -80,15 +89,6 @@ public abstract class ObjectListShowAction extends DumbAwareAction {
                             true, null, 10);
 
                     popup.getContent().setBackground(Colors.LIGHT_BLUE);
-                    showPopup(popup);
-                } else {
-                    JLabel label = new JLabel(getEmptyListMessage(), Icons.EXEC_MESSAGES_INFO, SwingConstants.LEFT);
-                    label.setBorder(JBUI.Borders.empty(3));
-                    JPanel panel = new JPanel(new BorderLayout());
-                    panel.add(label);
-                    panel.setBackground(Colors.LIGHT_BLUE);
-                    ComponentPopupBuilder popupBuilder = JBPopupFactory.getInstance().createComponentPopupBuilder(panel, null);
-                    JBPopup popup = popupBuilder.createPopup();
                     showPopup(popup);
                 }
             });
@@ -113,7 +113,6 @@ public abstract class ObjectListShowAction extends DumbAwareAction {
 
     @Override
     public void update(@NotNull AnActionEvent e) {
-        super.update(e);
     }
 
     protected abstract AnAction createObjectAction(DBObject object);

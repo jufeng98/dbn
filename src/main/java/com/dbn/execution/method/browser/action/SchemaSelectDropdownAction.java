@@ -5,12 +5,12 @@ import com.dbn.connection.ConnectionHandler;
 import com.dbn.execution.method.browser.ui.MethodExecutionBrowserForm;
 import com.dbn.object.DBSchema;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.Presentation;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.Icon;
-import javax.swing.JComponent;
+import javax.swing.*;
 
 public class SchemaSelectDropdownAction extends DBNComboBoxAction {
     MethodExecutionBrowserForm browserComponent;
@@ -21,7 +21,7 @@ public class SchemaSelectDropdownAction extends DBNComboBoxAction {
 
     @Override
     @NotNull
-    protected DefaultActionGroup createPopupActionGroup(JComponent jComponent) {
+    protected DefaultActionGroup createPopupActionGroup(@NotNull JComponent component, @NotNull DataContext dataContext) {
         DefaultActionGroup actionGroup = new DefaultActionGroup();
         ConnectionHandler connection = browserComponent.getSettings().getConnection();
         if (connection != null) {

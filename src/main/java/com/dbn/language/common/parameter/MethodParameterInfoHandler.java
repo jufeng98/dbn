@@ -1,7 +1,5 @@
 package com.dbn.language.common.parameter;
 
-import com.dbn.language.common.psi.PsiUtil;
-import com.dbn.language.common.psi.lookup.ObjectReferenceLookupAdapter;
 import com.dbn.code.common.style.options.CodeStyleCaseOption;
 import com.dbn.code.common.style.options.CodeStyleCaseSettings;
 import com.dbn.code.psql.style.PSQLCodeStyle;
@@ -14,6 +12,8 @@ import com.dbn.language.common.element.util.ElementTypeAttribute;
 import com.dbn.language.common.psi.BasePsiElement;
 import com.dbn.language.common.psi.IdentifierPsiElement;
 import com.dbn.language.common.psi.NamedPsiElement;
+import com.dbn.language.common.psi.PsiUtil;
+import com.dbn.language.common.psi.lookup.ObjectReferenceLookupAdapter;
 import com.dbn.object.DBArgument;
 import com.dbn.object.DBMethod;
 import com.dbn.object.DBProgram;
@@ -44,13 +44,6 @@ public class MethodParameterInfoHandler implements ParameterInfoHandler<BasePsiE
     @Override
     @Compatibility
     public Object[] getParametersForLookup(LookupElement item, ParameterInfoContext context) {
-        return null;
-    }
-
-    @Nullable
-    @Override
-    @Compatibility
-    public Object[] getParametersForDocumentation(DBMethod method, ParameterInfoContext context) {
         return null;
     }
 
@@ -183,19 +176,6 @@ public class MethodParameterInfoHandler implements ParameterInfoHandler<BasePsiE
             paramPsiElement = paramPsiElement.getNextSibling();
         }
         context.setCurrentParameter(index);
-    }
-
-    @Nullable
-    @Override
-    @Compatibility
-    public String getParameterCloseChars() {
-        return ",";
-    }
-
-    @Override
-    @Compatibility
-    public boolean tracksParameterIndex() {
-        return false;
     }
 
     @Override

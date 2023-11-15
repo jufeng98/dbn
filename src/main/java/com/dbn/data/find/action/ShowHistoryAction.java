@@ -1,13 +1,9 @@
 package com.dbn.data.find.action;
 
 import com.dbn.data.find.DataSearchComponent;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CustomShortcutSet;
-import com.intellij.openapi.actionSystem.KeyboardShortcut;
-import com.intellij.openapi.actionSystem.Shortcut;
+import com.intellij.icons.AllIcons;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.DumbAware;
-import com.intellij.openapi.util.IconLoader;
 import com.intellij.util.containers.ContainerUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,7 +20,7 @@ public class ShowHistoryAction extends DataSearchHeaderAction implements DumbAwa
     public ShowHistoryAction(final JTextField searchField, DataSearchComponent searchComponent) {
         super(searchComponent);
         this.searchField = searchField;
-        getTemplatePresentation().setIcon(IconLoader.getIcon("/actions/search.png"));
+        getTemplatePresentation().setIcon(AllIcons.Actions.Search);
         getTemplatePresentation().setDescription("Search history");
         getTemplatePresentation().setText("Search History");
 

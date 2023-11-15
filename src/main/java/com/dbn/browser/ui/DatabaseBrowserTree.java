@@ -15,7 +15,6 @@ import com.dbn.common.ui.tree.DBNTree;
 import com.dbn.common.ui.tree.Trees;
 import com.dbn.common.ui.util.Borderless;
 import com.dbn.common.ui.util.Mouse;
-import com.dbn.common.ui.util.UserInterface;
 import com.dbn.common.util.Actions;
 import com.dbn.connection.ConnectionBundle;
 import com.dbn.connection.ConnectionHandler;
@@ -42,7 +41,6 @@ import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
-import java.awt.*;
 import java.awt.event.*;
 
 import static com.dbn.common.dispose.Checks.isNotValid;
@@ -162,17 +160,7 @@ public final class DatabaseBrowserTree extends DBNTree implements Borderless {
 
     @Override
     public String getToolTipText(MouseEvent e) {
-        TreePath path = Trees.getPathAtMousePosition(this, e);
-        if (path == null) return null;
-
-        Rectangle pathBounds = getPathBounds(path);
-        if (pathBounds == null) return null;
-
-        Point mouseLocation = UserInterface.getRelativeMouseLocation(e.getComponent());
-        if (mouseLocation == null) return null;
-        if (!pathBounds.contains(mouseLocation)) return null;
-
-        Object object = path.getLastPathComponent();
+        Object object = getTreeNode(e);
         if (object instanceof ToolTipProvider) {
             ToolTipProvider toolTipProvider = (ToolTipProvider) object;
             return toolTipProvider.getToolTip();

@@ -14,6 +14,9 @@ public class CalendarNextMonthAction extends CalendarPopupAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
-        getCalendarTableModel(e).rollMonth(1);
+        CalendarTableModel model = getCalendarTableModel(e);
+        if (model == null) return;
+
+        model.rollMonth(1);
     }
 }

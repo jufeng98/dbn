@@ -339,6 +339,9 @@ public class Strings extends com.intellij.openapi.util.text.StringUtil {
         boolean test(char chr);
     }
 
-
+    public static String replaceCarriageReturns(String string) {
+        if (string == null) return null;
+        return string.replaceAll("[\\n|\\r]", " ").replaceAll("\\s+", " ").trim();
+    }
 }
 

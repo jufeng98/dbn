@@ -14,6 +14,8 @@ class ArrayEditorAcceptAction extends ArrayEditorAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         ArrayEditorPopupProviderForm form = getArrayEditorForm(e);
+        if (form == null) return;
+
         ArrayEditorList list = form.getEditorList();
         list.stopCellEditing();
         UserValueHolder userValueHolder = form.getEditorComponent().getUserValueHolder();

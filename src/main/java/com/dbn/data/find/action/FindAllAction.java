@@ -1,17 +1,17 @@
 package com.dbn.data.find.action;
 
 import com.dbn.data.find.DataSearchComponent;
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.IdeActions;
 import com.intellij.openapi.project.DumbAware;
-import com.intellij.openapi.util.IconLoader;
 import org.jetbrains.annotations.NotNull;
 
 public class FindAllAction extends DataSearchHeaderAction implements DumbAware {
     public FindAllAction(DataSearchComponent searchComponent) {
         super(searchComponent);
-        getTemplatePresentation().setIcon(IconLoader.getIcon("/actions/export.png"));
+        getTemplatePresentation().setIcon(AllIcons.ToolbarDecorator.Export);
         getTemplatePresentation().setDescription("Export matches to Find tool window");
         getTemplatePresentation().setText("Find All");
         registerCustomShortcutSet(ActionManager.getInstance().getAction(IdeActions.ACTION_FIND_USAGES).getShortcutSet(),
@@ -20,7 +20,6 @@ public class FindAllAction extends DataSearchHeaderAction implements DumbAware {
 
     @Override
     public void update(@NotNull final AnActionEvent e) {
-        super.update(e);
 /*
         Editor editor = getEditorSearchComponent().getEditor();
         Project project = editor.getProject();

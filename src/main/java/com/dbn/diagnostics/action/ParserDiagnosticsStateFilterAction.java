@@ -4,14 +4,11 @@ import com.dbn.common.ui.misc.DBNComboBoxAction;
 import com.dbn.diagnostics.data.ParserDiagnosticsFilter;
 import com.dbn.diagnostics.data.StateTransition;
 import com.dbn.diagnostics.ui.ParserDiagnosticsForm;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.DumbAware;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.JComponent;
+import javax.swing.*;
 
 public class ParserDiagnosticsStateFilterAction extends DBNComboBoxAction implements DumbAware {
     private final ParserDiagnosticsForm form;
@@ -22,7 +19,7 @@ public class ParserDiagnosticsStateFilterAction extends DBNComboBoxAction implem
 
     @Override
     @NotNull
-    protected DefaultActionGroup createPopupActionGroup(JComponent component) {
+    protected DefaultActionGroup createPopupActionGroup(@NotNull JComponent component, @NotNull DataContext dataContext) {
         DefaultActionGroup actionGroup = new DefaultActionGroup();
         actionGroup.add(new SelectFilterValueAction(null));
         actionGroup.addSeparator();

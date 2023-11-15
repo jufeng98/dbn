@@ -13,6 +13,8 @@ class ArrayEditorRevertAction extends ArrayEditorAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         ArrayEditorPopupProviderForm form = getArrayEditorForm(e);
+        if (form == null) return;
+
         form.hidePopup();
     }
 

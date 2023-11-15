@@ -4,6 +4,7 @@ import com.dbn.common.dispose.Disposer;
 import com.dbn.common.dispose.Failsafe;
 import com.dbn.common.message.MessageType;
 import com.dbn.connection.ConnectionId;
+import com.dbn.database.DatabaseMessage;
 import com.dbn.execution.common.message.ConsoleMessage;
 import com.dbn.execution.statement.processor.StatementExecutionProcessor;
 import com.dbn.execution.statement.result.StatementExecutionResult;
@@ -14,15 +15,15 @@ import lombok.Setter;
 @Getter
 @Setter
 public class StatementExecutionMessage extends ConsoleMessage {
-    private final String causeMessage;
     private StatementExecutionResult executionResult;
+    private final DatabaseMessage databaseMessage;
     private final ConnectionId connectionId;
 
-    public StatementExecutionMessage(StatementExecutionResult executionResult, String message, String causeMessage, MessageType messageType) {
+    public StatementExecutionMessage(StatementExecutionResult executionResult, String message, DatabaseMessage databaseMessage, MessageType messageType) {
         super(messageType, message);
         this.executionResult = executionResult;
-        this.causeMessage = causeMessage;
         this.connectionId = executionResult.getConnectionId();
+        this.databaseMessage = databaseMessage;
     }
 
     public VirtualFile getVirtualFile() {

@@ -11,6 +11,9 @@ public class CalendarNextYearAction extends CalendarPopupAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
-        getCalendarTableModel(e).rollYear(1);
+        CalendarTableModel model = getCalendarTableModel(e);
+        if (model == null) return;
+
+        model.rollYear(1);
     }
 }

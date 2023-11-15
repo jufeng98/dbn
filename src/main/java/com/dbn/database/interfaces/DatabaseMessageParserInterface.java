@@ -1,5 +1,6 @@
 package com.dbn.database.interfaces;
 
+import com.dbn.database.DatabaseMessage;
 import com.dbn.database.DatabaseObjectIdentifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,4 +18,8 @@ public interface DatabaseMessageParserInterface extends DatabaseInterface{
     boolean isAuthenticationException(SQLException e);
 
     boolean isSuccessException(SQLException exception);
+
+    default DatabaseMessage parseExceptionMessage(SQLException exception) {
+        return new DatabaseMessage(exception.getMessage(), null);
+    };
 }

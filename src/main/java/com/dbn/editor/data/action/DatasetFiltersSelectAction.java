@@ -2,7 +2,6 @@ package com.dbn.editor.data.action;
 
 import com.dbn.common.icon.Icons;
 import com.dbn.common.ui.misc.DBNComboBoxAction;
-import com.dbn.common.util.Context;
 import com.dbn.editor.data.DatasetEditor;
 import com.dbn.editor.data.filter.DatasetFilter;
 import com.dbn.editor.data.filter.DatasetFilterGroup;
@@ -35,8 +34,7 @@ public class DatasetFiltersSelectAction extends DBNComboBoxAction {
 
     @Override
     @NotNull
-    protected DefaultActionGroup createPopupActionGroup(JComponent button) {
-        DataContext dataContext = Context.getDataContext(button);
+    protected DefaultActionGroup createPopupActionGroup(@NotNull JComponent button, @NotNull DataContext dataContext) {
         DatasetEditor datasetEditor = DatasetEditor.get(dataContext);
 
         DefaultActionGroup actionGroup = new DefaultActionGroup();

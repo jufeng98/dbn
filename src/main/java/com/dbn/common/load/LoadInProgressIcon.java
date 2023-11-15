@@ -1,39 +1,33 @@
 package com.dbn.common.load;
 
-import com.dbn.common.util.TimeUtil;
 import com.dbn.common.dispose.Disposer;
-import com.intellij.openapi.util.IconLoader;
+import com.dbn.common.util.TimeUtil;
+import com.intellij.icons.AllIcons;
 
 import javax.swing.*;
 import java.awt.*;
-import java.lang.reflect.Field;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 
 public class LoadInProgressIcon implements Icon{
     public static final Icon INSTANCE = new LoadInProgressIcon();
 
-    public static int ROLL_INTERVAL = 50;
-    private static int ROLL_ELEMENTS = 12;
+    public static int ROLL_INTERVAL = 80;
 
     private static final Icon[] ICONS;
     static {
-        try {
-            // TODO workaround for spinner change from 12 to 8 (go standard api if possible)
-            Field field = Class.forName("com.intellij.icons.AllIcons$Process").getDeclaredField("Step_9");
-            if (field.getAnnotation(Deprecated.class) != null) {
-                ROLL_INTERVAL = 80;
-                ROLL_ELEMENTS = 8;
-            }
-        } catch (Throwable e) {
-            conditionallyLog(e);
-        }
-
-        ICONS = new Icon[ROLL_ELEMENTS];
+        ICONS = new Icon[8];
         for (int i = 0; i < ICONS.length; i++) {
-            ICONS[i] = IconLoader.getIcon("/process/step_" + (i + 1) + ".png");
+            switch (i) {
+                case 0: ICONS[i] = AllIcons.Process.Step_1; break;
+                case 1: ICONS[i] = AllIcons.Process.Step_2; break;
+                case 2: ICONS[i] = AllIcons.Process.Step_3; break;
+                case 3: ICONS[i] = AllIcons.Process.Step_4; break;
+                case 4: ICONS[i] = AllIcons.Process.Step_5; break;
+                case 5: ICONS[i] = AllIcons.Process.Step_6; break;
+                case 6: ICONS[i] = AllIcons.Process.Step_7; break;
+                case 7: ICONS[i] = AllIcons.Process.Step_8; break;
+            }
         }
     }
 

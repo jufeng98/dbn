@@ -1,19 +1,20 @@
 package com.dbn.execution.method.action;
 
-import com.dbn.common.action.ComboBoxAction;
+import com.dbn.common.ui.misc.DBNComboBoxAction;
 import com.dbn.common.util.Commons;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.SchemaId;
 import com.dbn.execution.method.MethodExecutionInput;
 import com.dbn.object.DBSchema;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.Presentation;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
-public class ExecutionSchemasSelectAction extends ComboBoxAction {
+public class ExecutionSchemasSelectAction extends DBNComboBoxAction {
     private MethodExecutionInput executionInput;
 
     public ExecutionSchemasSelectAction(MethodExecutionInput executionInput) {
@@ -28,7 +29,7 @@ public class ExecutionSchemasSelectAction extends ComboBoxAction {
 
     @Override
     @NotNull
-    protected DefaultActionGroup createPopupActionGroup(JComponent jComponent) {
+    protected DefaultActionGroup createPopupActionGroup(@NotNull JComponent component, @NotNull DataContext dataContext) {
         ConnectionHandler connection = executionInput.getConnection();
         DefaultActionGroup actionGroup = new DefaultActionGroup();
         if (connection != null) {

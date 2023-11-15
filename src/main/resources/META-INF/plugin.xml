@@ -358,7 +358,7 @@
             <!--<add-to-group group-id="ProjectViewPopupMenu" relative-to-action="WeighingNewGroup" anchor="before"/>-->
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
         </action>
-        <group>
+        <group id="DBNavigator.ActionGroup.ProjectViewContext">
             <group id="DBNavigator.ActionGroup.ProjectViewPopup" text="DB Navigator" popup="true" keep-content="true">
                 <action id="DBNavigator.Actions.File.ExecuteScript" class="com.dbn.execution.script.action.ExecuteScriptFileAction" text="Execute SQL Script" icon="/img/action/ExecuteAsScript.png"/>
                 <action id="DBNavigator.Actions.ConnectionContext.LinkConnection" class="com.dbn.connection.context.action.FolderConnectionLinkAction" text="Connection Context - Associate Connection" icon="/img/action/FolderConnectionLink.png"/>
@@ -589,11 +589,11 @@
 
         <group id="DBNavigator.ActionGroup.Calendar.Controls" text="Calendar Controls">
             <group id="DBNavigator.ActionGroup.Calendar.LeftControls" text="Calendar Left Controls">
-                <action id="DBNavigator.Actions.Calendar.CalendarPreviousMonth" class="com.dbn.data.editor.ui.calendar.CalendarPreviousMonthAction" text="Calendar - Previous Month">
-                    <keyboard-shortcut keymap="$default" first-keystroke="ctrl LEFT"/>
-                </action>
                 <action id="DBNavigator.Actions.Calendar.CalendarPreviousYear" class="com.dbn.data.editor.ui.calendar.CalendarPreviousYearAction" text="Calendar - Previous Year">
                     <keyboard-shortcut keymap="$default" first-keystroke="ctrl DOWN"/>
+                </action>
+                <action id="DBNavigator.Actions.Calendar.CalendarPreviousMonth" class="com.dbn.data.editor.ui.calendar.CalendarPreviousMonthAction" text="Calendar - Previous Month">
+                    <keyboard-shortcut keymap="$default" first-keystroke="ctrl LEFT"/>
                 </action>
             </group>
             <group id="DBNavigator.ActionGroup.Calendar.RightControls" text="Calendar Right Controls">
