@@ -12,11 +12,11 @@ import java.util.TimerTask;
 public class LoadInProgressIcon implements Icon{
     public static final Icon INSTANCE = new LoadInProgressIcon();
 
-    public static int ROLL_INTERVAL = 80;
+    public static int ROLL_INTERVAL = 50;
 
     private static final Icon[] ICONS;
     static {
-        ICONS = new Icon[8];
+        ICONS = new Icon[12];
         for (int i = 0; i < ICONS.length; i++) {
             switch (i) {
                 case 0: ICONS[i] = AllIcons.Process.Step_1; break;
@@ -27,6 +27,10 @@ public class LoadInProgressIcon implements Icon{
                 case 5: ICONS[i] = AllIcons.Process.Step_6; break;
                 case 6: ICONS[i] = AllIcons.Process.Step_7; break;
                 case 7: ICONS[i] = AllIcons.Process.Step_8; break;
+                case 8: ICONS[i] = AllIcons.Process.Step_9; break;
+                case 9: ICONS[i] = AllIcons.Process.Step_10; break;
+                case 10: ICONS[i] = AllIcons.Process.Step_11; break;
+                case 11: ICONS[i] = AllIcons.Process.Step_12; break;
             }
         }
     }
