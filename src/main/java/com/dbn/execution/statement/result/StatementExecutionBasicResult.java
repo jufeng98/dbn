@@ -8,13 +8,14 @@ import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.ConnectionId;
 import com.dbn.connection.ConnectionRef;
 import com.dbn.connection.SchemaId;
+import com.dbn.database.DatabaseMessage;
 import com.dbn.execution.ExecutionResultBase;
 import com.dbn.execution.compiler.CompilerResult;
-import com.dbn.execution.statement.processor.StatementExecutionProcessor;
-import com.dbn.execution.statement.result.ui.StatementExecutionResultForm;
 import com.dbn.execution.statement.StatementExecutionContext;
 import com.dbn.execution.statement.StatementExecutionInput;
 import com.dbn.execution.statement.StatementExecutionMessage;
+import com.dbn.execution.statement.processor.StatementExecutionProcessor;
+import com.dbn.execution.statement.result.ui.StatementExecutionResultForm;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
@@ -125,13 +126,13 @@ public class StatementExecutionBasicResult extends ExecutionResultBase<Statement
     }
 
     @Override
-    public void updateExecutionMessage(MessageType messageType, String message, String causeMessage) {
-        executionMessage = new StatementExecutionMessage(this, message, causeMessage, messageType);
+    public void updateExecutionMessage(MessageType messageType, String message, DatabaseMessage databaseMessage) {
+        executionMessage = new StatementExecutionMessage(this, message, databaseMessage, messageType);
     }
 
     @Override
     public void updateExecutionMessage(MessageType messageType, String message) {
-        executionMessage = new StatementExecutionMessage(this, message, "", messageType);
+        executionMessage = new StatementExecutionMessage(this, message, null, messageType);
     }
 
     @Override

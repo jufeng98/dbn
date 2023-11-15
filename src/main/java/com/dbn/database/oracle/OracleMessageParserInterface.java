@@ -1,7 +1,8 @@
 package com.dbn.database.oracle;
 
-import com.dbn.database.common.DatabaseObjectIdentifierImpl;
+import com.dbn.database.DatabaseMessage;
 import com.dbn.database.DatabaseObjectIdentifier;
+import com.dbn.database.common.DatabaseObjectIdentifierImpl;
 import com.dbn.database.interfaces.DatabaseMessageParserInterface;
 import com.dbn.object.type.DBObjectType;
 import org.jetbrains.annotations.Nullable;
@@ -89,5 +90,24 @@ public class OracleMessageParserInterface implements DatabaseMessageParserInterf
         } else {
             return string;
         }
+    }
+
+    @Override
+    public DatabaseMessage parseExceptionMessage(SQLException exception) {
+        String message = exception.getMessage();
+        message = message.
+            replaceAll("[\r\n]+", "\n").
+            replaceAll("\\nPL/SQL", " PL/SQL");
+
+        String title = message;
+        String detail = null;
+        int splitIndex = message.indexOf("\n");
+        if (splitIndex > -1) {
+            title = message.substring(0, splitIndex);
+            detail = message;
+        }
+
+
+        return new DatabaseMessage(title, detail);
     }
 }

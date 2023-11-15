@@ -1,12 +1,10 @@
 package com.dbn.common.message;
 
 import com.dbn.common.dispose.StatefulDisposableBase;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @EqualsAndHashCode(callSuper = false)
 public class Message extends StatefulDisposableBase {
     protected MessageType type;

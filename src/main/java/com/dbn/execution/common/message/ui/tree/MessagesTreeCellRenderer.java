@@ -8,9 +8,9 @@ import com.dbn.common.ui.tree.DBNColoredTreeCellRenderer;
 import com.dbn.common.ui.tree.DBNTree;
 import com.dbn.common.util.Commons;
 import com.dbn.connection.ConnectionHandler;
+import com.dbn.database.DatabaseMessage;
 import com.dbn.execution.common.message.ui.tree.node.*;
 import com.dbn.execution.compiler.CompilerMessage;
-import com.dbn.execution.common.message.ui.tree.node.*;
 import com.dbn.execution.explain.result.ExplainPlanMessage;
 import com.dbn.execution.statement.StatementExecutionMessage;
 import com.dbn.object.common.DBSchemaObject;
@@ -136,8 +136,9 @@ public class MessagesTreeCellRenderer extends DBNColoredTreeCellRenderer {
                         greyAttributes :
                         regularAttributes);
 
-                if (message.getCauseMessage() != null) {
-                    append(" " + message.getCauseMessage(), isOrphan ?
+                DatabaseMessage databaseMessage = message.getDatabaseMessage();
+                if (databaseMessage != null) {
+                    append(" " + databaseMessage.getTitle(), isOrphan ?
                             greyAttributes :
                             errorAttributes);
                 }

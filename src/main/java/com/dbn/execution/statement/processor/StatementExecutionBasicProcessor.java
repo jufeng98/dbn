@@ -22,6 +22,7 @@ import com.dbn.connection.jdbc.DBNStatement;
 import com.dbn.connection.mapping.FileConnectionContextManager;
 import com.dbn.connection.session.DatabaseSession;
 import com.dbn.database.DatabaseFeature;
+import com.dbn.database.DatabaseMessage;
 import com.dbn.editor.DBContentType;
 import com.dbn.editor.EditorProviderId;
 import com.dbn.execution.ExecutionManager;
@@ -320,7 +321,8 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
                     Resources.cancel(context.getStatement());
                     if (context.isNot(CANCEL_REQUESTED)) {
                         executionException = e;
-                        executionResult = createErrorExecutionResult(e.getMessage());
+                        DatabaseMessage databaseMessage = getMessageParserInterface().parseExceptionMessage(e);
+                        executionResult = createErrorExecutionResult(databaseMessage);
                         executionResult.calculateExecDuration();
                         consumeLoggerOutput(context);
                     }
@@ -375,15 +377,15 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
         ConnectionHandler connection = getTargetConnection();
         String statementText = executionInput.getExecutableStatementText();
         StatementExecutionVariablesBundle executionVariables = executionInput.getExecutionVariables();
-        if (executionVariables != null) {
-            executionVariables.cacheVariableDataTypes(connection);
-            statementText = executionVariables.prepareStatementText(connection, statementText, false);
-            executionInput.setExecutableStatementText(statementText);
+        if (executionVariables == null) return statementText;
 
-            if (executionVariables.hasErrors()) {
-                executionResult = createErrorExecutionResult("Could not bind all variables.");
-                return null; // cancel execution
-            }
+        executionVariables.cacheVariableDataTypes(connection);
+        statementText = executionVariables.prepareStatementText(connection, statementText, false);
+        executionInput.setExecutableStatementText(statementText);
+
+        if (executionVariables.hasErrors()) {
+            executionResult = createErrorExecutionResult(new DatabaseMessage("Could not bind all variables.", null));
+            return null; // cancel execution
         }
         return statementText;
     }
@@ -675,9 +677,9 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
     }
 
 
-    private StatementExecutionResult createErrorExecutionResult(String cause) {
+    private StatementExecutionResult createErrorExecutionResult(DatabaseMessage databaseMessage) {
         StatementExecutionResult executionResult = new StatementExecutionBasicResult(this, getResultName(), 0);
-        executionResult.updateExecutionMessage(MessageType.ERROR, "Error executing " + getStatementName() + '.', cause);
+        executionResult.updateExecutionMessage(MessageType.ERROR, "Error executing " + getStatementName() + '.', databaseMessage);
         executionResult.setExecutionStatus(StatementExecutionStatus.ERROR);
         return executionResult;
     }
