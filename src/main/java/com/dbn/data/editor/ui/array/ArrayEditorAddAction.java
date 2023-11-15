@@ -13,7 +13,8 @@ class ArrayEditorAddAction extends ArrayEditorAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
-        ArrayEditorList editorList = getArrayEditorList(e);
-        editorList.insertRow();
+        ArrayEditorList list = getArrayEditorList(e);
+        if (list == null) return;
+        list.insertRow();
     }
 }

@@ -13,7 +13,9 @@ class ArrayEditorRemoveAction extends ArrayEditorAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
-        ArrayEditorList editorList = getArrayEditorList(e);
-        editorList.removeRow();
+        ArrayEditorList list = getArrayEditorList(e);
+        if (list == null) return;
+
+        list.removeRow();
     }
 }

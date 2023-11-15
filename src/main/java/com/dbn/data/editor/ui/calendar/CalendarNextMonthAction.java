@@ -1,7 +1,6 @@
 package com.dbn.data.editor.ui.calendar;
 
 import com.dbn.common.icon.Icons;
-import com.dbn.common.util.Safe;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,6 +15,8 @@ public class CalendarNextMonthAction extends CalendarPopupAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         CalendarTableModel model = getCalendarTableModel(e);
-        Safe.run(model, m -> m.rollMonth(1));
+        if (model == null) return;
+
+        model.rollMonth(1);
     }
 }

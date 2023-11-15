@@ -16,6 +16,8 @@ class ArrayEditorDeleteAction extends ArrayEditorAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         ArrayEditorPopupProviderForm form = getArrayEditorForm(e);
+        if (form == null) return;
+
         TextFieldWithPopup editorComponent = form.getEditorComponent();
         editorComponent.getUserValueHolder().updateUserValue(new ArrayList<String>(), false);
         form.hidePopup();

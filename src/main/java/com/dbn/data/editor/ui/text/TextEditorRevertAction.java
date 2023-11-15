@@ -12,6 +12,8 @@ class TextEditorRevertAction extends TextEditorAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         TextEditorPopupProviderForm form = getTextEditorForm(e);
+        if (form == null) return;
+
         form.hidePopup();
     }
 

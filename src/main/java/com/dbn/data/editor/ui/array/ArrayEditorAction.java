@@ -13,11 +13,14 @@ public abstract class ArrayEditorAction extends BasicAction {
         super(text, description, icon);
     }
 
+    @Nullable
     protected ArrayEditorPopupProviderForm getArrayEditorForm(@NotNull AnActionEvent e) {
         return e.getData(DataKeys.ARRAY_EDITOR_POPUP_PROVIDER_FORM);
     }
 
+    @Nullable
     protected ArrayEditorList getArrayEditorList(@NotNull AnActionEvent e) {
-        return getArrayEditorForm(e).getEditorList();
+        ArrayEditorPopupProviderForm form = getArrayEditorForm(e);
+        return form == null ? null : form.getEditorList();
     }
 }

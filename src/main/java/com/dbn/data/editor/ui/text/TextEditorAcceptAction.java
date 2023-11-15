@@ -16,6 +16,7 @@ class TextEditorAcceptAction extends TextEditorAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         TextEditorPopupProviderForm form = getTextEditorForm(e);
+        if (form == null) return;
 
         String text = form.getText().trim();
         TextFieldWithPopup<?> editorComponent = form.getEditorComponent();

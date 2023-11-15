@@ -1,6 +1,5 @@
 package com.dbn.common.action;
 
-import com.dbn.common.util.Commons;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
@@ -41,9 +40,9 @@ public abstract class ProjectAction extends BasicAction {
 
     @Nullable
     private Project resolveProject(@NotNull AnActionEvent e) {
-        return Commons.coalesce(
-                () -> getProject(),
-                () -> Lookups.getProject(e));
+        Project project = getProject();
+        if (project == null) project = Lookups.getProject(e);
+        return project;
     }
 
     /**

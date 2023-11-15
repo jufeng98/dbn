@@ -247,8 +247,9 @@ public abstract class BasePsiElement<T extends ElementType> extends ASTWrapperPs
 
         ASTNode child = psiChild.getNode();
         while (child != null) {
-            if (child.getPsi() != null) {
-                child.getPsi().accept(visitor);
+            PsiElement childPsi = child.getPsi();
+            if (childPsi != null) {
+                childPsi.accept(visitor);
             }
             child = child.getTreeNext();
         }
