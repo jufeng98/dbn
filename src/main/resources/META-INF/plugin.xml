@@ -589,11 +589,11 @@
 
         <group id="DBNavigator.ActionGroup.Calendar.Controls" text="Calendar Controls">
             <group id="DBNavigator.ActionGroup.Calendar.LeftControls" text="Calendar Left Controls">
-                <action id="DBNavigator.Actions.Calendar.CalendarPreviousMonth" class="com.dbn.data.editor.ui.calendar.CalendarPreviousMonthAction" text="Calendar - Previous Month">
-                    <keyboard-shortcut keymap="$default" first-keystroke="ctrl LEFT"/>
-                </action>
                 <action id="DBNavigator.Actions.Calendar.CalendarPreviousYear" class="com.dbn.data.editor.ui.calendar.CalendarPreviousYearAction" text="Calendar - Previous Year">
                     <keyboard-shortcut keymap="$default" first-keystroke="ctrl DOWN"/>
+                </action>
+                <action id="DBNavigator.Actions.Calendar.CalendarPreviousMonth" class="com.dbn.data.editor.ui.calendar.CalendarPreviousMonthAction" text="Calendar - Previous Month">
+                    <keyboard-shortcut keymap="$default" first-keystroke="ctrl LEFT"/>
                 </action>
             </group>
             <group id="DBNavigator.ActionGroup.Calendar.RightControls" text="Calendar Right Controls">

@@ -14,8 +14,10 @@ class CalendarResetTimeAction extends CalendarPopupAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
-        Calendar calendar = new GregorianCalendar(2000, Calendar.JANUARY, 0, 0, 0, 0);
         CalendarPopupProviderForm form = getCalendarForm(e);
+        if (form == null) return;
+
+        Calendar calendar = new GregorianCalendar(2000, Calendar.JANUARY, 1, 0, 0, 0);
         String timeString = form.getFormatter().formatTime(calendar.getTime());
         form.setTimeText(timeString);
     }
