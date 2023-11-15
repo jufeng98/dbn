@@ -9,6 +9,7 @@ import com.dbn.object.lookup.DBObjectRef;
 import com.dbn.vfs.DatabaseFileSystem;
 import com.dbn.vfs.file.DBConsoleVirtualFile;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.project.DumbAware;
@@ -23,7 +24,7 @@ public class ConnectionSelectDropdownAction extends DBNComboBoxAction implements
 
     @Override
     @NotNull
-    protected DefaultActionGroup createPopupActionGroup(JComponent component) {
+    protected DefaultActionGroup createPopupActionGroup(@NotNull JComponent component, @NotNull DataContext dataContext) {
         Project project = Lookups.getProject(component);
         return new ConnectionSelectActionGroup(project);
     }

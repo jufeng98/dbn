@@ -21,7 +21,7 @@ public class TimedReloadComboBoxAction extends DBNComboBoxAction implements Dumb
 
     @Override
     @NotNull
-    protected DefaultActionGroup createPopupActionGroup(JComponent component) {
+    protected DefaultActionGroup createPopupActionGroup(JComponent component, DataContext dataContext) {
         DefaultActionGroup actionGroup = new DefaultActionGroup();
         actionGroup.add(new SelectRefreshTimeAction(0));
         actionGroup.addSeparator();

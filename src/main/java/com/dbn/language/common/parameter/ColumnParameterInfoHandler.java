@@ -43,13 +43,6 @@ public class ColumnParameterInfoHandler implements ParameterInfoHandler<BasePsiE
     @Nullable
     @Override
     @Compatibility
-    public Object[] getParametersForDocumentation(BasePsiElement method, ParameterInfoContext context) {
-        return null;
-    }
-
-    @Nullable
-    @Override
-    @Compatibility
     public BasePsiElement findElementForParameterInfo(@NotNull CreateParameterInfoContext context) {
         BasePsiElement handlerPsiElement = lookupHandlerElement(context.getFile(), context.getOffset());
         BasePsiElement providerPsiElement = lookupProviderElement(handlerPsiElement);
@@ -192,19 +185,6 @@ public class ColumnParameterInfoHandler implements ParameterInfoHandler<BasePsiE
             return basePsiElement.findFirstPsiElement(IterationElementType.class);
         }
         return null;
-    }
-
-    @Nullable
-    @Override
-    @Compatibility
-    public String getParameterCloseChars() {
-        return ",";
-    }
-
-    @Override
-    @Compatibility
-    public boolean tracksParameterIndex() {
-        return false;
     }
 
     @Override

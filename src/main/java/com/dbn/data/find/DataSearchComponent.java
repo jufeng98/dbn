@@ -14,13 +14,13 @@ import com.intellij.featureStatistics.FeatureUsageTracker;
 import com.intellij.find.FindInProjectSettings;
 import com.intellij.find.FindManager;
 import com.intellij.find.FindModel;
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.event.SelectionEvent;
 import com.intellij.openapi.editor.event.SelectionListener;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.ui.LightColors;
 import com.intellij.ui.components.JBList;
@@ -87,7 +87,7 @@ public class DataSearchComponent extends DBNFormBase implements SelectionListene
         });
 
         closeLabel.setText(" ");
-        closeLabel.setIcon(IconLoader.getIcon("/actions/cross.png"));
+        closeLabel.setIcon(AllIcons.Actions.Close);
         closeLabel.addMouseListener(Mouse.listener().onClick(e -> close()));
 
         updateUIWithFindModel();
@@ -195,7 +195,7 @@ public class DataSearchComponent extends DBNFormBase implements SelectionListene
         setSmallerFontAndOpaque(matchesLabel);
 
 
-        JLabel closeLabel = new JLabel(" ", IconLoader.getIcon("/actions/cross.png"), SwingConstants.RIGHT);
+        JLabel closeLabel = new JLabel(" ", AllIcons.Actions.Close, SwingConstants.RIGHT);
         closeLabel.addMouseListener(Mouse.listener().onClick(e -> close()));
 
         closeLabel.setToolTipText("Close search bar (Escape)");

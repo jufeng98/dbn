@@ -5,17 +5,14 @@ import com.dbn.common.action.ProjectAction;
 import com.dbn.common.ui.form.DBNFormBase;
 import com.dbn.common.ui.misc.DBNComboBoxAction;
 import com.dbn.common.util.*;
-import com.dbn.execution.method.ArgumentValue;
 import com.dbn.data.editor.text.TextContentType;
 import com.dbn.data.value.LargeObjectValue;
 import com.dbn.editor.data.options.DataEditorQualifiedEditorSettings;
 import com.dbn.editor.data.options.DataEditorSettings;
+import com.dbn.execution.method.ArgumentValue;
 import com.dbn.object.DBArgument;
 import com.dbn.object.lookup.DBObjectRef;
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.project.Project;
@@ -115,7 +112,7 @@ public class MethodExecutionLargeValueResultForm extends DBNFormBase {
 
         @Override
         @NotNull
-        protected DefaultActionGroup createPopupActionGroup(JComponent button) {
+        protected DefaultActionGroup createPopupActionGroup(@NotNull JComponent button, @NotNull DataContext dataContext) {
             Project project = Lookups.getProject(button);
             DataEditorQualifiedEditorSettings qualifiedEditorSettings = DataEditorSettings.getInstance(project).getQualifiedEditorSettings();
 

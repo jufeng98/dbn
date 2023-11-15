@@ -1,8 +1,8 @@
 package com.dbn.language.editor.action;
 
-import com.dbn.common.icon.Icons;
 import com.dbn.common.action.Lookups;
 import com.dbn.common.dispose.Checks;
+import com.dbn.common.icon.Icons;
 import com.dbn.common.ui.misc.DBNComboBoxAction;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.SchemaId;
@@ -25,16 +25,9 @@ import javax.swing.*;
 public class SchemaSelectDropdownAction extends DBNComboBoxAction implements DumbAware {
     private static final String NAME = "Schema";
 
-    @Override
     @NotNull
-    protected DefaultActionGroup createPopupActionGroup(JComponent component) {
-        Project project = Lookups.getProject(component);
-        VirtualFile virtualFile = Lookups.getVirtualFile(component);
-        return createActionGroup(project, virtualFile);
-    }
-
     @Override
-    protected @NotNull DefaultActionGroup createPopupActionGroup(@NotNull JComponent button, @NotNull DataContext dataContext) {
+    protected  DefaultActionGroup createPopupActionGroup(@NotNull JComponent button, @NotNull DataContext dataContext) {
         Project project = Lookups.getProject(button);
         VirtualFile virtualFile = Lookups.getVirtualFile(dataContext);
         return createActionGroup(project, virtualFile);

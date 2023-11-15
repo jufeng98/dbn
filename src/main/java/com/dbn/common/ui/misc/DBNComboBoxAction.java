@@ -1,6 +1,9 @@
 package com.dbn.common.ui.misc;
 
 import com.dbn.common.action.ComboBoxAction;
+import com.dbn.common.compatibility.Compatibility;
+import com.dbn.common.util.Context;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.util.ui.JBUI;
@@ -22,5 +25,12 @@ public abstract class DBNComboBoxAction extends ComboBoxAction implements DumbAw
         panel.add(button, constraints);
         panel.setFocusable(false);
         return panel;
+    }
+
+    @NotNull
+    @Override
+    @Compatibility
+    protected final DefaultActionGroup createPopupActionGroup(JComponent component) {
+        return createPopupActionGroup(component, Context.getDataContext(component));
     }
 }

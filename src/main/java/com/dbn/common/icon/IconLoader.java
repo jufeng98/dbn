@@ -35,7 +35,6 @@ class IconLoader {
         };
     }
 
-
     static Icon load(String key, String path) {
         Icon icon = load(path);
         REGISTRY.put(key, icon);
