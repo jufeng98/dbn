@@ -1,5 +1,6 @@
 package com.dbn.common.icon;
 
+import com.intellij.openapi.progress.ProcessCanceledException;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
@@ -7,6 +8,7 @@ import javax.swing.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 import static com.intellij.openapi.util.IconLoader.findIcon;
 
 @Slf4j
@@ -26,6 +28,9 @@ class IconLoader {
                 try {
                     Icon icon = findIcon(svgPath, classLoader);
                     if (icon != null && icon.getIconWidth() > 1) return icon;
+                } catch (ProcessCanceledException e) {
+                    conditionallyLog(e);
+                    throw e;
                 } catch (Throwable t) {
                     log.error("Failed to load icon {}", svgPath, t);
                 }

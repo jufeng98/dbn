@@ -1,12 +1,12 @@
 package com.dbn.language.common.psi;
 
-import com.dbn.language.common.element.parser.ParseResultType;
 import com.dbn.common.Pair;
 import com.dbn.common.ref.WeakRefCache;
 import com.dbn.language.common.element.impl.IdentifierElementType;
 import com.dbn.language.common.element.impl.LeafElementType;
 import com.dbn.language.common.element.impl.QualifiedIdentifierElementType;
 import com.dbn.language.common.element.impl.QualifiedIdentifierVariant;
+import com.dbn.language.common.element.parser.ParseResultType;
 import com.dbn.object.common.DBObject;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
@@ -139,19 +139,17 @@ public class QualifiedIdentifierPsiElement extends SequencePsiElement<QualifiedI
 
     public DBObject lookupParentObjectFor(LeafElementType leafElementType) {
        for (QualifiedIdentifierVariant parseVariant : getParseVariants()) {
-            if (parseVariant.getLeafs().length == getElementsCount()) {
-                int index = parseVariant.getIndexOf(leafElementType);
-                if (index > 0) {
-                    IdentifierPsiElement previousPsiElement = getLeafAtIndex(index-1);
-                    if (previousPsiElement != null) {
-                        DBObject parentObject = previousPsiElement.getUnderlyingObject();
-                        if (parentObject != null) {
-                            return parentObject;
-                        }
-                    }
-                }
-            }
-        }
+           if (parseVariant.getLeafs().length != getElementsCount()) continue;
+
+           int index = parseVariant.getIndexOf(leafElementType);
+           if (index <= 0) continue;
+
+           IdentifierPsiElement previousPsiElement = getLeafAtIndex(index-1);
+           if (previousPsiElement == null) continue;
+
+           DBObject parentObject = previousPsiElement.getUnderlyingObject();
+           if (parentObject != null) return parentObject;
+       }
         return null;
     }
 

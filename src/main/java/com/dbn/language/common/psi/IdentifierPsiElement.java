@@ -1,9 +1,5 @@
 package com.dbn.language.common.psi;
 
-import com.dbn.language.common.psi.lookup.IdentifierLookupAdapter;
-import com.dbn.language.common.psi.lookup.LookupAdapters;
-import com.dbn.language.common.psi.lookup.ObjectDefinitionLookupAdapter;
-import com.dbn.language.common.psi.lookup.PsiLookupAdapter;
 import com.dbn.code.common.style.formatting.FormattingAttributes;
 import com.dbn.common.Capture;
 import com.dbn.common.consumer.ListCollector;
@@ -15,11 +11,14 @@ import com.dbn.language.common.element.impl.LeafElementType;
 import com.dbn.language.common.element.impl.QualifiedIdentifierVariant;
 import com.dbn.language.common.element.util.ElementTypeAttribute;
 import com.dbn.language.common.element.util.IdentifierType;
+import com.dbn.language.common.psi.lookup.IdentifierLookupAdapter;
+import com.dbn.language.common.psi.lookup.LookupAdapters;
+import com.dbn.language.common.psi.lookup.ObjectDefinitionLookupAdapter;
+import com.dbn.language.common.psi.lookup.PsiLookupAdapter;
 import com.dbn.language.common.resolve.AliasObjectResolver;
 import com.dbn.language.common.resolve.SurroundingVirtualObjectResolver;
 import com.dbn.language.common.resolve.UnderlyingObjectResolver;
 import com.dbn.object.DBSchema;
-import com.dbn.object.DBSynonym;
 import com.dbn.object.common.*;
 import com.dbn.object.lookup.DBObjectRef;
 import com.dbn.object.type.DBObjectType;
@@ -38,6 +37,7 @@ import java.util.function.Consumer;
 import static com.dbn.common.thread.ThreadMonitor.isDispatchThread;
 import static com.dbn.common.util.Commons.nvl;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
+import static com.dbn.object.DBSynonym.unwrap;
 
 public abstract class IdentifierPsiElement extends LeafPsiElement<IdentifierElementType> {
     private PsiResolveResult ref;
@@ -238,7 +238,7 @@ public abstract class IdentifierPsiElement extends LeafPsiElement<IdentifierElem
         UnderlyingObjectResolver underlyingObjectResolver = getElementType().getUnderlyingObjectResolver();
         if (underlyingObjectResolver != null) {
             DBObject underlyingObject = underlyingObjectResolver.resolve(this);
-            return resolveActualObject(underlyingObject);
+            return unwrap(underlyingObject);
         }
 
         IdentifierPsiElement originalElement = (IdentifierPsiElement) getOriginalElement();
@@ -247,7 +247,7 @@ public abstract class IdentifierPsiElement extends LeafPsiElement<IdentifierElem
             if (psiReferenceElement instanceof DBObjectPsiElement) {
                 DBObjectPsiElement underlyingObject = (DBObjectPsiElement) psiReferenceElement;
                 DBObject object = underlyingObject.getObject();
-                return object == null ? null : resolveActualObject(object.getUndisposedEntity());
+                return object == null ? null : unwrap(object.getUndisposedEntity());
             }
 
             if (psiReferenceElement instanceof IdentifierPsiElement) {
@@ -258,7 +258,7 @@ public abstract class IdentifierPsiElement extends LeafPsiElement<IdentifierElem
 
         if (isAlias() && isDefinition()) {
             DBObject underlyingObject = AliasObjectResolver.getInstance().resolve(this);
-            return resolveActualObject(underlyingObject);
+            return unwrap(underlyingObject);
         }
 
         DBObject underlyingObject = SurroundingVirtualObjectResolver.getInstance().resolve(this);
@@ -266,15 +266,6 @@ public abstract class IdentifierPsiElement extends LeafPsiElement<IdentifierElem
             return underlyingObject;
         }
         return null;
-    }
-
-    private static DBObject resolveActualObject(@Nullable DBObject object) {
-        while (object instanceof DBSynonym) {
-            DBSynonym synonym = (DBSynonym) object;
-            object = synonym.getUnderlyingObject();
-            if (object == null) return synonym;
-        }
-        return object;
     }
 
     @Override
@@ -394,8 +385,10 @@ public abstract class IdentifierPsiElement extends LeafPsiElement<IdentifierElem
                 String objectName = refText.toString();
                 Set<DBObject> parentObjects = identifyPotentialParentObjects(objectType, null, this, this);
                 for (DBObject parentObject : parentObjects) {
-                    DBObject childObject = parentObject.getChildObject(objectType, objectName, false);
+                    parentObject = unwrap(parentObject);
+                    if (parentObject == null) continue;
 
+                    DBObject childObject = parentObject.getChildObject(objectType, objectName, false);
                     if (childObject == null && objectType.isOverloadable()) {
                         childObject = parentObject.getChildObject(objectType, objectName, (short) 1, false);
                     }
@@ -416,7 +409,6 @@ public abstract class IdentifierPsiElement extends LeafPsiElement<IdentifierElem
                     if (childObject == null && objectType.isOverloadable()) {
                         childObject = schema.getChildObject(objectType, objectName, (short) 1, false);
                     }
-
 
                     if (updateReference(null, elementType, childObject)) return;
                 }

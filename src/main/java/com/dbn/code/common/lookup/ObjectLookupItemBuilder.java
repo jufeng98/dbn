@@ -15,6 +15,7 @@ import com.dbn.object.DBSynonym;
 import com.dbn.object.common.DBObject;
 import com.dbn.object.common.DBVirtualObject;
 import com.dbn.object.lookup.DBObjectRef;
+import com.dbn.object.type.DBObjectType;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -68,9 +69,9 @@ public class ObjectLookupItemBuilder extends LookupItemBuilder {
             String typePrefix = "";
             if (object instanceof DBSynonym) {
                 DBSynonym synonym = (DBSynonym) object;
-                DBObject underlyingObject = synonym.getUnderlyingObject();
-                if (underlyingObject != null) {
-                    typePrefix = underlyingObject.getTypeName() + ' ';
+                DBObjectType underlyingObjectType = synonym.getUnderlyingObjectType();
+                if (underlyingObjectType != null) {
+                    typePrefix = underlyingObjectType.getName() + ' ';
                 }
             }
 

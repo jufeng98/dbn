@@ -93,6 +93,11 @@ class DBSynonymImpl extends DBSchemaObjectImpl<DBSynonymMetadata> implements DBS
     }
 
     @Override
+    public @Nullable DBObjectType getUnderlyingObjectType() {
+        return underlyingObject == null ? null : underlyingObject.getObjectType();
+    }
+
+    @Override
     public String getNavigationTooltipText() {
         DBObject parentObject = getParentObject();
         if (parentObject == null) {

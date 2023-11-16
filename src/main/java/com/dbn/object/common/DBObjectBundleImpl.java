@@ -20,8 +20,6 @@ import com.dbn.common.thread.Background;
 import com.dbn.common.ui.tree.TreeEventType;
 import com.dbn.common.util.Lists;
 import com.dbn.connection.*;
-import com.dbn.object.*;
-import com.dbn.connection.*;
 import com.dbn.data.type.DBDataTypeBundle;
 import com.dbn.data.type.DBNativeDataType;
 import com.dbn.database.DatabaseObjectIdentifier;
@@ -562,8 +560,9 @@ public class DBObjectBundleImpl extends StatefulDisposableBase implements DBObje
 
     @Override
     public void lookupChildObjectsOfType(Consumer<? super DBObject> consumer, DBObject parentObject, DBObjectType objectType, ObjectTypeFilter filter, DBSchema currentSchema) {
+        if (currentSchema == null) return;
+        if (parentObject == null) return;
         if (!getConnectionObjectTypeFilter().accepts(objectType)) return;
-        if (parentObject == null || currentSchema == null) return;
 
         if (parentObject instanceof DBSchema) {
             DBSchema schema = (DBSchema) parentObject;
@@ -571,20 +570,20 @@ public class DBObjectBundleImpl extends StatefulDisposableBase implements DBObje
                 Set<DBObjectType> concreteTypes = objectType.getInheritingTypes();
                 for (DBObjectType concreteType : concreteTypes) {
                     if (filter.acceptsObject(schema, currentSchema, concreteType)) {
-                        consumer.acceptAll(schema.collectChildObjects(concreteType));
+                        schema.collectChildObjects(concreteType, consumer);
                     }
                 }
             } else {
                 if (filter.acceptsObject(schema, currentSchema, objectType)) {
-                    consumer.acceptAll(schema.collectChildObjects(objectType));
+                    schema.collectChildObjects(objectType, consumer);
                 }
             }
 
             boolean synonymsSupported = SYNONYM.isSupported(parentObject);
             if (synonymsSupported && filter.acceptsObject(schema, currentSchema, SYNONYM)) {
                 for (DBSynonym synonym : schema.getSynonyms()) {
-                    DBObject underlyingObject = synonym.getUnderlyingObject();
-                    if (underlyingObject != null && underlyingObject.isOfType(objectType)) {
+                    DBObjectType underlyingObjectType = synonym.getUnderlyingObjectType();
+                    if (underlyingObjectType != null && underlyingObjectType.matches(objectType)) {
                         consumer.accept(synonym);
                     }
                 }
@@ -593,13 +592,13 @@ public class DBObjectBundleImpl extends StatefulDisposableBase implements DBObje
             if (objectType.isGeneric()) {
                 Set<DBObjectType> concreteTypes = objectType.getInheritingTypes();
                 for (DBObjectType concreteType : concreteTypes) {
-                    if (filter.acceptsRootObject(objectType)) {
-                        consumer.acceptAll(parentObject.collectChildObjects(concreteType));
+                    if (filter.acceptsRootObject(concreteType)) {
+                        parentObject.collectChildObjects(concreteType, consumer);
                     }
                 }
             } else {
                 if (filter.acceptsRootObject(objectType)) {
-                    consumer.acceptAll(parentObject.collectChildObjects(objectType));
+                    parentObject.collectChildObjects(objectType, consumer);
                 }
             }
         }
