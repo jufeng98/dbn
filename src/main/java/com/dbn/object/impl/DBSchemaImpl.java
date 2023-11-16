@@ -12,7 +12,6 @@ import com.dbn.connection.DatabaseEntity;
 import com.dbn.connection.SchemaId;
 import com.dbn.database.common.metadata.def.DBSchemaMetadata;
 import com.dbn.object.*;
-import com.dbn.object.*;
 import com.dbn.object.common.DBObject;
 import com.dbn.object.common.DBRootObjectImpl;
 import com.dbn.object.common.DBSchemaObject;
@@ -31,8 +30,8 @@ import org.jetbrains.annotations.Nullable;
 import java.sql.SQLException;
 import java.util.*;
 
-import static com.dbn.common.content.DynamicContentProperty.*;
 import static com.dbn.common.content.DynamicContentProperty.HIDDEN;
+import static com.dbn.common.content.DynamicContentProperty.*;
 import static com.dbn.common.dispose.Failsafe.nd;
 import static com.dbn.common.util.Commons.nvl;
 import static com.dbn.common.util.Unsafe.cast;
@@ -150,19 +149,19 @@ class DBSchemaImpl extends DBRootObjectImpl<DBSchemaMetadata> implements DBSchem
 
     @Override
     public <T extends DBObject> T  getChildObject(DBObjectType type, String name, short overload, boolean lookupHidden) {
-        if (type.isSchemaObject()) {
-            DBObject object = super.getChildObject(type, name, overload, lookupHidden);
-            if (object == null && type != SYNONYM) {
-                DBSynonym synonym = super.getChildObject(SYNONYM, name, overload, lookupHidden);
-                if (synonym != null) {
-                    DBObject underlyingObject = synonym.getUnderlyingObject();
-                    if (underlyingObject != null && underlyingObject.isOfType(type)) {
-                        return cast(synonym);
-                    }
+        if (!type.isSchemaObject()) return null;
+
+        DBObject object = super.getChildObject(type, name, overload, lookupHidden);
+        if (object == null && type != SYNONYM) {
+            DBSynonym synonym = super.getChildObject(SYNONYM, name, overload, lookupHidden);
+            if (synonym != null) {
+                DBObjectType underlyingObjectType = synonym.getUnderlyingObjectType();
+                if (underlyingObjectType != null && underlyingObjectType.matches(type)) {
+                    return cast(synonym);
                 }
-            } else {
-                return cast(object);
             }
+        } else {
+            return cast(object);
         }
         return null;
     }

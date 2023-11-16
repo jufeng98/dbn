@@ -39,10 +39,10 @@ import java.util.Collection;
 import java.util.Set;
 
 import static com.dbn.common.dispose.Checks.isNotValid;
+import static com.dbn.object.DBSynonym.unwrap;
 
 public class CodeCompletionProvider extends CompletionProvider<CompletionParameters> {
     public static final CodeCompletionProvider INSTANCE = new CodeCompletionProvider();
-
 
     private CodeCompletionProvider() {
         super();
@@ -288,28 +288,28 @@ public class CodeCompletionProvider extends CompletionProvider<CompletionParamet
 
     private static void buildAliasDefinitionNames(BasePsiElement aliasElement, CodeCompletionLookupConsumer consumer) {
         IdentifierPsiElement aliasedObject = PsiUtil.lookupObjectPriorTo(aliasElement, DBObjectType.ANY);
-        if (aliasedObject != null && aliasedObject.isObject()) {
-            CharSequence unquotedText = aliasedObject.getUnquotedText();
-            if (unquotedText.length() > 0) {
-                String[] aliasNames = Naming.createAliasNames(unquotedText);
+        if (aliasedObject == null) return;
+        if (!aliasedObject.isObject()) return;
 
-                BasePsiElement scope = aliasElement.getEnclosingScopeElement();
+        CharSequence unquotedText = aliasedObject.getUnquotedText();
+        if (unquotedText.length() == 0) return;
 
-                for (int i = 0; i< aliasNames.length; i++) {
-                    while (true) {
-                        PsiLookupAdapter lookupAdapter = LookupAdapters.aliasDefinition(DBObjectType.ANY);
-                        boolean isExisting = scope != null && lookupAdapter.findInScope(scope) != null;
-                        boolean isKeyword = aliasElement.getLanguageDialect().isReservedWord(aliasNames[i]);
-                        if (isKeyword || isExisting) {
-                            aliasNames[i] = Naming.nextNumberedIdentifier(aliasNames[i], false);
-                        } else {
-                            break;
-                        }
-                    }
+        String[] aliasNames = Naming.createAliasNames(unquotedText);
+        BasePsiElement scope = aliasElement.getEnclosingScopeElement();
+
+        for (int i = 0; i< aliasNames.length; i++) {
+            while (true) {
+                PsiLookupAdapter lookupAdapter = LookupAdapters.aliasDefinition(DBObjectType.ANY);
+                boolean isExisting = scope != null && lookupAdapter.findInScope(scope) != null;
+                boolean isKeyword = aliasElement.getLanguageDialect().isReservedWord(aliasNames[i]);
+                if (isKeyword || isExisting) {
+                    aliasNames[i] = Naming.nextNumberedIdentifier(aliasNames[i], false);
+                } else {
+                    break;
                 }
-                consumer.accept(aliasNames);
             }
         }
+        consumer.accept(aliasNames);
     }
 
     private static void collectObjectMatchingScope(
@@ -318,30 +318,41 @@ public class CodeCompletionProvider extends CompletionProvider<CompletionParamet
             ObjectTypeFilter filter,
             @NotNull  BasePsiElement sourceScope,
             CodeCompletionContext context) {
+        ConnectionHandler connection = context.getConnection();
+        if (isNotValid(connection) || connection.isVirtual()) return;
+
         DBObjectType objectType = identifierElementType.getObjectType();
         PsiElement sourceElement = context.getElementAtCaret();
-        ConnectionHandler connection = context.getConnection();
-
-        if (isNotValid(connection) || connection.isVirtual()) return;
 
         DBObjectBundle objectBundle = connection.getObjectBundle();
         if (sourceElement.getParent() instanceof QualifiedIdentifierPsiElement && sourceElement.getParent().getFirstChild() != sourceElement) {
             QualifiedIdentifierPsiElement qualifiedIdentifierPsiElement = (QualifiedIdentifierPsiElement) sourceElement.getOriginalElement().getParent();
             DBObject parentObject = qualifiedIdentifierPsiElement.lookupParentObjectFor(identifierElementType);
-            if (parentObject != null) {
-                DBSchema currentSchema = PsiUtil.getDatabaseSchema(sourceScope);
-                objectBundle.lookupChildObjectsOfType(
-                        consumer,
-                        parentObject,
-                        objectType,
-                        filter,
-                        currentSchema);
 
-            }
+            parentObject = unwrap(parentObject);
+            if (parentObject == null) return;
+
+            DBSchema currentSchema = PsiUtil.getDatabaseSchema(sourceScope);
+            objectBundle.lookupChildObjectsOfType(
+                    consumer,
+                    parentObject,
+                    objectType,
+                    filter,
+                    currentSchema);
+
         } else if (!identifierElementType.isLocalReference()){
             Set<DBObject> parentObjects = LeafPsiElement.identifyPotentialParentObjects(objectType, filter, sourceScope, null);
-            if (parentObjects != null && !parentObjects.isEmpty()) {
+            if (parentObjects == null || parentObjects.isEmpty()) {
+                if (filter.acceptsRootObject(objectType)) {
+                    objectBundle.lookupObjectsOfType(
+                            consumer,
+                            objectType);
+                }
+            } else {
                 for (DBObject parentObject : parentObjects) {
+                    parentObject = unwrap(parentObject);
+                    if (parentObject == null) continue;
+
                     DBSchema currentSchema = PsiUtil.getDatabaseSchema(sourceScope);
                     objectBundle.lookupChildObjectsOfType(
                             consumer,
@@ -349,12 +360,6 @@ public class CodeCompletionProvider extends CompletionProvider<CompletionParamet
                             objectType,
                             filter,
                             currentSchema);
-                }
-            } else {
-                if (filter.acceptsRootObject(objectType)) {
-                    objectBundle.lookupObjectsOfType(
-                            consumer,
-                            objectType);
                 }
             }
         }

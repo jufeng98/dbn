@@ -85,7 +85,7 @@ class DBObjectLookupScanner extends StatefulDisposableBase implements DBObjectLi
                 objectLists.visit(this, true);
             }
         }
-        asyncScanner.awaitCompletion();
+        asyncScanner.complete();
     }
 
     private boolean isScannable(DBObjectList<?> objectList) {
