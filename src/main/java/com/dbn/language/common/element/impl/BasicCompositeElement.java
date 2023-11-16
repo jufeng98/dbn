@@ -7,8 +7,13 @@ import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
 
 public class BasicCompositeElement extends CompositeElement {
+
     public BasicCompositeElement(@NotNull IElementType type) {
         super(type);
+
+        // initialise the psi wrapper when node is created
+        // (unjustified number of threads invoking createPsiNoLock all over again)
+        getPsi();
     }
 
     @Override
