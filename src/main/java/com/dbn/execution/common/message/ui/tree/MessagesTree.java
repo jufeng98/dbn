@@ -105,7 +105,6 @@ public class MessagesTree extends DBNTree implements Disposable {
     public String getToolTipText(MouseEvent event) {
         Object object = getTreeNode(event);
         if (object == null) return null;
-
         if (!(object instanceof MessagesTreeLeafNode)) return null;
 
         MessagesTreeLeafNode node = (MessagesTreeLeafNode) object;
@@ -114,9 +113,7 @@ public class MessagesTree extends DBNTree implements Disposable {
             StatementExecutionMessage statementExecutionMessage = (StatementExecutionMessage) message;
             DatabaseMessage databaseMessage = statementExecutionMessage.getDatabaseMessage();
             if (databaseMessage == null) return null;
-            String details = databaseMessage.getDetails();
-
-            return "<html><div style='white-space:nowrap'>" + details.replaceAll("\n", "<br>") + "</div></html>";
+            return databaseMessage.getTooltip();
         }
 
         return null;
