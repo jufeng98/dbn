@@ -138,7 +138,11 @@ public class CodeCompletionContext {
     }
 
     public void awaitCompletion() {
-        queue.awaitCompletion();
+        queue.complete();
+    }
+
+    public void cancel() {
+        queue.cancel();
     }
 
     public void addCompletionCandidate(@Nullable LeafElementType leafElementType) {

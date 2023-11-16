@@ -55,10 +55,11 @@ public class CodeCompletionLookupConsumer implements CancellableConsumer<Object>
                     if (tokenTypeCategory == TokenTypeCategory.OBJECT) {
                         TokenType tokenType = tokenElementType.getTokenType();
                         DBObjectType objectType = tokenType.getObjectType();
-                        if (objectType != null) {
-                            if (filterSettings.acceptsRootObject(objectType)) {
-                                lookupItemBuilder = new BasicLookupItemBuilder(tokenType.getValue(), objectType.getName(), objectType.getIcon());
-                            }
+                        if (objectType != null && filterSettings.acceptsRootObject(objectType)) {
+                            lookupItemBuilder = new BasicLookupItemBuilder(
+                                    tokenType.getValue(),
+                                    objectType.getName(),
+                                    objectType.getIcon());
                         }
                     } else if (filterSettings.acceptReservedWord(tokenTypeCategory)) {
                         lookupItemBuilder = tokenElementType.getLookupItemBuilder(language);
@@ -111,6 +112,7 @@ public class CodeCompletionLookupConsumer implements CancellableConsumer<Object>
 
     public void checkCancelled() {
         if (context.getResult().isStopped() || context.getQueue().isFinished()) {
+            context.cancel();
             throw new CodeCompletionCancelledException();
         }
     }
