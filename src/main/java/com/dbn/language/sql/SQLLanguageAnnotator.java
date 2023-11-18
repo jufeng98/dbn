@@ -1,16 +1,17 @@
 package com.dbn.language.sql;
 
-import com.dbn.language.common.psi.*;
 import com.dbn.code.sql.color.SQLTextAttributesKeys;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.ConnectionHandlerStatus;
 import com.dbn.language.common.DBLanguageAnnotator;
 import com.dbn.language.common.DBLanguageDialect;
+import com.dbn.language.common.psi.*;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
 import static com.dbn.common.util.Unsafe.cast;
+import static com.dbn.connection.ConnectionHandler.isLiveConnection;
 import static com.intellij.lang.annotation.HighlightSeverity.ERROR;
 import static com.intellij.lang.annotation.HighlightSeverity.WARNING;
 
@@ -96,8 +97,7 @@ public class SQLLanguageAnnotator extends DBLanguageAnnotator {
 
     private static boolean checkConnection(@NotNull IdentifierPsiElement objectReference) {
         ConnectionHandler connection = objectReference.getConnection();
-        return connection != null &&
-                !connection.isVirtual() &&
+        return isLiveConnection(connection) &&
                 connection.canConnect() &&
                 connection.isValid() &&
                 !connection.getConnectionStatus().is(ConnectionHandlerStatus.LOADING);

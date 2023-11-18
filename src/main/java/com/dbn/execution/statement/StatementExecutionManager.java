@@ -1,7 +1,23 @@
 package com.dbn.execution.statement;
 
+import com.dbn.DatabaseNavigator;
+import com.dbn.common.action.UserDataKeys;
+import com.dbn.common.component.PersistentState;
+import com.dbn.common.component.ProjectComponentBase;
+import com.dbn.common.consumer.ListCollector;
+import com.dbn.common.dispose.Failsafe;
+import com.dbn.common.event.ProjectEvents;
+import com.dbn.common.notification.NotificationGroup;
+import com.dbn.common.thread.Dispatch;
+import com.dbn.common.thread.Progress;
 import com.dbn.common.util.*;
 import com.dbn.connection.*;
+import com.dbn.connection.jdbc.DBNConnection;
+import com.dbn.connection.mapping.FileConnectionContextManager;
+import com.dbn.debugger.DBDebuggerType;
+import com.dbn.diagnostics.Diagnostics;
+import com.dbn.editor.console.SQLConsoleEditor;
+import com.dbn.editor.ddl.DDLFileEditor;
 import com.dbn.execution.ExecutionStatus;
 import com.dbn.execution.common.options.ExecutionEngineSettings;
 import com.dbn.execution.statement.options.StatementExecutionSettings;
@@ -14,26 +30,9 @@ import com.dbn.execution.statement.variables.StatementExecutionVariableTypes;
 import com.dbn.execution.statement.variables.StatementExecutionVariables;
 import com.dbn.execution.statement.variables.StatementExecutionVariablesBundle;
 import com.dbn.execution.statement.variables.ui.StatementExecutionInputsDialog;
-import com.dbn.language.common.psi.*;
-import com.dbn.DatabaseNavigator;
-import com.dbn.common.action.UserDataKeys;
-import com.dbn.common.component.PersistentState;
-import com.dbn.common.component.ProjectComponentBase;
-import com.dbn.common.consumer.ListCollector;
-import com.dbn.common.dispose.Failsafe;
-import com.dbn.common.event.ProjectEvents;
-import com.dbn.common.notification.NotificationGroup;
-import com.dbn.common.thread.Dispatch;
-import com.dbn.common.thread.Progress;
-import com.dbn.connection.*;
-import com.dbn.connection.jdbc.DBNConnection;
-import com.dbn.connection.mapping.FileConnectionContextManager;
-import com.dbn.debugger.DBDebuggerType;
-import com.dbn.diagnostics.Diagnostics;
-import com.dbn.editor.console.SQLConsoleEditor;
-import com.dbn.editor.ddl.DDLFileEditor;
 import com.dbn.language.common.DBLanguagePsiFile;
 import com.dbn.language.common.psi.BasePsiElement.MatchType;
+import com.dbn.language.common.psi.*;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
@@ -61,6 +60,7 @@ import static com.dbn.common.component.Components.projectService;
 import static com.dbn.common.dispose.Checks.isNotValid;
 import static com.dbn.common.dispose.Failsafe.guarded;
 import static com.dbn.common.dispose.Failsafe.nd;
+import static com.dbn.connection.ConnectionHandler.isLiveConnection;
 
 @State(
     name = StatementExecutionManager.COMPONENT_NAME,
@@ -120,7 +120,7 @@ public class StatementExecutionManager extends ProjectComponentBase implements P
     @Nullable
     public StatementExecutionQueue getExecutionQueue(ConnectionId connectionId, SessionId sessionId) {
         ConnectionHandler connection = nd(ConnectionHandler.get(connectionId));
-        return connection.isVirtual() ? null : connection.getExecutionQueue(sessionId);
+        return isLiveConnection(connection) ? connection.getExecutionQueue(sessionId) : null;
     }
 
     public static StatementExecutionManager getInstance(@NotNull Project project) {

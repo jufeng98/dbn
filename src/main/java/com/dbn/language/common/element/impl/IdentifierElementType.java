@@ -1,8 +1,5 @@
 package com.dbn.language.common.element.impl;
 
-import com.dbn.language.common.element.util.*;
-import com.dbn.language.common.psi.IdentifierDefPsiElement;
-import com.dbn.language.common.psi.IdentifierRefPsiElement;
 import com.dbn.code.common.style.formatting.FormattingDefinition;
 import com.dbn.code.common.style.formatting.SpacingDefinition;
 import com.dbn.language.common.element.ElementType;
@@ -10,6 +7,8 @@ import com.dbn.language.common.element.ElementTypeBundle;
 import com.dbn.language.common.element.cache.IdentifierElementTypeLookupCache;
 import com.dbn.language.common.element.parser.impl.IdentifierElementTypeParser;
 import com.dbn.language.common.element.util.*;
+import com.dbn.language.common.psi.IdentifierDefPsiElement;
+import com.dbn.language.common.psi.IdentifierRefPsiElement;
 import com.dbn.language.common.resolve.UnderlyingObjectResolver;
 import com.dbn.object.type.DBObjectType;
 import com.intellij.lang.ASTNode;
@@ -121,10 +120,6 @@ public final class IdentifierElementType extends LeafElementType {
     
     public boolean isVariable() {
         return identifierType == IdentifierType.VARIABLE;
-    }
-
-    public IdentifierCategory getIdentifierCategory() {
-        return identifierCategory;
     }
 
     public boolean isReference() {

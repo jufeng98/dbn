@@ -1,7 +1,5 @@
 package com.dbn.language.common.psi;
 
-import com.dbn.language.common.psi.lookup.ObjectLookupAdapter;
-import com.dbn.language.common.psi.lookup.PsiLookupAdapter;
 import com.dbn.common.consumer.SetCollector;
 import com.dbn.common.dispose.Checks;
 import com.dbn.connection.ConnectionHandler;
@@ -9,6 +7,8 @@ import com.dbn.language.common.TokenType;
 import com.dbn.language.common.element.ElementType;
 import com.dbn.language.common.element.impl.LeafElementType;
 import com.dbn.language.common.element.util.ElementTypeAttribute;
+import com.dbn.language.common.psi.lookup.ObjectLookupAdapter;
+import com.dbn.language.common.psi.lookup.PsiLookupAdapter;
 import com.dbn.object.DBSchema;
 import com.dbn.object.common.DBObject;
 import com.dbn.object.common.DBObjectBundle;
@@ -24,6 +24,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 import java.util.function.Consumer;
+
+import static com.dbn.connection.ConnectionHandler.isLiveConnection;
 
 public abstract class LeafPsiElement<T extends LeafElementType> extends BasePsiElement<T> implements PsiReference {
 
@@ -122,7 +124,7 @@ public abstract class LeafPsiElement<T extends LeafElementType> extends BasePsiE
             if (objectType.isSchemaObject()) {
                 ConnectionHandler connection = sourceScope.getConnection();
 
-                if (connection != null && !connection.isVirtual()) {
+                if (isLiveConnection(connection)) {
                     DBObjectBundle objectBundle = connection.getObjectBundle();
 
                     if (filter == null || filter.acceptsCurrentSchemaObject(objectType)) {

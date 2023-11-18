@@ -1,10 +1,5 @@
 package com.dbn.connection.mapping;
 
-import com.dbn.connection.*;
-import com.dbn.connection.config.ConnectionConfigListener;
-import com.dbn.connection.mapping.ui.FileConnectionMappingDialog;
-import com.dbn.connection.session.DatabaseSession;
-import com.dbn.connection.session.SessionManagerListener;
 import com.dbn.DatabaseNavigator;
 import com.dbn.common.action.UserDataKeys;
 import com.dbn.common.component.PersistentState;
@@ -16,10 +11,14 @@ import com.dbn.common.thread.Progress;
 import com.dbn.common.util.Dialogs;
 import com.dbn.common.util.Documents;
 import com.dbn.connection.*;
+import com.dbn.connection.config.ConnectionConfigListener;
 import com.dbn.connection.mapping.ConnectionContextActions.ConnectionSetupAction;
 import com.dbn.connection.mapping.ConnectionContextActions.SchemaSelectAction;
 import com.dbn.connection.mapping.ConnectionContextActions.SessionCreateAction;
 import com.dbn.connection.mapping.ConnectionContextActions.SessionSelectAction;
+import com.dbn.connection.mapping.ui.FileConnectionMappingDialog;
+import com.dbn.connection.session.DatabaseSession;
+import com.dbn.connection.session.SessionManagerListener;
 import com.dbn.object.DBSchema;
 import com.dbn.vfs.file.DBConsoleVirtualFile;
 import com.intellij.openapi.actionSystem.DataContext;
@@ -56,13 +55,13 @@ import java.util.function.Consumer;
 
 import static com.dbn.common.component.Components.projectService;
 import static com.dbn.common.dispose.Checks.isNotValid;
-import static com.dbn.common.dispose.Checks.isValid;
 import static com.dbn.common.file.util.VirtualFiles.isLocalFileSystem;
 import static com.dbn.common.message.MessageCallback.when;
 import static com.dbn.common.options.setting.Settings.newElement;
 import static com.dbn.common.util.Files.isDbLanguageFile;
 import static com.dbn.common.util.Messages.options;
 import static com.dbn.common.util.Messages.showWarningDialog;
+import static com.dbn.connection.ConnectionHandler.isLiveConnection;
 import static com.dbn.connection.ConnectionSelectorOptions.Option.*;
 import static com.dbn.connection.mapping.ConnectionContextActions.ConnectionSelectAction;
 
@@ -254,7 +253,7 @@ public class FileConnectionContextManager extends ProjectComponentBase implement
         Dispatch.run(() -> {
             Project project = getProject();
             ConnectionHandler activeConnection = getConnection(file);
-            if (activeConnection == null || activeConnection.isVirtual()) {
+            if (!isLiveConnection(activeConnection)) {
                 String message =
                         activeConnection == null ?
                                 "The file is not linked to any connection.\nTo continue with the statement execution please select a target connection." :
@@ -367,7 +366,7 @@ public class FileConnectionContextManager extends ProjectComponentBase implement
                         progress -> {
                             DefaultActionGroup actionGroup = new DefaultActionGroup();
 
-                            if (isValid(connection) && !connection.isVirtual()) {
+                            if (isLiveConnection(connection)) {
                                 List<DBSchema> schemas = connection.getObjectBundle().getSchemas();
                                 for (DBSchema schema : schemas) {
                                     SchemaSelectAction schemaAction = new SchemaSelectAction(file, schema, callback);
@@ -410,7 +409,7 @@ public class FileConnectionContextManager extends ProjectComponentBase implement
                 (action) -> {
                     DefaultActionGroup actionGroup = new DefaultActionGroup();
                     ConnectionHandler connection = action.getConnection();
-                    if (isValid(connection) && !connection.isVirtual()) {
+                    if (isLiveConnection(connection)) {
                         List<DatabaseSession> sessions = connection.getSessionBundle().getSessions();
                         for (DatabaseSession session : sessions) {
                             SessionSelectAction sessionAction = new SessionSelectAction(file, session, callback);

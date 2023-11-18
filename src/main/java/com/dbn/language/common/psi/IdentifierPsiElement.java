@@ -11,10 +11,7 @@ import com.dbn.language.common.element.impl.LeafElementType;
 import com.dbn.language.common.element.impl.QualifiedIdentifierVariant;
 import com.dbn.language.common.element.util.ElementTypeAttribute;
 import com.dbn.language.common.element.util.IdentifierType;
-import com.dbn.language.common.psi.lookup.IdentifierLookupAdapter;
-import com.dbn.language.common.psi.lookup.LookupAdapters;
-import com.dbn.language.common.psi.lookup.ObjectDefinitionLookupAdapter;
-import com.dbn.language.common.psi.lookup.PsiLookupAdapter;
+import com.dbn.language.common.psi.lookup.*;
 import com.dbn.language.common.resolve.AliasObjectResolver;
 import com.dbn.language.common.resolve.SurroundingVirtualObjectResolver;
 import com.dbn.language.common.resolve.UnderlyingObjectResolver;
@@ -36,6 +33,7 @@ import java.util.function.Consumer;
 
 import static com.dbn.common.thread.ThreadMonitor.isDispatchThread;
 import static com.dbn.common.util.Commons.nvl;
+import static com.dbn.connection.ConnectionHandler.isLiveConnection;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 import static com.dbn.object.DBSynonym.unwrap;
 
@@ -380,8 +378,14 @@ public abstract class IdentifierPsiElement extends LeafPsiElement<IdentifierElem
                 if (updateReference(null, elementType, referencedElement)) return;
             }
 
-            ConnectionHandler activeConnection = getConnection();
-            if (!elementType.isLocalReference() && activeConnection != null && !activeConnection.isVirtual()) {
+            if (elementType.isLocalReference()) {
+                PsiLookupAdapter lookupAdapter = new ObjectReferenceLookupAdapter(this, objectType, refText);
+                PsiElement referencedElement = lookupAdapter.findInParentScopeOf(this);
+                if (updateReference(null, elementType, referencedElement)) return;
+            }
+
+            ConnectionHandler connection = getConnection();
+            if (!elementType.isLocalReference() && isLiveConnection(connection)) {
                 String objectName = refText.toString();
                 Set<DBObject> parentObjects = identifyPotentialParentObjects(objectType, null, this, this);
                 for (DBObject parentObject : parentObjects) {
@@ -396,7 +400,7 @@ public abstract class IdentifierPsiElement extends LeafPsiElement<IdentifierElem
                     if (updateReference(null, elementType, childObject)) return;
                 }
 
-                DBObjectBundle objectBundle = activeConnection.getObjectBundle();
+                DBObjectBundle objectBundle = connection.getObjectBundle();
                 DBObject childObject = objectBundle.getObject(objectType, objectName, (short) 0);
                 if (updateReference(null, elementType, childObject)) {
                     return;

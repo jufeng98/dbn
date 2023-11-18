@@ -1,15 +1,17 @@
 package com.dbn.connection.context.action;
 
 import com.dbn.common.action.Lookups;
+import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.mapping.FileConnectionContext;
 import com.dbn.connection.mapping.FileConnectionContextManager;
-import com.dbn.connection.ConnectionHandler;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
+
+import static com.dbn.connection.ConnectionHandler.isLiveConnection;
 
 public class FolderSchemaLinkAction extends AbstractFolderContextAction {
 
@@ -25,11 +27,10 @@ public class FolderSchemaLinkAction extends AbstractFolderContextAction {
 
     private boolean isAvailableFor(VirtualFile file, @NotNull Project project) {
         FileConnectionContext mapping = getFileContext(file, project);
-        if (mapping != null) {
-            ConnectionHandler connection = mapping.getConnection();
-            return connection != null && !connection.isVirtual();
-        }
-        return false;
+        if (mapping == null) return false;
+
+        ConnectionHandler connection = mapping.getConnection();
+        return isLiveConnection(connection);
     }
 
     @Override

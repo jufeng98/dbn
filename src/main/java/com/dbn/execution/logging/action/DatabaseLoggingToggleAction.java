@@ -17,7 +17,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static com.dbn.common.dispose.Checks.isValid;
+import static com.dbn.connection.ConnectionHandler.isLiveConnection;
 
 public class DatabaseLoggingToggleAction extends ToggleAction implements DumbAware {
 
@@ -35,14 +35,12 @@ public class DatabaseLoggingToggleAction extends ToggleAction implements DumbAwa
     private static ConnectionHandler getConnection(AnActionEvent e) {
         Project project = Lookups.getProject(e);
         VirtualFile virtualFile = Lookups.getVirtualFile(e);
-        if (project != null && virtualFile != null) {
-            FileConnectionContextManager contextManager = FileConnectionContextManager.getInstance(project);
-            ConnectionHandler connection = contextManager.getConnection(virtualFile);
-            if (isValid(connection) && !connection.isVirtual()) {
-                return connection ;
-            }
+        if (project == null || virtualFile == null) return null;
 
-        }
+        FileConnectionContextManager contextManager = FileConnectionContextManager.getInstance(project);
+        ConnectionHandler connection = contextManager.getConnection(virtualFile);
+        if (isLiveConnection(connection)) return connection;
+
         return null;
     }
 
