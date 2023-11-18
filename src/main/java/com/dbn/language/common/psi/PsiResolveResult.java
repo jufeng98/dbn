@@ -171,24 +171,12 @@ public final class PsiResolveResult extends PropertyHolderBase.IntStore<PsiResol
 
     private boolean connectionChanged() {
         ConnectionId currentConnectionId = getCurrentConnectionId();
-        if (!match(currentConnectionId, connectionId)) return true;
-
-        ConnectionId referenceConnectionId = getReferenceConnectionId();
-        ConnectionId parentConnectionId = getParentConnectionId();
-        if (parentConnectionId != null && !match(parentConnectionId, referenceConnectionId)) return true;
-
-        return false;
+        return !match(currentConnectionId, connectionId);
     }
 
     private boolean schemaChanged() {
         SchemaId currentSchemaId = getCurrentSchemaId();
-        if (!match(schemaId, currentSchemaId)) return true;
-
-        SchemaId parentSchemaId = getParentSchemaId();
-        SchemaId referenceSchemaId = getReferenceSchemaId();
-        if (parentSchemaId != null && !match(parentSchemaId, referenceSchemaId)) return true;
-
-        return false;
+        return !match(currentSchemaId, schemaId);
     }
 
     private boolean connectionBecameValid(ConnectionHandler connection) {
