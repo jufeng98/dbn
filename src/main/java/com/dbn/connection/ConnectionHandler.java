@@ -5,6 +5,7 @@ import com.dbn.common.Referenceable;
 import com.dbn.common.cache.Cache;
 import com.dbn.common.database.AuthenticationInfo;
 import com.dbn.common.database.DatabaseInfo;
+import com.dbn.common.dispose.Checks;
 import com.dbn.common.dispose.StatefulDisposable;
 import com.dbn.common.environment.EnvironmentTypeProvider;
 import com.dbn.common.filter.Filter;
@@ -27,6 +28,7 @@ import com.dbn.vfs.file.DBSessionBrowserVirtualFile;
 import com.intellij.lang.Language;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDirectory;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -240,4 +242,9 @@ public interface ConnectionHandler extends StatefulDisposable, EnvironmentTypePr
     }
 
     default void updateLastAccess() {};
+
+    @Contract("null -> false")
+    static boolean isLiveConnection(@Nullable ConnectionHandler connection) {
+        return Checks.isValid(connection) && !connection.isVirtual();
+    }
 }

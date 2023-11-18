@@ -22,6 +22,8 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
+import static com.dbn.connection.ConnectionHandler.isLiveConnection;
+
 public class SchemaSelectDropdownAction extends DBNComboBoxAction implements DumbAware {
     private static final String NAME = "Schema";
 
@@ -35,14 +37,14 @@ public class SchemaSelectDropdownAction extends DBNComboBoxAction implements Dum
 
     private static DefaultActionGroup createActionGroup(Project project, VirtualFile virtualFile) {
         DefaultActionGroup actionGroup = new DefaultActionGroup();
-        if (virtualFile != null) {
-            FileConnectionContextManager contextManager = FileConnectionContextManager.getInstance(project);
-            ConnectionHandler activeConnection = contextManager.getConnection(virtualFile);
-            if (Checks.isValid(activeConnection) && !activeConnection.isVirtual()) {
-                for (DBSchema schema : activeConnection.getObjectBundle().getSchemas()){
-                    actionGroup.add(new SchemaSelectAction(schema));
-                }
-            }
+        if (virtualFile == null) return actionGroup;
+
+        FileConnectionContextManager contextManager = FileConnectionContextManager.getInstance(project);
+        ConnectionHandler connection = contextManager.getConnection(virtualFile);
+        if (!isLiveConnection(connection)) return actionGroup;
+
+        for (DBSchema schema : connection.getObjectBundle().getSchemas()){
+            actionGroup.add(new SchemaSelectAction(schema));
         }
         return actionGroup;
     }
@@ -59,8 +61,8 @@ public class SchemaSelectDropdownAction extends DBNComboBoxAction implements Dum
 
         if (project != null && virtualFile != null) {
             FileConnectionContextManager contextManager = FileConnectionContextManager.getInstance(project);
-            ConnectionHandler activeConnection = contextManager.getConnection(virtualFile);
-            visible = activeConnection != null && !activeConnection.isVirtual();
+            ConnectionHandler connection = contextManager.getConnection(virtualFile);
+            visible = isLiveConnection(connection);
             if (visible) {
                 SchemaId schema = contextManager.getDatabaseSchema(virtualFile);
                 if (schema != null) {

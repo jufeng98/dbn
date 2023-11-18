@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 import static com.dbn.common.util.Commons.match;
+import static com.dbn.connection.ConnectionHandler.isLiveConnection;
 import static com.dbn.language.common.psi.PsiResolveStatus.*;
 
 @Getter
@@ -58,8 +59,8 @@ public final class PsiResolveResult extends PropertyHolderBase.IntStore<PsiResol
         this.schemaId = element.getSchemaId();
 
         ConnectionHandler connection = element.getConnection();
-        set(CONNECTION_VALID, connection != null && !connection.isVirtual() && connection.isValid());
-        set(CONNECTION_ACTIVE, connection != null && !connection.isVirtual() && connection.canConnect());
+        set(CONNECTION_VALID, isLiveConnection(connection) && connection.isValid());
+        set(CONNECTION_ACTIVE, isLiveConnection(connection) && connection.canConnect());
 
         BasePsiElement enclosingScopePsiElement = element.getEnclosingScopeElement();
         this.scopeTextLength = enclosingScopePsiElement == null ? 0 : enclosingScopePsiElement.getTextLength();
@@ -191,11 +192,11 @@ public final class PsiResolveResult extends PropertyHolderBase.IntStore<PsiResol
     }
 
     private boolean connectionBecameValid(ConnectionHandler connection) {
-        return isNot(CONNECTION_VALID) && connection != null && !connection.isVirtual() && connection.isValid();
+        return isNot(CONNECTION_VALID) && isLiveConnection(connection) && connection.isValid();
     }
 
     private boolean connectionBecameActive(ConnectionHandler connection) {
-        return isNot(CONNECTION_ACTIVE) && connection!= null && !connection.isVirtual() && connection.canConnect();
+        return isNot(CONNECTION_ACTIVE) && isLiveConnection(connection) && connection.canConnect();
     }
 
     private boolean enclosingScopeChanged() {

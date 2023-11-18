@@ -11,6 +11,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 
+import static com.dbn.connection.ConnectionHandler.isLiveConnection;
+
 public class FolderSchemaLinkAction extends AbstractFolderContextAction {
 
     @Override
@@ -25,11 +27,10 @@ public class FolderSchemaLinkAction extends AbstractFolderContextAction {
 
     private boolean isAvailableFor(VirtualFile file, @NotNull Project project) {
         FileConnectionContext mapping = getFileContext(file, project);
-        if (mapping != null) {
-            ConnectionHandler connection = mapping.getConnection();
-            return connection != null && !connection.isVirtual();
-        }
-        return false;
+        if (mapping == null) return false;
+
+        ConnectionHandler connection = mapping.getConnection();
+        return isLiveConnection(connection);
     }
 
     @Override

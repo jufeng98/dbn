@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.util.List;
 
-import static com.dbn.common.dispose.Checks.isValid;
+import static com.dbn.connection.ConnectionHandler.isLiveConnection;
 
 public class DatabaseSessionSelectDropdownAction extends DBNComboBoxAction implements DumbAware {
     private static final String NAME = "Session";
@@ -31,29 +31,29 @@ public class DatabaseSessionSelectDropdownAction extends DBNComboBoxAction imple
     protected DefaultActionGroup createPopupActionGroup(JComponent component, DataContext dataContext) {
         Project project = Lookups.getProject(component);
         DefaultActionGroup actionGroup = new DefaultActionGroup();
-        VirtualFile virtualFile = Lookups.getVirtualFile(component);
-        if (virtualFile != null) {
-            ConnectionHandler connection = FileConnectionContextManager.getInstance(project).getConnection(virtualFile);
-            if (isValid(connection) && !connection.isVirtual()) {
-                DatabaseSessionBundle sessionBundle = connection.getSessionBundle();
 
-                if (isDebugConsole(virtualFile)) {
-                    actionGroup.add(new DatabaseSessionSelectAction(sessionBundle.getDebugSession()));
-                } else {
-                    actionGroup.add(new DatabaseSessionSelectAction(sessionBundle.getMainSession()));
-                    actionGroup.add(new DatabaseSessionSelectAction(sessionBundle.getPoolSession()));
-                    List<DatabaseSession> sessions = sessionBundle.getSessions(ConnectionType.SESSION);
-                    if (sessions.size() > 0) {
-                        //actionGroup.addSeparator();
-                        for (DatabaseSession session : sessions){
-                            actionGroup.add(new DatabaseSessionSelectAction(session));
-                        }
-                    }
-                    actionGroup.addSeparator();
-                    actionGroup.add(new DatabaseSessionCreateAction(connection));
-                    actionGroup.add(new DatabaseSessionDisableAction(connection));
+        VirtualFile virtualFile = Lookups.getVirtualFile(component);
+        if (virtualFile == null) return actionGroup;
+
+        ConnectionHandler connection = FileConnectionContextManager.getInstance(project).getConnection(virtualFile);
+        if (!isLiveConnection(connection)) return actionGroup;
+
+        DatabaseSessionBundle sessionBundle = connection.getSessionBundle();
+        if (isDebugConsole(virtualFile)) {
+            actionGroup.add(new DatabaseSessionSelectAction(sessionBundle.getDebugSession()));
+        } else {
+            actionGroup.add(new DatabaseSessionSelectAction(sessionBundle.getMainSession()));
+            actionGroup.add(new DatabaseSessionSelectAction(sessionBundle.getPoolSession()));
+            List<DatabaseSession> sessions = sessionBundle.getSessions(ConnectionType.SESSION);
+            if (!sessions.isEmpty()) {
+                //actionGroup.addSeparator();
+                for (DatabaseSession session : sessions){
+                    actionGroup.add(new DatabaseSessionSelectAction(session));
                 }
             }
+            actionGroup.addSeparator();
+            actionGroup.add(new DatabaseSessionCreateAction(connection));
+            actionGroup.add(new DatabaseSessionDisableAction(connection));
         }
         return actionGroup;
     }
@@ -82,7 +82,7 @@ public class DatabaseSessionSelectDropdownAction extends DBNComboBoxAction imple
         if (project != null && virtualFile != null) {
             FileConnectionContextManager contextManager = FileConnectionContextManager.getInstance(project);
             ConnectionHandler connection = contextManager.getConnection(virtualFile);
-            visible = connection != null && !connection.isVirtual() && connection.getSettings().getDetailSettings().isEnableSessionManagement();
+            visible = isLiveConnection(connection) && connection.getSettings().getDetailSettings().isEnableSessionManagement();
             if (visible) {
                 if (isDebugConsole(virtualFile)) {
                     DatabaseSession debugSession = connection.getSessionBundle().getDebugSession();

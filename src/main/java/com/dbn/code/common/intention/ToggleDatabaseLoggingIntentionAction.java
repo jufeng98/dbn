@@ -22,6 +22,8 @@ import javax.swing.*;
 import static com.dbn.common.dispose.Checks.isNotValid;
 import static com.dbn.common.util.Editors.isMainEditor;
 import static com.dbn.common.util.Files.isDbLanguagePsiFile;
+import static com.dbn.connection.ConnectionHandler.isLiveConnection;
+import static com.dbn.database.DatabaseFeature.DATABASE_LOGGING;
 import static com.dbn.debugger.DatabaseDebuggerManager.isDebugConsole;
 
 public class ToggleDatabaseLoggingIntentionAction extends GenericIntentionAction implements LowPriorityAction {
@@ -81,15 +83,13 @@ public class ToggleDatabaseLoggingIntentionAction extends GenericIntentionAction
     }
 
     private static boolean supportsLogging(ConnectionHandler connection) {
-        return Checks.isValid(connection) &&
-                !connection.isVirtual() &&
-                DatabaseFeature.DATABASE_LOGGING.isSupported(connection);
+        return isLiveConnection(connection) && DATABASE_LOGGING.isSupported(connection);
     }
 
     @Override
     public void invoke(@NotNull final Project project, Editor editor, PsiFile psiFile) throws IncorrectOperationException {
         ConnectionHandler connection = getConnection(psiFile);
-        if (DatabaseFeature.DATABASE_LOGGING.isSupported(connection)) {
+        if (DATABASE_LOGGING.isSupported(connection)) {
             connection.setLoggingEnabled(!connection.isLoggingEnabled());
         }
     }

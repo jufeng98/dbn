@@ -38,7 +38,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 import java.util.Set;
 
-import static com.dbn.common.dispose.Checks.isNotValid;
+import static com.dbn.connection.ConnectionHandler.isLiveConnection;
 import static com.dbn.object.DBSynonym.unwrap;
 
 public class CodeCompletionProvider extends CompletionProvider<CompletionParameters> {
@@ -319,7 +319,7 @@ public class CodeCompletionProvider extends CompletionProvider<CompletionParamet
             @NotNull  BasePsiElement sourceScope,
             CodeCompletionContext context) {
         ConnectionHandler connection = context.getConnection();
-        if (isNotValid(connection) || connection.isVirtual()) return;
+        if (!isLiveConnection(connection)) return;
 
         DBObjectType objectType = identifierElementType.getObjectType();
         PsiElement sourceElement = context.getElementAtCaret();

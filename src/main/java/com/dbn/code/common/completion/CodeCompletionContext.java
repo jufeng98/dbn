@@ -129,8 +129,7 @@ public class CodeCompletionContext {
     }
 
     public boolean isLiveConnection() {
-        ConnectionHandler connection = getConnection();
-        return connection != null && !connection.isVirtual();
+        return ConnectionHandler.isLiveConnection(getConnection());
     }
 
     public void queue(Runnable runnable) {

@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static com.dbn.common.dispose.Checks.isValid;
 import static com.dbn.common.options.setting.Settings.*;
+import static com.dbn.connection.ConnectionHandler.isLiveConnection;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 
 @Slf4j
@@ -92,7 +93,7 @@ public class FileConnectionContextImpl implements FileConnectionContext {
     @Nullable
     public DatabaseSession getSession() {
         ConnectionHandler connection = getConnection();
-        if (connection != null && !connection.isVirtual()) {
+        if (isLiveConnection(connection)) {
             return connection.getSessionBundle().getSession(sessionId);
         }
         return null;

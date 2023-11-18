@@ -14,10 +14,9 @@ import com.dbn.common.util.Context;
 import com.dbn.common.util.Editors;
 import com.dbn.common.util.Safe;
 import com.dbn.connection.*;
-import com.dbn.connection.session.DatabaseSession;
-import com.dbn.connection.*;
 import com.dbn.connection.mapping.FileConnectionContext;
 import com.dbn.connection.mapping.FileConnectionContextManager;
+import com.dbn.connection.session.DatabaseSession;
 import com.dbn.object.DBSchema;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -43,7 +42,7 @@ import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.List;
 
-import static com.dbn.common.dispose.Checks.isNotValid;
+import static com.dbn.connection.ConnectionHandler.isLiveConnection;
 
 public class FileConnectionMappingTable extends DBNTable<FileConnectionMappingTableModel> {
     private final FileConnectionContextManager manager;
@@ -164,7 +163,7 @@ public class FileConnectionMappingTable extends DBNTable<FileConnectionMappingTa
 
     private void promptSchemaSelector(@NotNull FileConnectionContext mapping) {
         ConnectionHandler connection = mapping.getConnection();
-        if (isNotValid(connection) || connection.isVirtual()) return;
+        if (!isLiveConnection(connection)) return;
 
         Project project = connection.getProject();
         Progress.modal(project, connection, true,
@@ -182,7 +181,7 @@ public class FileConnectionMappingTable extends DBNTable<FileConnectionMappingTa
 
     private void promptSessionSelector(@NotNull FileConnectionContext mapping) {
         ConnectionHandler connection = mapping.getConnection();
-        if (isNotValid(connection) || connection.isVirtual())  return;
+        if (!isLiveConnection(connection))  return;
 
         DefaultActionGroup actionGroup = new DefaultActionGroup();
         VirtualFile file = mapping.getFile();

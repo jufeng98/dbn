@@ -61,6 +61,7 @@ import static com.dbn.common.component.Components.projectService;
 import static com.dbn.common.dispose.Checks.isNotValid;
 import static com.dbn.common.dispose.Failsafe.guarded;
 import static com.dbn.common.dispose.Failsafe.nd;
+import static com.dbn.connection.ConnectionHandler.isLiveConnection;
 
 @State(
     name = StatementExecutionManager.COMPONENT_NAME,
@@ -120,7 +121,7 @@ public class StatementExecutionManager extends ProjectComponentBase implements P
     @Nullable
     public StatementExecutionQueue getExecutionQueue(ConnectionId connectionId, SessionId sessionId) {
         ConnectionHandler connection = nd(ConnectionHandler.get(connectionId));
-        return connection.isVirtual() ? null : connection.getExecutionQueue(sessionId);
+        return isLiveConnection(connection) ? connection.getExecutionQueue(sessionId) : null;
     }
 
     public static StatementExecutionManager getInstance(@NotNull Project project) {

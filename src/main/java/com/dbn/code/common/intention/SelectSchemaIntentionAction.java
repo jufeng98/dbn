@@ -18,6 +18,7 @@ import javax.swing.*;
 
 import static com.dbn.common.util.Editors.isMainEditor;
 import static com.dbn.common.util.Files.isDbLanguagePsiFile;
+import static com.dbn.connection.ConnectionHandler.isLiveConnection;
 
 public class SelectSchemaIntentionAction extends GenericIntentionAction implements LowPriorityAction {
     @Override
@@ -43,7 +44,7 @@ public class SelectSchemaIntentionAction extends GenericIntentionAction implemen
 
         DBLanguagePsiFile dbFile = (DBLanguagePsiFile) psiFile;
         ConnectionHandler connection = dbFile.getConnection();
-        return connection != null && !connection.isVirtual();
+        return isLiveConnection(connection);
     }
 
     @Override

@@ -11,6 +11,7 @@ import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
 import static com.dbn.common.util.Unsafe.cast;
+import static com.dbn.connection.ConnectionHandler.isLiveConnection;
 import static com.intellij.lang.annotation.HighlightSeverity.ERROR;
 import static com.intellij.lang.annotation.HighlightSeverity.WARNING;
 
@@ -96,8 +97,7 @@ public class SQLLanguageAnnotator extends DBLanguageAnnotator {
 
     private static boolean checkConnection(@NotNull IdentifierPsiElement objectReference) {
         ConnectionHandler connection = objectReference.getConnection();
-        return connection != null &&
-                !connection.isVirtual() &&
+        return isLiveConnection(connection) &&
                 connection.canConnect() &&
                 connection.isValid() &&
                 !connection.getConnectionStatus().is(ConnectionHandlerStatus.LOADING);

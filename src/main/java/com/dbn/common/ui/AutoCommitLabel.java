@@ -25,6 +25,8 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.awt.*;
 
+import static com.dbn.connection.ConnectionHandler.isLiveConnection;
+
 public class AutoCommitLabel extends DBNPanelImpl implements Disposable {
     private interface Colors {
         Color DISCONNECTED = new JBColor(new Color(0x454545), new Color(0x808080));
@@ -72,7 +74,7 @@ public class AutoCommitLabel extends DBNPanelImpl implements Disposable {
     private void update() {
         Dispatch.run(true, () -> {
             ConnectionHandler connection = getConnection();
-            if (connection != null && !connection.isVirtual()) {
+            if (isLiveConnection(connection)) {
                 setVisible(true);
                 boolean disconnected = !connection.isConnected(sessionId);
                 boolean autoCommit = connection.isAutoCommit();

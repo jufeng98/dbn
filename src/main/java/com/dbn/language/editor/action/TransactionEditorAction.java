@@ -20,6 +20,8 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
+import static com.dbn.connection.ConnectionHandler.isLiveConnection;
+
 public abstract class TransactionEditorAction extends ProjectAction {
     TransactionEditorAction(String text, String description, Icon icon) {
         super(text, description, icon);
@@ -30,9 +32,9 @@ public abstract class TransactionEditorAction extends ProjectAction {
         VirtualFile virtualFile = Lookups.getVirtualFile(e);
         boolean enabled = false;
         boolean visible = false;
-        ConnectionHandler connection = getConnection(e);
-        if (connection != null && !connection.isVirtual()) {
 
+        ConnectionHandler connection = getConnection(e);
+        if (isLiveConnection(connection)) {
             DatabaseSession session = getDatabaseSession(e);
             if (session != null && !session.isPool()) {
                 DBNConnection conn = getTargetConnection(e);
@@ -54,7 +56,6 @@ public abstract class TransactionEditorAction extends ProjectAction {
 
             }
         }
-
 
         Presentation presentation = e.getPresentation();
         presentation.setEnabled(enabled);

@@ -29,6 +29,7 @@ import java.awt.*;
 import java.util.List;
 
 import static com.dbn.common.text.TextContent.plain;
+import static com.dbn.connection.ConnectionHandler.isLiveConnection;
 
 public class ScriptExecutionInputForm extends DBNFormBase {
     private JPanel headerPanel;
@@ -125,7 +126,7 @@ public class ScriptExecutionInputForm extends DBNFormBase {
         ConnectionHandler connection = executionInput.getConnection();
         SchemaId schema = executionInput.getSchemaId();
         CmdLineInterface cmdLineInterface;
-        if (connection != null && !connection.isVirtual()) {
+        if (isLiveConnection(connection)) {
             schema = Commons.nvln(schema, connection.getDefaultSchema());
             connectionComboBox.setSelectedValue(connection);
             schemaComboBox.setValues(connection.getSchemaIds());

@@ -63,7 +63,7 @@ import static com.dbn.common.list.FilteredList.unwrap;
 import static com.dbn.common.search.Search.binarySearch;
 import static com.dbn.common.search.Search.comboSearch;
 import static com.dbn.common.util.Commons.nvl;
-import static com.dbn.object.common.DBObjectSearchAdapters.binary;
+import static com.dbn.connection.ConnectionHandler.isLiveConnection;
 import static java.util.Collections.emptyList;
 
 @Slf4j
@@ -140,7 +140,7 @@ public class DBObjectListImpl<T extends DBObject> extends DynamicContentBase<T> 
     @Nullable
     public Filter<T> getConfigFilter() {
         ConnectionHandler connection = this.getConnection();
-        if (isValid(connection) && !connection.isVirtual()) {
+        if (isLiveConnection(connection)) {
             ConnectionFilterSettings filterSettings = connection.getSettings().getFilterSettings();
             return filterSettings.getNameFilter(objectType);
         }

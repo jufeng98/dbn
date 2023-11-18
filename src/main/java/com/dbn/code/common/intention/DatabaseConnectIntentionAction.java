@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
-import static com.dbn.common.dispose.Checks.isValid;
+import static com.dbn.connection.ConnectionHandler.isLiveConnection;
 
 public class DatabaseConnectIntentionAction extends GenericIntentionAction implements LowPriorityAction{
     @Override
@@ -33,7 +33,7 @@ public class DatabaseConnectIntentionAction extends GenericIntentionAction imple
         if (psiFile instanceof DBLanguagePsiFile) {
             DBLanguagePsiFile dbLanguagePsiFile = (DBLanguagePsiFile) psiFile;
             ConnectionHandler connection = dbLanguagePsiFile.getConnection();
-            if (isValid(connection) && !connection.isVirtual() && !connection.canConnect() && !connection.isConnected()) {
+            if (isLiveConnection(connection) && !connection.canConnect() && !connection.isConnected()) {
                 return true;
             }
         }
@@ -45,7 +45,7 @@ public class DatabaseConnectIntentionAction extends GenericIntentionAction imple
         if (psiFile instanceof DBLanguagePsiFile) {
             DBLanguagePsiFile dbLanguagePsiFile = (DBLanguagePsiFile) psiFile;
             ConnectionHandler connection = dbLanguagePsiFile.getConnection();
-            if (isValid(connection) && !connection.isVirtual()) {
+            if (isLiveConnection(connection)) {
                 connection.getInstructions().setAllowAutoConnect(true);
 
                 DatabaseSession databaseSession = dbLanguagePsiFile.getSession();
