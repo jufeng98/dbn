@@ -1,9 +1,9 @@
 package com.dbn.connection.context.action;
 
 import com.dbn.common.action.Lookups;
+import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.mapping.FileConnectionContext;
 import com.dbn.connection.mapping.FileConnectionContextManager;
-import com.dbn.connection.ConnectionHandler;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.Presentation;

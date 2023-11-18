@@ -1,11 +1,11 @@
 package com.dbn.language.sql;
 
-import com.dbn.language.common.psi.*;
 import com.dbn.code.sql.color.SQLTextAttributesKeys;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.ConnectionHandlerStatus;
 import com.dbn.language.common.DBLanguageAnnotator;
 import com.dbn.language.common.DBLanguageDialect;
+import com.dbn.language.common.psi.*;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;

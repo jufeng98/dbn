@@ -4,7 +4,6 @@ import com.dbn.common.dispose.Checks;
 import com.dbn.common.icon.Icons;
 import com.dbn.common.util.Strings;
 import com.dbn.connection.ConnectionHandler;
-import com.dbn.database.DatabaseFeature;
 import com.dbn.database.interfaces.DatabaseCompatibilityInterface;
 import com.dbn.language.common.PsiFileRef;
 import com.dbn.vfs.file.DBSourceCodeVirtualFile;

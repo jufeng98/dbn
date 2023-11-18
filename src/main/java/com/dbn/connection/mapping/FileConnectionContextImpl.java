@@ -2,11 +2,11 @@ package com.dbn.connection.mapping;
 
 import com.dbn.common.file.util.VirtualFiles;
 import com.dbn.common.util.Commons;
-import com.dbn.connection.session.DatabaseSession;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.ConnectionId;
 import com.dbn.connection.SchemaId;
 import com.dbn.connection.SessionId;
+import com.dbn.connection.session.DatabaseSession;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import lombok.Data;

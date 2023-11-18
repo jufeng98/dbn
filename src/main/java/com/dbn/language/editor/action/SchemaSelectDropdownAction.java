@@ -1,7 +1,6 @@
 package com.dbn.language.editor.action;
 
 import com.dbn.common.action.Lookups;
-import com.dbn.common.dispose.Checks;
 import com.dbn.common.icon.Icons;
 import com.dbn.common.ui.misc.DBNComboBoxAction;
 import com.dbn.connection.ConnectionHandler;
