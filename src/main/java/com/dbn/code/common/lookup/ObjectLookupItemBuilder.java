@@ -7,6 +7,7 @@ import com.dbn.code.common.completion.options.general.CodeCompletionFormatSettin
 import com.dbn.code.common.style.DBLCodeStyleManager;
 import com.dbn.code.common.style.options.CodeStyleCaseOption;
 import com.dbn.code.common.style.options.CodeStyleCaseSettings;
+import com.dbn.common.util.Characters;
 import com.dbn.common.util.Strings;
 import com.dbn.database.interfaces.DatabaseCompatibilityInterface;
 import com.dbn.language.common.DBLanguage;
@@ -112,7 +113,7 @@ public class ObjectLookupItemBuilder extends LookupItemBuilder {
                 char firstInputChar = userInput.charAt(0);
                 char firstPresentationChar = text.charAt(0);
 
-                if (Character.toUpperCase(firstInputChar) == Character.toUpperCase(firstPresentationChar)) {
+                if (Characters.equalIgnoreCase(firstInputChar, firstPresentationChar)) {
                     boolean upperCaseInput = Character.isUpperCase(firstInputChar);
                     boolean upperCasePresentation = Character.isUpperCase(firstPresentationChar);
 

@@ -2,6 +2,7 @@ package com.dbn.object.type;
 
 import com.dbn.common.content.DynamicContentType;
 import com.dbn.common.icon.Icons;
+import com.dbn.common.util.Characters;
 import com.dbn.common.util.Strings;
 import com.dbn.connection.context.DatabaseContext;
 import com.dbn.database.DatabaseObjectTypeId;
@@ -158,7 +159,7 @@ public enum DBObjectType implements DynamicContentType<DBObjectType> {
         this.disabledIcon = disabledIcon;
         this.generic = generic;
         this.presentableListName = listName == null ? null :
-                Character.toUpperCase(listName.charAt(0)) + listName.substring(1).replace('_', ' ');
+                Characters.toUpperCase(listName.charAt(0)) + listName.substring(1).replace('_', ' ');
     }
 
     public static Set<DBObjectType> emptySet() {

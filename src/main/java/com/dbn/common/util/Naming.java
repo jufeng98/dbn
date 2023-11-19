@@ -119,7 +119,7 @@ public class Naming {
         for (int i=0; i<friendlyName.length(); i++) {
             if (i>0 && Character.isLetter(friendlyName.charAt(i-1))){
                 char chr = friendlyName.charAt(i);
-                chr = Character.toLowerCase(chr);
+                chr = Characters.toLowerCase(chr);
                 friendlyName.setCharAt(i, chr);
             }
         }
@@ -147,7 +147,7 @@ public class Naming {
 
     public static String capitalize(String string) {
         string = toLowerCase(string);
-        string = Character.toUpperCase(string.charAt(0)) + string.substring(1);
+        string = Characters.toUpperCase(string.charAt(0)) + string.substring(1);
         return string;
     }
 
@@ -155,7 +155,7 @@ public class Naming {
         StringBuilder result = new StringBuilder(toLowerCase(string));
         for (int i=0; i<result.length(); i++) {
             if (i == 0 || !Character.isLetter(result.charAt(i-1))) {
-                result.setCharAt(i, Character.toUpperCase(result.charAt(i)));
+                result.setCharAt(i, Characters.toUpperCase(result.charAt(i)));
             }
         }
         return result.toString();
