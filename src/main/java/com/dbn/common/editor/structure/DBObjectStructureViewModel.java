@@ -3,6 +3,7 @@ package com.dbn.common.editor.structure;
 import com.intellij.ide.structureView.FileEditorPositionListener;
 import com.intellij.ide.structureView.ModelListener;
 import com.intellij.ide.structureView.StructureViewModel;
+import com.intellij.ide.structureView.StructureViewTreeElement;
 import com.intellij.ide.util.treeView.smartTree.Filter;
 import com.intellij.ide.util.treeView.smartTree.Grouper;
 import com.intellij.ide.util.treeView.smartTree.Sorter;
@@ -11,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class DBObjectStructureViewModel implements StructureViewModel {
+public abstract class DBObjectStructureViewModel implements StructureViewModel, StructureViewModel.ElementInfoProvider {
     protected Set<FileEditorPositionListener> fileEditorPositionListeners = new HashSet<>();
     protected Set<ModelListener> modelListeners = new HashSet<>();
 
@@ -70,5 +71,17 @@ public abstract class DBObjectStructureViewModel implements StructureViewModel {
         for (FileEditorPositionListener positionListener : fileEditorPositionListeners) {
             positionListener.onCurrentElementChanged();
         }
+    }
+
+    @Override
+    public boolean isAlwaysLeaf(StructureViewTreeElement element) {
+        // model seems to be able to derive "is leaf" logic from the absence of children
+        // (but only if model is extending ElementInfoProvider)
+        return false;
+    }
+
+    @Override
+    public boolean isAlwaysShowsPlus(StructureViewTreeElement element) {
+        return false;
     }
 }
