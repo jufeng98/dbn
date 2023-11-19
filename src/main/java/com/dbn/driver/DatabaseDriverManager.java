@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static com.dbn.common.component.Components.applicationService;
 import static com.dbn.common.options.setting.Settings.newElement;
+import static com.dbn.common.util.Strings.cachedLowerCase;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 import static com.dbn.driver.DatabaseDriverManager.COMPONENT_NAME;
 
@@ -85,7 +86,7 @@ public class DatabaseDriverManager extends ApplicationComponentBase implements P
     @Nullable
     @SneakyThrows
     private DriverBundle loadBundledDrivers(DatabaseType databaseType) {
-        String libraryRoot = "bundled-jdbc-" + databaseType.name().toLowerCase();
+        String libraryRoot = "bundled-jdbc-" + cachedLowerCase(databaseType.name());
         log.info("Loading driver library " + libraryRoot);
 
         File deploymentRoot = Files.getPluginDeploymentRoot();

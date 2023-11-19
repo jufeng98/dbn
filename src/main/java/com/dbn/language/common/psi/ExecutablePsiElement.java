@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
+import static com.dbn.common.util.Strings.cachedUpperCase;
 import static com.dbn.language.common.element.util.ElementTypeAttribute.*;
 
 public class ExecutablePsiElement extends NamedPsiElement implements Cloneable<ExecutablePsiElement> {
@@ -185,7 +186,7 @@ public class ExecutablePsiElement extends NamedPsiElement implements Cloneable<E
                     BasePsiElement compilableBlockPsiElement = findFirstPsiElement(COMPILABLE_BLOCK);
                     if (compilableBlockPsiElement != null) {
                         DBObjectType objectType = subjectPsiElement.getObjectType();
-                        subjectType = objectType.getName().toUpperCase() + " ";
+                        subjectType = cachedUpperCase(objectType.getName()) + " ";
                         if (compilableBlockPsiElement.is(OBJECT_DECLARATION)) {
                             subjectType += "BODY ";
                         }

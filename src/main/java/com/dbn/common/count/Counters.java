@@ -3,6 +3,8 @@ package com.dbn.common.count;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.dbn.common.util.Strings.cachedLowerCase;
+
 public class Counters {
     private final Map<CounterType, Counter> counters = new ConcurrentHashMap<>();
 
@@ -17,7 +19,7 @@ public class Counters {
             Counter counter = counters.get(counterType);
 
             if (builder.length() > 0) builder.append(" ");
-            builder.append(counterType.name().toLowerCase());
+            builder.append(cachedLowerCase(counterType.name()));
             builder.append("=");
             builder.append(counter.get());
         }

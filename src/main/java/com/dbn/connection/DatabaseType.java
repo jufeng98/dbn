@@ -13,6 +13,7 @@ import javax.swing.*;
 import java.util.Arrays;
 
 import static com.dbn.common.constant.Constant.array;
+import static com.dbn.common.util.Strings.toUpperCase;
 
 @Getter
 public enum DatabaseType implements Constant<DatabaseType>, Presentable{
@@ -190,7 +191,7 @@ public enum DatabaseType implements Constant<DatabaseType>, Presentable{
     }
 
     private static DatabaseType strongMatch(String identifier) {
-        identifier = identifier == null ? "" : identifier.toUpperCase();
+        identifier = identifier == null ? "" : toUpperCase(identifier);
         if (identifier.contains("ORACLE") || identifier.contains("OJDBC")) {
             return DatabaseType.ORACLE;
         } else if (identifier.contains("MYSQL")) {
@@ -205,7 +206,7 @@ public enum DatabaseType implements Constant<DatabaseType>, Presentable{
 
 
     private static DatabaseType softMatch(String identifier) {
-        identifier = identifier == null ? "" : identifier.toUpperCase();
+        identifier = identifier == null ? "" : toUpperCase(identifier);
         for (DatabaseType databaseType : values()) {
             if (databaseType.isDerivedDb(identifier)) return databaseType;
         }

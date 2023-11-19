@@ -37,6 +37,7 @@ import java.util.List;
 import static com.dbn.common.Priority.HIGH;
 import static com.dbn.common.Priority.LOW;
 import static com.dbn.common.component.Components.projectService;
+import static com.dbn.common.util.Strings.cachedUpperCase;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 import static com.dbn.object.common.property.DBObjectProperty.COMPILABLE;
 import static com.dbn.object.common.status.DBObjectStatus.COMPILING;
@@ -191,32 +192,36 @@ public class DatabaseCompilerManager extends ProjectComponentBase {
             debug = objectStatus.is(DBObjectStatus.DEBUG);
         }
 
+        String schemaName = object.getSchemaName();
+        String objectName = object.getName();
+        String objectTypeName = cachedUpperCase(object.getTypeName());
+
         if (contentType == DBContentType.CODE_SPEC || contentType == DBContentType.CODE) {
             metadata.compileObject(
-                    object.getSchemaName(),
-                    object.getName(),
-                    object.getTypeName().toUpperCase(),
+                    schemaName,
+                    objectName,
+                    objectTypeName,
                     debug,
                     conn);
         } else if (contentType == DBContentType.CODE_BODY) {
             metadata.compileObjectBody(
-                    object.getSchemaName(),
-                    object.getName(),
-                    object.getTypeName().toUpperCase(),
+                    schemaName,
+                    objectName,
+                    objectTypeName,
                     debug,
                     conn);
 
         } else if (contentType == DBContentType.CODE_SPEC_AND_BODY) {
             metadata.compileObject(
-                    object.getSchemaName(),
-                    object.getName(),
-                    object.getTypeName().toUpperCase(),
+                    schemaName,
+                    objectName,
+                    objectTypeName,
                     debug,
                     conn);
             metadata.compileObjectBody(
-                    object.getSchemaName(),
-                    object.getName(),
-                    object.getTypeName().toUpperCase(),
+                    schemaName,
+                    objectName,
+                    objectTypeName,
                     debug,
                     conn);
         }

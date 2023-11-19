@@ -16,6 +16,7 @@ import java.util.List;
 
 import static com.dbn.common.options.setting.Settings.newElement;
 import static com.dbn.common.options.setting.Settings.stringAttribute;
+import static com.dbn.common.util.Strings.cachedUpperCase;
 
 @Getter
 @Setter
@@ -101,7 +102,7 @@ public class DatabaseBrowserEditorSettings extends BasicProjectConfiguration<Dat
     public void writeConfiguration(Element element) {
         for (DefaultEditorOption option : options) {
             Element child = newElement(element, "object-type");
-            child.setAttribute("name", option.getObjectType().getName().toUpperCase());
+            child.setAttribute("name", cachedUpperCase(option.getObjectType().getName()));
             child.setAttribute("editor-type", option.getEditorType().name());
         }
     }

@@ -3,16 +3,17 @@ package com.dbn.editor.code.ui;
 import com.dbn.common.message.MessageType;
 import com.dbn.common.util.Messages;
 import com.dbn.database.DatabaseFeature;
+import com.dbn.editor.code.SourceCodeEditor;
+import com.dbn.editor.code.SourceCodeManager;
 import com.dbn.editor.code.content.SourceCodeContent;
 import com.dbn.editor.code.diff.MergeAction;
 import com.dbn.editor.code.diff.SourceCodeDiffManager;
-import com.dbn.editor.code.SourceCodeEditor;
-import com.dbn.editor.code.SourceCodeManager;
 import com.dbn.object.common.DBSchemaObject;
 import com.dbn.vfs.file.DBSourceCodeVirtualFile;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.text.DateFormatUtil;
 
+import static com.dbn.common.util.Strings.toLowerCase;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 
 public class SourceCodeOutdatedNotificationPanel extends SourceCodeEditorNotificationPanel{
@@ -22,7 +23,7 @@ public class SourceCodeOutdatedNotificationPanel extends SourceCodeEditorNotific
         Project project = editableObject.getProject();
         String presentableChangeTime =
                 DatabaseFeature.OBJECT_CHANGE_MONITORING.isSupported(editableObject) ?
-                        DateFormatUtil.formatPrettyDateTime(sourceCodeFile.getDatabaseChangeTimestamp()).toLowerCase() : "";
+                        toLowerCase(DateFormatUtil.formatPrettyDateTime(sourceCodeFile.getDatabaseChangeTimestamp())) : "";
 
 
         String text = "Outdated version";

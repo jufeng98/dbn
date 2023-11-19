@@ -8,7 +8,6 @@ import com.dbn.code.common.completion.options.general.CodeCompletionFormatSettin
 import com.dbn.code.common.style.DBLCodeStyleManager;
 import com.dbn.code.common.style.options.CodeStyleCaseOption;
 import com.dbn.code.common.style.options.CodeStyleCaseSettings;
-import com.dbn.common.util.Strings;
 import com.dbn.language.common.DBLanguage;
 import com.dbn.language.common.TokenType;
 import com.dbn.language.common.TokenTypeCategory;
@@ -17,7 +16,9 @@ import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.lookup.LookupItem;
 import com.intellij.openapi.project.Project;
 
-import javax.swing.Icon;
+import javax.swing.*;
+
+import static com.dbn.common.util.Strings.*;
 
 public class TokenLookupItemBuilder extends LookupItemBuilder {
 
@@ -41,7 +42,7 @@ public class TokenLookupItemBuilder extends LookupItemBuilder {
     public CharSequence getText(CodeCompletionContext completionContext) {
         String text = tokenElementType.getText();
         TokenType tokenType = tokenElementType.getTokenType();
-        if (Strings.isEmpty(text)) {
+        if (isEmpty(text)) {
             text = tokenType.getValue();
         }
         Project project = completionContext.getParameters().getOriginalFile().getProject();
@@ -60,14 +61,14 @@ public class TokenLookupItemBuilder extends LookupItemBuilder {
 
         String userInput = completionContext.getUserInput();
         CodeCompletionFormatSettings codeCompletionFormatSettings = CodeCompletionSettings.getInstance(project).getFormatSettings();
-        if (Strings.isNotEmpty(userInput) && !text.startsWith(userInput) && !codeCompletionFormatSettings.isEnforceCodeStyleCase()) {
+        if (isNotEmpty(userInput) && !text.startsWith(userInput) && !codeCompletionFormatSettings.isEnforceCodeStyleCase()) {
             char firstInputChar = userInput.charAt(0);
             char firstPresentationChar = text.charAt(0);
 
             if (Character.toUpperCase(firstInputChar) == Character.toUpperCase(firstPresentationChar)) {
                 text = Character.isUpperCase(firstInputChar) ?
-                        text.toUpperCase() :
-                        text.toLowerCase();
+                        toUpperCase(text) :
+                        toLowerCase(text);
             } else {
                 return null;
             }

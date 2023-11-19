@@ -2,7 +2,6 @@ package com.dbn.code.common.style.options;
 
 import com.dbn.common.options.PersistentConfiguration;
 import com.dbn.common.util.Naming;
-import com.dbn.common.util.Strings;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,6 +10,7 @@ import org.jdom.Element;
 import java.util.Objects;
 
 import static com.dbn.common.options.setting.Settings.stringAttribute;
+import static com.dbn.common.util.Strings.*;
 
 @Getter
 @Setter
@@ -29,8 +29,8 @@ public class CodeStyleCaseOption implements PersistentConfiguration {
     public String format(String string) {
         if (string != null) {
             switch (styleCase) {
-                case UPPER: return ignore(string) ? string : string.toUpperCase();
-                case LOWER: return ignore(string) ? string : string.toLowerCase();
+                case UPPER: return ignore(string) ? string : toUpperCase(string);
+                case LOWER: return ignore(string) ? string : toLowerCase(string);
                 case CAPITALIZED: return ignore(string) ? string : Naming.capitalize(string);
                 case PRESERVE: return string;
             }
@@ -39,7 +39,7 @@ public class CodeStyleCaseOption implements PersistentConfiguration {
     }
 
     boolean ignore(String string) {
-        return string.startsWith("`") || string.startsWith("'") || string.startsWith("\"") || (ignoreMixedCase && Strings.isMixedCase(string));
+        return string.startsWith("`") || string.startsWith("'") || string.startsWith("\"") || (ignoreMixedCase && isMixedCase(string));
     }
 
     /*********************************************************

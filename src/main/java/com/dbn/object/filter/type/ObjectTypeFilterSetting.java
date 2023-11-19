@@ -10,6 +10,8 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
+import static com.dbn.common.util.Strings.cachedUpperCase;
+
 @Getter
 @Setter
 @EqualsAndHashCode
@@ -37,7 +39,7 @@ public class ObjectTypeFilterSetting implements Selectable<ObjectTypeFilterSetti
 
     @Override
     public @NotNull String getName() {
-        return objectType.getName().toUpperCase();
+        return cachedUpperCase(objectType.getName());
     }
 
     @Override

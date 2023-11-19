@@ -10,11 +10,11 @@ import com.dbn.connection.mapping.FileConnectionContextManager;
 import com.dbn.database.common.debug.BreakpointInfo;
 import com.dbn.database.common.debug.BreakpointOperationInfo;
 import com.dbn.database.interfaces.DatabaseDebuggerInterface;
+import com.dbn.debugger.DBDebugConsoleLogger;
+import com.dbn.debugger.DBDebugUtil;
 import com.dbn.debugger.common.breakpoint.DBBreakpointHandler;
 import com.dbn.debugger.common.breakpoint.DBBreakpointType;
 import com.dbn.debugger.common.breakpoint.DBBreakpointUtil;
-import com.dbn.debugger.DBDebugConsoleLogger;
-import com.dbn.debugger.DBDebugUtil;
 import com.dbn.debugger.common.process.DBDebugProcess;
 import com.dbn.language.common.element.util.ElementTypeAttribute;
 import com.dbn.language.common.psi.BasePsiElement;
@@ -36,6 +36,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
 
+import static com.dbn.common.util.Strings.cachedUpperCase;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 
 public class DBJdbcBreakpointHandler extends DBBreakpointHandler<DBJdbcDebugProcess> {
@@ -149,7 +150,7 @@ public class DBJdbcBreakpointHandler extends DBBreakpointHandler<DBJdbcDebugProc
             defaultBreakpointInfo = getDebuggerInterface().addProgramBreakpoint(
                     method.getSchema().getName(),
                     schemaObject.getName(),
-                    schemaObject.getObjectType().getName().toUpperCase(),
+                    cachedUpperCase(schemaObject.getObjectType().getName()),
                     line,
                     getDebugConnection());
         } catch (SQLException e) {
@@ -185,7 +186,7 @@ public class DBJdbcBreakpointHandler extends DBBreakpointHandler<DBJdbcDebugProc
                 debuggerInterface.addProgramBreakpoint(
                         object.getSchema().getName(),
                         object.getName(),
-                        object.getObjectType().getName().toUpperCase(),
+                        cachedUpperCase(object.getObjectType().getName()),
                         breakpoint.getLine(),
                         debugConnection);
     }

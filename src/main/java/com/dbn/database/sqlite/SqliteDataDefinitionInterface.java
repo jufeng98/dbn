@@ -17,6 +17,7 @@ import com.intellij.openapi.util.text.StringUtil;
 
 import java.sql.SQLException;
 
+import static com.dbn.common.util.Strings.cachedLowerCase;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 
 public class SqliteDataDefinitionInterface extends DatabaseDataDefinitionInterfaceImpl {
@@ -44,7 +45,7 @@ public class SqliteDataDefinitionInterface extends DatabaseDataDefinitionInterfa
             if (objectTypeId == DatabaseObjectTypeId.DATASET_TRIGGER) {
                 objectTypeId = DatabaseObjectTypeId.TRIGGER;
             }
-            String objectType = objectTypeId.toString().toLowerCase();
+            String objectType = cachedLowerCase(objectTypeId.toString());
             code = updateNameQualification(code, useQualified, objectType, schemaName, objectName, caseSettings);
             String dropStatement =
                     kco.format("drop " + objectType + " if exists ") +

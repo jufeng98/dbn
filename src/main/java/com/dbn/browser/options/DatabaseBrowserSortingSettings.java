@@ -20,6 +20,7 @@ import java.util.Map;
 
 import static com.dbn.common.options.setting.Settings.newElement;
 import static com.dbn.common.options.setting.Settings.stringAttribute;
+import static com.dbn.common.util.Strings.cachedUpperCase;
 
 @Getter
 @Setter
@@ -112,7 +113,7 @@ public class DatabaseBrowserSortingSettings
     public void writeConfiguration(Element element) {
         for (DBObjectComparator comparator : comparators.values()) {
             Element child = newElement(element, "object-type");
-            child.setAttribute("name", comparator.getObjectType().getName().toUpperCase());
+            child.setAttribute("name", cachedUpperCase(comparator.getObjectType().getName()));
             child.setAttribute("sorting-type", comparator.getSortingType().name());
         }
     }

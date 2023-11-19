@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.dbn.common.options.setting.Settings.stringAttribute;
+import static com.dbn.common.util.Strings.toLowerCase;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 
 @Slf4j
@@ -278,7 +279,7 @@ public abstract class TokenTypeBundleBase {
     }
 
     private static boolean isTokenType(String text, Map<String, SimpleTokenType> tokenTypesMap) {
-        return tokenTypesMap.containsKey(text) || tokenTypesMap.containsKey(text.toLowerCase());
+        return tokenTypesMap.containsKey(text) || tokenTypesMap.containsKey(toLowerCase(text));
     }
 }
 

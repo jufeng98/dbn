@@ -16,6 +16,8 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.sql.SQLException;
 
+import static com.dbn.common.util.Strings.cachedLowerCase;
+
 class DBDatabaseTriggerImpl extends DBTriggerImpl implements DBDatabaseTrigger {
     DBDatabaseTriggerImpl(DBSchema schema, DBTriggerMetadata metadata) throws SQLException {
         super(schema, metadata);
@@ -63,7 +65,7 @@ class DBDatabaseTriggerImpl extends DBTriggerImpl implements DBDatabaseTrigger {
         ttb.append(true, getObjectType().getName(), true);
         StringBuilder triggerDesc = new StringBuilder();
         triggerDesc.append(" - ");
-        triggerDesc.append(triggerType.getName().toLowerCase());
+        triggerDesc.append(cachedLowerCase(triggerType.getName()));
         triggerDesc.append(" ") ;
 
         for (DBTriggerEvent triggeringEvent : triggeringEvents) {

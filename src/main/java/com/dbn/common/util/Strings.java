@@ -13,7 +13,8 @@ import static java.lang.Character.isWhitespace;
 @UtilityClass
 public class Strings extends com.intellij.openapi.util.text.StringUtil {
 
-    private static final Map<String, String> UPPER_CASE_STRING_CACHE = new ConcurrentHashMap<>();
+    private static final Map<String, String> UPPER_CASE_STRINGS = new ConcurrentHashMap<>();
+    private static final Map<String, String> LOWER_CASE_STRINGS = new ConcurrentHashMap<>();
 
     @NotNull
     public static List<String> tokenize(@Nullable String string, @NotNull String separator) {
@@ -244,23 +245,20 @@ public class Strings extends com.intellij.openapi.util.text.StringUtil {
         return -1;
     }
 
-    public static CharSequence toUpperCase(CharSequence s) {
-        StringBuilder answer = null;
+    public static String toUpperCase(CharSequence string) {
+        return toUpperCase(string.toString());
+    }
 
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            char upcased = toUpperCase(c);
-            if (answer == null && upcased != c) {
-                answer = new StringBuilder(s.length());
-                answer.append(s.subSequence(0, i));
-            }
+    public static String toLowerCase(CharSequence string) {
+        return toLowerCase(string.toString());
+    }
 
-            if (answer != null) {
-                answer.append(upcased);
-            }
-        }
+    public static String toUpperCase(String string) {
+        return string.toUpperCase(Locale.ENGLISH);
+    }
 
-        return answer == null ? s : answer.toString();
+    public static String toLowerCase(String string) {
+        return string.toLowerCase(Locale.ENGLISH);
     }
 
     public static String intern(String value) {
@@ -332,7 +330,11 @@ public class Strings extends com.intellij.openapi.util.text.StringUtil {
     }
 
     public static String cachedUpperCase(String string) {
-        return UPPER_CASE_STRING_CACHE.computeIfAbsent(string, k -> k.toUpperCase().intern());
+        return UPPER_CASE_STRINGS.computeIfAbsent(string, k -> toLowerCase(k).intern());
+    }
+
+    public static String cachedLowerCase(String string) {
+        return LOWER_CASE_STRINGS.computeIfAbsent(string, k -> toLowerCase(k).intern());
     }
 
     public interface CharPredicate {

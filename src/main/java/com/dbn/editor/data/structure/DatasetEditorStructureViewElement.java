@@ -1,6 +1,7 @@
 package com.dbn.editor.data.structure;
 
 import com.dbn.browser.model.BrowserTreeNode;
+import com.dbn.common.util.Strings;
 import com.dbn.editor.data.DatasetEditor;
 import com.dbn.editor.data.model.DatasetEditorModel;
 import com.dbn.editor.data.ui.table.DatasetEditorTable;
@@ -46,7 +47,7 @@ public class DatasetEditorStructureViewElement implements StructureViewTreeEleme
             public String getLocationString() {
                 if (treeNode instanceof DBColumn) {
                     DBColumn column  = (DBColumn) treeNode;
-                    return column.getDataType().getName().toLowerCase();
+                    return Strings.cachedLowerCase(column.getDataType().getName());
 
                 }
                 return null;

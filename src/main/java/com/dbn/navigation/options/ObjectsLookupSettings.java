@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.dbn.common.options.setting.Settings.*;
+import static com.dbn.common.util.Strings.cachedUpperCase;
 
 @Getter
 @Setter
@@ -149,7 +150,7 @@ public class ObjectsLookupSettings extends BasicProjectConfiguration<NavigationS
         @Override
         @NotNull
         public String getName() {
-            return objectType.getName().toUpperCase();
+            return cachedUpperCase(objectType.getName());
         }
 
         @Override

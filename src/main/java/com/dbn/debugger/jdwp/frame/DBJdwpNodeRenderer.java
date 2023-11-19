@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import static com.dbn.common.util.Strings.toLowerCase;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 
 public class DBJdwpNodeRenderer extends NodeRendererImpl {
@@ -148,7 +149,7 @@ public class DBJdwpNodeRenderer extends NodeRendererImpl {
 
     @Override
     public String getName() {
-        return super.getName().toLowerCase();
+        return toLowerCase(super.getName());
     }
 
     @Nullable
@@ -156,7 +157,7 @@ public class DBJdwpNodeRenderer extends NodeRendererImpl {
     @Compatibility
     public String getIdLabel(Value value, DebugProcess process) {
         String label = null;//super.getIdLabel(value, process);
-        if (label != null && !label.toLowerCase().startsWith("deprecated")) {
+        if (label != null && !toLowerCase(label).startsWith("deprecated")) {
             label = adjustIdLabel(label);
         }
 
@@ -185,7 +186,7 @@ public class DBJdwpNodeRenderer extends NodeRendererImpl {
         if (index > -1) {
             label = label.substring(0, index);
         }
-        label = label.toLowerCase();
+        label = toLowerCase(label);
         return label;
     }
 }

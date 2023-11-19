@@ -20,13 +20,12 @@ import com.dbn.database.interfaces.DatabaseDebuggerInterface;
 import com.dbn.debugger.*;
 import com.dbn.debugger.common.breakpoint.DBBreakpointHandler;
 import com.dbn.debugger.common.breakpoint.DBBreakpointUtil;
-import com.dbn.debugger.jdbc.frame.DBJdbcDebugSuspendContext;
-import com.dbn.debugger.*;
 import com.dbn.debugger.common.config.DBRunConfig;
 import com.dbn.debugger.common.process.DBDebugProcess;
 import com.dbn.debugger.common.process.DBDebugProcessStatus;
 import com.dbn.debugger.common.process.DBDebugProcessStatusHolder;
 import com.dbn.debugger.jdbc.evaluation.DBJdbcDebuggerEditorsProvider;
+import com.dbn.debugger.jdbc.frame.DBJdbcDebugSuspendContext;
 import com.dbn.editor.DBContentType;
 import com.dbn.execution.ExecutionContext;
 import com.dbn.execution.ExecutionInput;
@@ -57,6 +56,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.dbn.common.util.Strings.cachedUpperCase;
 import static com.dbn.debugger.common.process.DBDebugProcessStatus.*;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 import static com.dbn.execution.ExecutionStatus.CANCELLED;
@@ -398,7 +398,7 @@ public abstract class DBJdbcDebugProcess<T extends ExecutionInput> extends XDebu
                 runtimeInfo = debuggerInterface.runToPosition(
                         object.getSchema().getName(),
                         object.getName(),
-                        object.getObjectType().getName().toUpperCase(),
+                        cachedUpperCase(object.getObjectType().getName()),
                         position.getLine(),
                         debuggerConnection);
             }

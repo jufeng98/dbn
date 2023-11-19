@@ -4,11 +4,11 @@ import com.dbn.common.util.Commons;
 import com.dbn.connection.jdbc.DBNConnection;
 import com.dbn.database.common.debug.VariableInfo;
 import com.dbn.database.interfaces.DatabaseDebuggerInterface;
+import com.dbn.debugger.common.evaluation.DBDebuggerEvaluator;
+import com.dbn.debugger.common.frame.DBDebugValue;
 import com.dbn.debugger.jdbc.DBJdbcDebugProcess;
 import com.dbn.debugger.jdbc.frame.DBJdbcDebugStackFrame;
 import com.dbn.debugger.jdbc.frame.DBJdbcDebugValue;
-import com.dbn.debugger.common.evaluation.DBDebuggerEvaluator;
-import com.dbn.debugger.common.frame.DBDebugValue;
 import com.intellij.xdebugger.frame.XValueNode;
 import com.intellij.xdebugger.frame.XValuePlace;
 import com.intellij.xdebugger.frame.presentation.XNumericValuePresentation;
@@ -18,6 +18,8 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.util.List;
 
+import static com.dbn.common.util.Strings.toLowerCase;
+import static com.dbn.common.util.Strings.toUpperCase;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 
 public class DBJdbcDebuggerEvaluator extends DBDebuggerEvaluator<DBJdbcDebugStackFrame, DBJdbcDebugValue> {
@@ -34,7 +36,8 @@ public class DBJdbcDebuggerEvaluator extends DBDebuggerEvaluator<DBJdbcDebugStac
             DBJdbcDebugProcess debugProcess = debugValue.getDebugProcess();
             String variableName = debugValue.getVariableName();
             DBDebugValue parentValue = debugValue.getParentValue();
-            String dbVariableName = (parentValue == null ? variableName : parentValue.getVariableName() + "." + variableName).toUpperCase();
+            String dbVariableName = parentValue == null ? variableName : parentValue.getVariableName() + "." + variableName;
+            dbVariableName = toUpperCase(dbVariableName);
             int frameIndex = debugValue.getStackFrame().getFrameIndex();
 
             DBNConnection conn = debugProcess.getDebuggerConnection();
@@ -50,7 +53,7 @@ public class DBJdbcDebuggerEvaluator extends DBDebuggerEvaluator<DBJdbcDebugStac
             String type = variableInfo.getError();
 
             if (type != null) {
-                type = type.toLowerCase();
+                type = toLowerCase(type);
                 value = "";
             }
             if (childVariableNames != null) {

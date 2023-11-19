@@ -23,6 +23,8 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 
 import static com.dbn.common.dispose.Checks.isValid;
+import static com.dbn.common.util.Strings.toLowerCase;
+import static com.dbn.common.util.Strings.toUpperCase;
 
 public class ObjectLookupItemBuilder extends LookupItemBuilder {
     private final DBLanguage language;
@@ -117,13 +119,13 @@ public class ObjectLookupItemBuilder extends LookupItemBuilder {
                     if (Strings.isMixedCase(text)) {
                         if (upperCaseInput != upperCasePresentation) {
                             text = upperCaseInput ?
-                                    text.toUpperCase() :
-                                    text.toLowerCase();
+                                    toUpperCase(text) :
+                                    toLowerCase(text);
                         }
                     } else {
                         text = upperCaseInput ?
-                                text.toUpperCase() :
-                                text.toLowerCase();
+                                toUpperCase(text) :
+                                toLowerCase(text);
                     }
                 } else {
                     return null;

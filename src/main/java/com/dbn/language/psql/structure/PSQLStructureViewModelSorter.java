@@ -11,6 +11,8 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.util.Comparator;
 
+import static com.dbn.common.util.Strings.toUpperCase;
+
 public class PSQLStructureViewModelSorter implements Sorter {
 
     @Override
@@ -68,7 +70,7 @@ public class PSQLStructureViewModelSorter implements Sorter {
                     BasePsiElement subjectPsiElement1 = namedPsiElement1.findFirstPsiElement(ElementTypeAttribute.SUBJECT);
                     BasePsiElement subjectPsiElement2 = namedPsiElement2.findFirstPsiElement(ElementTypeAttribute.SUBJECT);
                     if (subjectPsiElement1 != null && subjectPsiElement2 != null) {
-                        return subjectPsiElement1.getText().toUpperCase().compareTo(subjectPsiElement2.getText().toUpperCase());
+                        return toUpperCase(subjectPsiElement1.getText()).compareTo(toUpperCase(subjectPsiElement2.getText()));
                     }
                 }
                 return 0;

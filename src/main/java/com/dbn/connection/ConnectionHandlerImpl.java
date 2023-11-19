@@ -56,6 +56,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.dbn.common.util.Commons.coalesce;
+import static com.dbn.common.util.Strings.cachedUpperCase;
 import static com.dbn.common.util.TimeUtil.isOlderThan;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 import static com.intellij.openapi.util.text.StringUtil.isEmpty;
@@ -410,7 +411,7 @@ public class ConnectionHandlerImpl extends StatefulDisposableBase implements Con
     @Override
     public SchemaId getUserSchema() {
         if (DatabaseFeature.USER_SCHEMA.isSupported(this)) {
-            String userName = getUserName().toUpperCase();
+            String userName = cachedUpperCase(getUserName());
             return SchemaId.get(userName);
         }
         return null;

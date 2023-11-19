@@ -20,6 +20,7 @@ import javax.swing.*;
 import java.sql.SQLException;
 
 import static com.dbn.common.Priority.HIGHEST;
+import static com.dbn.common.util.Strings.cachedLowerCase;
 
 class DBDatasetTriggerImpl extends DBTriggerImpl implements DBDatasetTrigger {
     DBDatasetTriggerImpl(DBDataset dataset, DBTriggerMetadata metadata) throws SQLException {
@@ -79,7 +80,7 @@ class DBDatasetTriggerImpl extends DBTriggerImpl implements DBDatasetTrigger {
         ttb.append(true, getObjectType().getName(), true);
         StringBuilder triggerDesc = new StringBuilder();
         triggerDesc.append(" - ");
-        triggerDesc.append(triggerType.getName().toLowerCase());
+        triggerDesc.append(cachedLowerCase(triggerType.getName()));
         triggerDesc.append(" ") ;
 
         for (DBTriggerEvent triggeringEvent : triggeringEvents) {

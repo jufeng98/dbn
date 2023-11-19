@@ -44,6 +44,9 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.util.*;
 
+import static com.dbn.common.util.Strings.cachedUpperCase;
+import static com.dbn.common.util.Strings.toLowerCase;
+
 @Slf4j
 @Getter
 public abstract class DBDebugStackFrame<P extends DBDebugProcess, V extends DBDebugValue> extends XStackFrame {
@@ -122,14 +125,14 @@ public abstract class DBDebugStackFrame<P extends DBDebugProcess, V extends DBDe
     }
 
     public V getValue(String variableName) {
-        return valuesMap == null ? null : valuesMap.get(variableName.toLowerCase());
+        return valuesMap == null ? null : valuesMap.get(toLowerCase(variableName));
     }
 
     public void setValue(String variableName, V value) {
         if (valuesMap == null) {
             valuesMap = new HashMap<>();
         }
-        valuesMap.put(variableName.toLowerCase(), value);
+        valuesMap.put(toLowerCase(variableName), value);
     }
 
     @Nullable
@@ -193,7 +196,7 @@ public abstract class DBDebugStackFrame<P extends DBDebugProcess, V extends DBDe
                 });
             }
 
-            String valueCacheKey = variableName.toUpperCase();
+            String valueCacheKey = cachedUpperCase(variableName);
             if (!valuesMap.containsKey(valueCacheKey)) {
                 Icon icon = basePsiElement.getIcon(true);
                 List<String> childVariables = childVariableNames.isEmpty() ? null : childVariableNames.elements();

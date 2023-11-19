@@ -8,6 +8,8 @@ import com.dbn.object.lookup.DBObjectRef;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.dbn.common.util.Strings.toUpperCase;
+
 class DatasetJoin {
     private final DBObjectRef<DBDataset> dataset1;
     private final DBObjectRef<DBDataset> dataset2;
@@ -43,7 +45,7 @@ class DatasetJoin {
                 for (DBColumn column2 : dataset2.getColumns()) {
                     String name1 = column1.getName();
                     String name2 = column2.getName();
-                    if (name1.length() > 2 && Strings.equalsIgnoreCase(name1, name2) && name1.toUpperCase().endsWith("ID")) {
+                    if ((name1.length() > 2) && Strings.equalsIgnoreCase(name1, name2) && toUpperCase(name1).endsWith("ID")) {
                         createMapping(column1, column2);
                     }
                 }

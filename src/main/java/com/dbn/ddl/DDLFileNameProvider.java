@@ -4,6 +4,8 @@ import com.dbn.object.common.DBObject;
 import com.dbn.object.lookup.DBObjectRef;
 import lombok.Getter;
 
+import static com.dbn.common.util.Strings.toLowerCase;
+
 @Getter
 public class DDLFileNameProvider {
     private final DBObjectRef object;
@@ -21,6 +23,6 @@ public class DDLFileNameProvider {
     }
 
     public String getFileName() {
-        return object.getFileName().toLowerCase() + '.' + extension;
+        return toLowerCase(object.getFileName()) + '.' + extension;
     }
 }

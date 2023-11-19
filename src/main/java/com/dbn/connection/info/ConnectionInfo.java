@@ -8,6 +8,8 @@ import org.jetbrains.annotations.NotNull;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
+import static com.dbn.common.util.Strings.toLowerCase;
+
 @Value
 public class ConnectionInfo {
     private final DatabaseType databaseType;
@@ -27,7 +29,7 @@ public class ConnectionInfo {
         url = metaData.getURL();
         userName = metaData.getUserName();
         driverJdbcType = resolveDriverType(metaData);
-        databaseType = DatabaseType.resolve(productName.toLowerCase());
+        databaseType = DatabaseType.resolve(toLowerCase(productName));
     }
 
     @NotNull

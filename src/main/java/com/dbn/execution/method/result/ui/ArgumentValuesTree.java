@@ -22,6 +22,8 @@ import java.awt.*;
 import java.sql.ResultSet;
 import java.util.List;
 
+import static com.dbn.common.util.Strings.cachedLowerCase;
+
 class ArgumentValuesTree extends DBNTree{
 
     ArgumentValuesTree(MethodExecutionResultForm parent, List<ArgumentValue> inputArgumentValues, List<ArgumentValue> outputArgumentValues) {
@@ -106,7 +108,7 @@ class ArgumentValuesTree extends DBNTree{
                         append(" = ", SimpleTextAttributes.REGULAR_ATTRIBUTES);
                         DBDataType dataType = argument.getDataType();
                         if (dataType != null) {
-                            append("{" + dataType.getName().toLowerCase() + "} " , SimpleTextAttributes.GRAY_ATTRIBUTES);
+                            append("{" + cachedLowerCase(dataType.getName()) + "} " , SimpleTextAttributes.GRAY_ATTRIBUTES);
                         }
                     }
                     append(displayValue, SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);

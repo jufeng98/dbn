@@ -81,6 +81,7 @@ import static com.dbn.common.navigation.NavigationInstruction.*;
 import static com.dbn.common.util.Commons.list;
 import static com.dbn.common.util.Messages.*;
 import static com.dbn.common.util.Naming.unquote;
+import static com.dbn.common.util.Strings.toLowerCase;
 import static com.dbn.common.util.Unsafe.silent;
 import static com.dbn.database.DatabaseFeature.OBJECT_CHANGE_MONITORING;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
@@ -268,7 +269,7 @@ public class SourceCodeManager extends ProjectComponentBase implements Persisten
             if (changedInDatabase && sourceCodeFile.isMergeRequired()) {
                 String presentableChangeTime =
                         OBJECT_CHANGE_MONITORING.isSupported(object) ?
-                                DateFormatUtil.formatPrettyDateTime(sourceCodeFile.getDatabaseChangeTimestamp()).toLowerCase() : "";
+                                toLowerCase(DateFormatUtil.formatPrettyDateTime(sourceCodeFile.getDatabaseChangeTimestamp())) : "";
                 String message =
                         "The " + object.getQualifiedNameWithType() +
                                 " was changed in database by another user " + presentableChangeTime + "." +

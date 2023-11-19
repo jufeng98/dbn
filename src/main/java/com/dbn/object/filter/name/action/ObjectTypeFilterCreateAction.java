@@ -7,11 +7,13 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
+import static com.dbn.common.util.Strings.cachedUpperCase;
+
 public class ObjectTypeFilterCreateAction extends AbstractObjectFilterAction {
-    private DBObjectType objectType;
+    private final DBObjectType objectType;
 
     ObjectTypeFilterCreateAction(DBObjectType objectType, ObjectNameFilterSettingsForm settingsForm) {
-        super(objectType.getName().toUpperCase(), objectType.getIcon(), settingsForm);
+        super(cachedUpperCase(objectType.getName()), objectType.getIcon(), settingsForm);
         this.objectType = objectType;
     }
 

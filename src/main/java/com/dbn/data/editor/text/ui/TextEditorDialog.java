@@ -14,6 +14,8 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
+import static com.dbn.common.util.Strings.*;
+
 public class TextEditorDialog extends DBNDialog<TextEditorForm> {
     private final DataEditorComponent textEditorAdapter;
     private TextEditorDialog(Project project, DataEditorComponent textEditorAdapter){
@@ -38,7 +40,7 @@ public class TextEditorDialog extends DBNDialog<TextEditorForm> {
         DBDataType dataType = userValueHolder.getDataType();
         String dataTypeName = dataType == null ? "OBJECT" : dataType.getName();
         DBObjectType objectType = userValueHolder.getObjectType();
-        return "Edit " + dataTypeName.toUpperCase() + " content (" +objectType.getName().toLowerCase() + " " + userValueHolder.getName().toUpperCase() + ")";
+        return "Edit " + cachedUpperCase(dataTypeName) + " content (" + cachedLowerCase(objectType.getName()) + " " + toUpperCase(userValueHolder.getName()) + ")";
     }
 
     public static void show(Project project, DataEditorComponent textEditorAdapter) {

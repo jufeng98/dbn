@@ -1,14 +1,14 @@
 package com.dbn.language.common.element.impl;
 
-import com.dbn.language.common.element.cache.NamedElementTypeLookupCache;
-import com.dbn.language.common.psi.ExecutablePsiElement;
-import com.dbn.language.common.psi.NamedPsiElement;
-import com.dbn.language.common.psi.RootPsiElement;
 import com.dbn.language.common.element.ElementType;
 import com.dbn.language.common.element.ElementTypeBundle;
+import com.dbn.language.common.element.cache.NamedElementTypeLookupCache;
 import com.dbn.language.common.element.parser.impl.NamedElementTypeParser;
 import com.dbn.language.common.element.util.ElementTypeAttribute;
 import com.dbn.language.common.element.util.ElementTypeDefinitionException;
+import com.dbn.language.common.psi.ExecutablePsiElement;
+import com.dbn.language.common.psi.NamedPsiElement;
+import com.dbn.language.common.psi.RootPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import lombok.Getter;
@@ -17,6 +17,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import static com.dbn.common.util.Strings.cachedUpperCase;
 
 @Getter
 public final class NamedElementType extends SequenceElementType {
@@ -66,7 +68,7 @@ public final class NamedElementType extends SequenceElementType {
     @NotNull
     @Override
     public String getName() {
-        return getId().toUpperCase();
+        return cachedUpperCase(getId());
     }
 
     public void addParent(ElementType parent) {

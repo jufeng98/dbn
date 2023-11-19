@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static com.dbn.common.util.Strings.cachedUpperCase;
+
 public class DatabaseBrowserSortingSettingsForm extends ConfigurationEditorForm<DatabaseBrowserSortingSettings> {
     private JPanel mainPanel;
     private JBScrollPane sortingTypesScrollPanel;
@@ -71,7 +73,7 @@ public class DatabaseBrowserSortingSettingsForm extends ConfigurationEditorForm<
                     DBObjectType objectType = (DBObjectType) value;
                     if (objectType != null) {
                         setIcon(objectType.getIcon());
-                        append(objectType.getName().toUpperCase(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
+                        append(cachedUpperCase(objectType.getName()), SimpleTextAttributes.REGULAR_ATTRIBUTES);
                     } else {
                         append("");
                     }
