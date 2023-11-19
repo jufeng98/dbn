@@ -11,6 +11,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
+import static com.dbn.common.util.Strings.cachedUpperCase;
+
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = false)
@@ -38,16 +40,16 @@ public class DataGridAuditColumnSettings extends BasicProjectConfiguration<DataG
     private void updateLookupCache(Collection<String> columnNames) {
         lookupCache = new HashSet<>();
         for (String columnName : columnNames) {
-            lookupCache.add(columnName.toUpperCase());
+            lookupCache.add(cachedUpperCase(columnName));
         }
     }
 
     public boolean isAuditColumn(String columnName) {
-        return columnName!= null && lookupCache.size() > 0 && lookupCache.contains(columnName.toUpperCase());
+        return columnName!= null && !lookupCache.isEmpty() && lookupCache.contains(cachedUpperCase(columnName));
     }
 
     public boolean isColumnVisible(String columnName) {
-        return showColumns || columnName == null || lookupCache.size() == 0 || !lookupCache.contains(columnName.toUpperCase());
+        return showColumns || columnName == null || lookupCache.isEmpty() || !lookupCache.contains(cachedUpperCase(columnName));
     }
 
     /****************************************************
@@ -69,7 +71,7 @@ public class DataGridAuditColumnSettings extends BasicProjectConfiguration<DataG
         this.columnNames.clear();
         StringTokenizer columnNames = new StringTokenizer(Settings.getString(element, "column-names", ""), ",");
         while (columnNames.hasMoreTokens()) {
-            String columnName = columnNames.nextToken().trim().toUpperCase();
+            String columnName = cachedUpperCase(columnNames.nextToken().trim());
             this.columnNames.add(columnName);
         }
         updateLookupCache(this.columnNames);

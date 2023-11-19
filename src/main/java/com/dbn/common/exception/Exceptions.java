@@ -10,7 +10,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static com.dbn.common.util.Commons.nvl;
+import static com.dbn.common.util.Strings.cachedLowerCase;
 
 public class Exceptions {
     public static final SQLNonTransientConnectionException DBN_NOT_CONNECTED_EXCEPTION = new SQLNonTransientConnectionException("Not connected to database");
@@ -51,7 +51,7 @@ public class Exceptions {
     }
 
     public static TimeoutException timeoutException(long time, TimeUnit timeUnit) {
-        return new TimeoutException("Operation timed out after " + time + " " + timeUnit.name().toLowerCase());
+        return new TimeoutException("Operation timed out after " + time + " " + cachedLowerCase(timeUnit.name()));
     }
 
     public static Throwable causeOf(ExecutionException e) {

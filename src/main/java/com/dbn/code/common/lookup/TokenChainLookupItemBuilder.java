@@ -14,7 +14,10 @@ import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.lookup.LookupItem;
 import com.intellij.openapi.project.Project;
 
-import javax.swing.Icon;
+import javax.swing.*;
+
+import static com.dbn.common.util.Strings.toLowerCase;
+import static com.dbn.common.util.Strings.toUpperCase;
 
 public class TokenChainLookupItemBuilder extends LookupItemBuilder {
 
@@ -59,8 +62,8 @@ public class TokenChainLookupItemBuilder extends LookupItemBuilder {
 
             if (Character.toUpperCase(firstInputChar) == Character.toUpperCase(firstPresentationChar)) {
                 text = Character.isUpperCase(firstInputChar) ?
-                        text.toUpperCase() :
-                        text.toLowerCase();
+                        toUpperCase(text) :
+                        toLowerCase(text);
             } else {
                 return null;
             }

@@ -61,6 +61,7 @@ import java.util.concurrent.TimeUnit;
 import static com.dbn.common.dispose.Checks.isNotValid;
 import static com.dbn.common.dispose.Checks.isValid;
 import static com.dbn.common.navigation.NavigationInstruction.*;
+import static com.dbn.common.util.Strings.toUpperCase;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 import static com.dbn.execution.ExecutionStatus.*;
 import static com.dbn.object.common.property.DBObjectProperty.COMPILABLE;
@@ -648,7 +649,7 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
             IdentifierPsiElement subjectPsiElement = getSubjectPsiElement();
             if (schema != null && subjectPsiElement != null) {
                 DBObjectType objectType = subjectPsiElement.getObjectType();
-                String objectName = subjectPsiElement.getUnquotedText().toString().toUpperCase();
+                String objectName = toUpperCase(subjectPsiElement.getUnquotedText());
                 compilerResult = new CompilerResult(compilerAction, connection, schema, objectType, objectName, null);
             }
         } else {

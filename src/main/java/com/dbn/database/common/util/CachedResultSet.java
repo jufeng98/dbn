@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.dbn.common.util.Commons.nvl;
+import static com.dbn.common.util.Strings.cachedUpperCase;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 
 @Slf4j
@@ -52,7 +53,7 @@ public class CachedResultSet extends StatefulDisposableBase implements ResultSet
         } else if (source != null && !Resources.isClosed(source)) {
             try {
                 List<String> columnNames = ResultSets.getColumnNames(source);
-                this.columnNames = Lists.convert(columnNames, s -> s.toUpperCase().trim());
+                this.columnNames = Lists.convert(columnNames, s -> cachedUpperCase(s.trim()));
                 load(source, condition);
             } finally {
                 Resources.close(source);

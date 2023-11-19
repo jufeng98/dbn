@@ -1,11 +1,11 @@
 package com.dbn.common.environment;
 
+import com.dbn.common.options.PersistentConfiguration;
 import com.dbn.common.ui.Presentable;
 import com.dbn.common.ui.util.LookAndFeel;
 import com.dbn.common.util.Cloneable;
 import com.dbn.common.util.Commons;
 import com.dbn.common.util.Strings;
-import com.dbn.common.options.PersistentConfiguration;
 import com.intellij.ui.JBColor;
 import com.intellij.util.ui.ColorIcon;
 import lombok.EqualsAndHashCode;
@@ -20,6 +20,7 @@ import java.awt.*;
 import java.util.Objects;
 
 import static com.dbn.common.options.setting.Settings.*;
+import static com.dbn.common.util.Strings.cachedLowerCase;
 
 @Getter
 @Setter
@@ -152,7 +153,7 @@ public class EnvironmentType implements Cloneable<EnvironmentType>, PersistentCo
         if (id == null && defaultEnvironmentType != null) {
             id = defaultEnvironmentType.id;
         }
-        if (id == null) id = EnvironmentTypeId.get(name.toLowerCase());
+        if (id == null) id = EnvironmentTypeId.get(cachedLowerCase(name));
         readonlyCode = booleanAttribute(element, "readonly-code", readonlyCode);
         readonlyData = booleanAttribute(element, "readonly-data", readonlyData);
 

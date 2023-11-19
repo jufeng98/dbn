@@ -13,6 +13,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
+import static com.dbn.common.util.Strings.toUpperCase;
+
 public class MySqlArgumentsResultSet extends StatefulDisposableBase implements ResultSetStub {
     private static class Argument {
         private String name;
@@ -63,7 +65,7 @@ public class MySqlArgumentsResultSet extends StatefulDisposableBase implements R
                     // hit IN OUT or INOUT token and name is not set
                     if ((token.equalsIgnoreCase("IN") || token.equalsIgnoreCase("OUT") || token.equalsIgnoreCase("INOUT"))) {
                         if (argument.name != null) throwParseException(argumentsString, token, "Argument name should not be set.");
-                        argument.inOut = token.toUpperCase();
+                        argument.inOut = toUpperCase(token);
                         continue;
                     }
 

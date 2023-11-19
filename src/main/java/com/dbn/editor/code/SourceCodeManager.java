@@ -1,10 +1,5 @@
 package com.dbn.editor.code;
 
-import com.dbn.editor.code.content.SourceCodeContent;
-import com.dbn.editor.code.diff.MergeAction;
-import com.dbn.editor.code.diff.SourceCodeDiffManager;
-import com.dbn.editor.code.options.CodeEditorConfirmationSettings;
-import com.dbn.editor.code.options.CodeEditorSettings;
 import com.dbn.DatabaseNavigator;
 import com.dbn.common.component.PersistentState;
 import com.dbn.common.component.ProjectComponentBase;
@@ -34,6 +29,11 @@ import com.dbn.database.interfaces.DatabaseMetadataInterface;
 import com.dbn.debugger.DatabaseDebuggerManager;
 import com.dbn.editor.DBContentType;
 import com.dbn.editor.EditorProviderId;
+import com.dbn.editor.code.content.SourceCodeContent;
+import com.dbn.editor.code.diff.MergeAction;
+import com.dbn.editor.code.diff.SourceCodeDiffManager;
+import com.dbn.editor.code.options.CodeEditorConfirmationSettings;
+import com.dbn.editor.code.options.CodeEditorSettings;
 import com.dbn.execution.statement.DataDefinitionChangeListener;
 import com.dbn.language.common.DBLanguagePsiFile;
 import com.dbn.language.common.psi.BasePsiElement;
@@ -77,6 +77,7 @@ import static com.dbn.common.navigation.NavigationInstruction.*;
 import static com.dbn.common.util.Commons.list;
 import static com.dbn.common.util.Messages.*;
 import static com.dbn.common.util.Naming.unquote;
+import static com.dbn.common.util.Strings.toLowerCase;
 import static com.dbn.database.DatabaseFeature.OBJECT_CHANGE_MONITORING;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 import static com.dbn.vfs.file.status.DBFileStatus.LOADING;
@@ -255,7 +256,7 @@ public class SourceCodeManager extends ProjectComponentBase implements Persisten
             if (changedInDatabase && sourceCodeFile.isMergeRequired()) {
                 String presentableChangeTime =
                         OBJECT_CHANGE_MONITORING.isSupported(object) ?
-                                DateFormatUtil.formatPrettyDateTime(sourceCodeFile.getDatabaseChangeTimestamp()).toLowerCase() : "";
+                                toLowerCase(DateFormatUtil.formatPrettyDateTime(sourceCodeFile.getDatabaseChangeTimestamp())) : "";
                 String message =
                         "The " + object.getQualifiedNameWithType() +
                                 " was changed in database by another user " + presentableChangeTime + "." +

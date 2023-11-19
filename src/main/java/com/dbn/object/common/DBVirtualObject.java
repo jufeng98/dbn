@@ -1,6 +1,5 @@
 package com.dbn.object.common;
 
-import com.dbn.language.common.psi.lookup.*;
 import com.dbn.code.common.lookup.LookupItemBuilder;
 import com.dbn.code.common.lookup.ObjectLookupItemBuilder;
 import com.dbn.common.dispose.Disposer;
@@ -22,6 +21,7 @@ import com.dbn.language.common.psi.BasePsiElement;
 import com.dbn.language.common.psi.IdentifierPsiElement;
 import com.dbn.language.common.psi.LeafPsiElement;
 import com.dbn.language.common.psi.QualifiedIdentifierPsiElement;
+import com.dbn.language.common.psi.lookup.*;
 import com.dbn.object.common.list.DBObjectList;
 import com.dbn.object.common.list.DBObjectListContainer;
 import com.dbn.object.lookup.DBObjectRef;
@@ -53,6 +53,7 @@ import static com.dbn.common.util.Commons.nvl;
 import static com.dbn.common.util.Documents.getDocument;
 import static com.dbn.common.util.Documents.getEditors;
 import static com.dbn.common.util.Lists.convert;
+import static com.dbn.common.util.Strings.toUpperCase;
 import static com.dbn.language.common.psi.lookup.LookupAdapters.*;
 import static com.dbn.object.common.sorting.DBObjectComparator.compareName;
 import static com.dbn.object.common.sorting.DBObjectComparator.compareType;
@@ -124,7 +125,7 @@ public class DBVirtualObject extends DBRootObjectImpl implements PsiReference {
         lookupAdapter.collectInElement(psiElement, basePsiElement -> {
             if (basePsiElement instanceof IdentifierPsiElement) {
                 IdentifierPsiElement identifierPsiElement = (IdentifierPsiElement) basePsiElement;
-                String tableName = identifierPsiElement.getText().toUpperCase();
+                String tableName = toUpperCase(identifierPsiElement.getText());
                 if (!tableNames.contains(tableName)) {
                     tableNames.add(tableName);
                 }

@@ -21,6 +21,8 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+import static com.dbn.common.util.Strings.cachedUpperCase;
+
 public class CodeCompletionSortingSettingsForm extends ConfigurationEditorForm<CodeCompletionSortingSettings> {
     private JPanel mainPanel;
     private JList sortingItemsList;
@@ -95,7 +97,7 @@ public class CodeCompletionSortingSettingsForm extends ConfigurationEditorForm<C
             if (objectType == null) {
                 append(sortingItem.getTokenTypeName(), SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
             } else {
-                append(objectType.getName().toUpperCase(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
+                append(cachedUpperCase(objectType.getName()), SimpleTextAttributes.REGULAR_ATTRIBUTES);
                 setIcon(objectType.getIcon());
             }
 

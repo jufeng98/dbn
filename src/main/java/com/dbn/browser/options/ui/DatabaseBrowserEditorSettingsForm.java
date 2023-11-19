@@ -24,6 +24,8 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.dbn.common.util.Strings.cachedUpperCase;
+
 public class DatabaseBrowserEditorSettingsForm extends ConfigurationEditorForm<DatabaseBrowserEditorSettings> {
     private JPanel mainPanel;
     private JBScrollPane editorTypesScrollPanel;
@@ -67,7 +69,7 @@ public class DatabaseBrowserEditorSettingsForm extends ConfigurationEditorForm<D
                     DBObjectType objectType = (DBObjectType) value;
                     if (objectType != null) {
                         setIcon(objectType.getIcon());
-                        append(objectType.getName().toUpperCase(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
+                        append(cachedUpperCase(objectType.getName()), SimpleTextAttributes.REGULAR_ATTRIBUTES);
                     } else {
                         append("");
                     }

@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import static com.dbn.common.util.Strings.toLowerCase;
+import static com.dbn.common.util.Strings.toUpperCase;
+
 @UtilityClass
 public class Naming {
 
@@ -44,7 +47,7 @@ public class Naming {
         boolean partial = false;
         Set<String> names = new HashSet<>();
         for (IdentifierPsiElement identifier : identifiers) {
-            names.add(identifier.getUnquotedText().toString().toUpperCase());
+            names.add(toUpperCase(identifier.getUnquotedText()));
             if (names.size() >= maxItems) {
                 partial = identifiers.size() > maxItems;
                 break;
@@ -86,7 +89,7 @@ public class Naming {
                 camelBuffer.append(current);
             }
         }
-        return camelBuffer.toString().toLowerCase();
+        return toLowerCase(camelBuffer);
     }
 
     public static String createCommaSeparatedList(DBObject[] objects) {
@@ -143,13 +146,13 @@ public class Naming {
     }
 
     public static String capitalize(String string) {
-        string = string.toLowerCase();
+        string = toLowerCase(string);
         string = Character.toUpperCase(string.charAt(0)) + string.substring(1);
         return string;
     }
 
     public static String capitalizeWords(String string) {
-        StringBuilder result = new StringBuilder(string.toLowerCase());
+        StringBuilder result = new StringBuilder(toLowerCase(string));
         for (int i=0; i<result.length(); i++) {
             if (i == 0 || !Character.isLetter(result.charAt(i-1))) {
                 result.setCharAt(i, Character.toUpperCase(result.charAt(i)));

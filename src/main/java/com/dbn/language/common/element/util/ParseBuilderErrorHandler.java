@@ -1,15 +1,17 @@
 package com.dbn.language.common.element.util;
 
+import com.dbn.common.util.Strings;
 import com.dbn.language.common.TokenType;
 import com.dbn.language.common.TokenTypeCategory;
 import com.dbn.language.common.element.parser.ParserBuilder;
 import com.dbn.language.common.element.parser.ParserContext;
-import com.dbn.common.util.Strings;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.dbn.common.util.Strings.toUpperCase;
 
 public class ParseBuilderErrorHandler {
     public static void updateBuilderError(Set<TokenType> expectedTokens, ParserContext context) {
@@ -32,7 +34,7 @@ public class ParseBuilderErrorHandler {
                     String value = tokenType.getValue();
                     String description =
                             tokenType.isIdentifier() ? "identifier" :
-                                    Strings.isNotEmptyOrSpaces(value) ? value.toUpperCase() : tokenType.getTypeName();
+                                    Strings.isNotEmptyOrSpaces(value) ? toUpperCase(value) : tokenType.getTypeName();
 
                     tokenDescriptions.add(description);
                 }
@@ -83,7 +85,7 @@ public class ParseBuilderErrorHandler {
                     message = category.getName() + " (e.g. " +
                             tokenTypes
                                     .stream()
-                                    .map(tokenType -> tokenType.getValue().toUpperCase())
+                                    .map(tokenType -> toUpperCase(tokenType.getValue()))
                                     .distinct()
                                     .limit(20)
                                     .sorted()

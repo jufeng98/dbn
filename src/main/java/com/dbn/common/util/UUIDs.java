@@ -5,6 +5,8 @@ import lombok.experimental.UtilityClass;
 
 import java.util.UUID;
 
+import static com.dbn.common.util.Strings.toUpperCase;
+
 @UtilityClass
 public class UUIDs {
 
@@ -15,7 +17,7 @@ public class UUIDs {
 */
 
     public static String compact() {
-        return UUID.randomUUID().toString().replaceAll("-", "").toUpperCase();
+        return toUpperCase(UUID.randomUUID().toString().replaceAll("-", ""));
     }
 
     public static String regular() {

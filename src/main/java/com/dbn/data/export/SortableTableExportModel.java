@@ -1,9 +1,9 @@
 package com.dbn.data.export;
 
 import com.dbn.common.util.Strings;
-import com.dbn.data.model.sortable.SortableDataModel;
 import com.dbn.data.grid.ui.table.sortable.SortableTable;
 import com.dbn.data.model.ColumnInfo;
+import com.dbn.data.model.sortable.SortableDataModel;
 import com.dbn.data.model.sortable.SortableDataModelCell;
 import com.dbn.data.type.DBNativeDataType;
 import com.dbn.data.type.GenericDataType;
@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.dbn.common.util.Strings.cachedUpperCase;
 
 @Getter
 public class SortableTableExportModel implements DataExportModel{
@@ -85,7 +87,7 @@ public class SortableTableExportModel implements DataExportModel{
     @Nullable
     private static String produceColumnFriendlyName(String key) {
         if (Strings.isNotEmpty(key)) {
-            key = key.trim().toUpperCase();
+            key = cachedUpperCase(key.trim());
             if (key.matches("[A-Z][A-Z0-9_]*")) {
                 key = key.replaceAll("_", " _");
                 return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, key);

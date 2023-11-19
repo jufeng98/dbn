@@ -15,6 +15,7 @@ import javax.swing.*;
 import java.util.Objects;
 
 import static com.dbn.common.options.setting.Settings.*;
+import static com.dbn.common.util.Strings.cachedUpperCase;
 
 @Getter
 @Setter
@@ -33,7 +34,7 @@ public class CodeCompletionFilterOption implements CheckedTreeNodeProvider, Pers
     public String getName() {
         return objectType == null ?
                 tokenTypeCategory.getName() :
-                objectType.getName().toUpperCase();
+                cachedUpperCase(objectType.getName());
     }
 
     public Icon getIcon() {

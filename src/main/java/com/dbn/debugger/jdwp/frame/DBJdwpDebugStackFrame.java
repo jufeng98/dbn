@@ -23,6 +23,8 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.util.List;
 
+import static com.dbn.common.util.Strings.toLowerCase;
+
 @Getter
 public class DBJdwpDebugStackFrame extends DBDebugStackFrame<DBJdwpDebugProcess<?>, DBJdwpDebugValue> {
     private JavaStackFrame underlyingFrame;
@@ -94,10 +96,12 @@ public class DBJdwpDebugStackFrame extends DBDebugStackFrame<DBJdwpDebugProcess<
     @Override
     public Object getEqualityObject() {
         DBSchemaObject object = DBDebugUtil.getObject(getSourcePosition());
+        if (object == null) return null;
+
         IdentifierPsiElement subject = getSubject();
         String subjectString = subject == null ? null : subject.getText();
 
-        return object == null ? null : (object.getQualifiedName() + "." + subjectString).toLowerCase();
+        return toLowerCase(object.getQualifiedName() + "." + subjectString);
         //return underlyingFrame.getEqualityObject();
     }
 }

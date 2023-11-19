@@ -7,14 +7,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.dbn.common.cache.CacheKey.key;
+import static com.dbn.common.util.Strings.cachedLowerCase;
+import static com.dbn.common.util.Strings.toLowerCase;
 import static com.dbn.database.sqlite.adapter.SqliteRawMetaData.*;
 
 public abstract class SqliteConstraintInfoResultSetStub<T extends SqliteMetadataResultSetRow<T>> extends SqliteDatasetInfoResultSetStub<T> {
@@ -161,7 +159,7 @@ public abstract class SqliteConstraintInfoResultSetStub<T extends SqliteMetadata
             StringBuilder builder = new StringBuilder();
             for (ConstraintColumnInfo constraintColumnInfo : constraintColumnInfos) {
                 if (builder.length() == 0) {
-                    builder.append(constraintType.name().toLowerCase());
+                    builder.append(cachedLowerCase(constraintType.name()));
                     builder.append("_");
                     builder.append(constraintType == ConstraintType.FK ?
                             constraintColumnInfo.getFkDataset() :
@@ -172,7 +170,7 @@ public abstract class SqliteConstraintInfoResultSetStub<T extends SqliteMetadata
                         constraintColumnInfo.getFkColumn() :
                         constraintColumnInfo.getColumn());
             }
-            return builder.toString().toLowerCase();
+            return toLowerCase(builder);
         }
 
         public static class ConstraintColumnInfo {

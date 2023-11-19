@@ -13,6 +13,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
+import static com.dbn.common.util.Strings.toLowerCase;
+
 @Getter
 @Setter
 public class DBDataType {
@@ -125,7 +127,7 @@ public class DBDataType {
         if (qualifiedName == null) {
             StringBuilder buffer = new StringBuilder();
             String name = getName();
-            buffer.append(name == null ? "" : name.toLowerCase());
+            buffer.append(name == null ? "" : toLowerCase(name));
             if (precision > 0) {
                 buffer.append(" (");
                 buffer.append(precision);

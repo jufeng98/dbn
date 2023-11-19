@@ -5,7 +5,6 @@ import com.dbn.common.ref.WeakRef;
 import com.dbn.common.util.Strings;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.database.DatabaseFeature;
-import com.dbn.editor.session.options.SessionBrowserSettings;
 import com.dbn.editor.session.SessionBrowser;
 import com.dbn.editor.session.SessionBrowserFilter;
 import com.dbn.editor.session.SessionBrowserFilterType;
@@ -14,12 +13,15 @@ import com.dbn.editor.session.model.SessionBrowserColumnInfo;
 import com.dbn.editor.session.model.SessionBrowserModel;
 import com.dbn.editor.session.model.SessionBrowserModelCell;
 import com.dbn.editor.session.model.SessionBrowserModelRow;
+import com.dbn.editor.session.options.SessionBrowserSettings;
 import com.dbn.editor.session.ui.table.SessionBrowserTable;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.project.DumbAwareAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import static com.dbn.common.util.Strings.cachedLowerCase;
 
 public class SessionBrowserTableActionGroup extends DefaultActionGroup {
     boolean headerAction;
@@ -139,7 +141,7 @@ public class SessionBrowserTableActionGroup extends DefaultActionGroup {
         private final SessionBrowserFilterType filterType;
         private final String name;
         private FilterByAction(SessionBrowserFilterType filterType, String name) {
-            super("Filter by " + filterType.name().toLowerCase() + " \"" + name + "\"", null, Icons.DATASET_FILTER);
+            super("Filter by " + cachedLowerCase(filterType.name()) + " \"" + name + "\"", null, Icons.DATASET_FILTER);
             this.filterType = filterType;
             this.name = name;
         }
@@ -166,7 +168,7 @@ public class SessionBrowserTableActionGroup extends DefaultActionGroup {
 
         @Override
         public void update(AnActionEvent e) {
-            e.getPresentation().setText("Filter by " + filterType.name().toLowerCase() + " \"" + name + "\"", false);
+            e.getPresentation().setText("Filter by " + cachedLowerCase(filterType.name()) + " \"" + name + "\"", false);
         }
     }
 }

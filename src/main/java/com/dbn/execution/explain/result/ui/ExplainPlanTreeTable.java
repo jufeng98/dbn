@@ -50,6 +50,7 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 import static com.dbn.common.dispose.Failsafe.guarded;
+import static com.dbn.common.util.Strings.toLowerCase;
 
 public class ExplainPlanTreeTable extends TreeTable implements StatefulDisposable, Borderless {
     private static final int MAX_TREE_COLUMN_WIDTH = 900;
@@ -135,7 +136,7 @@ public class ExplainPlanTreeTable extends TreeTable implements StatefulDisposabl
                     SimpleTextAttributes regularAttributes = Objects.equals(options, "FULL") ?
                             SimpleTextAttributes.ERROR_ATTRIBUTES :
                             SimpleTextAttributes.GRAYED_ATTRIBUTES;
-                    append(" (" + options.toLowerCase() + ")", selected ? selectedCellAttributes : regularAttributes);
+                    append(" (" + toLowerCase(options) + ")", selected ? selectedCellAttributes : regularAttributes);
                 }
                 setBorder(null);
             });

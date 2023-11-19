@@ -11,6 +11,9 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.util.Objects;
 
+import static com.dbn.common.util.Strings.toLowerCase;
+import static com.dbn.common.util.Strings.toUpperCase;
+
 
 public class CodeCompletionLookupItem extends LookupItem {
     public CodeCompletionLookupItem(LookupItemBuilder lookupItemBuilder, @NotNull String text, CodeCompletionContext completionContext) {
@@ -18,7 +21,7 @@ public class CodeCompletionLookupItem extends LookupItem {
         setIcon(lookupItemBuilder.getIcon());
         if (lookupItemBuilder.isBold()) setBold();
         setAttribute(LookupItem.TYPE_TEXT_ATTR, lookupItemBuilder.getTextHint());
-        addLookupStrings(text.toUpperCase(), text.toLowerCase());
+        addLookupStrings(toUpperCase(text), toLowerCase(text));
         setPresentableText(Naming.unquote(text));
         CodeCompletionSortingSettings sortingSettings = completionContext.getCodeCompletionSettings().getSortingSettings();
         if (sortingSettings.isEnabled()) {
@@ -34,7 +37,7 @@ public class CodeCompletionLookupItem extends LookupItem {
 
     public CodeCompletionLookupItem(Object source, Icon icon, @NotNull String text, String description, boolean bold) {
         super(source, text);
-        addLookupStrings(text.toUpperCase(), text.toLowerCase());
+        addLookupStrings(toUpperCase(text), toLowerCase(text));
         setIcon(icon);
         if (bold) setBold();
         setAttribute(LookupItem.TYPE_TEXT_ATTR, description);

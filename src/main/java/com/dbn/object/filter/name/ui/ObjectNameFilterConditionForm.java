@@ -1,9 +1,9 @@
 package com.dbn.object.filter.name.ui;
 
+import com.dbn.common.ui.ValueSelectorListener;
+import com.dbn.common.ui.form.DBNFormBase;
 import com.dbn.common.ui.listener.ComboBoxSelectionKeyListener;
 import com.dbn.common.ui.misc.DBNComboBox;
-import com.dbn.common.ui.form.DBNFormBase;
-import com.dbn.common.ui.ValueSelectorListener;
 import com.dbn.object.filter.ConditionJoinType;
 import com.dbn.object.filter.ConditionOperator;
 import com.dbn.object.filter.name.CompoundFilterCondition;
@@ -12,6 +12,8 @@ import com.dbn.object.type.DBObjectType;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+
+import static com.dbn.common.util.Strings.cachedUpperCase;
 
 public class ObjectNameFilterConditionForm extends DBNFormBase {
     private JPanel mainPanel;
@@ -50,7 +52,7 @@ public class ObjectNameFilterConditionForm extends DBNFormBase {
         }
 
         objectNameLabel.setIcon(objectType.getIcon());
-        objectNameLabel.setText(objectType.getName().toUpperCase() + " NAME");
+        objectNameLabel.setText(cachedUpperCase(objectType.getName()) + " NAME");
 
         operatorComboBox.setValues(ConditionOperator.values());;
         if (operation == Operation.EDIT) {

@@ -10,6 +10,7 @@ import lombok.Setter;
 import org.jdom.Element;
 
 import static com.dbn.common.options.setting.Settings.enumAttribute;
+import static com.dbn.common.util.Strings.cachedUpperCase;
 
 @Getter
 @Setter
@@ -44,7 +45,7 @@ public class SimpleNameFilterCondition extends NameFilterCondition implements Fi
     }
 
     public String toString() {
-        return getObjectType().getName().toUpperCase() + "_NAME " + getOperator() + " '" + getPattern() + "'";
+        return cachedUpperCase(getObjectType().getName()) + "_NAME " + getOperator() + " '" + getPattern() + "'";
     }
 
     /*********************************************************

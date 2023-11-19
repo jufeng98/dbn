@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static com.dbn.common.util.Strings.toLowerCase;
+
 public class CaseInsensitiveStringKeyMap<V> implements Map<String, V> {
     private final Map<String, V> data = new HashMap<>();
 
@@ -77,6 +79,6 @@ public class CaseInsensitiveStringKeyMap<V> implements Map<String, V> {
     }
 
     private static String internalKey(Object key) {
-        return key == null ? "" : key.toString().toLowerCase();
+        return key == null ? "" : toLowerCase(key.toString());
     }
 }

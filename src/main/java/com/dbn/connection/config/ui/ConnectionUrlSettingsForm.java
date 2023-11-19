@@ -31,6 +31,7 @@ import static com.dbn.common.ui.util.ComboBoxes.*;
 import static com.dbn.common.ui.util.TextFields.onTextChange;
 import static com.dbn.common.util.Commons.coalesce;
 import static com.dbn.common.util.Commons.nvl;
+import static com.dbn.common.util.Strings.toLowerCase;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 
 public class ConnectionUrlSettingsForm extends DBNFormBase {
@@ -87,7 +88,7 @@ public class ConnectionUrlSettingsForm extends DBNFormBase {
     }
 
     public String getVendor() {
-        return Objects.toString(getDatabaseType()).toLowerCase();
+        return toLowerCase(Objects.toString(getDatabaseType()));
     }
 
     public String getHost() {

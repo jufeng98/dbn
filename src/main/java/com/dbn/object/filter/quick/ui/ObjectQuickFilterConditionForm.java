@@ -6,12 +6,12 @@ import com.dbn.common.ui.listener.ComboBoxSelectionKeyListener;
 import com.dbn.common.ui.misc.DBNComboBox;
 import com.dbn.common.util.Actions;
 import com.dbn.object.filter.ConditionOperator;
-import com.dbn.object.filter.quick.action.DeleteQuickFilterConditionAction;
-import com.dbn.object.filter.quick.action.EnableDisableQuickFilterConditionAction;
-import com.dbn.object.type.DBObjectType;
 import com.dbn.object.filter.quick.ObjectQuickFilter;
 import com.dbn.object.filter.quick.ObjectQuickFilterCondition;
 import com.dbn.object.filter.quick.ObjectQuickFilterManager;
+import com.dbn.object.filter.quick.action.DeleteQuickFilterConditionAction;
+import com.dbn.object.filter.quick.action.EnableDisableQuickFilterConditionAction;
+import com.dbn.object.type.DBObjectType;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
@@ -20,6 +20,7 @@ import javax.swing.*;
 import java.awt.*;
 
 import static com.dbn.common.ui.util.TextFields.onTextChange;
+import static com.dbn.common.util.Strings.cachedUpperCase;
 
 public class ObjectQuickFilterConditionForm extends DBNFormBase {
     private JPanel mainPanel;
@@ -37,7 +38,7 @@ public class ObjectQuickFilterConditionForm extends DBNFormBase {
 
         DBObjectType objectType = filter.getObjectType();
         objectNameLabel.setIcon(objectType.getIcon());
-        objectNameLabel.setText(objectType.getName().toUpperCase() + " NAME");
+        objectNameLabel.setText(cachedUpperCase(objectType.getName()) + " NAME");
 
         operatorComboBox.setValues(ConditionOperator.values());
         patternTextField.setText(condition.getPattern());

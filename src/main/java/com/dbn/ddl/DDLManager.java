@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import static com.dbn.common.component.Components.projectService;
+import static com.dbn.common.util.Strings.cachedUpperCase;
 
 @State(
         name = DDLManager.COMPONENT_NAME,
@@ -45,7 +46,7 @@ public class DDLManager extends ProjectComponentBase implements PersistentState 
                 DBObjectType objectType = object.getObjectType();
                 DBObjectType genericType = objectType.getGenericType();
                 objectType = genericType == DBObjectType.TRIGGER ? genericType : objectType;
-                String objectTypeName = objectType.getName().toUpperCase();
+                String objectTypeName = cachedUpperCase(objectType.getName());
 
                 statement = conn.prepareCall("{? = call DBMS_METADATA.GET_DDL(?, ?, ?)}");
                 statement.registerOutParameter(1, Types.CLOB);

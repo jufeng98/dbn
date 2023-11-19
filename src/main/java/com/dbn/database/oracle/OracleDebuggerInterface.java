@@ -5,7 +5,6 @@ import com.dbn.code.common.style.options.CodeStyleCaseSettings;
 import com.dbn.connection.jdbc.DBNConnection;
 import com.dbn.database.common.DatabaseDebuggerInterfaceImpl;
 import com.dbn.database.common.debug.*;
-import com.dbn.database.common.debug.*;
 import com.dbn.database.interfaces.DatabaseDebuggerInterface;
 import com.dbn.database.interfaces.DatabaseInterfaces;
 import com.dbn.editor.DBContentType;
@@ -14,6 +13,7 @@ import com.dbn.object.type.DBObjectType;
 import java.sql.SQLException;
 import java.util.StringTokenizer;
 
+import static com.dbn.common.util.Strings.cachedLowerCase;
 import static com.dbn.editor.code.content.GuardedBlockMarker.END_OFFSET_IDENTIFIER;
 import static com.dbn.editor.code.content.GuardedBlockMarker.START_OFFSET_IDENTIFIER;
 
@@ -242,7 +242,7 @@ public class OracleDebuggerInterface extends DatabaseDebuggerInterfaceImpl imple
                 if (typeName.length() > 0) typeName.append(".");
                 typeName.append(tokenizer.nextToken());
             }
-            return typeName.toString().toLowerCase();
+            return cachedLowerCase(typeName.toString());
         }
 
         return typeIdentifier;

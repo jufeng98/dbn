@@ -21,6 +21,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.dbn.common.util.Strings.cachedLowerCase;
+import static com.dbn.common.util.Strings.cachedUpperCase;
 import static com.dbn.object.common.property.DBObjectProperty.*;
 import static com.dbn.object.type.DBTriggerEvent.*;
 import static com.dbn.object.type.DBTriggerType.*;
@@ -116,11 +118,11 @@ abstract class DBTriggerImpl extends DBSchemaObjectImpl<DBTriggerMetadata> imple
     @Override
     public List<PresentableProperty> getPresentableProperties() {
         List<PresentableProperty> properties = super.getPresentableProperties();
-        StringBuilder events = new StringBuilder(triggerType.getName().toLowerCase());
+        StringBuilder events = new StringBuilder(cachedLowerCase(triggerType.getName()));
         events.append(" ");
         for (DBTriggerEvent triggeringEvent : triggerEvents) {
             if (triggeringEvent != triggerEvents[0]) events.append(" or ");
-            events.append(triggeringEvent.getName().toUpperCase());
+            events.append(cachedUpperCase(triggeringEvent.getName()));
         }
 
         properties.add(0, new SimplePresentableProperty("Trigger event", events.toString()));

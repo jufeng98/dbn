@@ -17,6 +17,8 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.util.List;
 
+import static com.dbn.common.util.Strings.toLowerCase;
+
 public class DBJdbcDebugStackFrame extends DBDebugStackFrame<DBJdbcDebugProcess, DBJdbcDebugValue> {
     private final DebuggerRuntimeInfo runtimeInfo;
     private final Latent<DBJdbcDebuggerEvaluator> evaluator =
@@ -73,7 +75,7 @@ public class DBJdbcDebugStackFrame extends DBDebugStackFrame<DBJdbcDebugProcess,
         DebuggerRuntimeInfo runtimeInfo = getDebugProcess().getRuntimeInfo();
         IdentifierPsiElement subject = getSubject();
         String subjectString = subject == null ? null : subject.getText();
-        return runtimeInfo == null ? null : (runtimeInfo.getOwnerName() + "." + runtimeInfo.getProgramName() + "." + subjectString).toLowerCase();
+        return runtimeInfo == null ? null : toLowerCase(runtimeInfo.getOwnerName() + "." + runtimeInfo.getProgramName() + "." + subjectString);
     }
 }
 

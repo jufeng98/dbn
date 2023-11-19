@@ -1,5 +1,7 @@
 package com.dbn.language.common.element.util;
 
+import static com.dbn.common.util.Strings.cachedLowerCase;
+
 public enum IdentifierType {
     OBJECT,
     ALIAS,
@@ -9,7 +11,7 @@ public enum IdentifierType {
     private final String lowerCaseName;
 
     IdentifierType() {
-        this.lowerCaseName = name().toLowerCase();
+        this.lowerCaseName = cachedLowerCase(name());
     }
 
     public String lowerCaseName() {

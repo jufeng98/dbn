@@ -19,6 +19,8 @@ import com.intellij.openapi.util.text.StringUtil;
 
 import java.sql.SQLException;
 
+import static com.dbn.common.util.Strings.cachedLowerCase;
+
 public class OracleDataDefinitionInterface extends DatabaseDataDefinitionInterfaceImpl {
     public OracleDataDefinitionInterface(DatabaseInterfaces provider) {
         super("oracle_ddl_interface.xml", provider);
@@ -41,7 +43,7 @@ public class OracleDataDefinitionInterface extends DatabaseDataDefinitionInterfa
         if (objectTypeId == DatabaseObjectTypeId.VIEW) {
             return kco.format("create" + (makeRerunnable ? " or replace" : "") + " view ") + oco.format((useQualified ? schemaName + "." : "") + objectName) + kco.format(" as\n") + code + "\n/";
         } else {
-            String objectType = objectTypeId.toString().toLowerCase();
+            String objectType = cachedLowerCase(objectTypeId.toString());
             if (contentType == DBContentType.CODE_BODY) {
                 objectType = objectType + " body";
             }

@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.dbn.common.util.Strings.toLowerCase;
+
 public class DBLLanguageFileScrambler {
     AtomicInteger fineNameIndex = new AtomicInteger();
     private final Map<String, String> locationMap = new HashMap<>();
@@ -140,6 +142,6 @@ public class DBLLanguageFileScrambler {
 
     private String getObjectName(DBObjectType objectType, String objectName) {
         Map<String, String> indexMap = objectTypeIndex.computeIfAbsent(objectType, t -> new HashMap<>());
-        return indexMap.computeIfAbsent(objectName.toLowerCase(), n -> scrambledName(objectType.getName().replaceAll(" ", "_"), indexMap.size() + 1));
+        return indexMap.computeIfAbsent(toLowerCase(objectName), n -> scrambledName(objectType.getName().replaceAll(" ", "_"), indexMap.size() + 1));
     }
 }

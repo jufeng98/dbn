@@ -11,12 +11,15 @@ import com.intellij.ui.SimpleTextAttributes;
 import javax.swing.*;
 import java.util.List;
 
+import static com.dbn.common.util.Strings.cachedLowerCase;
+import static com.dbn.common.util.Strings.cachedUpperCase;
+
 class FilterSettingsTreeCellRenderer extends ColoredTreeCellRenderer {
     @Override
     public void customizeCellRenderer(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
         if (value instanceof ObjectNameFilter) {
             ObjectNameFilter condition = (ObjectNameFilter) value;
-            append(condition.getObjectType().getName().toUpperCase(), SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
+            append(cachedUpperCase(condition.getObjectType().getName()), SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
             setIcon(condition.getObjectType().getIcon());
         }
 
@@ -31,7 +34,7 @@ class FilterSettingsTreeCellRenderer extends ColoredTreeCellRenderer {
         if (value instanceof SimpleNameFilterCondition) {
             SimpleNameFilterCondition condition = (SimpleNameFilterCondition) value;
 
-            append(condition.getObjectType().getName().toUpperCase() + "_NAME ", SimpleTextAttributes.REGULAR_ATTRIBUTES);
+            append(cachedUpperCase(condition.getObjectType().getName()) + "_NAME ", SimpleTextAttributes.REGULAR_ATTRIBUTES);
             append(condition.getOperator().getName(), SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
             append(" '" + condition.getPattern() + "' ", new SimpleTextAttributes(0, JBColor.BLUE));
 
@@ -43,7 +46,7 @@ class FilterSettingsTreeCellRenderer extends ColoredTreeCellRenderer {
             if (parentCondition != null) {
                 List<FilterCondition> conditions = parentCondition.getConditions();
                 if (conditions.indexOf(condition) < conditions.size() - 1) {
-                    append(parentCondition.getJoinType().toString().toLowerCase(), SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
+                    append(cachedLowerCase(parentCondition.getJoinType().toString()), SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
                 }
             }
         }

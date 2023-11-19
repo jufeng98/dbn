@@ -18,11 +18,13 @@ import java.text.MessageFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.dbn.common.util.Strings.cachedUpperCase;
+
 public abstract class DatabaseDataDefinitionInterfaceImpl extends DatabaseInterfaceBase implements DatabaseDataDefinitionInterface {
     public static final String TEMP_OBJECT_NAME = "DBN_TEMPORARY_{0}_0001";
 
     public static String getTempObjectName(String objectType) {
-        return MessageFormat.format(TEMP_OBJECT_NAME, objectType.toUpperCase());
+        return MessageFormat.format(TEMP_OBJECT_NAME, cachedUpperCase(objectType));
     }
 
     public DatabaseDataDefinitionInterfaceImpl(String fileName, DatabaseInterfaces provider) {
