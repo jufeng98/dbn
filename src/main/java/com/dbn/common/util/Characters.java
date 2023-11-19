@@ -21,7 +21,7 @@ public class Characters {
     }
 
     public static boolean equalIgnoreCase(char char1, char char2) {
-        return Objects.equals(toUpperCase(char1), toLowerCase(char2));
+        return Objects.equals(toUpperCase(char1), toUpperCase(char2));
     }
 
 }

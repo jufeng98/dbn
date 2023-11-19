@@ -330,7 +330,7 @@ public class Strings extends com.intellij.openapi.util.text.StringUtil {
     }
 
     public static String cachedUpperCase(String string) {
-        return UPPER_CASE_STRINGS.computeIfAbsent(string, k -> toLowerCase(k).intern());
+        return UPPER_CASE_STRINGS.computeIfAbsent(string, k -> toUpperCase(k).intern());
     }
 
     public static String cachedLowerCase(String string) {
