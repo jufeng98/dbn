@@ -254,11 +254,11 @@ public class Strings extends com.intellij.openapi.util.text.StringUtil {
     }
 
     public static String toUpperCase(String string) {
-        return string.toUpperCase(Locale.ENGLISH);
+        return string.toUpperCase(Locale.ROOT);
     }
 
     public static String toLowerCase(String string) {
-        return string.toLowerCase(Locale.ENGLISH);
+        return string.toLowerCase(Locale.ROOT);
     }
 
     public static String intern(String value) {
