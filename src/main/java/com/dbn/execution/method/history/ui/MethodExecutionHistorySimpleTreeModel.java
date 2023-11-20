@@ -70,11 +70,6 @@ public class MethodExecutionHistorySimpleTreeModel extends MethodExecutionHistor
     }
 
     @Override
-    protected String getMethodName(MethodExecutionInput executionInput) {
-        return executionInput.getMethodRef().getQualifiedObjectName();
-    }
-
-    @Override
     public TreePath getTreePath(MethodExecutionInput executionInput) {
         List<MethodExecutionHistoryTreeNode> path = new ArrayList<>();
         RootTreeNode root = getRoot();

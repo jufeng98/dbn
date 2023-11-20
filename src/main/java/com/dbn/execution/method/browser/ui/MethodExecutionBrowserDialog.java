@@ -1,5 +1,6 @@
 package com.dbn.execution.method.browser.ui;
 
+import com.dbn.common.dispose.Disposer;
 import com.dbn.common.ui.dialog.DBNDialog;
 import com.dbn.object.DBMethod;
 import com.dbn.object.common.ui.ObjectTreeModel;
@@ -26,6 +27,7 @@ public class MethodExecutionBrowserDialog extends DBNDialog<MethodExecutionBrows
         this.objectTreeModel = objectTreeModel;
         this.debug = debug;
         getForm().addTreeSelectionListener(selectionListener);
+        Disposer.register(this, objectTreeModel);
         init();
     }
 

@@ -96,16 +96,15 @@ public final class DatabaseBrowserTree extends DBNTree implements Borderless {
     }
 
     public void selectElement(BrowserTreeNode treeNode, boolean focus) {
-        if (treeNode != null) {
-            ConnectionHandler connection = treeNode.getConnection();
-            Filter<BrowserTreeNode> filter = connection.getObjectTypeFilter();
+        if (treeNode == null) return;
 
-            if (filter.accepts(treeNode)) {
-                targetSelection = treeNode;
-                scrollToSelectedElement();
-                if (focus) requestFocus();
-            }
-        }
+        ConnectionHandler connection = treeNode.getConnection();
+        Filter<BrowserTreeNode> filter = connection.getObjectTypeFilter();
+        if (!filter.accepts(treeNode)) return;
+
+        targetSelection = treeNode;
+        scrollToSelectedElement();
+        if (focus) requestFocus();
     }
 
     public void scrollToSelectedElement() {
@@ -170,26 +169,26 @@ public final class DatabaseBrowserTree extends DBNTree implements Borderless {
 
     public void navigateBack() {
         BrowserTreeNode treeNode = navigationHistory.previous();
-        if (treeNode != null) {
-            selectPathSilently(DatabaseBrowserUtils.createTreePath(treeNode));
-        }
+        if (treeNode == null) return;
+
+        selectPathSilently(DatabaseBrowserUtils.createTreePath(treeNode));
     }
 
     public void navigateForward() {
         BrowserTreeNode treeNode = navigationHistory.next();
-        if (treeNode != null) {
-            selectPathSilently(DatabaseBrowserUtils.createTreePath(treeNode));
-        }
+        if (treeNode == null) return;
+
+        selectPathSilently(DatabaseBrowserUtils.createTreePath(treeNode));
     }
 
 
     private void selectPathSilently(TreePath treePath) {
-        if (treePath != null) {
-            listenersEnabled = false;
-            selectionModel.setSelectionPath(treePath);
-            TreeUtil.selectPath(DatabaseBrowserTree.this, treePath, true);
-            listenersEnabled = true;
-        }
+        if (treePath == null) return;
+
+        listenersEnabled = false;
+        selectionModel.setSelectionPath(treePath);
+        TreeUtil.selectPath(DatabaseBrowserTree.this, treePath, true);
+        listenersEnabled = true;
     }
 
     public void expandAll() {
@@ -213,12 +212,13 @@ public final class DatabaseBrowserTree extends DBNTree implements Borderless {
     }
 
     private void collapse(BrowserTreeNode treeNode) {
-        if (!treeNode.isLeaf() && treeNode.isTreeStructureLoaded()) {
-            for (int i = 0; i < treeNode.getChildCount(); i++) {
-                BrowserTreeNode childTreeNode = treeNode.getChildAt(i);
-                collapse(childTreeNode);
-                collapsePath(DatabaseBrowserUtils.createTreePath(childTreeNode));
-            }
+        if (treeNode.isLeaf()) return;
+        if (!treeNode.isTreeStructureLoaded()) return;
+
+        for (int i = 0; i < treeNode.getChildCount(); i++) {
+            BrowserTreeNode childTreeNode = treeNode.getChildAt(i);
+            collapse(childTreeNode);
+            collapsePath(DatabaseBrowserUtils.createTreePath(childTreeNode));
         }
     }
 

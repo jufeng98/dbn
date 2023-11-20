@@ -1,17 +1,18 @@
 package com.dbn.execution.method.history.ui;
 
 import com.dbn.common.icon.Icons;
+import com.dbn.common.ui.tree.DBNTreeNode;
 import com.dbn.common.util.Commons;
 import com.dbn.object.type.DBObjectType;
 import lombok.Getter;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import java.util.Collections;
 import java.util.List;
 
-public class MethodExecutionHistoryTreeNode extends DefaultMutableTreeNode {
+@Getter
+public class MethodExecutionHistoryTreeNode extends DBNTreeNode {
     public enum Type {
         ROOT,
         CONNECTION,
@@ -22,8 +23,8 @@ public class MethodExecutionHistoryTreeNode extends DefaultMutableTreeNode {
         FUNCTION,
         UNKNOWN
     }
-    private final @Getter String name;
-    private final @Getter Type type;
+    private final String name;
+    private final Type type;
 
     public MethodExecutionHistoryTreeNode(MethodExecutionHistoryTreeNode parent, Type type, String name) {
         this.name = name;

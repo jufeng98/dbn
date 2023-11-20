@@ -2,6 +2,7 @@ package com.dbn.execution.method.history.ui;
 
 import com.dbn.common.dispose.StatefulDisposable;
 import com.dbn.common.icon.Icons;
+import com.dbn.common.ui.tree.DBNTreeModel;
 import com.dbn.common.util.Strings;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.ConnectionId;
@@ -10,26 +11,22 @@ import com.dbn.execution.method.MethodExecutionInput;
 import com.dbn.object.DBMethod;
 import com.dbn.object.lookup.DBObjectRef;
 import com.dbn.object.type.DBObjectType;
-import lombok.Getter;
-import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+import java.util.Collections;
 import java.util.List;
 
 import static com.dbn.connection.ConnectionId.UNKNOWN;
 
-public abstract class MethodExecutionHistoryTreeModel extends DefaultTreeModel implements StatefulDisposable {
+public abstract class MethodExecutionHistoryTreeModel extends DBNTreeModel implements StatefulDisposable {
     protected List<MethodExecutionInput> executionInputs;
 
     MethodExecutionHistoryTreeModel(List<MethodExecutionInput> executionInputs) {
-        super(new DefaultMutableTreeNode());
+        super(new RootTreeNode());
         this.executionInputs = executionInputs;
-        setRoot(new RootTreeNode());
     }
 
     @Override
@@ -40,14 +37,12 @@ public abstract class MethodExecutionHistoryTreeModel extends DefaultTreeModel i
 
     public abstract List<MethodExecutionInput> getExecutionInputs();
 
-    protected abstract String getMethodName(MethodExecutionInput executionInput);
-
     public abstract TreePath getTreePath(MethodExecutionInput executionInput);
 
     /**********************************************************
      *                        TreeNodes                       *
      **********************************************************/
-    class RootTreeNode extends MethodExecutionHistoryTreeNode {
+    static class RootTreeNode extends MethodExecutionHistoryTreeNode {
         RootTreeNode() {
             super(null, Type.ROOT, "ROOT");
         }
@@ -65,7 +60,7 @@ public abstract class MethodExecutionHistoryTreeModel extends DefaultTreeModel i
         }
     }
 
-    protected class ConnectionTreeNode extends MethodExecutionHistoryTreeNode {
+    protected static class ConnectionTreeNode extends MethodExecutionHistoryTreeNode {
         ConnectionRef connection;
         ConnectionTreeNode(MethodExecutionHistoryTreeNode parent, MethodExecutionInput executionInput) {
             super(parent, Type.CONNECTION, null);
@@ -105,7 +100,7 @@ public abstract class MethodExecutionHistoryTreeModel extends DefaultTreeModel i
         }
     }
 
-    class SchemaTreeNode extends MethodExecutionHistoryTreeNode {
+    static class SchemaTreeNode extends MethodExecutionHistoryTreeNode {
         SchemaTreeNode(MethodExecutionHistoryTreeNode parent, MethodExecutionInput executionInput) {
             super(parent, Type.SCHEMA, executionInput.getMethodRef().getSchemaName());
         }
@@ -141,7 +136,7 @@ public abstract class MethodExecutionHistoryTreeModel extends DefaultTreeModel i
 
     }
 
-    class ProgramTreeNode extends MethodExecutionHistoryTreeNode {
+    static class ProgramTreeNode extends MethodExecutionHistoryTreeNode {
         ProgramTreeNode(MethodExecutionHistoryTreeNode parent, MethodExecutionInput executionInput) {
             super(parent,
                     getNodeType(MethodRefUtil.getProgramObjectType(executionInput.getMethodRef())),
@@ -163,13 +158,15 @@ public abstract class MethodExecutionHistoryTreeModel extends DefaultTreeModel i
         }
     }
 
-    protected class MethodTreeNode extends MethodExecutionHistoryTreeNode {
+    protected static class MethodTreeNode extends MethodExecutionHistoryTreeNode {
         private final MethodExecutionInput executionInput;
 
         MethodTreeNode(MethodExecutionHistoryTreeNode parent, MethodExecutionInput executionInput) {
             super(parent,
                     getNodeType(executionInput.getMethodRef().getObjectType()),
-                    getMethodName(executionInput));
+                    parent instanceof ProgramTreeNode ?
+                            executionInput.getMethodRef().getObjectName() :
+                            executionInput.getMethodRef().getQualifiedObjectName());
             this.executionInput = executionInput;
         }
 
@@ -187,16 +184,10 @@ public abstract class MethodExecutionHistoryTreeModel extends DefaultTreeModel i
         }
     }
 
-
-    /********************************************************
-     *                    Disposable                        *
-     ********************************************************/
-    @Getter
-    @Setter
-    private boolean disposed;
-
     @Override
     public void disposeInner() {
-        //executionInputs.clear();
+        super.disposeInner();
+        setRoot(new RootTreeNode());
+        executionInputs = Collections.emptyList();
     }
 }
