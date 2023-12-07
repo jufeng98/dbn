@@ -224,7 +224,7 @@ public abstract class IdentifierPsiElement extends LeafPsiElement<IdentifierElem
             underlyingObject.capture(getSignature(), () -> DBObjectRef.of(loadUnderlyingObject()));
             object = DBObjectRef.get(underlyingObject.get());
         }
-        return object;
+        return unwrap(object);
     }
 
     private Object getSignature() {
@@ -235,17 +235,15 @@ public abstract class IdentifierPsiElement extends LeafPsiElement<IdentifierElem
     private DBObject loadUnderlyingObject() {
         UnderlyingObjectResolver underlyingObjectResolver = getElementType().getUnderlyingObjectResolver();
         if (underlyingObjectResolver != null) {
-            DBObject underlyingObject = underlyingObjectResolver.resolve(this);
-            return unwrap(underlyingObject);
+            return underlyingObjectResolver.resolve(this);
         }
 
         IdentifierPsiElement originalElement = (IdentifierPsiElement) getOriginalElement();
         PsiElement psiReferenceElement = originalElement.resolve();
         if (psiReferenceElement != null && psiReferenceElement != this) {
             if (psiReferenceElement instanceof DBObjectPsiElement) {
-                DBObjectPsiElement underlyingObject = (DBObjectPsiElement) psiReferenceElement;
-                DBObject object = underlyingObject.getObject();
-                return object == null ? null : unwrap(object.getUndisposedEntity());
+                DBObjectPsiElement objectPsiElement = (DBObjectPsiElement) psiReferenceElement;
+                return objectPsiElement.getObject();
             }
 
             if (psiReferenceElement instanceof IdentifierPsiElement) {
@@ -255,14 +253,12 @@ public abstract class IdentifierPsiElement extends LeafPsiElement<IdentifierElem
         }
 
         if (isAlias() && isDefinition()) {
-            DBObject underlyingObject = AliasObjectResolver.getInstance().resolve(this);
-            return unwrap(underlyingObject);
+            return AliasObjectResolver.getInstance().resolve(this);
         }
 
         DBObject underlyingObject = SurroundingVirtualObjectResolver.getInstance().resolve(this);
-        if (underlyingObject != null) {
-            return underlyingObject;
-        }
+        if (underlyingObject != null) return underlyingObject;
+
         return null;
     }
 

@@ -20,19 +20,19 @@ public class CollectionUtil {
     }
 
     public static void clear(Collection<?> collection) {
-        if (collection != null && collection.size() > 0) {
-            try {
-                collection.clear();
-            } catch (UnsupportedOperationException ignore) {}
-        }
+        if (collection == null || collection.size() == 0) return;
+
+        try {
+            collection.clear();
+        } catch (UnsupportedOperationException ignore) {}
     }
 
     public static void clear(@Nullable Map<?, ?> map) {
-        if (map != null) {
-            try {
-                map.clear();
-            } catch (UnsupportedOperationException ignore) {}
-        }
+        if (map == null) return;
+
+        try {
+            map.clear();
+        } catch (UnsupportedOperationException ignore) {}
     }
 
 

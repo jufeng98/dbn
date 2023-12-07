@@ -1,8 +1,5 @@
 package com.dbn.language.common.psi;
 
-import com.dbn.language.common.psi.lookup.IdentifierLookupAdapter;
-import com.dbn.language.common.psi.lookup.LookupAdapters;
-import com.dbn.language.common.psi.lookup.PsiLookupAdapter;
 import com.dbn.common.consumer.SetCollector;
 import com.dbn.common.thread.Read;
 import com.dbn.common.util.Documents;
@@ -12,6 +9,9 @@ import com.dbn.connection.mapping.FileConnectionContextManager;
 import com.dbn.language.common.DBLanguageDialect;
 import com.dbn.language.common.element.ElementType;
 import com.dbn.language.common.element.util.ElementTypeAttribute;
+import com.dbn.language.common.psi.lookup.IdentifierLookupAdapter;
+import com.dbn.language.common.psi.lookup.LookupAdapters;
+import com.dbn.language.common.psi.lookup.PsiLookupAdapter;
 import com.dbn.object.DBSchema;
 import com.dbn.object.type.DBObjectType;
 import com.intellij.lang.Language;
@@ -43,9 +43,11 @@ public class PsiUtil {
         if (virtualFile == null) return null;
 
         FileConnectionContextManager contextManager = FileConnectionContextManager.getInstance(psiElement.getProject());
-        SchemaId schemaId = contextManager.getDatabaseSchema(virtualFile);
         ConnectionHandler connection = contextManager.getConnection(virtualFile);
-        if (schemaId == null || connection == null) return null;
+        if (connection == null) return null;
+
+        SchemaId schemaId = contextManager.getDatabaseSchema(virtualFile);
+        if (schemaId == null) return null;
 
         return connection.getSchema(schemaId);
     }
@@ -275,28 +277,31 @@ public class PsiUtil {
     @Nullable
     public static PsiElement getFirstLeaf(@NotNull PsiElement psiElement) {
         PsiElement childPsiElement = psiElement.getFirstChild();
-        if (childPsiElement == null) {
-            return psiElement;
-        } else if (ignore(childPsiElement)) {
-            return getNextLeaf(childPsiElement);
-        }
+        if (isNotValid(childPsiElement)) return psiElement;
+        if (ignore(childPsiElement)) return getNextLeaf(childPsiElement);
         return getFirstLeaf(childPsiElement);
     }
 
     @Nullable
     public static PsiElement getNextLeaf(@Nullable PsiElement psiElement) {
-        if (psiElement == null) {
-            return null;
-        } else {
-            PsiElement nextElement = psiElement.getNextSibling();
-            if (nextElement == null) {
-                return getNextLeaf(psiElement.getParent());
-            }
-            else if (ignore(nextElement)) {
-                return getNextLeaf(nextElement);
-            }
-            return getFirstLeaf(nextElement);
-        }
+        if (isNotValid(psiElement)) return null;
+
+        PsiElement nextElement = psiElement.getNextSibling();
+        if (nextElement == null) return getNextLeaf(psiElement.getParent());
+        if (ignore(nextElement)) return getNextLeaf(nextElement);
+
+        return getFirstLeaf(nextElement);
+    }
+
+    @Nullable
+    public static PsiFile getPsiFile(Editor editor) {
+        if (isNotValid(editor)) return null;
+
+        Project project = editor.getProject();
+        if (isNotValid(project)) return null;
+
+        Document document = editor.getDocument();
+        return getPsiFile(project, document);
     }
 
     @Nullable
