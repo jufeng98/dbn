@@ -97,7 +97,8 @@ public class OracleMessageParserInterface implements DatabaseMessageParserInterf
         String message = exception.getMessage();
         message = message.
             replaceAll("[\r\n]+", "\n").
-            replaceAll("\\nPL/SQL", " PL/SQL");
+            replaceAll("\\nPL/SQL", " PL/SQL").
+            replaceAll("\\nPLS-", " PLS-");
 
         String title = message;
         String detail = null;
