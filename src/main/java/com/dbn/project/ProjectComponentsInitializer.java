@@ -5,6 +5,7 @@ import com.dbn.common.component.ProjectComponentBase;
 import com.dbn.common.event.ProjectEvents;
 import com.dbn.connection.config.ConnectionBundleSettings;
 import com.dbn.connection.console.DatabaseConsoleManager;
+import com.dbn.connection.session.DatabaseSessionManager;
 import com.dbn.ddl.DDLFileAttachmentManager;
 import com.dbn.editor.DatabaseEditorStateManager;
 import com.dbn.editor.DatabaseFileEditorManager;
@@ -75,6 +76,7 @@ public class ProjectComponentsInitializer extends ProjectComponentBase implement
         DatabaseCompilerManager.getInstance(project);
         DDLFileAttachmentManager.getInstance(project);
         DatabaseLoaderManager.getInstance(project);
+        DatabaseSessionManager.getInstance(project);
         DatabaseFileEditorManager.getInstance(project);
         initialized = true;
     }
