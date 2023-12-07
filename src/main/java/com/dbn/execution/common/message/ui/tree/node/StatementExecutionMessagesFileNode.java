@@ -1,6 +1,6 @@
 package com.dbn.execution.common.message.ui.tree.node;
 
-import com.dbn.common.dispose.Failsafe;
+import com.dbn.common.file.VirtualFileRef;
 import com.dbn.common.ui.tree.TreeEventType;
 import com.dbn.common.ui.tree.Trees;
 import com.dbn.execution.common.message.ui.tree.MessagesTreeBundleNode;
@@ -12,17 +12,17 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.tree.TreePath;
 
 public class StatementExecutionMessagesFileNode extends MessagesTreeBundleNode<StatementExecutionMessagesNode, StatementExecutionMessageNode> {
-    private VirtualFile virtualFile;
+    private final VirtualFileRef file;
 
-    StatementExecutionMessagesFileNode(StatementExecutionMessagesNode parent, VirtualFile virtualFile) {
+    StatementExecutionMessagesFileNode(StatementExecutionMessagesNode parent, VirtualFile file) {
         super(parent);
-        this.virtualFile = virtualFile;
+        this.file = VirtualFileRef.of(file);
     }
 
     @NotNull
     @Override
-    public VirtualFile getVirtualFile() {
-        return Failsafe.nn(virtualFile);
+    public VirtualFile getFile() {
+        return VirtualFileRef.ensure(file);
     }
 
     TreePath addExecutionMessage(StatementExecutionMessage executionMessage) {

@@ -21,7 +21,7 @@ public class CompilerMessagesNode extends MessagesTreeBundleNode<MessagesTreeRoo
     @Nullable
     private MessagesTreeNode getChildTreeNode(VirtualFile virtualFile) {
         for (MessagesTreeNode messagesTreeNode : getChildren()) {
-            VirtualFile nodeVirtualFile = messagesTreeNode.getVirtualFile();
+            VirtualFile nodeVirtualFile = messagesTreeNode.getFile();
             if (nodeVirtualFile != null && nodeVirtualFile.equals(virtualFile)) {
                 return messagesTreeNode;
             }

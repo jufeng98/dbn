@@ -162,5 +162,16 @@ public final class VirtualFiles {
         }
         return null;
     }
+
+    @Nullable
+    public static String getPresentablePath(@Nullable VirtualFile file) {
+        if (file == null) return null;
+
+        if (file instanceof VirtualFilePathWrapper) {
+            VirtualFilePathWrapper databaseFile = (VirtualFilePathWrapper) file;
+            return databaseFile.getPresentablePath();
+        }
+        return file.getPath();
+    }
 }
 

@@ -13,8 +13,8 @@ public class ExplainPlanMessageNode extends MessagesTreeLeafNode<ExplainPlanMess
 
     @Nullable
     @Override
-    public VirtualFile getVirtualFile() {
-        return getParent().getVirtualFile();
+    public VirtualFile getFile() {
+        return getParent().getFile();
     }
 
     @Override

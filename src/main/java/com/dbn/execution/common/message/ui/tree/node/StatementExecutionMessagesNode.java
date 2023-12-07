@@ -8,6 +8,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.tree.TreePath;
+import java.util.Objects;
 
 public class StatementExecutionMessagesNode extends MessagesTreeBundleNode<MessagesTreeRootNode, StatementExecutionMessagesFileNode> {
     public StatementExecutionMessagesNode(MessagesTreeRootNode parent) {
@@ -15,9 +16,9 @@ public class StatementExecutionMessagesNode extends MessagesTreeBundleNode<Messa
     }
 
     @Nullable
-    private StatementExecutionMessagesFileNode getChildTreeNode(VirtualFile virtualFile) {
+    private StatementExecutionMessagesFileNode getChildTreeNode(VirtualFile file) {
         for (StatementExecutionMessagesFileNode messagesTreeNode : getChildren()) {
-            if (messagesTreeNode.getVirtualFile().equals(virtualFile)) {
+            if (Objects.equals(messagesTreeNode.getFile(), file)) {
                 return messagesTreeNode;
             }
         }
