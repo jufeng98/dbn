@@ -1,5 +1,7 @@
 package com.dbn.common.load;
 
+import com.intellij.openapi.application.Application;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import lombok.experimental.UtilityClass;
@@ -10,6 +12,9 @@ public final class ProgressMonitor {
 
     @Nullable
     public static ProgressIndicator getProgressIndicator() {
+        Application application = ApplicationManager.getApplication();
+        if (application == null) return null;
+
         return ProgressManager.getInstance().getProgressIndicator();
     }
 
@@ -47,11 +52,10 @@ public final class ProgressMonitor {
     }
 
     public static boolean isModal() {
-        ProgressIndicator progress = progress();
-        return progress != null && progress.isModal();
+        return progress().isModal();
     }
 
     public static boolean isProgress() {
-        return progress() != null;
+        return progress() != DevNullProgressIndicator.INSTANCE;
     }
 }
