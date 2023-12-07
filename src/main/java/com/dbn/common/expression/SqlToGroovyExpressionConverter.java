@@ -18,28 +18,29 @@ public class SqlToGroovyExpressionConverter {
         expression = expression.replaceAll("(?i)\\bIS\\s+NULL\\b", "== NULL");
         expression = expression.replaceAll("(?i)\\bIS\\s+NOT\\s+NULL\\b", "!= NULL");
 
-        expression = replaceEQUALS(expression);
-        expression = replaceIN(expression);
-        expression = replaceLIKE(expression);
+        expression = replace_EQUALS(expression);
+        expression = replace_LIKE(expression);
+        expression = replace_IN(expression);
 
         return expression;
     }
 
-    private static String replaceEQUALS(String expression) {
+    private static String replace_EQUALS(String expression) {
         Pattern pattern = Pattern.compile("(?<!([=<>!]))=(?!=)");
         Matcher matcher = pattern.matcher(expression);
         expression = matcher.replaceAll("==");
         return expression;
     }
 
-    private static String replaceIN(String expression) {
-        Pattern p = Pattern.compile("(\\w+)\\s+IN\\s+\\((.*?)\\)");
+    private static String replace_LIKE(String expression) {
+        Pattern p = Pattern.compile("(\\w+)\\s+LIKE\\s+'(%?)([^%]+)%'");
         Matcher m = p.matcher(expression);
-        StringBuilder result = new StringBuilder();
+        StringBuffer result = new StringBuffer();
         while (m.find()) {
-            String name = m.group(1);  // group with name
-            String values = m.group(2);      // group with values
-            String transformed = String.format("[%s].contains(%s)", values, name);
+            String name = m.group(1);
+            String suffix = m.group(2);
+            String value = m.group(3);
+            String transformed = String.format("%s.toLowerCase().indexOf('%s'.toLowerCase()) " + (suffix.isEmpty() ? "== 0" : "> 0"), name, value);
             m.appendReplacement(result, transformed);
         }
         m.appendTail(result);
@@ -47,15 +48,14 @@ public class SqlToGroovyExpressionConverter {
         return expression;
     }
 
-    private static String replaceLIKE(String expression) {
-        Pattern p = Pattern.compile("(\\w+)\\s+LIKE\\s+'(%?)([^%]+)%'");
+    private static String replace_IN(String expression) {
+        Pattern p = Pattern.compile("(\\w+)\\s+IN\\s+\\((.*?)\\)");
         Matcher m = p.matcher(expression);
-        StringBuilder result = new StringBuilder();
+        StringBuffer result = new StringBuffer(); // Java 8 compatibility
         while (m.find()) {
             String name = m.group(1);
-            String suffix = m.group(2);
-            String value = m.group(3);
-            String transformed = String.format("%s.toLowerCase().indexOf('%s'.toLowerCase()) " + (suffix.isEmpty() ? "== 0" : "> 0"), name, value);
+            String values = m.group(2);
+            String transformed = String.format("[%s].contains(%s)", values, name);
             m.appendReplacement(result, transformed);
         }
         m.appendTail(result);
