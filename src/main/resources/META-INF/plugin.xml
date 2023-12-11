@@ -6,6 +6,7 @@
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
     <depends optional="true" config-file="dbn-java-support.xml">com.intellij.modules.java</depends>
+    <depends optional="true" config-file="dbn-copyright-support.xml">com.intellij.copyright</depends>
     <vendor email="dancioca@bluewin.ch">Dan Cioca</vendor>
     <idea-version since-build="200.0001" until-build="233.*"/>
     <description><![CDATA[
