@@ -686,8 +686,8 @@
         <syntaxHighlighter key="DBN-SQL" factoryClass="com.dbn.language.common.DBSyntaxHighlighterProvider"/>
         <syntaxHighlighter key="DBN-PSQL" factoryClass="com.dbn.language.common.DBSyntaxHighlighterProvider"/>
 
-        <lang.syntaxHighlighterFactory key="DBN-SQL" language="DBN-SQL" implementationClass="com.dbn.language.common.DBSyntaxHighlighterFactory"/>
-        <lang.syntaxHighlighterFactory key="DBN-PSQL" language="DBN-PSQL" implementationClass="com.dbn.language.common.DBSyntaxHighlighterFactory"/>
+        <lang.syntaxHighlighterFactory language="DBN-SQL" implementationClass="com.dbn.language.common.DBSyntaxHighlighterFactory"/>
+        <lang.syntaxHighlighterFactory language="DBN-PSQL" implementationClass="com.dbn.language.common.DBSyntaxHighlighterFactory"/>
 
         <codeStyleSettingsProvider implementation="com.dbn.code.sql.style.options.SQLCodeStyleSettingsProvider"/>
         <codeStyleSettingsProvider implementation="com.dbn.code.psql.style.options.PSQLCodeStyleSettingsProvider"/>
@@ -744,10 +744,14 @@
         <editorTabColorProvider order="first" implementation="com.dbn.editor.DBEditorTabColorProvider"/>
 
         <errorHandler implementation="com.dbn.error.jira.JiraIssueReportSubmitter"/>
-        <liveTemplateContext implementation="com.dbn.language.sql.template.SQLTemplateContextType"/>
-        <liveTemplateContext implementation="com.dbn.language.psql.template.PSQLTemplateContextType"/>
+        <liveTemplateContext implementation="com.dbn.language.sql.template.SQLTemplateContextType" contextId="SQL"/>
+        <liveTemplateContext implementation="com.dbn.language.psql.template.PSQLTemplateContextType" contextId="PSQL"/>
+        <defaultLiveTemplates file="com/dbn/language/sql/template/default.xml"/>
+        <defaultLiveTemplates file="com/dbn/language/psql/template/default.xml"/>
+<!--
         <defaultLiveTemplatesProvider implementation="com.dbn.language.sql.template.SQLTemplateProvider"/>
         <defaultLiveTemplatesProvider implementation="com.dbn.language.psql.template.PSQLTemplateProvider"/>
+-->
 
         <fileEditorProvider implementation="com.dbn.editor.code.SourceCodeEditorProvider"/>
         <fileEditorProvider implementation="com.dbn.editor.code.SourceCodeBodyEditorProvider"/>
