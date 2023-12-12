@@ -5,6 +5,7 @@ import com.dbn.common.component.EagerService;
 import com.dbn.common.component.PersistentState;
 import com.dbn.common.file.FileTypeService;
 import com.dbn.common.options.setting.Settings;
+import com.dbn.common.util.UUIDs;
 import com.dbn.diagnostics.Diagnostics;
 import com.dbn.plugin.DBNPluginStateListener;
 import com.dbn.plugin.PluginConflictManager;
@@ -18,6 +19,7 @@ import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.extensions.ExtensionsArea;
 import com.intellij.openapi.extensions.PluginId;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
@@ -28,6 +30,7 @@ import java.util.Objects;
 import static com.dbn.common.component.Components.applicationService;
 
 @Slf4j
+@Getter
 @State(
     name = DatabaseNavigator.COMPONENT_NAME,
     storages = @Storage(DatabaseNavigator.STORAGE_FILE)
@@ -38,6 +41,8 @@ public class DatabaseNavigator extends ApplicationComponentBase implements Persi
 
     public static final PluginId SQL_PLUGIN_ID = PluginId.getId("com.intellij.database");
     public static final PluginId DBN_PLUGIN_ID = PluginId.getId("DBN");
+
+    private String clientId = UUIDs.compact();
     /*static {
         Extensions.getRootArea().
                 getExtensionPoint(CodeStyleSettingsProvider.EXTENSION_POINT_NAME).
@@ -88,6 +93,7 @@ public class DatabaseNavigator extends ApplicationComponentBase implements Persi
         Element element = new Element("state");
         Element diagnosticsElement = Settings.newElement(element, "diagnostics");
         Diagnostics.writeState(diagnosticsElement);
+        Settings.setString(element, "client-id", clientId);
         return element;
     }
 
@@ -95,6 +101,8 @@ public class DatabaseNavigator extends ApplicationComponentBase implements Persi
     public void loadComponentState(@NotNull Element element) {
         Element diagnosticsElement = element.getChild("diagnostics");
         Diagnostics.readState(diagnosticsElement);
+        clientId = Settings.getString(element, "client-id", clientId);
+
     }
 }
 

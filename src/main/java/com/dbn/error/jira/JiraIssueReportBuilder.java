@@ -1,5 +1,6 @@
 package com.dbn.error.jira;
 
+import com.dbn.DatabaseNavigator;
 import com.dbn.common.util.Strings;
 import com.dbn.connection.ConnectionBundle;
 import com.dbn.connection.ConnectionHandler;
@@ -50,6 +51,7 @@ public class JiraIssueReportBuilder implements IssueReportBuilder {
         report.setIdeVersion(ApplicationInfo.getInstance().getBuild().asString());
         report.setJavaVersion(System.getProperty("java.version"));
         report.setPluginVersion(report.getPlugin().getVersion());
+        report.setClientId(DatabaseNavigator.getInstance().getClientId());
     }
 
     private static void initDatabaseInfo(IssueReport report) {
@@ -102,6 +104,7 @@ public class JiraIssueReportBuilder implements IssueReportBuilder {
         addEnvironmentInfo(description, "Database Version", report.getDatabaseVersion());
         addEnvironmentInfo(description, "Database Driver", report.getDatabaseDriver());
         addEnvironmentInfo(description, "Last Action Id", report.getLastActionId());
+        addEnvironmentInfo(description, "Client Id", report.getClientId());
     }
 
     private static void buildAdditionalInfo(IssueReport report, StringBuilder description) {

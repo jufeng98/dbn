@@ -30,6 +30,7 @@ public class IssueReport {
 
     String summary;
     String description;
+    String clientId;
     
     public IssueReport(
             Project project,
