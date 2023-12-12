@@ -1,8 +1,8 @@
 package com.dbn.common.locale.options.ui;
 
-import com.dbn.common.icon.Icons;
 import com.dbn.common.color.Colors;
 import com.dbn.common.event.ProjectEvents;
+import com.dbn.common.icon.Icons;
 import com.dbn.common.locale.DBDateFormat;
 import com.dbn.common.locale.DBNumberFormat;
 import com.dbn.common.locale.Formatter;
@@ -29,6 +29,7 @@ import java.awt.event.ItemListener;
 import java.util.Date;
 import java.util.Locale;
 
+import static com.dbn.common.ui.util.ComboBoxes.initComboBox;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 
 public class RegionalSettingsEditorForm extends ConfigurationEditorForm<RegionalSettings> {
@@ -59,13 +60,12 @@ public class RegionalSettingsEditorForm extends ConfigurationEditorForm<Regional
         previewPanel.setBorder(Borders.COMPONENT_OUTLINE_BORDER);
         previewPanel.setBackground(Colors.getLighterPanelBackground());
         errorLabel.setVisible(false);
-        localeComboBox.setValues(LocaleOption.ALL);
-
-        numberFormatComboBox.setValues(
+        initComboBox(localeComboBox, LocaleOption.ALL);
+        initComboBox(numberFormatComboBox,
                 DBNumberFormat.UNGROUPED,
                 DBNumberFormat.GROUPED);
 
-        dateFormatComboBox.setValues(
+        initComboBox(dateFormatComboBox,
                 DBDateFormat.SHORT,
                 DBDateFormat.MEDIUM,
                 DBDateFormat.LONG,

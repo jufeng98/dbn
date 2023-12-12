@@ -42,11 +42,11 @@ public final class Colors {
     }
 
     public static Color getTextFieldBackground() {
-        return cached(2, () -> UIUtil.getTableBackground());
+        return cached(2, () -> UIUtil.getTextFieldBackground());
     }
 
     public static Color getTextFieldForeground() {
-        return cached(3, () -> UIUtil.getTableForeground());
+        return cached(3, () -> UIUtil.getTextFieldForeground());
     }
 
     public static Color getTableBackground() {
