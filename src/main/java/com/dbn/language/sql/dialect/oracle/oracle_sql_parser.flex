@@ -2,7 +2,9 @@ package com.dbn.language.sql.dialect.oracle;
 
 import com.dbn.language.common.DBLanguageDialectIdentifier;
 import com.dbn.language.common.TokenTypeBundle;
-import com.dbn.language.sql.dialect.oracle.OraclePLSQLBlockMonitor;import com.intellij.psi.tree.IElementType;
+import com.dbn.language.common.lexer.DBLanguageCompoundLexerBase;
+import com.dbn.language.sql.dialect.oracle.OraclePLSQLBlockMonitor;
+import com.intellij.psi.tree.IElementType;
 
 import static com.dbn.language.sql.dialect.oracle.OraclePLSQLBlockMonitor.Marker;
 
@@ -21,22 +23,22 @@ import static com.dbn.language.sql.dialect.oracle.OraclePLSQLBlockMonitor.Marker
 %{
     private final OraclePLSQLBlockMonitor pbm = new OraclePLSQLBlockMonitor(this, YYINITIAL, PSQL_BLOCK);
 
-        public OracleSQLParserFlexLexer(TokenTypeBundle tt) {
-            super(tt, DBLanguageDialectIdentifier.ORACLE_PLSQL);
-        }
+    public OracleSQLParserFlexLexer(TokenTypeBundle tt) {
+        super(tt, DBLanguageDialectIdentifier.ORACLE_PLSQL);
+    }
 
-        public void setTokenStart(int tokenStart) {
-            zzStartRead = tokenStart;
-        }
+    public void setTokenStart(int tokenStart) {
+        zzStartRead = tokenStart;
+    }
 
-        public int getCurrentPosition() {
-            return zzCurrentPos;
-        }
+    public int getCurrentPosition() {
+        return zzCurrentPos;
+    }
 
-        public String getCurrentToken() {
-            return ((String) zzBuffer).substring(zzStartRead, zzMarkedPos);
-        }
-    %}
+    public String getCurrentToken() {
+        return ((String) zzBuffer).substring(zzStartRead, zzMarkedPos);
+    }
+%}
 
 
 %include ../../../common/lexer/shared_elements.flext
