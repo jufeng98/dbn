@@ -1,16 +1,17 @@
 package com.dbn.language.common.element.impl;
 
-import com.dbn.language.common.element.parser.BranchCheck;
-import com.dbn.language.common.psi.SequencePsiElement;
 import com.dbn.common.util.Commons;
 import com.dbn.common.util.Strings;
 import com.dbn.language.common.element.ElementType;
 import com.dbn.language.common.element.ElementTypeBundle;
 import com.dbn.language.common.element.cache.OneOfElementTypeLookupCache;
+import com.dbn.language.common.element.parser.BranchCheck;
 import com.dbn.language.common.element.parser.impl.OneOfElementTypeParser;
 import com.dbn.language.common.element.util.ElementTypeDefinitionException;
+import com.dbn.language.common.psi.SequencePsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
+import lombok.Getter;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,6 +23,7 @@ import java.util.Set;
 import static com.dbn.common.options.setting.Settings.stringAttribute;
 import static com.dbn.common.util.Unsafe.cast;
 
+@Getter
 public final class OneOfElementType extends ElementTypeBase {
     private ElementTypeRef[] children;
     private boolean sortable;
@@ -130,10 +132,6 @@ public final class OneOfElementType extends ElementTypeBase {
         int i2 = o2.getLookupCache().startsWithIdentifier() ? 1 : 2;
         return i2-i1;
     };
-
-    public ElementTypeRef[] getChildren() {
-        return children;
-    }
 
     public ElementTypeRef getFirstChild() {
         return children[0];

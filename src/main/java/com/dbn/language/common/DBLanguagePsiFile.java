@@ -1,10 +1,5 @@
 package com.dbn.language.common;
 
-import com.dbn.language.common.element.cache.ElementLookupContext;
-import com.dbn.language.common.psi.BasePsiElement;
-import com.dbn.language.common.psi.PsiUtil;
-import com.dbn.language.common.psi.lookup.LookupAdapters;
-import com.dbn.language.common.psi.lookup.PsiLookupAdapter;
 import com.dbn.common.dispose.StatefulDisposable;
 import com.dbn.common.dispose.UnlistedDisposable;
 import com.dbn.common.environment.EnvironmentType;
@@ -12,7 +7,6 @@ import com.dbn.common.thread.Read;
 import com.dbn.common.ui.Presentable;
 import com.dbn.common.util.Commons;
 import com.dbn.common.util.Editors;
-import com.dbn.common.util.Lists;
 import com.dbn.common.util.SlowOps;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.SchemaId;
@@ -21,7 +15,12 @@ import com.dbn.connection.mapping.FileConnectionContextManager;
 import com.dbn.connection.session.DatabaseSession;
 import com.dbn.ddl.DDLFileAttachmentManager;
 import com.dbn.language.common.element.ElementTypeBundle;
+import com.dbn.language.common.element.cache.ElementLookupContext;
 import com.dbn.language.common.element.util.ElementTypeAttribute;
+import com.dbn.language.common.psi.BasePsiElement;
+import com.dbn.language.common.psi.PsiUtil;
+import com.dbn.language.common.psi.lookup.LookupAdapters;
+import com.dbn.language.common.psi.lookup.PsiLookupAdapter;
 import com.dbn.language.sql.SQLLanguage;
 import com.dbn.object.common.DBObject;
 import com.dbn.object.common.DBObjectPsiCache;
@@ -46,8 +45,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.PsiFileImpl;
-import com.intellij.psi.impl.source.tree.LeafPsiElement;
-import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.testFramework.LightVirtualFile;
 import lombok.Getter;
@@ -57,9 +54,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import static com.dbn.common.dispose.Failsafe.guarded;
@@ -447,51 +442,5 @@ public abstract class DBLanguagePsiFile extends PsiFileImpl implements DatabaseC
     public EnvironmentType getEnvironmentType() {
         ConnectionHandler connection = getConnection();
         return connection == null ? EnvironmentType.DEFAULT :  connection.getEnvironmentType();
-    }
-
-    public int countErrors() {
-        List<PsiErrorElement> errors = new ArrayList<>();
-        PsiElementVisitor visitor = new PsiRecursiveElementVisitor() {
-            @Override
-            public void visitElement(@NotNull PsiElement element) {
-                if (element instanceof PsiErrorElement) {
-                    if (Lists.noneMatch(errors, error -> error.getTextOffset() == element.getTextOffset())) {
-                        errors.add((PsiErrorElement) element);
-                    }
-
-                }
-                super.visitElement(element);
-
-            }
-        };;
-        visitor.visitFile(this);
-        return errors.size();
-    }
-
-    public int countWarnings() {
-        AtomicInteger count = new AtomicInteger();
-        PsiElementVisitor visitor = new PsiRecursiveElementVisitor() {
-            @Override
-            public void visitElement(@NotNull PsiElement element) {
-                if (element instanceof PsiWhiteSpace || element instanceof PsiComment) {
-                    // ignore
-                } else if (element instanceof LeafPsiElement && element.getParent() instanceof DBLanguagePsiFile) {
-                    LeafPsiElement leafPsiElement = (LeafPsiElement) element;
-                    IElementType elementType = leafPsiElement.getElementType();
-                    if (elementType instanceof com.dbn.language.common.TokenType) {
-                        com.dbn.language.common.TokenType tokenType = (TokenType) elementType;
-
-                        if (!tokenType.isCharacter() && !tokenType.isChameleon()) {
-                            count.incrementAndGet();
-                        }
-                    }
-
-                } else{
-                    super.visitElement(element);
-                }
-            }
-        };;
-        visitor.visitFile(this);
-        return count.get();
     }
 }
