@@ -6458,7 +6458,7 @@
 
     <element-def attributes="DATA_DEFINITION, SPECIFIC" description="DROP LIBRARY statement" id="drop_library">
         <token id="03665" type-id="KW_LIBRARY" />
-        <token id="03666" original-name="library_name" type-id="IDENTIFIER" />
+        <object-ref id="03666" type="LIBRARY" original-name="library_name"/>
     </element-def>
 
 
