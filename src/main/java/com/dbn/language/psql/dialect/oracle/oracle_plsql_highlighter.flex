@@ -1,6 +1,7 @@
 package com.dbn.language.psql.dialect.oracle;
 
 import com.dbn.language.common.TokenTypeBundle;
+import com.dbn.language.common.lexer.DBLanguageLexerBase;
 import com.intellij.psi.tree.IElementType;
 
 %%

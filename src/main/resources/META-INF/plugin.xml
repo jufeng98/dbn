@@ -1,11 +1,12 @@
 <idea-plugin url="https://plugins.jetbrains.com/plugin/1800-database-navigator">
     <name>Database Navigator</name>
     <id>DBN</id>
-    <version>3.4.2299.1</version>
+    <version>3.4.2411.1</version>
     <category>Database</category>
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
     <depends optional="true" config-file="dbn-java-support.xml">com.intellij.modules.java</depends>
+    <depends optional="true" config-file="dbn-copyright-support.xml">com.intellij.copyright</depends>
     <vendor email="dancioca@bluewin.ch">Dan Cioca</vendor>
     <idea-version since-build="181.0001" until-build="199.*"/>
     <description><![CDATA[
@@ -29,6 +30,13 @@
     ]]></description>
     <change-notes><![CDATA[
         <ul>
+            <li><b>3.4.2411</b>
+            <ul>
+                <li>Copyright support for SQL / PLSQL source code
+                <li>Oracle SQL - support for LIBRARY ddl statements
+                <li>IDE freezing issues - background operations
+                <li>Bug fixes
+            </ul>
             <li><b>3.4.2299</b>
             <ul>
                 <li>Fixed SQLite connectivity issues with certain system locales
@@ -687,8 +695,8 @@
         <syntaxHighlighter key="DBN-SQL" factoryClass="com.dbn.language.common.DBSyntaxHighlighterProvider"/>
         <syntaxHighlighter key="DBN-PSQL" factoryClass="com.dbn.language.common.DBSyntaxHighlighterProvider"/>
 
-        <lang.syntaxHighlighterFactory key="DBN-SQL" language="DBN-SQL" implementationClass="com.dbn.language.common.DBSyntaxHighlighterFactory"/>
-        <lang.syntaxHighlighterFactory key="DBN-PSQL" language="DBN-PSQL" implementationClass="com.dbn.language.common.DBSyntaxHighlighterFactory"/>
+        <lang.syntaxHighlighterFactory language="DBN-SQL" implementationClass="com.dbn.language.common.DBSyntaxHighlighterFactory"/>
+        <lang.syntaxHighlighterFactory language="DBN-PSQL" implementationClass="com.dbn.language.common.DBSyntaxHighlighterFactory"/>
 
         <codeStyleSettingsProvider implementation="com.dbn.code.sql.style.options.SQLCodeStyleSettingsProvider"/>
         <codeStyleSettingsProvider implementation="com.dbn.code.psql.style.options.PSQLCodeStyleSettingsProvider"/>
@@ -745,10 +753,14 @@
         <editorTabColorProvider order="first" implementation="com.dbn.editor.DBEditorTabColorProvider"/>
 
         <errorHandler implementation="com.dbn.error.jira.JiraIssueReportSubmitter"/>
-        <liveTemplateContext implementation="com.dbn.language.sql.template.SQLTemplateContextType"/>
-        <liveTemplateContext implementation="com.dbn.language.psql.template.PSQLTemplateContextType"/>
+        <liveTemplateContext implementation="com.dbn.language.sql.template.SQLTemplateContextType" contextId="SQL"/>
+        <liveTemplateContext implementation="com.dbn.language.psql.template.PSQLTemplateContextType" contextId="PSQL"/>
+        <defaultLiveTemplates file="com/dbn/language/sql/template/default.xml"/>
+        <defaultLiveTemplates file="com/dbn/language/psql/template/default.xml"/>
+<!--
         <defaultLiveTemplatesProvider implementation="com.dbn.language.sql.template.SQLTemplateProvider"/>
         <defaultLiveTemplatesProvider implementation="com.dbn.language.psql.template.PSQLTemplateProvider"/>
+-->
 
         <fileEditorProvider implementation="com.dbn.editor.code.SourceCodeEditorProvider"/>
         <fileEditorProvider implementation="com.dbn.editor.code.SourceCodeBodyEditorProvider"/>

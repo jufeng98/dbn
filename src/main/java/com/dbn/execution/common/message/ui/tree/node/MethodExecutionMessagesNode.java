@@ -1,9 +1,9 @@
 package com.dbn.execution.common.message.ui.tree.node;
 
 import com.dbn.common.ui.tree.TreeEventType;
-import com.dbn.execution.method.MethodExecutionMessage;
 import com.dbn.execution.common.message.ui.tree.MessagesTreeBundleNode;
 import com.dbn.execution.common.message.ui.tree.MessagesTreeRootNode;
+import com.dbn.execution.method.MethodExecutionMessage;
 import com.dbn.vfs.file.DBEditableObjectVirtualFile;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.Nullable;
@@ -17,7 +17,7 @@ public class MethodExecutionMessagesNode extends MessagesTreeBundleNode<Messages
 
     private MethodExecutionMessagesObjectNode getChildTreeNode(VirtualFile virtualFile) {
         for (MethodExecutionMessagesObjectNode messagesTreeNode : getChildren()) {
-            if (messagesTreeNode.getVirtualFile().equals(virtualFile)) {
+            if (messagesTreeNode.getFile().equals(virtualFile)) {
                 return messagesTreeNode;
             }
         }

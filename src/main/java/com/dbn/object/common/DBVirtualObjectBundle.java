@@ -10,7 +10,6 @@ import com.dbn.data.type.DBDataTypeBundle;
 import com.dbn.data.type.DBNativeDataType;
 import com.dbn.database.DatabaseObjectIdentifier;
 import com.dbn.object.*;
-import com.dbn.object.*;
 import com.dbn.object.common.list.DBObjectList;
 import com.dbn.object.common.list.DBObjectListContainer;
 import com.dbn.object.type.DBObjectType;
@@ -169,6 +168,10 @@ public class DBVirtualObjectBundle extends StatefulDisposableBase implements DBO
         return null;
     }
 
+    @Override
+    public DBObjectInitializer getObjectInitializer() {
+        return null;
+    }
 
     @Override
     public <T extends DBObject> DBObjectList<T> getObjectList(DBObjectType objectType) {

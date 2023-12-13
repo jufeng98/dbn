@@ -26,7 +26,7 @@ import static com.dbn.common.util.Lists.first;
 @Getter
 public class DatabaseSessionBundle extends StatefulDisposableBase implements Disposable{
     private final ConnectionRef connection;
-    private DatabaseSession mainSession;
+    private final DatabaseSession mainSession;
     private DatabaseSession debugSession;
     private DatabaseSession debuggerSession;
     private DatabaseSession poolSession;
@@ -79,10 +79,6 @@ public class DatabaseSessionBundle extends StatefulDisposableBase implements Dis
         return nn(mainSession);
     }
 
-    public DatabaseSession getPoolSession() {
-        return poolSession;
-    }
-
     @Nullable
     public DatabaseSession getSession(String name) {
         return first(sessions, session -> Objects.equals(session.getName(), name));
@@ -113,14 +109,17 @@ public class DatabaseSessionBundle extends StatefulDisposableBase implements Dis
 
     void deleteSession(SessionId id) {
         DatabaseSession session = getSession(id);
+        if (session.getConnectionType() != ConnectionType.SESSION) return;
+
+        sessions.remove(session);
         rebuildIndex();
     }
 
     void renameSession(String oldName, String newName) {
         DatabaseSession session = getSession(oldName);
-        if (session != null) {
-            session.setName(newName);
-        }
+        if (session == null) return;
+
+        session.setName(newName);
     }
 
     @Override

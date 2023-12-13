@@ -10,6 +10,7 @@ import com.dbn.connection.config.ConnectionDetailSettings;
 import com.dbn.editor.DBContentType;
 import com.dbn.object.DBConsole;
 import com.dbn.object.common.DBObject;
+import com.dbn.object.common.DBObjectBundle;
 import com.dbn.object.common.DBSchemaObject;
 import com.dbn.object.common.list.DBObjectList;
 import com.dbn.object.lookup.DBObjectRef;
@@ -35,6 +36,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.dbn.common.dispose.Checks.isNotValid;
+import static com.dbn.common.thread.ThreadMonitor.isTimeSensitiveThread;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 import static com.dbn.vfs.DatabaseFileSystem.FilePathType.*;
 
@@ -145,7 +147,6 @@ public class DatabaseFileSystem extends VirtualFileSystem implements /*NonPhysic
             String objectIdentifier = OBJECTS.collate(relativePath);
             DBObjectRef<DBSchemaObject> objectRef = new DBObjectRef<>(connectionId, objectIdentifier);
             DBEditableObjectVirtualFile databaseFile = findOrCreateDatabaseFile(project, objectRef);
-
             return databaseFile;
 
         } else if (OBJECT_CONTENTS.is(relativePath)) {
@@ -157,6 +158,7 @@ public class DatabaseFileSystem extends VirtualFileSystem implements /*NonPhysic
             String objectIdentifier = contentIdentifier.substring(contentTypeEndIndex + 1);
             DBObjectRef<DBSchemaObject> objectRef = new DBObjectRef<>(connectionId, objectIdentifier);
             DBEditableObjectVirtualFile virtualFile = findOrCreateDatabaseFile(project, objectRef);
+            if (virtualFile == null) return null;
             return virtualFile.getContentFile(contentType);
         }
 
@@ -235,13 +237,22 @@ public class DatabaseFileSystem extends VirtualFileSystem implements /*NonPhysic
         return filesCache.get(objectRef);
     }
 
-    @NotNull
+    @Nullable
     public DBEditableObjectVirtualFile findOrCreateDatabaseFile(@NotNull DBObject object) {
-        DBObjectRef objectRef = object.ref();
-        return filesCache.computeIfAbsent(objectRef, ref -> new DBEditableObjectVirtualFile(ref.getProject(), ref));
+        return findOrCreateDatabaseFile(object.getProject(), object.ref());
     }
 
+    @Nullable
     public DBEditableObjectVirtualFile findOrCreateDatabaseFile(@NotNull Project project, @NotNull DBObjectRef<?> ref) {
+        ConnectionHandler connection = ref.getConnection();
+        if (isNotValid(connection)) return null;
+
+        DBObject object = ref.value();
+        if (isNotValid(object) && isTimeSensitiveThread()) {
+            DBObjectBundle objectBundle = connection.getObjectBundle();
+            objectBundle.getObjectInitializer().initObject(ref);
+            return null;
+        }
         return filesCache.computeIfAbsent(ref, r -> new DBEditableObjectVirtualFile(project, r));
     }
 

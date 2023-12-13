@@ -1,31 +1,34 @@
 package com.dbn.object.common.ui;
 
+import com.dbn.common.ui.tree.DBNTreeModel;
+import com.dbn.common.ui.tree.DBNTreeNode;
 import com.dbn.object.DBSchema;
 import com.dbn.object.common.DBObject;
 import com.dbn.object.type.DBObjectType;
+import lombok.Getter;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class ObjectTreeModel extends DefaultTreeModel {
+@Getter
+public class ObjectTreeModel extends DBNTreeModel {
     private TreePath initialSelection;
     private Object[] elements;
 
     public ObjectTreeModel(DBSchema schema, Set<DBObjectType> objectTypes, DBObject selectedObject) {
-        super(new DefaultMutableTreeNode(schema == null ? "No schema selected" : schema.ref()));
+        super(new DBNTreeNode(schema == null ? "No schema selected" : schema.ref()));
         if (schema == null) return;
 
 
-        DefaultMutableTreeNode rootNode = getRoot();
+        DBNTreeNode rootNode = getRoot();
 
         for (DBObjectType objectType : objectTypes) {
             for (DBObject schemaObject :schema.collectChildObjects(objectType)) {
-                DefaultMutableTreeNode objectNode = new DefaultMutableTreeNode(schemaObject.ref());
+                DefaultMutableTreeNode objectNode = new DBNTreeNode(schemaObject.ref());
                 rootNode.add(objectNode);
                 if (selectedObject != null && selectedObject.equals(schemaObject)) {
                     initialSelection = new TreePath(objectNode.getPath());
@@ -34,33 +37,27 @@ public class ObjectTreeModel extends DefaultTreeModel {
         }
 
         for (DBObjectType schemaObjectType : schema.getObjectType().getChildren()) {
-            if (hasChild(schemaObjectType, objectTypes)) {
-                for (DBObject schemaObject : schema.collectChildObjects(schemaObjectType)) {
-                    DefaultMutableTreeNode bundleNode = new DefaultMutableTreeNode(schemaObject.ref());
+            if (!hasChild(schemaObjectType, objectTypes)) continue;
 
-                    List<DBObject> objects = new ArrayList<>();
-                    for (DBObjectType objectType : objectTypes) {
-                        objects.addAll(schemaObject.collectChildObjects(objectType));
-                    }
+            for (DBObject schemaObject : schema.collectChildObjects(schemaObjectType)) {
+                DefaultMutableTreeNode bundleNode = new DBNTreeNode(schemaObject.ref());
 
-                    if (objects.size() > 0) {
-                        rootNode.add(bundleNode);
-                        for (DBObject object : objects) {
-                            DefaultMutableTreeNode objectNode = new DefaultMutableTreeNode(object.ref());
-                            bundleNode.add(objectNode);
-                            if (selectedObject != null && selectedObject.equals(object)) {
-                                initialSelection = new TreePath(objectNode.getPath());
-                            }
+                List<DBObject> objects = new ArrayList<>();
+                for (DBObjectType objectType : objectTypes) {
+                    objects.addAll(schemaObject.collectChildObjects(objectType));
+                }
+                if (objects.isEmpty()) continue;
 
-                        }
+                rootNode.add(bundleNode);
+                for (DBObject object : objects) {
+                    DefaultMutableTreeNode objectNode = new DBNTreeNode(object.ref());
+                    bundleNode.add(objectNode);
+                    if (selectedObject != null && selectedObject.equals(object)) {
+                        initialSelection = new TreePath(objectNode.getPath());
                     }
                 }
             }
         }
-    }
-
-    public TreePath getInitialSelection() {
-        return initialSelection;
     }
 
     private boolean hasChild(DBObjectType parentObjectType, Set<DBObjectType> objectTypes) {
@@ -73,8 +70,8 @@ public class ObjectTreeModel extends DefaultTreeModel {
     }
 
     @Override
-    public DefaultMutableTreeNode getRoot() {
-        return (DefaultMutableTreeNode) super.getRoot();
+    public DBNTreeNode getRoot() {
+        return (DBNTreeNode) super.getRoot();
     }
 
     public Object[] getAllElements() {
@@ -92,5 +89,11 @@ public class ObjectTreeModel extends DefaultTreeModel {
             TreeNode childNode = node.getChildAt(i);
             collect(childNode, bucket);
         }
+    }
+
+    @Override
+    public void disposeInner() {
+        super.disposeInner();
+        elements = new Object[0];
     }
 }

@@ -1,14 +1,22 @@
 package com.dbn.connection.config.tns;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.regex.Pattern;
 
 public class TnsProfilePattern {
     public static TnsProfilePattern INSTANCE = new TnsProfilePattern();
 
-    private final Pattern pattern;
+    private Pattern pattern;
 
     private TnsProfilePattern() {
-        String value = "[A-Z0-9._]+";
+        pattern = initPattern();
+    }
+
+    @NotNull
+    private Pattern initPattern() {
+        // TODO support full TNS syntax (https://docs.oracle.com/en/database/oracle/oracle-database/19/netrf/local-naming-parameters-in-tns-ora-file.html#GUID-7F967CE5-5498-427C-9390-4A5C6767ADAA)
+        String value = "[A-Z0-9._-]+";
         String any =          keyValue("[_A-Z]+",      value);
 
         String community1 =   keyValue("COMMUNITY", group("community1", value));
@@ -31,6 +39,10 @@ public class TnsProfilePattern {
         String address2 =     keyValue("ADDRESS",     iteration(block(oneOf(community2, protocol2, host2, port2, any))));
         String address3 =     keyValue("ADDRESS",     iteration(block(oneOf(community3, protocol3, host3, port3, any))));
 
+        String retryCount =   keyValue("RETRY_COUNT", group("retrycount", value));
+        String retryDelay =   keyValue("RETRY_DELAY", group("retrydelay", value));
+        String security =     keyValue("SECURITY",    iteration(block(any)));
+
 
         String sid =          keyValue("SID",          group("sid", value));
         String server =       keyValue("SERVER",       group("server", value));
@@ -40,15 +52,15 @@ public class TnsProfilePattern {
         String type =         keyValue("TYPE",         group("failovertype", value));
         String method =       keyValue("METHOD",       group("failovermethod", value));
 
-        String sdu =          keyValue("FAILOVER",      group("sdu", value));
+        String sdu =          keyValue("SDU",           group("sdu", value));
         String failover =     keyValue("FAILOVER",      group("failover", value));
         String failoverMode = keyValue("FAILOVER_MODE", iteration(block(oneOf(type, method, any))));
         String addressList =  keyValue("ADDRESS_LIST",  iteration(block(address3)));
         String connectData =  keyValue("CONNECT_DATA",  iteration(block(oneOf(sid, server, serviceName, globalName, failoverMode, any))));
-        String description =  keyValue("DESCRIPTION",   iteration(block(oneOf(sdu, failover, address2, addressList, connectData))));
+        String description =  keyValue("DESCRIPTION",   iteration(block(oneOf(sdu, security, retryCount, retryDelay, failover, address2, addressList, connectData))));
         String block =        keyValue(group("schema", value), group("descriptor", block(oneOf(address1, description))));
 
-        pattern = Pattern.compile(block, Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+        return Pattern.compile(block, Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
     }
 
     public Pattern get() {

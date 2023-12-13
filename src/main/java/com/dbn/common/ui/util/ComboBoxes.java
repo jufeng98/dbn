@@ -1,11 +1,15 @@
 package com.dbn.common.ui.util;
 
 import com.dbn.common.ui.Presentable;
+import com.dbn.common.ui.misc.DBNComboBoxModel;
 import com.intellij.ui.ColoredListCellRenderer;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 public class ComboBoxes {
     public static void addItems(JComboBox comboBox, Iterable items) {
@@ -25,7 +29,8 @@ public class ComboBoxes {
     }
 
     public static <T extends Presentable> void initComboBox(JComboBox<T> comboBox, Collection<T> options) {
-        DefaultComboBoxModel<T> model = new DefaultComboBoxModel<>(new Vector<>(options));
+        DBNComboBoxModel<T> model = new DBNComboBoxModel<>();
+        model.getItems().addAll(options);
         comboBox.setModel(model);
         comboBox.setRenderer(new ColoredListCellRenderer<T>() {
             @Override

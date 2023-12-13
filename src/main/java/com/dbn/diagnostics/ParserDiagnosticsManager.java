@@ -14,6 +14,7 @@ import com.dbn.common.util.Lists;
 import com.dbn.diagnostics.data.DiagnosticCategory;
 import com.dbn.diagnostics.data.ParserDiagnosticsFilter;
 import com.dbn.diagnostics.data.ParserDiagnosticsResult;
+import com.dbn.diagnostics.data.ParserDiagnosticsUtil;
 import com.dbn.diagnostics.ui.ParserDiagnosticsForm;
 import com.dbn.language.common.DBLanguageFileType;
 import com.dbn.language.common.DBLanguagePsiFile;
@@ -88,8 +89,8 @@ public class ParserDiagnosticsManager extends ProjectComponentBase implements Pe
                 if (psiFile == null) {
                     result.addEntry(filePath, 1, 0);
                 } else {
-                    int errors = Read.call(psiFile, f -> f.countErrors());
-                    int warnings = Read.call(psiFile, f -> f.countWarnings());
+                    int errors = Read.call(psiFile, f -> ParserDiagnosticsUtil.countErrors(f));
+                    int warnings = Read.call(psiFile, f -> ParserDiagnosticsUtil.countWarnings(f));
                     if (errors > 0 || warnings > 0) {
                         result.addEntry(filePath, errors, warnings);
                     }
@@ -199,10 +200,6 @@ public class ParserDiagnosticsManager extends ProjectComponentBase implements Pe
     public void deleteResult(@NotNull ParserDiagnosticsResult selectedResult) {
         resultHistory.remove(selectedResult);
         indexResults();
-    }
-
-    public void setResultFilter(ParserDiagnosticsFilter filter) {
-        this.resultFilter = filter;
     }
 
     private void indexResults() {

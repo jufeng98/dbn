@@ -7,7 +7,6 @@ import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.Resources;
 import com.dbn.connection.SchemaId;
 import com.dbn.connection.SessionId;
-import com.dbn.connection.jdbc.DBNCallableStatement;
 import com.dbn.connection.jdbc.DBNConnection;
 import com.dbn.connection.jdbc.DBNPreparedStatement;
 import com.dbn.data.type.DBDataType;
@@ -154,7 +153,7 @@ public abstract class MethodExecutionProcessorImpl implements MethodExecutionPro
 
     private void initParameters(MethodExecutionContext context) throws SQLException {
         MethodExecutionInput executionInput = context.getInput();
-        DBNCallableStatement statement = context.getStatement();
+        DBNPreparedStatement statement = context.getStatement();
         bindParameters(executionInput, statement);
     }
 

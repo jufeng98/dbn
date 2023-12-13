@@ -76,7 +76,7 @@ public abstract class BasePsiElement<T extends ElementType> extends ASTWrapperPs
     private static final WeakRefCache<BasePsiElement, DBVirtualObject> underlyingObjectCache = WeakRefCache.weakKey();
     private static final WeakRefCache<BasePsiElement, FormattingAttributes> formattingAttributesCache = WeakRefCache.weakKey();
     private static final WeakRefCache<BasePsiElement, BasePsiElement> enclosingScopePsiElements = WeakRefCache.weakKeyValue();
-    private static final Set<String> supportedVisitors = new HashSet<>(Arrays.asList("SpellCheckingInspection"));
+    private static final Set<String> supportedVisitors = new HashSet<>(Arrays.asList("SpellCheckingInspection", "ParserDiagnosticsUtil"));
 
     private T elementType;
 

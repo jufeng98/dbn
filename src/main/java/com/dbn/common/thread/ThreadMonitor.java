@@ -140,7 +140,15 @@ public class ThreadMonitor {
     }
 
     public static boolean isTimeSensitiveThread() {
-        return isDispatchThread() || isWriteActionThread() || isReadActionThread();
+        if (isDispatchThread()) return true;
+        if (isWriteActionThread()) return true;
+        if (isReadActionThread()) return true;
+
+        if (isBackgroundProcess()) return false;
+        if (isTimeoutProcess()) return false;
+        if (isProgressProcess()) return isModalProcess();
+
+        return true;
     }
 
     public static int getProcessCount(ThreadProperty property) {

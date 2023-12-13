@@ -19,7 +19,7 @@ public interface MessagesTreeNode<P extends MessagesTreeNode, C extends Messages
     }
 
     @Nullable
-    default VirtualFile getVirtualFile() {return null;}
+    default VirtualFile getFile() {return null;}
 
     default List<C> getChildren() {return Collections.emptyList();}
 

@@ -4,14 +4,15 @@ import com.dbn.common.thread.Dispatch;
 import com.dbn.common.thread.Progress;
 import com.dbn.common.ui.form.DBNFormBase;
 import com.dbn.common.ui.tree.DBNTree;
+import com.dbn.common.ui.tree.DBNTreeNode;
 import com.dbn.common.ui.util.UserInterface;
 import com.dbn.common.util.Actions;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.execution.method.MethodExecutionManager;
+import com.dbn.execution.method.browser.MethodBrowserSettings;
 import com.dbn.execution.method.browser.action.ConnectionSelectDropdownAction;
 import com.dbn.execution.method.browser.action.ObjectTypeToggleAction;
 import com.dbn.execution.method.browser.action.SchemaSelectDropdownAction;
-import com.dbn.execution.method.browser.MethodBrowserSettings;
 import com.dbn.object.DBMethod;
 import com.dbn.object.DBSchema;
 import com.dbn.object.common.DBObject;
@@ -27,6 +28,8 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
+
+import static com.dbn.common.dispose.Failsafe.nd;
 
 public class MethodExecutionBrowserForm extends DBNFormBase {
 
@@ -78,6 +81,8 @@ public class MethodExecutionBrowserForm extends DBNFormBase {
         MethodBrowserSettings settings = getSettings();
         if (settings.getSelectedSchema() != schema) {
             settings.setSelectedSchema(schema);
+            DBNTreeNode root = (DBNTreeNode) methodsTree.getModel().getRoot();
+            root.setUserObject("Loading...");
             updateTree();
         }
     }
@@ -88,15 +93,15 @@ public class MethodExecutionBrowserForm extends DBNFormBase {
 
     DBMethod getSelectedMethod() {
         TreePath selectionPath = methodsTree.getSelectionPath();
-        if (selectionPath != null) {
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectionPath.getLastPathComponent();
-            Object userObject = node.getUserObject();
-            if (userObject instanceof DBObjectRef) {
-                DBObjectRef<?> objectRef = (DBObjectRef<?>) userObject;
-                DBObject object = DBObjectRef.get(objectRef);
-                if (object instanceof DBMethod) {
-                    return (DBMethod) object;
-                }
+        if (selectionPath == null) return null;
+
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectionPath.getLastPathComponent();
+        Object userObject = node.getUserObject();
+        if (userObject instanceof DBObjectRef) {
+            DBObjectRef<?> objectRef = (DBObjectRef<?>) userObject;
+            DBObject object = DBObjectRef.get(objectRef);
+            if (object instanceof DBMethod) {
+                return (DBMethod) object;
             }
         }
         return null;
@@ -109,10 +114,10 @@ public class MethodExecutionBrowserForm extends DBNFormBase {
                 progress -> {
                     MethodBrowserSettings settings = getSettings();
                     ObjectTreeModel model = new ObjectTreeModel(settings.getSelectedSchema(), settings.getVisibleObjectTypes(), null);
-                    Dispatch.run(() -> {
-                        methodsTree.setModel(model);
-                        UserInterface.repaint(methodsTree);
-                    });
+                    DBNTree methodsTree = nd(this.methodsTree);
+
+                    Dispatch.run(() -> methodsTree.setModel(model));
+                    UserInterface.repaint(methodsTree);
                 });
     }
 

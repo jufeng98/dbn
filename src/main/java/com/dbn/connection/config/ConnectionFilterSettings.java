@@ -35,7 +35,6 @@ public class ConnectionFilterSettings extends CompositeProjectConfiguration<Conn
     private boolean hidePseudoColumns = false;
     private boolean hideAuditColumns = false;
 
-    private transient final ConnectionSettings connectionSettings;
     private transient final Latent<Filter<DBSchema>> schemaFilter = Latent.mutable(
             () -> hideEmptySchemas,
             () -> loadSchemaFilter());
@@ -74,14 +73,13 @@ public class ConnectionFilterSettings extends CompositeProjectConfiguration<Conn
     }
 
     ConnectionFilterSettings(ConnectionSettings connectionSettings) {
-        super(connectionSettings.getProject());
-        this.connectionSettings = connectionSettings;
-        objectTypeFilterSettings = new ObjectTypeFilterSettings(this, getConnectionId());
-        objectNameFilterSettings = new ObjectNameFilterSettings(this, getConnectionId());
+        super(connectionSettings);
+        objectTypeFilterSettings = new ObjectTypeFilterSettings(this, connectionSettings.getConnectionId());
+        objectNameFilterSettings = new ObjectNameFilterSettings(this, connectionSettings.getConnectionId());
     }
 
     public ConnectionId getConnectionId() {
-        return connectionSettings.getConnectionId();
+        return ensureParent().getConnectionId();
     }
 
     @Override

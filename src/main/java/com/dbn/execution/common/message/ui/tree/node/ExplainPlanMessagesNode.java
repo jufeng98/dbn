@@ -17,7 +17,7 @@ public class ExplainPlanMessagesNode extends MessagesTreeBundleNode<MessagesTree
     @Nullable
     private ExplainPlanMessagesFileNode getChildTreeNode(VirtualFile virtualFile) {
         for (ExplainPlanMessagesFileNode messagesTreeNode : getChildren()) {
-            if (virtualFile.equals(messagesTreeNode.getVirtualFile())) {
+            if (virtualFile.equals(messagesTreeNode.getFile())) {
                 return messagesTreeNode;
             }
         }

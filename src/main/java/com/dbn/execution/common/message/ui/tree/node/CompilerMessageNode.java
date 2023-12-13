@@ -13,7 +13,7 @@ public class CompilerMessageNode extends MessagesTreeLeafNode<CompilerMessagesOb
 
     @Nullable
     @Override
-    public DBContentVirtualFile getVirtualFile() {
+    public DBContentVirtualFile getFile() {
         return getMessage().getContentFile();
     }
 

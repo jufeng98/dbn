@@ -54,28 +54,28 @@ public class CodeCompletionProvider extends CompletionProvider<CompletionParamet
             @NotNull ProcessingContext processingContext,
             @NotNull CompletionResultSet result) {
         PsiFile originalFile = parameters.getOriginalFile();
-        if (originalFile instanceof DBLanguagePsiFile) {
-            DBLanguagePsiFile file = (DBLanguagePsiFile) originalFile;
+        if (!(originalFile instanceof DBLanguagePsiFile)) return;
 
-            int caretOffset = parameters.getOffset();
-            PsiElement elementAtCaret = file.findElementAt(caretOffset);
-            if (elementAtCaret instanceof PsiComment) return;
+        DBLanguagePsiFile file = (DBLanguagePsiFile) originalFile;
 
-            LeafPsiElement leafAtCaret = caretOffset == 0 ? null : PsiUtil.lookupLeafAtOffset(file, caretOffset-1);
-            LeafPsiElement leafBeforeCaret = leafAtCaret == null || leafAtCaret.isCharacterToken() ?
-                    PsiUtil.lookupLeafBeforeOffset(file, caretOffset) :
-                    PsiUtil.lookupLeafBeforeOffset(file, leafAtCaret.getTextOffset());
+        int caretOffset = parameters.getOffset();
+        PsiElement elementAtCaret = file.findElementAt(caretOffset);
+        if (elementAtCaret instanceof PsiComment) return;
 
-            if (!shouldAddCompletions(leafAtCaret, leafBeforeCaret)) return;
+        LeafPsiElement leafAtCaret = caretOffset == 0 ? null : PsiUtil.lookupLeafAtOffset(file, caretOffset-1);
+        LeafPsiElement leafBeforeCaret = leafAtCaret == null || leafAtCaret.isCharacterToken() ?
+                PsiUtil.lookupLeafBeforeOffset(file, caretOffset) :
+                PsiUtil.lookupLeafBeforeOffset(file, leafAtCaret.getTextOffset());
+
+        if (!shouldAddCompletions(leafAtCaret, leafBeforeCaret)) return;
 
 
-            CodeCompletionContext context = new CodeCompletionContext(file, parameters, result);
-            int invocationCount = parameters.getInvocationCount();
-            if (invocationCount > 1) context.setExtended(true);
+        CodeCompletionContext context = new CodeCompletionContext(file, parameters, result);
+        int invocationCount = parameters.getInvocationCount();
+        if (invocationCount > 1) context.setExtended(true);
 
-            CodeCompletionLookupConsumer consumer = new CodeCompletionLookupConsumer(context);
-            collectCompletionVariants(consumer, leafBeforeCaret);
-        }
+        CodeCompletionLookupConsumer consumer = new CodeCompletionLookupConsumer(context);
+        collectCompletionVariants(consumer, leafBeforeCaret);
     }
 
     private boolean shouldAddCompletions(LeafPsiElement leafAtOffset, LeafPsiElement leafBeforeCaret) {
@@ -356,7 +356,7 @@ public class CodeCompletionProvider extends CompletionProvider<CompletionParamet
                     DBSchema currentSchema = PsiUtil.getDatabaseSchema(sourceScope);
                     objectBundle.lookupChildObjectsOfType(
                             consumer,
-                            parentObject.getUndisposedEntity(),
+                            parentObject,
                             objectType,
                             filter,
                             currentSchema);

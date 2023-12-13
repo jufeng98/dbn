@@ -1,8 +1,11 @@
 package com.dbn.connection.config.ui;
 
+import com.dbn.common.dispose.StatefulDisposable;
 import com.dbn.connection.config.ConnectionBundleSettings;
 import com.dbn.connection.config.ConnectionSettings;
 import com.dbn.data.sorting.SortDirection;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -10,7 +13,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-public class ConnectionListModel extends DefaultListModel<ConnectionSettings> {
+@Getter
+@Setter
+public class ConnectionListModel extends DefaultListModel<ConnectionSettings> implements StatefulDisposable {
+    private static final Comparator<ConnectionSettings> ASC_COMPARATOR = Comparator.comparing(s -> s.getDatabaseSettings().getName());
+    private static final Comparator<ConnectionSettings> DESC_COMPARATOR = (s1, s2) -> -s1.getDatabaseSettings().getName().compareTo(s2.getDatabaseSettings().getName());
+
+    private boolean disposed;
+
     public ConnectionListModel(ConnectionBundleSettings connectionBundleSettings) {
         List<ConnectionSettings> connections = connectionBundleSettings.getConnections();
         for (ConnectionSettings connection : connections) {
@@ -46,6 +56,8 @@ public class ConnectionListModel extends DefaultListModel<ConnectionSettings> {
         }
     }
 
-    private static final Comparator<ConnectionSettings> ASC_COMPARATOR = Comparator.comparing(s -> s.getDatabaseSettings().getName());
-    private static final Comparator<ConnectionSettings> DESC_COMPARATOR = (s1, s2) -> -s1.getDatabaseSettings().getName().compareTo(s2.getDatabaseSettings().getName());
+    @Override
+    public void disposeInner() {
+        removeAllElements();
+    }
 }

@@ -5,20 +5,25 @@ import com.dbn.code.common.completion.options.filter.CodeCompletionFilterSetting
 import javax.swing.tree.DefaultTreeModel;
 
 public class CodeCompletionFilterTreeModel extends DefaultTreeModel {
-    private CodeCompletionFilterTreeNode root;
 
     public CodeCompletionFilterTreeModel(CodeCompletionFilterSettings setup) {
         super(setup.createCheckedTreeNode());
-        root = (CodeCompletionFilterTreeNode) getRoot();
+    }
+
+    @Override
+    public CodeCompletionFilterTreeNode getRoot() {
+        return (CodeCompletionFilterTreeNode) super.getRoot();
     }
 
     public void applyChanges() {
-        root.applyChanges();
+        getRoot().applyChanges();
     }
 
     public void resetChanges() {
-        root.resetChanges();        
+        getRoot().resetChanges();
     }
+
+
 /*
     public Object getChild(Object o, int i) {
         CheckedTreeNode node = (CheckedTreeNode) o;

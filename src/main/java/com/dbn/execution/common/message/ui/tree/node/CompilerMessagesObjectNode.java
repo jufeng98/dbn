@@ -23,7 +23,7 @@ public class CompilerMessagesObjectNode extends MessagesTreeBundleNode<CompilerM
 
     @Override
     @Nullable
-    public DBEditableObjectVirtualFile getVirtualFile() {
+    public DBEditableObjectVirtualFile getFile() {
         DBSchemaObject schemaObject = getObject();
         if (schemaObject != null) {
             return schemaObject.getEditableVirtualFile();

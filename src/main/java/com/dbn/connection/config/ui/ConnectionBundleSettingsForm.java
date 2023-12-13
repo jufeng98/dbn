@@ -5,6 +5,7 @@ import com.dbn.common.clipboard.Clipboard;
 import com.dbn.common.color.Colors;
 import com.dbn.common.database.DatabaseInfo;
 import com.dbn.common.dispose.DisposableContainers;
+import com.dbn.common.dispose.Disposer;
 import com.dbn.common.options.ui.ConfigurationEditorForm;
 import com.dbn.common.ui.util.Fonts;
 import com.dbn.common.util.Actions;
@@ -74,7 +75,8 @@ public class ConnectionBundleSettingsForm extends ConfigurationEditorForm<Connec
 
     public ConnectionBundleSettingsForm(ConnectionBundleSettings configuration) {
         super(configuration);
-        connectionsList = new JBList<>(new ConnectionListModel(configuration));
+        ConnectionListModel connectionListModel = new ConnectionListModel(configuration);
+        connectionsList = new JBList<>(connectionListModel);
         connectionsList.addListSelectionListener(this);
         connectionsList.setCellRenderer(new ConnectionConfigListCellRenderer());
         connectionsList.setFont(Fonts.getLabelFont());
@@ -94,6 +96,7 @@ public class ConnectionBundleSettingsForm extends ConfigurationEditorForm<Connec
         connectionSetupPanel.setPreferredSize(new Dimension(500, -1));
         connectionSetupPanel.add(emptyPanel, BLANK_PANEL_ID);
 
+        Disposer.register(this, connectionListModel);
         //DataProviders.register(mainPanel, this);
     }
 

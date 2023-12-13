@@ -42,11 +42,6 @@ public class MethodExecutionHistoryGroupedTreeModel extends MethodExecutionHisto
     }
 
     @Override
-    protected String getMethodName(MethodExecutionInput executionInput) {
-        return executionInput.getMethodRef().getObjectName();
-    }
-
-    @Override
     public TreePath getTreePath(MethodExecutionInput executionInput) {
         List<MethodExecutionHistoryTreeNode> path = new ArrayList<>();
         RootTreeNode root = getRoot();

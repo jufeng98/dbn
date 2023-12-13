@@ -1,13 +1,17 @@
 package com.dbn.common.ui.misc;
 
-import com.dbn.common.ui.util.Listeners;
 import com.dbn.common.ui.Presentable;
+import com.dbn.common.ui.util.Listeners;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.swing.*;
 import javax.swing.event.ListDataListener;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 public class DBNComboBoxModel<T extends Presentable> implements MutableComboBoxModel<T> {
     private final Listeners<ListDataListener> listDataListeners = Listeners.create();
     private final List<T> items = new ArrayList<>();
@@ -38,8 +42,8 @@ public class DBNComboBoxModel<T extends Presentable> implements MutableComboBoxM
     }
 
     @Override
-    public void setSelectedItem(Object anItem) {
-        selectedItem = (T) anItem;
+    public void setSelectedItem(Object selectedItem) {
+        this.selectedItem = (T) selectedItem;
     }
 
     @Override
@@ -65,10 +69,6 @@ public class DBNComboBoxModel<T extends Presentable> implements MutableComboBoxM
     @Override
     public void removeListDataListener(ListDataListener l) {
         listDataListeners.remove(l);
-    }
-
-    public List<T> getItems() {
-        return items;
     }
 
     public boolean containsItem(T item) {

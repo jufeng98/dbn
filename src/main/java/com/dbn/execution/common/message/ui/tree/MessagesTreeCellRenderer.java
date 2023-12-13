@@ -24,6 +24,7 @@ import com.intellij.util.ui.UIUtil;
 import javax.swing.*;
 import java.awt.*;
 
+import static com.dbn.common.file.util.VirtualFiles.getPresentablePath;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 
 public class MessagesTreeCellRenderer extends DBNColoredTreeCellRenderer {
@@ -58,19 +59,19 @@ public class MessagesTreeCellRenderer extends DBNColoredTreeCellRenderer {
             }
             else if (value instanceof StatementExecutionMessagesFileNode){
                 StatementExecutionMessagesFileNode node = (StatementExecutionMessagesFileNode) value;
-                VirtualFile virtualFile = node.getVirtualFile();
+                VirtualFile file = node.getFile();
 
-                icon = VirtualFiles.getIcon(virtualFile);
-                append(virtualFile.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
-                append(" (" + virtualFile.getPath() + ")", SimpleTextAttributes.GRAY_ATTRIBUTES);
+                icon = VirtualFiles.getIcon(file);
+                append(file.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
+                append(" (" + getPresentablePath(file) + ")", SimpleTextAttributes.GRAY_ATTRIBUTES);
             }
             else if (value instanceof ExplainPlanMessagesFileNode) {
                 ExplainPlanMessagesFileNode node = (ExplainPlanMessagesFileNode) value;
-                VirtualFile virtualFile = node.getVirtualFile();
+                VirtualFile file = node.getFile();
 
-                icon = VirtualFiles.getIcon(virtualFile);
-                append(virtualFile.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
-                append(" (" + virtualFile.getPath() + ")", SimpleTextAttributes.GRAY_ATTRIBUTES);
+                icon = VirtualFiles.getIcon(file);
+                append(file.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
+                append(" (" + getPresentablePath(file) + ")", SimpleTextAttributes.GRAY_ATTRIBUTES);
 
             }
             else if (value instanceof CompilerMessagesObjectNode){
