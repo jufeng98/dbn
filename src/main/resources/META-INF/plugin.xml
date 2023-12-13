@@ -1,7 +1,7 @@
 <idea-plugin url="https://plugins.jetbrains.com/plugin/1800-database-navigator">
     <name>Database Navigator</name>
     <id>DBN</id>
-    <version>3.4.2299.0</version>
+    <version>3.4.2411.0</version>
     <category>Database</category>
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
@@ -30,6 +30,13 @@
     ]]></description>
     <change-notes><![CDATA[
         <ul>
+            <li><b>3.4.2411</b>
+            <ul>
+                <li>Copyright support for SQL / PLSQL source code
+                <li>Oracle SQL - support for LIBRARY ddl statements
+                <li>IDE freezing issues - background operations
+                <li>Bug fixes
+            </ul>
             <li><b>3.4.2299</b>
             <ul>
                 <li>Fixed SQLite connectivity issues with certain system locales
