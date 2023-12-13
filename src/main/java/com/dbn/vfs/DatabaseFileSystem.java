@@ -36,6 +36,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.dbn.common.dispose.Checks.isNotValid;
+import static com.dbn.common.thread.ThreadMonitor.isTimeSensitiveThread;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 import static com.dbn.vfs.DatabaseFileSystem.FilePathType.*;
 
