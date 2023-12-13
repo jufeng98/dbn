@@ -150,6 +150,8 @@ public class DatabaseFileEditorManager extends ProjectComponentBase {
         object.makeEditorReady();
 
         DBEditableObjectVirtualFile databaseFile = getFileSystem().findOrCreateDatabaseFile(object);
+        if (isNotValid(databaseFile)) return;
+
         EditorProviderId editorProviderId = handle.getEditorProviderId();
         databaseFile.setSelectedEditorProviderId(editorProviderId);
 
@@ -177,6 +179,7 @@ public class DatabaseFileEditorManager extends ProjectComponentBase {
         schemaObject.makeEditorReady();
 
         DBEditableObjectVirtualFile databaseFile = getFileSystem().findOrCreateDatabaseFile(schemaObject);
+        if (isNotValid(databaseFile)) return;
 
         Project project = schemaObject.getProject();
         SourceCodeManager sourceCodeManager = SourceCodeManager.getInstance(project);
@@ -302,8 +305,10 @@ public class DatabaseFileEditorManager extends ProjectComponentBase {
 
     public void reopenEditor(DBSchemaObject object) {
         Project project = object.getProject();
-        FileEditorManager editorManager = FileEditorManager.getInstance(project);
         VirtualFile virtualFile = getFileSystem().findOrCreateDatabaseFile(object);
+        if (isNotValid(virtualFile)) return;
+
+        FileEditorManager editorManager = FileEditorManager.getInstance(project);
         if (!editorManager.isFileOpen(virtualFile)) return;
 
         editorManager.closeFile(virtualFile);

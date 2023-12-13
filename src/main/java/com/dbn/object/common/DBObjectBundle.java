@@ -8,7 +8,6 @@ import com.dbn.data.type.DBDataTypeBundle;
 import com.dbn.data.type.DBNativeDataType;
 import com.dbn.database.DatabaseObjectIdentifier;
 import com.dbn.object.*;
-import com.dbn.object.*;
 import com.dbn.object.common.list.DBObjectList;
 import com.dbn.object.common.list.DBObjectListContainer;
 import com.dbn.object.type.DBObjectType;
@@ -83,6 +82,8 @@ public interface DBObjectBundle extends BrowserTreeNode, StatefulDisposable {
     void lookupChildObjectsOfType(Consumer<? super DBObject> consumer, DBObject parentObject, DBObjectType objectType, ObjectTypeFilter filter, DBSchema currentSchema);
 
     DBObjectListContainer getObjectLists();
+
+    DBObjectInitializer getObjectInitializer();
 
     <T extends DBObject> DBObjectList<T> getObjectList(DBObjectType objectType);
 

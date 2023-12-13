@@ -9,7 +9,6 @@ import com.dbn.browser.ui.HtmlToolTipBuilder;
 import com.dbn.common.content.DynamicContent;
 import com.dbn.common.content.DynamicContentType;
 import com.dbn.common.dispose.Disposer;
-import com.dbn.common.dispose.Failsafe;
 import com.dbn.common.dispose.StatefulDisposableBase;
 import com.dbn.common.event.ProjectEvents;
 import com.dbn.common.filter.Filter;
@@ -50,6 +49,7 @@ import java.util.*;
 import static com.dbn.browser.DatabaseBrowserUtils.treeVisibilityChanged;
 import static com.dbn.common.content.DynamicContentProperty.GROUPED;
 import static com.dbn.common.dispose.Failsafe.nd;
+import static com.dbn.common.dispose.Failsafe.nn;
 import static com.dbn.common.util.Commons.nvl;
 import static com.dbn.object.type.DBObjectRelationType.*;
 import static com.dbn.object.type.DBObjectType.*;
@@ -73,6 +73,7 @@ public class DBObjectBundleImpl extends StatefulDisposableBase implements DBObje
     private final DBDataTypeBundle dataTypes;
 
     private final DBObjectListContainer objectLists;
+    private final DBObjectInitializer objectInitializer;
     private final long configSignature;
     private final Latent<PsiFile> fakeObjectFile = Latent.basic(() -> createFakePsiFile());
 
@@ -84,6 +85,7 @@ public class DBObjectBundleImpl extends StatefulDisposableBase implements DBObje
         this.configSignature = connection.getSettings().getDatabaseSettings().getSignature();
 
         this.objectLists = new DBObjectListContainer(this);
+        this.objectInitializer = new DBObjectInitializer(connection);
         this.consoles = objectLists.createObjectList(CONSOLE, this);
         this.users = objectLists.createObjectList(USER, this);
         this.schemas = objectLists.createObjectList(SCHEMA, this);
@@ -192,7 +194,7 @@ public class DBObjectBundleImpl extends StatefulDisposableBase implements DBObje
 
     @Override
     public List<DBSchema> getSchemas() {
-        return Failsafe.nn(schemas).getAllElements();
+        return nn(schemas).getAllElements();
     }
 
     @Override
@@ -244,7 +246,7 @@ public class DBObjectBundleImpl extends StatefulDisposableBase implements DBObje
     @Override
     @Nullable
     public DBSchema getSchema(String name) {
-        return Failsafe.nn(schemas).getObject(name);
+        return nn(schemas).getObject(name);
     }
 
     @Override
@@ -606,7 +608,12 @@ public class DBObjectBundleImpl extends StatefulDisposableBase implements DBObje
 
     @Override
     public DBObjectListContainer getObjectLists() {
-        return Failsafe.nn(objectLists);
+        return nn(objectLists);
+    }
+
+    @Override
+    public DBObjectInitializer getObjectInitializer() {
+        return nn(objectInitializer);
     }
 
     @Override
