@@ -4108,7 +4108,7 @@
                 <token id="02041" type-id="KW_WHEN" />
                 <element ref-id="boolean_expression" />
                 <token id="02042" type-id="KW_THEN" />
-                <element original-name="return_expr" ref-id="expression" />
+                <element original-name="return_expr" ref-id="boolean_expression" />
             </sequence>
         </iteration>
     </element-def>
@@ -4118,13 +4118,13 @@
                 <token id="02045" type-id="KW_WHEN" />
                 <element ref-id="boolean_expression" />
                 <token id="02046" type-id="KW_THEN" />
-                <element original-name="return_expr" ref-id="expression" />
+                <element original-name="return_expr" ref-id="boolean_expression" />
             </sequence>
         </iteration>
     </element-def>
     <element-def description="ELSE clause" id="else_clause">
         <token id="02047" type-id="KW_ELSE" />
-        <element original-name="else_expr" ref-id="expression" />
+        <element original-name="else_expr" ref-id="boolean_expression" />
     </element-def>
     <element-def description="Simple expression" id="simple_expression">
         <one-of id="02048">
