@@ -4,13 +4,12 @@ import com.dbn.common.dispose.Failsafe;
 import com.dbn.common.util.Measured;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.application.ex.ApplicationEx;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.ThrowableComputable;
 import lombok.experimental.UtilityClass;
-
-import static com.dbn.common.dispose.Failsafe.guarded;
-import static com.intellij.openapi.command.WriteCommandAction.writeCommandAction;
 
 @UtilityClass
 public final class Write {
@@ -37,5 +36,9 @@ public final class Write {
                 application.invokeAndWait(() -> run(project, runnable), modalityState);
             });
         }
+    }
+
+    public static <T, E extends Throwable> T compute(ThrowableComputable<T, E> computable) throws E {
+        return WriteAction.compute(computable);
     }
 }

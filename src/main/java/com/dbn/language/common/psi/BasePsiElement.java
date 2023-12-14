@@ -60,14 +60,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import static com.dbn.common.Reflection.getEnclosingClass;
-import static com.dbn.common.Reflection.getSimpleClassName;
 import static com.dbn.common.util.Unsafe.cast;
 
 @Getter

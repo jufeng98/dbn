@@ -1,9 +1,5 @@
 package com.dbn.ddl;
 
-import com.dbn.ddl.options.DDLFileSettings;
-import com.dbn.ddl.ui.AttachDDLFileDialog;
-import com.dbn.ddl.ui.DDLFileNameListCellRenderer;
-import com.dbn.ddl.ui.DetachDDLFileDialog;
 import com.dbn.DatabaseNavigator;
 import com.dbn.common.component.PersistentState;
 import com.dbn.common.component.ProjectComponentBase;
@@ -15,6 +11,7 @@ import com.dbn.common.file.util.VirtualFiles;
 import com.dbn.common.thread.Background;
 import com.dbn.common.thread.Dispatch;
 import com.dbn.common.thread.Progress;
+import com.dbn.common.thread.Write;
 import com.dbn.common.ui.util.Lists;
 import com.dbn.common.util.Dialogs;
 import com.dbn.common.util.Dialogs.DialogCallback;
@@ -24,6 +21,10 @@ import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.ConnectionId;
 import com.dbn.connection.config.ConnectionConfigListener;
 import com.dbn.connection.mapping.FileConnectionContextManager;
+import com.dbn.ddl.options.DDLFileSettings;
+import com.dbn.ddl.ui.AttachDDLFileDialog;
+import com.dbn.ddl.ui.DDLFileNameListCellRenderer;
+import com.dbn.ddl.ui.DetachDDLFileDialog;
 import com.dbn.editor.DBContentType;
 import com.dbn.editor.DatabaseFileEditorManager;
 import com.dbn.editor.code.SourceCodeEditor;
@@ -315,7 +316,7 @@ public class DDLFileAttachmentManager extends ProjectComponentBase implements Pe
                 DBSchemaObject object = objectRef.ensure();
 
                 try {
-                    VirtualFile virtualFile = parentDirectory.createChildData(this, fileName);
+                    VirtualFile virtualFile = Write.compute(() -> parentDirectory.createChildData(this, fileName));
                     attachDDLFile(objectRef, virtualFile);
                     DBEditableObjectVirtualFile editableObjectFile = object.getEditableVirtualFile();
                     updateDDLFiles(editableObjectFile);
