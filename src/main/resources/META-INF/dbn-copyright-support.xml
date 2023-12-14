@@ -1,6 +1,6 @@
 <idea-plugin>
     <extensions defaultExtensionNs="com.intellij.copyright">
-        <updater filetype="DBN-SQL" implementationClass="com.maddyhome.idea.copyright.psi.UpdateAnyFileCopyright$Provider"/>
-        <updater filetype="DBN-PSQL" implementationClass="com.maddyhome.idea.copyright.psi.UpdateAnyFileCopyright$Provider"/>
+        <updater filetype="DBN-SQL" implementationClass="com.dbn.editor.copyright.DatabaseFileCopyrightProvider"/>
+        <updater filetype="DBN-PSQL" implementationClass="com.dbn.editor.copyright.DatabaseFileCopyrightProvider"/>
     </extensions>
 </idea-plugin>

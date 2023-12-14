@@ -18,6 +18,7 @@ import com.dbn.language.common.element.ElementTypeBundle;
 import com.dbn.language.common.element.cache.ElementLookupContext;
 import com.dbn.language.common.element.util.ElementTypeAttribute;
 import com.dbn.language.common.psi.BasePsiElement;
+import com.dbn.language.common.psi.PsiElementVisitors;
 import com.dbn.language.common.psi.PsiUtil;
 import com.dbn.language.common.psi.lookup.LookupAdapters;
 import com.dbn.language.common.psi.lookup.PsiLookupAdapter;
@@ -62,6 +63,12 @@ import static com.dbn.common.util.Documents.getDocument;
 import static com.dbn.common.util.Documents.getEditors;
 
 public abstract class DBLanguagePsiFile extends PsiFileImpl implements DatabaseContextBase, Presentable, StatefulDisposable, UnlistedDisposable {
+    // TODO: check if any other visitor relevant
+    public static final PsiElementVisitors visitors = PsiElementVisitors.create(
+            "SpellCheckingInspection",
+            "InjectedLanguageManager",
+            "UpdateCopyrightAction");
+
     private final Language language;
     private final DBLanguageFileType fileType;
     private DBObjectRef<DBSchemaObject> underlyingObject;
@@ -159,9 +166,7 @@ public abstract class DBLanguagePsiFile extends PsiFileImpl implements DatabaseC
 
     @Override
     public void accept(@NotNull PsiElementVisitor visitor) {
-        // TODO: check if any other visitor relevant
-        String name = visitor.getClass().getName();
-        if (name.contains("SpellCheckingInspection") || name.contains("InjectedLanguageManager")) {
+        if (visitors.isSupported(visitor)) {
             visitor.visitFile(this);
         }
     }
