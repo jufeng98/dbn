@@ -1,7 +1,7 @@
 package com.dbn.connection;
 
 import com.dbn.common.constant.Constant;
-import com.dbn.common.constant.ConstantUtil;
+import com.dbn.common.constant.Constants;
 import com.dbn.common.icon.Icons;
 import com.dbn.common.ui.Presentable;
 import lombok.Getter;
@@ -154,7 +154,7 @@ public enum DatabaseType implements Constant<DatabaseType>, Presentable{
 
     @NotNull
     public static DatabaseType get(String id) {
-        return ConstantUtil.get(values(), id, GENERIC);
+        return Constants.get(values(), id, GENERIC);
     }
 
     public static DatabaseType infer(String url) {

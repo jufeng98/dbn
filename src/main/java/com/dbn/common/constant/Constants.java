@@ -1,10 +1,12 @@
 package com.dbn.common.constant;
 
 import com.dbn.common.util.Strings;
+import lombok.experimental.UtilityClass;
 
 import java.util.*;
 
-public abstract class ConstantUtil {
+@UtilityClass
+public class Constants {
     public static List<String> getIdList(Class<? extends Constant> constantClass) {
         return toIdList(Arrays.asList(constantClass.getEnumConstants()));
     }
@@ -40,7 +42,7 @@ public abstract class ConstantUtil {
     }
 
     public static <T extends Constant> boolean isOneOf(T constant, T ... constants) {
-        if (constants != null && constants.length > 0) {
+        if (constants != null) {
             for (T c : constants) {
                 if (c == constant) {
                     return true;

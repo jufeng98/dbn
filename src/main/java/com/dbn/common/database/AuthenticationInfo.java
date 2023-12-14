@@ -1,5 +1,6 @@
 package com.dbn.common.database;
 
+import com.dbn.common.constant.Constants;
 import com.dbn.common.options.BasicConfiguration;
 import com.dbn.common.options.ui.ConfigurationEditorForm;
 import com.dbn.common.util.Cloneable;
@@ -88,7 +89,7 @@ public class AuthenticationInfo extends BasicConfiguration<ConnectionDatabaseSet
         type = getEnum(element, "type", type);
 
         AuthenticationType[] supportedAuthTypes = getParent().getDatabaseType().getAuthTypes();
-        if (!type.isOneOf(supportedAuthTypes)) {
+        if (!Constants.isOneOf(type, supportedAuthTypes)) {
             type = supportedAuthTypes[0];
         }
 

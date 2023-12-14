@@ -1,5 +1,6 @@
 package com.dbn.connection.config.ui;
 
+import com.dbn.common.constant.Constants;
 import com.dbn.common.database.DatabaseInfo;
 import com.dbn.common.ui.Presentable;
 import com.dbn.common.ui.form.DBNFormBase;
@@ -172,7 +173,7 @@ public class ConnectionUrlSettingsForm extends DBNFormBase {
 
         boolean tnsVisible = urlType == DatabaseUrlType.TNS;
         boolean flsVisible = urlType == DatabaseUrlType.FILE;
-        boolean hpdVisible = urlType.isOneOf(
+        boolean hpdVisible = Constants.isOneOf(urlType,
                 DatabaseUrlType.SID,
                 DatabaseUrlType.SERVICE,
                 DatabaseUrlType.DATABASE);

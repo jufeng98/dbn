@@ -1,14 +1,15 @@
 package com.dbn.database.postgres;
 
+import com.dbn.common.constant.Constants;
 import com.dbn.common.database.AuthenticationInfo;
 import com.dbn.common.database.DatabaseInfo;
 import com.dbn.common.util.Strings;
 import com.dbn.connection.AuthenticationType;
 import com.dbn.connection.SchemaId;
-import com.dbn.database.postgres.execution.PostgresMethodExecutionProcessor;
 import com.dbn.database.CmdLineExecutionInput;
 import com.dbn.database.common.DatabaseExecutionInterfaceImpl;
 import com.dbn.database.common.execution.MethodExecutionProcessor;
+import com.dbn.database.postgres.execution.PostgresMethodExecutionProcessor;
 import com.dbn.execution.script.CmdLineInterface;
 import com.dbn.object.DBMethod;
 import org.jetbrains.annotations.NotNull;
@@ -47,7 +48,7 @@ public class PostgresExecutionInterface extends DatabaseExecutionInterfaceImpl {
         }
 
         AuthenticationType authenticationType = authenticationInfo.getType();
-        if (authenticationType.isOneOf(AuthenticationType.USER, AuthenticationType.USER_PASSWORD)) {
+        if (Constants.isOneOf(authenticationType, AuthenticationType.USER, AuthenticationType.USER_PASSWORD)) {
             command.add("--username=" + authenticationInfo.getUser());
         }
 

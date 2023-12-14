@@ -1,6 +1,7 @@
 package com.dbn.data.export.processor;
 
 import com.dbn.common.clipboard.Clipboard;
+import com.dbn.common.constant.Constants;
 import com.dbn.common.load.ProgressMonitor;
 import com.dbn.common.locale.Formatter;
 import com.dbn.common.util.Strings;
@@ -64,7 +65,7 @@ public class XMLDataExportProcessor extends DataExportProcessor{
                 GenericDataType genericDataType = model.getGenericDataType(columnIndex);
 
                 String value = null;
-                if (genericDataType.isOneOf(
+                if (Constants.isOneOf(genericDataType,
                         GenericDataType.BOOLEAN,
                         GenericDataType.LITERAL,
                         GenericDataType.NUMERIC,

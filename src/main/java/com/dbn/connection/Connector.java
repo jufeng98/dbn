@@ -1,5 +1,6 @@
 package com.dbn.connection;
 
+import com.dbn.common.constant.Constants;
 import com.dbn.common.database.AuthenticationInfo;
 import com.dbn.common.notification.NotificationGroup;
 import com.dbn.common.notification.NotificationSupport;
@@ -102,7 +103,7 @@ class Connector {
             }
 
             AuthenticationType authenticationType = authenticationInfo.getType();
-            if (authenticationType.isOneOf(AuthenticationType.USER, AuthenticationType.USER_PASSWORD)) {
+            if (Constants.isOneOf(authenticationType, AuthenticationType.USER, AuthenticationType.USER_PASSWORD)) {
                 String user = authenticationInfo.getUser();
                 if (Strings.isNotEmpty(user)) {
                     properties.put(Property.USER, user);
