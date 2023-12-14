@@ -1,5 +1,6 @@
 package com.dbn.connection.ui;
 
+import com.dbn.common.constant.Constants;
 import com.dbn.common.database.AuthenticationInfo;
 import com.dbn.common.text.TextContent;
 import com.dbn.common.ui.form.DBNFormBase;
@@ -91,7 +92,7 @@ public class ConnectionAuthenticationForm extends DBNFormBase {
     private void updateAuthenticationFields() {
         AuthenticationType authType = ComboBoxes.getSelection(authTypeComboBox);
 
-        boolean showUser = authType.isOneOf(
+        boolean showUser = Constants.isOneOf(authType,
                 AuthenticationType.USER,
                 AuthenticationType.USER_PASSWORD);
 

@@ -1,5 +1,6 @@
 package com.dbn.connection;
 
+import com.dbn.common.constant.Constants;
 import com.dbn.common.database.DatabaseInfo;
 import com.dbn.common.database.DatabaseInfo.Default;
 import lombok.Getter;
@@ -174,7 +175,7 @@ public enum DatabaseUrlPattern {
     }
 
     private String resolveGroup(String url, String name, DatabaseUrlType ... urlTypes) {
-        if (!urlType.isOneOf(urlTypes)) return "";
+        if (!Constants.isOneOf(urlType, urlTypes)) return "";
         if (!isValid(url)) return "";
 
         try {

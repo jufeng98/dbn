@@ -416,14 +416,14 @@ public class DBObjectListImpl<T extends DBObject> extends DynamicContentBase<T> 
 
     @Override
     public void refreshTreeChildren(@NotNull DBObjectType... objectTypes) {
-        if (isLoaded()) {
-            if (objectType.isOneOf(objectTypes)) {
-                notifyChangeListeners();
-            }
+        if (!isLoaded()) return;
 
-            for (DBObject object : getObjects()) {
-                object.refreshTreeChildren(objectTypes);
-            }
+        if (objectType.isOneOf(objectTypes)) {
+            notifyChangeListeners();
+        }
+
+        for (DBObject object : getObjects()) {
+            object.refreshTreeChildren(objectTypes);
         }
     }
 

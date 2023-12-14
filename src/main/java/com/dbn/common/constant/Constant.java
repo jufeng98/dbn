@@ -17,7 +17,7 @@ public interface Constant<T extends Constant<T>> extends Serializable, Comparabl
         return Objects.equals(id(), id);
     }
 
-    default boolean isOneOf(T... constants){return ConstantUtil.isOneOf(this, constants);}
+    default boolean isOneOf(T... constants){return Constants.isOneOf(this, constants);}
 
     static <T> T[] array(T ... constants) {
         return constants;
