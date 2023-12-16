@@ -69,8 +69,10 @@ public class TabbedBrowserForm extends DatabaseBrowserForm{
 
 
     private void initTabs(@Nullable TabbedBrowserForm previous) {
-        Project project = ensureProject();
+        JPanel mainPanel = this.mainPanel;
+        if (mainPanel == null) return;
 
+        Project project = ensureProject();
         ConnectionManager connectionManager = ConnectionManager.getInstance(project);
         ConnectionBundle connectionBundle = connectionManager.getConnectionBundle();
         for (ConnectionHandler connection: connectionBundle.getConnections()) {

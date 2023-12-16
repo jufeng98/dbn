@@ -1,9 +1,10 @@
 package com.dbn.common.ui.tab;
 
 import com.dbn.common.compatibility.Workaround;
-import com.dbn.common.ui.form.DBNForm;
 import com.dbn.common.dispose.Disposer;
 import com.dbn.common.dispose.StatefulDisposable;
+import com.dbn.common.thread.Dispatch;
+import com.dbn.common.ui.form.DBNForm;
 import com.intellij.openapi.util.ActionCallback;
 import com.intellij.ui.tabs.TabInfo;
 import com.intellij.ui.tabs.impl.JBTabsImpl;
@@ -25,7 +26,7 @@ public class TabbedPane extends JBTabsImpl implements StatefulDisposable {
     public TabbedPane(@NotNull DBNForm form) {
         super(form.ensureProject());
         setTabDraggingEnabled(true);
-        Disposer.register(form, () -> disposeInner());
+        Disposer.register(form, () -> Dispatch.run(() -> disposeInner()));
     }
 
     public void select(JComponent component, boolean requestFocus) {

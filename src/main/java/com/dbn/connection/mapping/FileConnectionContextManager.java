@@ -516,9 +516,11 @@ public class FileConnectionContextManager extends ProjectComponentBase implement
     }
 
     private void loadFileMappings(@NotNull Element element, ProgressIndicator indicator) {
-        List<Element> mappingElements = element.getChildren();
-        Map<String, FileConnectionContext> mappings = registry.getMappings();
+        FileConnectionContextRegistry registry = this.registry;
+        if (registry == null) return;
 
+        Map<String, FileConnectionContext> mappings = registry.getMappings();
+        List<Element> mappingElements = element.getChildren();
         int size = mappingElements.size();
         for (int i = 0; i < size; i++) {
             Element child = mappingElements.get(i);
