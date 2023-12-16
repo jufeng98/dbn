@@ -60,14 +60,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import static com.dbn.common.Reflection.getEnclosingClass;
-import static com.dbn.common.Reflection.getSimpleClassName;
 import static com.dbn.common.util.Unsafe.cast;
 
 @Getter
@@ -76,7 +72,12 @@ public abstract class BasePsiElement<T extends ElementType> extends ASTWrapperPs
     private static final WeakRefCache<BasePsiElement, DBVirtualObject> underlyingObjectCache = WeakRefCache.weakKey();
     private static final WeakRefCache<BasePsiElement, FormattingAttributes> formattingAttributesCache = WeakRefCache.weakKey();
     private static final WeakRefCache<BasePsiElement, BasePsiElement> enclosingScopePsiElements = WeakRefCache.weakKeyValue();
-    private static final Set<String> supportedVisitors = new HashSet<>(Arrays.asList("SpellCheckingInspection", "ParserDiagnosticsUtil"));
+
+    // TODO: check if any other visitor relevant
+    public static final PsiElementVisitors visitors = PsiElementVisitors.create(
+            "SpellCheckingInspection",
+            "ParserDiagnosticsUtil",
+            "UpdateCopyrightAction");
 
     private T elementType;
 
@@ -263,12 +264,9 @@ public abstract class BasePsiElement<T extends ElementType> extends ASTWrapperPs
 
     @Override
     public void accept(@NotNull PsiElementVisitor visitor) {
-        Class<?> visitorClass = getEnclosingClass(visitor.getClass());
-        String visitorName = getSimpleClassName(visitorClass);
-
-        if (!supportedVisitors.contains(visitorName)) return;
-
-        super.accept(visitor);
+        if (visitors.isSupported(visitor)) {
+            super.accept(visitor);
+        }
     }
 
     @Override

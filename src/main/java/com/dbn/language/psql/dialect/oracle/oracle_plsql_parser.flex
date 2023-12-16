@@ -44,11 +44,11 @@ SQLP_VARIABLE = "&""&"?{IDENTIFIER}
 {BLOCK_COMMENT}  { return stt.getBlockComment(); }
 {LINE_COMMENT}   { return stt.getLineComment(); }
 
-"wrapped"        { yybegin(WRAPPED); return tt.getTokenType("KW_WRAPPED");}
-"$if"(~"$then")  { yybegin(CONDITIONAL);}
-"$else"          { }
-"$elsif"         { }
-"$then"          { }
+"wrapped"          { yybegin(WRAPPED); return tt.getTokenType("KW_WRAPPED");}
+"$if"(~"$then")    { yybegin(CONDITIONAL);}
+"$elsif"(~"$then") { }
+"$else"            { }
+"$then"            { }
 
 {VARIABLE}       { return stt.getVariable(); }
 {SQLP_VARIABLE}  { return stt.getVariable(); }

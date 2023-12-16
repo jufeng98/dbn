@@ -135,10 +135,10 @@ public class FileConnectionContextManager extends ProjectComponentBase implement
         Document document = editor.getDocument();
         VirtualFile file = FileDocumentManager.getInstance().getFile(document);
         boolean changed = setConnection(file, connection);
-        if (changed) {
-            // TODO add as FileConnectionMappingListener.TOPIC
-            Documents.touchDocument(editor, true);
-        }
+        if (!changed) return;
+        
+        // TODO add as FileConnectionMappingListener.TOPIC
+        Documents.touchDocument(editor, true);
     }
 
     /*******************************************************************
@@ -150,22 +150,21 @@ public class FileConnectionContextManager extends ProjectComponentBase implement
     }
 
     public boolean setDatabaseSchema(VirtualFile file, SchemaId schema) {
-        if (isSchemaSelectable(file)) {
-            return notifiedChange(
-                    () -> registry.setDatabaseSchema(file, schema),
-                    handler -> handler.schemaChanged(getProject(), file, schema));
-        }
-        return false;
+        if (!isSchemaSelectable(file)) return false;
+        
+        return notifiedChange(
+                () -> registry.setDatabaseSchema(file, schema),
+                handler -> handler.schemaChanged(getProject(), file, schema));
     }
 
     public void setDatabaseSchema(@NotNull Editor editor, SchemaId schema) {
         Document document = editor.getDocument();
         VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
         boolean changed = setDatabaseSchema(virtualFile, schema);
-        if (changed) {
-            // TODO add as FileConnectionMappingListener.TOPIC
-            Documents.touchDocument(editor, false);
-        }
+        if (!changed) return;
+        
+        // TODO add as FileConnectionMappingListener.TOPIC
+        Documents.touchDocument(editor, false);
     }
 
     /*******************************************************************
@@ -178,10 +177,9 @@ public class FileConnectionContextManager extends ProjectComponentBase implement
 
     public boolean setDatabaseSession(VirtualFile file, DatabaseSession session) {
         if (!isSessionSelectable(file)) return false;
-
-        return notifiedChange(
-                () -> registry.setDatabaseSession(file, session),
-                handler -> handler.sessionChanged(getProject(), file, session));
+        
+        return notifiedChange(() -> registry.setDatabaseSession(file, session),
+                consumer -> consumer.sessionChanged(getProject(), file, session));
     }
 
     public void setDatabaseSession(@NotNull Editor editor, DatabaseSession session) {
@@ -301,7 +299,7 @@ public class FileConnectionContextManager extends ProjectComponentBase implement
         List<ConnectionHandler> connections = connectionBundle.getConnections();
 
         DefaultActionGroup actionGroup = new DefaultActionGroup();
-        if (connections.size() > 0) {
+        if (!connections.isEmpty()) {
             for (ConnectionHandler connection : connections) {
                 ConnectionSelectAction connectionAction = new ConnectionSelectAction(
                         connection,
@@ -451,27 +449,27 @@ public class FileConnectionContextManager extends ProjectComponentBase implement
             Map<String, FileConnectionContext> mappings = registry.getMappings();
             for (VFileEvent event : events) {
                 VirtualFile file = event.getFile();
-                if (file != null) {
-                    if (event instanceof VFileDeleteEvent) {
-                        registry.removeMapping(file);
+                if (file == null) continue;
+                
+                if (event instanceof VFileDeleteEvent) {
+                    registry.removeMapping(file);
 
-                    } else if (event instanceof VFileMoveEvent) {
-                        VFileMoveEvent moveEvent = (VFileMoveEvent) event;
-                        String oldFileUrl = moveEvent.getOldParent().getUrl() + "/" + file.getName();
+                } else if (event instanceof VFileMoveEvent) {
+                    VFileMoveEvent moveEvent = (VFileMoveEvent) event;
+                    String oldFileUrl = moveEvent.getOldParent().getUrl() + "/" + file.getName();
+                    FileConnectionContext mapping = mappings.get(oldFileUrl);
+                    if (mapping != null) {
+                        mapping.setFileUrl(event.getFile().getUrl());
+                    }
+
+                } else if (event instanceof VFilePropertyChangeEvent) {
+                    VFilePropertyChangeEvent propChangeEvent = (VFilePropertyChangeEvent) event;
+                    VirtualFile parent = file.getParent();
+                    if (file.isInLocalFileSystem() && parent != null) {
+                        String oldFileUrl = parent.getUrl() + "/" + propChangeEvent.getOldValue();
                         FileConnectionContext mapping = mappings.get(oldFileUrl);
                         if (mapping != null) {
-                            mapping.setFileUrl(event.getFile().getUrl());
-                        }
-
-                    } else if (event instanceof VFilePropertyChangeEvent) {
-                        VFilePropertyChangeEvent propChangeEvent = (VFilePropertyChangeEvent) event;
-                        VirtualFile parent = file.getParent();
-                        if (file.isInLocalFileSystem() && parent != null) {
-                            String oldFileUrl = parent.getUrl() + "/" + propChangeEvent.getOldValue();
-                            FileConnectionContext mapping = mappings.get(oldFileUrl);
-                            if (mapping != null) {
-                                mapping.setFileUrl(file.getUrl());
-                            }
+                            mapping.setFileUrl(file.getUrl());
                         }
                     }
                 }
@@ -516,9 +514,11 @@ public class FileConnectionContextManager extends ProjectComponentBase implement
     }
 
     private void loadFileMappings(@NotNull Element element, ProgressIndicator indicator) {
-        List<Element> mappingElements = element.getChildren();
-        Map<String, FileConnectionContext> mappings = registry.getMappings();
+        FileConnectionContextRegistry registry = this.registry;
+        if (registry == null) return;
 
+        Map<String, FileConnectionContext> mappings = registry.getMappings();
+        List<Element> mappingElements = element.getChildren();
         int size = mappingElements.size();
         for (int i = 0; i < size; i++) {
             Element child = mappingElements.get(i);

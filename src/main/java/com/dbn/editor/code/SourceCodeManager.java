@@ -16,6 +16,7 @@ import com.dbn.common.navigation.NavigationInstructions;
 import com.dbn.common.notification.NotificationGroup;
 import com.dbn.common.thread.Background;
 import com.dbn.common.thread.Progress;
+import com.dbn.common.thread.Read;
 import com.dbn.common.util.ChangeTimestamp;
 import com.dbn.common.util.Documents;
 import com.dbn.common.util.Editors;
@@ -260,7 +261,7 @@ public class SourceCodeManager extends ProjectComponentBase implements Persisten
             Document document = Failsafe.nn(Documents.getDocument(sourceCodeFile));
             Documents.saveDocument(document);
 
-            if (!isValidObjectHeader(sourceCodeFile)) return;
+            if (Read.call(sourceCodeFile, f -> !isValidObjectHeader(f))) return;
 
             DBSchemaObject object = sourceCodeFile.getObject();
             ProgressMonitor.setProgressDetail("Checking for third party changes on " + object.getQualifiedNameWithType());
