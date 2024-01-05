@@ -12,11 +12,13 @@ import com.intellij.openapi.fileEditor.FileEditorPolicy;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import lombok.Getter;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+@Getter
 public abstract class DDLFileEditorProvider extends BasicTextEditorProvider implements DumbAware {
 
     private final int index;
@@ -25,10 +27,6 @@ public abstract class DDLFileEditorProvider extends BasicTextEditorProvider impl
     public DDLFileEditorProvider(int index, String componentName) {
         this.index = index;
         this.componentName = componentName;
-    }
-
-    public int getIndex() {
-        return index;
     }
 
     @Override

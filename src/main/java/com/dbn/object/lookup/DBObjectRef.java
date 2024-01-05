@@ -31,6 +31,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.dbn.common.dispose.Checks.isNotValid;
 import static com.dbn.common.dispose.Failsafe.nn;
 import static com.dbn.common.options.setting.Settings.connectionIdAttribute;
 import static com.dbn.common.options.setting.Settings.stringAttribute;
@@ -382,12 +383,13 @@ public class DBObjectRef<T extends DBObject> implements Comparable<DBObjectRef<?
 
         clearReference();
         ConnectionHandler connection = getConnection();
-        if (Checks.isValid(connection) && connection.isEnabled()) {
-            object = lookup(connection);
-            if (object != null) {
-                reference = WeakRef.of(object);
-            }
-        }
+        if (isNotValid(connection)) return object;
+        if (!connection.isEnabled()) return object;
+
+        object = lookup(connection);
+        if (object == null) return null;
+
+        reference = WeakRef.of(object);
         return object;
     }
 
@@ -418,7 +420,7 @@ public class DBObjectRef<T extends DBObject> implements Comparable<DBObjectRef<?
     @Nullable
     private T lookup(@NotNull ConnectionHandler connection) {
         DBObject object = null;
-        DBObjectRef parent = getParentRef();
+        DBObjectRef<?> parent = getParentRef();
         if (parent == null) {
             DBObjectBundle objectBundle = connection.getObjectBundle();
             object = objectBundle.getObject(objectType, objectName, overload);
@@ -550,10 +552,9 @@ public class DBObjectRef<T extends DBObject> implements Comparable<DBObjectRef<?
             return this.objectName.compareToIgnoreCase(that.objectName);
         } else if (thisParent == null) {
             return -1;
-        } else if (thatParent == null) {
+        } else {
             return 1;
         }
-        return 0;
     }
 
     @Override

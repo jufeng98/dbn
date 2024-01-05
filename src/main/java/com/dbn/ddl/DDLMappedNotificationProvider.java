@@ -24,7 +24,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-import static com.dbn.common.dispose.Checks.allValid;
 import static com.dbn.common.dispose.Checks.isNotValid;
 import static com.dbn.common.util.Editors.isDdlFileEditor;
 import static com.dbn.common.util.Files.isDbLanguageFile;
@@ -84,17 +83,19 @@ public class DDLMappedNotificationProvider extends LegacyEditorNotificationsProv
             }
 
             private void updateDdlFileHeaders(Project project, VirtualFile file) {
-                if (allValid(project, file) && file instanceof DBEditableObjectVirtualFile) {
-                    DBEditableObjectVirtualFile editableObjectFile = (DBEditableObjectVirtualFile) file;
-                    DBObjectRef<DBSchemaObject> object = editableObjectFile.getObjectRef();
-                    DDLFileAttachmentManager attachmentManager = DDLFileAttachmentManager.getInstance(project);
-                    List<VirtualFile> attachedDDLFiles = attachmentManager.getAttachedDDLFiles(object);
-                    if (attachedDDLFiles != null) {
-                        EditorNotifications notifications = Editors.getNotifications(project);;
-                        for (VirtualFile virtualFile : attachedDDLFiles) {
-                            notifications.updateNotifications(virtualFile);
-                        }
-                    }
+                if (isNotValid(project)) return;
+                if (isNotValid(file)) return;
+                if (!(file instanceof DBEditableObjectVirtualFile)) return;
+
+                DBEditableObjectVirtualFile editableObjectFile = (DBEditableObjectVirtualFile) file;
+                DBObjectRef<DBSchemaObject> object = editableObjectFile.getObjectRef();
+                DDLFileAttachmentManager attachmentManager = DDLFileAttachmentManager.getInstance(project);
+                List<VirtualFile> attachedDDLFiles = attachmentManager.getAttachedDDLFiles(object);
+                if (attachedDDLFiles == null) return;
+
+                EditorNotifications notifications = Editors.getNotifications(project);;
+                for (VirtualFile virtualFile : attachedDDLFiles) {
+                    notifications.updateNotifications(virtualFile);
                 }
             }
         };

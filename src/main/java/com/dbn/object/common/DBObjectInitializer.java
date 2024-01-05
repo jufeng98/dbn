@@ -25,11 +25,11 @@ public class DBObjectInitializer {
         return connection.ensure().getProject();
     }
 
-    public void initObject(DBObjectRef ref) {
+    public void initObject(DBObjectRef<?> ref) {
         DBObject object = ref.value();
         if (isValid(object)) return;
 
-        DBObjectRef parentRef = ref.getParentRef();
+        DBObjectRef<?> parentRef = ref.getParentRef();
         if (parentRef == null) {
             initRootObject(ref);
         } else  {
@@ -37,7 +37,7 @@ public class DBObjectInitializer {
         }
     }
 
-    private void initRootObject(DBObjectRef ref) {
+    private void initRootObject(DBObjectRef<?> ref) {
         Project project = getProject();
 
         String identifier = identifier(ref, null);
@@ -58,7 +58,7 @@ public class DBObjectInitializer {
         }
     }
 
-    private void initChildObject(DBObjectRef ref, DBObjectRef parentRef) {
+    private void initChildObject(DBObjectRef<?> ref, DBObjectRef<?> parentRef) {
         Project project = getProject();
 
         DBObjectType objectType = ref.getObjectType();
@@ -83,7 +83,7 @@ public class DBObjectInitializer {
     }
 
 
-    private String identifier(DBObjectRef ref, DBObjectType objectType) {
+    private String identifier(DBObjectRef<?> ref, DBObjectType objectType) {
         return ref.getPath() + "#" + objectType;
     }
 
