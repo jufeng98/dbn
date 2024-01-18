@@ -37,11 +37,11 @@ public interface DatabaseContextBase extends DatabaseContext{
     }
 
     @Override
-    default boolean isSameAs(DatabaseContext context) {
+    default boolean isSameAs(DatabaseContext that) {
         return
-            Objects.equals(nvl(getConnectionId(), ConnectionId.NULL), nvl(context.getConnectionId(), ConnectionId.NULL)) &&
-            Objects.equals(nvl(getSessionId(), SessionId.NULL), nvl(context.getSessionId(), SessionId.NULL)) &&
-            Objects.equals(nvl(getSchemaId(), SchemaId.NULL), nvl(context.getSchemaId(), SchemaId.NULL));
+            Objects.equals(nvl(this.getConnectionId(), ConnectionId.NULL), nvl(that.getConnectionId(), ConnectionId.NULL)) &&
+            Objects.equals(nvl(this.getSessionId(), SessionId.NULL), nvl(that.getSessionId(), SessionId.NULL)) &&
+            Objects.equals(nvl(this.getSchemaId(), SchemaId.NULL), nvl(that.getSchemaId(), SchemaId.NULL));
     }
 
     @Nullable

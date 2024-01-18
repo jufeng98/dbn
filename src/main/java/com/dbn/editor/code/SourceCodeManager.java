@@ -349,7 +349,7 @@ public class SourceCodeManager extends ProjectComponentBase implements Persisten
             StringBuilder buffer = new StringBuilder();
             while (resultSet != null && resultSet.next()) {
                 String codeLine = resultSet.getString("SOURCE_CODE");
-                buffer.append(codeLine);
+                if (codeLine != null) buffer.append(codeLine);
             }
 
             if (buffer.length() == 0 && !optionalContent)

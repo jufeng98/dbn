@@ -390,6 +390,9 @@ public class DBObjectRef<T extends DBObject> implements Comparable<DBObjectRef<?
         if (object == null) return null;
 
         reference = WeakRef.of(object);
+
+        // further qualify the object type if it happens to be generic
+        objectType = object.getObjectType();
         return object;
     }
 

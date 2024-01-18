@@ -51,8 +51,7 @@ class SubcontentDependencyAdapterImpl extends BasicDependencyAdapter implements 
 
     @Override
     public boolean canLoadFast() {
-        DynamicContent sourceContent = getSourceContent();
-        return sourceContent.isLoaded() && !sourceContent.isDirty();
+        return getSourceContent().isReady();
     }
 
     @Override
