@@ -8,16 +8,13 @@ import com.dbn.connection.SchemaId;
 import com.dbn.connection.SessionId;
 import com.dbn.connection.session.DatabaseSession;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileManager;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.jdom.Element;
 import org.jetbrains.annotations.Nullable;
 
-import static com.dbn.common.dispose.Checks.isValid;
 import static com.dbn.common.options.setting.Settings.*;
 import static com.dbn.connection.ConnectionHandler.isLiveConnection;
-import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 
 @Slf4j
 @Data
@@ -70,17 +67,7 @@ public class FileConnectionContextImpl implements FileConnectionContext {
     @Override
     @Nullable
     public VirtualFile getFile() {
-        try {
-            VirtualFileManager virtualFileManager = VirtualFileManager.getInstance();
-            VirtualFile file = virtualFileManager.findFileByUrl(fileUrl);
-            if (isValid(file)) {
-                return file;
-            }
-        } catch (Exception e) {
-            conditionallyLog(e);
-            log.warn("Failed to read file " + fileUrl, e);
-        }
-        return null;
+        return VirtualFiles.findFileByUrl(fileUrl);
     }
 
     @Override

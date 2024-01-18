@@ -1,5 +1,6 @@
 package com.dbn.debugger.common.breakpoint;
 
+import com.dbn.common.file.util.VirtualFiles;
 import com.dbn.common.thread.Read;
 import com.dbn.common.util.Unsafe;
 import com.dbn.connection.ConnectionHandler;
@@ -13,7 +14,6 @@ import com.dbn.vfs.file.DBEditableObjectVirtualFile;
 import com.dbn.vfs.file.DBSourceCodeVirtualFile;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.xdebugger.XDebuggerManager;
 import com.intellij.xdebugger.XDebuggerUtil;
 import com.intellij.xdebugger.breakpoints.XBreakpointManager;
@@ -43,22 +43,22 @@ public class DBBreakpointUtil {
     @Nullable
     public static VirtualFile getVirtualFile(@NotNull XLineBreakpoint breakpoint) {
         VirtualFile breakpointFile = breakpoint.getUserData(BREAKPOINT_FILE);
-        if (breakpointFile == null) {
-            DatabaseFileSystem databaseFileSystem = DatabaseFileSystem.getInstance();
-            String fileUrl = breakpoint.getFileUrl();
-            if (databaseFileSystem.isDatabaseUrl(fileUrl)) {
-                VirtualFile virtualFile = databaseFileSystem.findFileByPath(fileUrl);
-                if (virtualFile instanceof DBContentVirtualFile) {
-                    DBContentVirtualFile contentVirtualFile = (DBContentVirtualFile) virtualFile;
-                    breakpointFile = contentVirtualFile.getMainDatabaseFile();
-                    breakpoint.putUserData(BREAKPOINT_FILE, breakpointFile);
-                } else if (virtualFile instanceof DBConsoleVirtualFile) {
-                    breakpointFile = virtualFile;
-                    breakpoint.putUserData(BREAKPOINT_FILE, breakpointFile);
-                }
-            } else {
-                return VirtualFileManager.getInstance().findFileByUrl(fileUrl);
+        if (breakpointFile != null) return breakpointFile;
+
+        DatabaseFileSystem databaseFileSystem = DatabaseFileSystem.getInstance();
+        String fileUrl = breakpoint.getFileUrl();
+        if (databaseFileSystem.isDatabaseUrl(fileUrl)) {
+            VirtualFile virtualFile = databaseFileSystem.findFileByPath(fileUrl);
+            if (virtualFile instanceof DBContentVirtualFile) {
+                DBContentVirtualFile contentVirtualFile = (DBContentVirtualFile) virtualFile;
+                breakpointFile = contentVirtualFile.getMainDatabaseFile();
+                breakpoint.putUserData(BREAKPOINT_FILE, breakpointFile);
+            } else if (virtualFile instanceof DBConsoleVirtualFile) {
+                breakpointFile = virtualFile;
+                breakpoint.putUserData(BREAKPOINT_FILE, breakpointFile);
             }
+        } else {
+            return VirtualFiles.findFileByUrl(fileUrl);
         }
         return breakpointFile;
     }
