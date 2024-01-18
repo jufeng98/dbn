@@ -24,6 +24,10 @@ public final class Files {
     public static final String[] SQL_FILE_EXTENSIONS = {"sql", "ddl", "vw"};
     public static final String[] PSQL_FILE_EXTENSIONS = {"psql", "plsql", "trg", "prc", "fnc", "pkg", "pks", "pkb", "tpe", "tps", "tpb"};
 
+    public static String toRegexFileNamePattern(String fileNamePattern) {
+        return "^(?i)" + fileNamePattern.replaceAll("\\*", "[a-z0-9_-]*") + "$";
+    }
+
     public static File createFileByRelativePath(@NotNull final File absoluteBase, @NotNull final String relativeTail) {
         // assert absoluteBase.isAbsolute() && absoluteBase.isDirectory(); : assertion seem to be too costly
 
@@ -45,35 +49,32 @@ public final class Files {
     }
 
     public static String convertToRelativePath(Project project, String path) {
-        if (!Strings.isEmptyOrSpaces(path)) {
-            VirtualFile baseDir = project.getBaseDir();
-            if (baseDir != null) {
-                File projectDir = new File(baseDir.getPath());
-                String relativePath = com.intellij.openapi.util.io.FileUtil.getRelativePath(projectDir, new File(path));
-                if (relativePath != null) {
-                    if (relativePath.lastIndexOf(".." + File.separatorChar) < 1) {
-                        return relativePath;
-                    }
-                }
-            }
+        if (Strings.isEmptyOrSpaces(path)) return path;
+
+        VirtualFile baseDir = project.getBaseDir();
+        if (baseDir == null) return path;
+
+        File projectDir = new File(baseDir.getPath());
+        String relativePath = com.intellij.openapi.util.io.FileUtil.getRelativePath(projectDir, new File(path));
+        if (relativePath == null) return path;
+
+        if (relativePath.lastIndexOf(".." + File.separatorChar) < 1) {
+            return relativePath;
         }
         return path;
     }
 
     public static String convertToAbsolutePath(Project project, String path) {
-        if (!Strings.isEmptyOrSpaces(path)) {
-            VirtualFile baseDir = project.getBaseDir();
-            if (baseDir != null) {
-                File projectDir = new File(baseDir.getPath());
-                if (new File(path).isAbsolute()) {
-                    return path;
-                } else {
-                    File file = Files.createFileByRelativePath(projectDir, path);
-                    return file == null ? null : file.getPath();
-                }
-            }
-        }
-        return path;
+        if (Strings.isEmptyOrSpaces(path)) return path;
+
+        VirtualFile baseDir = project.getBaseDir();
+        if (baseDir == null) return path;
+
+        File projectDir = new File(baseDir.getPath());
+        if (new File(path).isAbsolute()) return path;
+
+        File file = Files.createFileByRelativePath(projectDir, path);
+        return file == null ? null : file.getPath();
     }
 
     public static boolean isValidFileUrl(String fileUrl, Project project) {
