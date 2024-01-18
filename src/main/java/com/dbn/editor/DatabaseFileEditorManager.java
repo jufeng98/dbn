@@ -19,6 +19,7 @@ import com.dbn.editor.code.SourceCodeMainEditor;
 import com.dbn.editor.code.SourceCodeManager;
 import com.dbn.editor.data.filter.DatasetFilter;
 import com.dbn.editor.data.filter.DatasetFilterManager;
+import com.dbn.editor.data.filter.DatasetFilterType;
 import com.dbn.editor.data.options.DataEditorSettings;
 import com.dbn.object.DBConsole;
 import com.dbn.object.DBDataset;
@@ -47,7 +48,6 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.dbn.browser.DatabaseBrowserUtils.markSkipBrowserAutoscroll;
 import static com.dbn.browser.DatabaseBrowserUtils.unmarkSkipBrowserAutoscroll;
@@ -158,18 +158,12 @@ public class DatabaseFileEditorManager extends ProjectComponentBase {
         invokeFileOpen(handle, () -> {
             if (!allValid(object, databaseFile)) return;
 
-            Project project = object.getProject();
 
             // open / reopen (select) the file
-            if (isFileOpened(object) || promptFileOpen(databaseFile)) {
-                boolean focusEditor = handle.getEditorInstructions().isFocus();
+            if (isFileOpened(object))
+                openOrFocusEditor(handle, databaseFile, editorProviderId); else
+                prepareEditor(databaseFile, () -> openOrFocusEditor(handle, databaseFile, editorProviderId));
 
-                Editors.openFileEditor(project, databaseFile, focusEditor);
-                NavigationInstructions instructions = NavigationInstructions.create().
-                        with(SCROLL).
-                        with(FOCUS, focusEditor);
-                Editors.selectEditor(project, null, databaseFile, editorProviderId, instructions);
-            }
         });
     }
 
@@ -187,14 +181,31 @@ public class DatabaseFileEditorManager extends ProjectComponentBase {
 
         invokeFileOpen(handle, () -> {
             if (isNotValid(schemaObject)) return;
-            if (!isFileOpened(schemaObject) && !promptFileOpen(databaseFile)) return;
 
             // open / reopen (select) the file
-            boolean focusEditor = handle.getEditorInstructions().isFocus();
-            Editors.openFileEditor(project, databaseFile, focusEditor, fileEditors ->
-                    focusEditor(handle, fileEditors, focusEditor, databaseFile));
+            if (isFileOpened(schemaObject))
+                openOrFocusSelectEditor(handle, databaseFile); else
+                prepareEditor(databaseFile, () -> openOrFocusSelectEditor(handle, databaseFile));
 
         });
+    }
+
+    private void openOrFocusEditor(@NotNull DBFileOpenHandle handle, DBEditableObjectVirtualFile databaseFile, EditorProviderId editorProviderId) {
+        Project project = databaseFile.getProject();
+        boolean focusEditor = handle.getEditorInstructions().isFocus();
+
+        Editors.openFileEditor(project, databaseFile, focusEditor);
+        NavigationInstructions instructions = NavigationInstructions.create().
+                with(SCROLL).
+                with(FOCUS, focusEditor);
+        Editors.selectEditor(project, null, databaseFile, editorProviderId, instructions);
+    }
+
+    private void openOrFocusSelectEditor(DBFileOpenHandle handle, DBEditableObjectVirtualFile databaseFile) {
+        Project project = databaseFile.getProject();
+        boolean focusEditor = handle.getEditorInstructions().isFocus();
+        Editors.openFileEditor(project, databaseFile, focusEditor, fileEditors ->
+                focusEditor(handle, fileEditors, focusEditor, databaseFile));
     }
 
     private void focusEditor(DBFileOpenHandle handle, FileEditor[] fileEditors, boolean focusEditor, DBEditableObjectVirtualFile databaseFile) {
@@ -230,55 +241,92 @@ public class DatabaseFileEditorManager extends ProjectComponentBase {
         }
     }
 
-    private static boolean promptFileOpen(@NotNull DBEditableObjectVirtualFile databaseFile) {
+    private static void prepareEditor(@NotNull DBEditableObjectVirtualFile databaseFile, @NotNull Runnable callback) {
         DBSchemaObject object = databaseFile.getObject();
-        Project project = object.getProject();
         DBContentType contentType = object.getContentType();
         if (contentType == DBContentType.DATA) {
-            DBDataset dataset = (DBDataset) object;
-            DatasetFilterManager filterManager = DatasetFilterManager.getInstance(project);
-            DatasetFilter filter = filterManager.getActiveFilter(dataset);
+            prepareDatasetEditor(databaseFile, callback);
 
-            if (filter == null) {
-                DataEditorSettings settings = DataEditorSettings.getInstance(project);
-                if (settings.getFilterSettings().isPromptFilterDialog()) {
-                    int exitCode = filterManager.openFiltersDialog(dataset, true, false, settings.getFilterSettings().getDefaultFilterType());
-                    return exitCode != DialogWrapper.CANCEL_EXIT_CODE;
-                }
-            }
         } else if (contentType.isOneOf(DBContentType.CODE, DBContentType.CODE_SPEC_AND_BODY)) {
-            DDLFileGeneralSettings ddlFileSettings = DDLFileSettings.getInstance(project).getGeneralSettings();
-            ConnectionHandler connection = object.getConnection();
-            boolean ddlFileBinding = connection.getSettings().getDetailSettings().isEnableDdlFileBinding();
-            if (!ddlFileBinding || !ddlFileSettings.isDdlFilesLookupEnabled()) return true;
+            prepareSourcecodeEditor(databaseFile, callback);
 
-            List<VirtualFile> attachedDDLFiles = databaseFile.getAttachedDDLFiles();
-            if (attachedDDLFiles != null && !attachedDDLFiles.isEmpty()) return true;
+        } else {
+            callback.run();
+        }
+    }
 
-            // do not prompt ddl file attachments during workspace restore
-            if (ThreadInfo.current().is(ThreadProperty.WORKSPACE_RESTORE)) return true;
-
-            DDLFileAttachmentManager fileAttachmentManager = DDLFileAttachmentManager.getInstance(project);
-            DBObjectRef<DBSchemaObject> objectRef = DBObjectRef.of(object);
-            List<VirtualFile> virtualFiles = fileAttachmentManager.lookupDetachedDDLFiles(objectRef);
-            if (virtualFiles.isEmpty()) {
-                if (ddlFileSettings.isDdlFilesCreationEnabled()) {
-                    Messages.showQuestionDialog(
-                            project, "No DDL file found",
-                            "Could not find any DDL file for " + object.getQualifiedNameWithType() + ". Do you want to create one? \n" +
-                                    "(You can disable this check in \"DDL File\" options)", Messages.OPTIONS_YES_NO, 0,
-                            option -> when(option == 0, () -> fileAttachmentManager.createDDLFile(objectRef)));
-
-                }
-            } else {
-                AtomicBoolean cancelled = new AtomicBoolean();
-                List<VirtualFileInfo> fileInfos = VirtualFileInfo.fromFiles(virtualFiles, project);
-                fileAttachmentManager.showFileAttachDialog(object, fileInfos, true, (dialog, exitCode) -> cancelled.set(exitCode == DialogWrapper.CANCEL_EXIT_CODE));
-                return !cancelled.get();
-            }
+    private static void prepareSourcecodeEditor(@NotNull DBEditableObjectVirtualFile databaseFile, @NotNull Runnable callback) {
+        // do not prompt ddl file attachments during workspace restore
+        if (ThreadInfo.current().is(ThreadProperty.WORKSPACE_RESTORE)) {
+            callback.run();
+            return;
         }
 
-        return true;
+        DBSchemaObject object = databaseFile.getObject();
+        Project project = object.getProject();
+
+        DDLFileGeneralSettings ddlFileSettings = DDLFileSettings.getInstance(project).getGeneralSettings();
+        ConnectionHandler connection = object.getConnection();
+        boolean ddlFileBinding = connection.getSettings().getDetailSettings().isEnableDdlFileBinding();
+        if (!ddlFileBinding || !ddlFileSettings.isDdlFilesLookupEnabled()) {
+            callback.run();
+            return;
+        }
+
+        List<VirtualFile> attachedDDLFiles = databaseFile.getAttachedDDLFiles();
+        if (attachedDDLFiles != null && !attachedDDLFiles.isEmpty()) {
+            callback.run();
+            return;
+        }
+
+        DDLFileAttachmentManager fileAttachmentManager = DDLFileAttachmentManager.getInstance(project);
+        DBObjectRef<DBSchemaObject> objectRef = DBObjectRef.of(object);
+        List<VirtualFile> ddlFiles = fileAttachmentManager.lookupDetachedDDLFiles(objectRef);
+        if (ddlFiles.isEmpty() && ddlFileSettings.isDdlFilesCreationEnabled()) {
+            Messages.showQuestionDialog(
+                    project, "No DDL file found",
+                    "Could not find any DDL file for " + object.getQualifiedNameWithType() + ". Do you want to create one? \n" +
+                            "(You can disable this check in \"DDL File\" options)", Messages.OPTIONS_YES_CANCEL, 0,
+                    option -> {
+                        when(option == 0, () -> fileAttachmentManager.createDDLFile(objectRef));
+                        when(option != 2, callback);
+                    });
+            return;
+        } else {
+            List<VirtualFileInfo> fileInfos = VirtualFileInfo.fromFiles(ddlFiles, project);
+            fileAttachmentManager.showFileAttachDialog(object, fileInfos, true,
+                    (dialog, exitCode) -> when(exitCode != DialogWrapper.CANCEL_EXIT_CODE, callback));
+        }
+    }
+
+    private static void prepareDatasetEditor(DBEditableObjectVirtualFile databaseFile, @NotNull Runnable callback) {
+        // do not prompt filter dialogs attachments during workspace restore
+        if (ThreadInfo.current().is(ThreadProperty.WORKSPACE_RESTORE)) {
+            callback.run();
+            return;
+        }
+
+        DBDataset dataset = (DBDataset) databaseFile.getObject();
+        Project project = dataset.getProject();
+
+        DatasetFilterManager filterManager = DatasetFilterManager.getInstance(project);
+        DatasetFilter filter = filterManager.getActiveFilter(dataset);
+        if (filter != null) {
+            callback.run();
+            return;
+        }
+
+
+        DataEditorSettings settings = DataEditorSettings.getInstance(project);
+        if (!settings.getFilterSettings().isPromptFilterDialog()) {
+            callback.run();
+            return;
+        }
+
+        DatasetFilterType defaultFilterType = settings.getFilterSettings().getDefaultFilterType();
+        filterManager.openFiltersDialog(dataset, true, false, defaultFilterType,
+                (dialog, exitCode) -> when(exitCode != DialogWrapper.CANCEL_EXIT_CODE, callback));
+
     }
 
 

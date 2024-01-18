@@ -370,7 +370,7 @@ public class DatasetEditor extends DisposableUserDataHolderBase implements
                                 if (option == 0) {
                                     loadData(instructions);
                                 } else if (option == 1) {
-                                    filterManager.openFiltersDialog(dataset, false, false, DatasetFilterType.NONE);
+                                    filterManager.openFiltersDialog(dataset, false, false, DatasetFilterType.NONE, null);
                                     instructions.setUseCurrentFilter(true);
                                     loadData(instructions);
                                 } else if (option == 2) {

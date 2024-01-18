@@ -1,10 +1,10 @@
 package com.dbn.common.util;
 
-import com.dbn.common.option.DoNotAskOption;
 import com.dbn.common.icon.Icons;
 import com.dbn.common.message.Message;
 import com.dbn.common.message.MessageBundle;
 import com.dbn.common.message.MessageCallback;
+import com.dbn.common.option.DoNotAskOption;
 import com.dbn.common.thread.Dispatch;
 import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.project.Project;
@@ -21,6 +21,7 @@ public class Messages {
 
     public static final String[] OPTIONS_OK = options("OK");
     public static final String[] OPTIONS_YES_NO = options("Yes", "No");
+    public static final String[] OPTIONS_YES_CANCEL = options("Yes", "No", "Cancel");
 
     public static void showErrorDialog(@Nullable Project project, String title, MessageBundle messages) {
         StringBuilder buffer = new StringBuilder();

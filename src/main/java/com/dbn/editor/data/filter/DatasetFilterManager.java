@@ -5,6 +5,7 @@ import com.dbn.common.component.PersistentState;
 import com.dbn.common.component.ProjectComponentBase;
 import com.dbn.common.dispose.Failsafe;
 import com.dbn.common.util.Dialogs;
+import com.dbn.common.util.Dialogs.DialogCallback;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.ConnectionId;
 import com.dbn.data.model.ColumnInfo;
@@ -22,7 +23,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.dbn.common.component.Components.projectService;
 import static com.dbn.common.options.setting.Settings.newElement;
@@ -51,10 +51,8 @@ public class DatasetFilterManager extends ProjectComponentBase implements Persis
         }
     }
 
-    public int openFiltersDialog(DBDataset dataset, boolean isAutomaticPrompt, boolean createNewFilter, DatasetFilterType defaultFilterType) {
-        AtomicInteger response = new AtomicInteger();
-        Dialogs.show(() -> new DatasetFilterDialog(dataset, isAutomaticPrompt, createNewFilter, defaultFilterType), (dialog, exitCode) -> response.set(exitCode));
-        return response.get();
+    public void openFiltersDialog(DBDataset dataset, boolean isAutomaticPrompt, boolean createNewFilter, DatasetFilterType defaultFilterType, DialogCallback<DatasetFilterDialog> callback) {
+        Dialogs.show(() -> new DatasetFilterDialog(dataset, isAutomaticPrompt, createNewFilter, defaultFilterType), callback);
     }
 
     public void createBasicFilter(@NotNull DBDataset dataset, String columnName, Object columnValue, ConditionOperator operator, boolean interactive) {
