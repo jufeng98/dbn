@@ -44,6 +44,7 @@ import com.dbn.vfs.file.DBSessionBrowserVirtualFile;
 import com.intellij.lang.Language;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDirectory;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -69,11 +70,16 @@ public class ConnectionHandlerImpl extends StatefulDisposableBase implements Con
 
     private final ProjectRef project;
     private final ConnectionRef ref;
-    private final ConnectionHandlerStatusHolder connectionStatus;
-    private final ConnectionPool connectionPool;
-    private final DatabaseConsoleBundle consoleBundle;
-    private final DatabaseSessionBundle sessionBundle;
+
+    private boolean enabled;
+    private ConnectionInfo connectionInfo;
+    private DatabaseCompatibility compatibility = DatabaseCompatibility.allFeatures();
     private final ConnectionInstructions instructions = new ConnectionInstructions();
+
+    private final @Getter(lazy = true) ConnectionPool connectionPool = new ConnectionPool(this);
+    private final @Getter(lazy = true) ConnectionHandlerStatusHolder connectionStatus = new ConnectionHandlerStatusHolder(this);
+    private final @Getter(lazy = true) DatabaseConsoleBundle consoleBundle = new DatabaseConsoleBundle(this);
+    private final @Getter(lazy = true) DatabaseSessionBundle sessionBundle = new DatabaseSessionBundle(this);
 
     private final Latent<DatabaseInterfaces> interfaces = Latent.mutable(
             () -> getDatabaseType(),
@@ -85,10 +91,6 @@ public class ConnectionHandlerImpl extends StatefulDisposableBase implements Con
 
     private final Latent<DatabaseInterfaceQueue> interfaceQueue = Latent.basic(
             () -> new InterfaceQueue(this));
-
-    private boolean enabled;
-    private ConnectionInfo connectionInfo;
-    private DatabaseCompatibility compatibility = DatabaseCompatibility.allFeatures();
 
     private final Latent<DBSessionBrowserVirtualFile> sessionBrowserFile = Latent.basic(
             () -> new DBSessionBrowserVirtualFile(this));
@@ -121,11 +123,6 @@ public class ConnectionHandlerImpl extends StatefulDisposableBase implements Con
         this.connectionSettings = connectionSettings;
         this.enabled = connectionSettings.isActive();
         ref = ConnectionRef.of(this);
-
-        connectionStatus = new ConnectionHandlerStatusHolder(this);
-        connectionPool = new ConnectionPool(this);
-        consoleBundle = new DatabaseConsoleBundle(this);
-        sessionBundle = new DatabaseSessionBundle(this);
     }
 
     @NotNull
@@ -159,12 +156,11 @@ public class ConnectionHandlerImpl extends StatefulDisposableBase implements Con
     @Override
     @NotNull
     public String getConnectionName(@Nullable DBNConnection connection) {
-        if (connection == null || sessionBundle == null) {
-            return getName();
-        } else {
-            DatabaseSession session = sessionBundle.getSession(connection.getSessionId());
-            return getName() + " (" + session.getName() + ")";
-        }
+        if (connection == null) return getName();
+
+        DatabaseSessionBundle sessionBundle = getSessionBundle();
+        DatabaseSession session = sessionBundle.getSession(connection.getSessionId());
+        return getName() + " (" + session.getName() + ")";
     }
 
     @Override
@@ -238,24 +234,6 @@ public class ConnectionHandlerImpl extends StatefulDisposableBase implements Con
 
     @Override
     @NotNull
-    public ConnectionHandlerStatusHolder getConnectionStatus() {
-        return connectionStatus;
-    }
-
-    @NotNull
-    @Override
-    public DatabaseConsoleBundle getConsoleBundle() {
-        return consoleBundle;
-    }
-
-    @NotNull
-    @Override
-    public DatabaseSessionBundle getSessionBundle() {
-        return sessionBundle;
-    }
-
-    @Override
-    @NotNull
     public DBSessionBrowserVirtualFile getSessionBrowserFile() {
         return sessionBrowserFile.get();
     }
@@ -304,12 +282,12 @@ public class ConnectionHandlerImpl extends StatefulDisposableBase implements Con
 
     @Override
     public boolean isConnected() {
-        return connectionStatus.isConnected();
+        return getConnectionStatus().isConnected();
     }
 
     @Override
     public boolean isConnected(SessionId sessionId) {
-        return connectionPool.isConnected(sessionId);
+        return getConnectionPool().isConnected(sessionId);
     }
 
     public String toString() {
@@ -339,7 +317,7 @@ public class ConnectionHandlerImpl extends StatefulDisposableBase implements Con
 
     @Override
     public boolean isValid() {
-        return connectionStatus.isValid();
+        return getConnectionStatus().isValid();
     }
 
     @Override
@@ -387,7 +365,7 @@ public class ConnectionHandlerImpl extends StatefulDisposableBase implements Con
         // explicit disconnect (reset auto-connect data)
         temporaryAuthenticationInfo.reset();
         instructions.setAllowAutoConnect(false);
-        connectionStatus.setConnected(false);
+        getConnectionStatus().setConnected(false);
         getConnectionPool().closeConnections();
     }
 
@@ -560,12 +538,6 @@ public class ConnectionHandlerImpl extends StatefulDisposableBase implements Con
         connectionPool.releaseConnection(connection);
     }
 
-    @Override
-    @NotNull
-    public ConnectionPool getConnectionPool() {
-        return Failsafe.nn(connectionPool);
-    }
-
     @NotNull
     @Override
     public DatabaseInterfaces getInterfaces() {
@@ -645,6 +617,7 @@ public class ConnectionHandlerImpl extends StatefulDisposableBase implements Con
 
     @Override
     public Icon getIcon(){
+        ConnectionHandlerStatusHolder connectionStatus = getConnectionStatus();
         if (connectionStatus.isConnected()) {
             return
                 connectionStatus.isBusy() ? Icons.CONNECTION_BUSY :

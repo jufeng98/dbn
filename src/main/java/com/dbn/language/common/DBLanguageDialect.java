@@ -1,12 +1,11 @@
 package com.dbn.language.common;
 
-import com.dbn.language.common.element.ChameleonElementType;
-import com.dbn.language.common.element.TokenPairTemplate;
 import com.dbn.common.action.UserDataKeys;
 import com.dbn.common.dispose.Failsafe;
-import com.dbn.common.latent.Latent;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.mapping.FileConnectionContextManager;
+import com.dbn.language.common.element.ChameleonElementType;
+import com.dbn.language.common.element.TokenPairTemplate;
 import com.dbn.language.psql.PSQLLanguage;
 import com.dbn.language.sql.SQLLanguage;
 import com.intellij.lang.Language;
@@ -33,9 +32,9 @@ public abstract class DBLanguageDialect extends Language implements DBFileElemen
 
     private final DBLanguageDialectIdentifier identifier;
 
-    private final Latent<DBLanguageSyntaxHighlighter> syntaxHighlighter = Latent.basic(() -> createSyntaxHighlighter());
-    private final Latent<DBLanguageParserDefinition> parserDefinition = Latent.basic(() -> createParserDefinition());
-    private final Latent<IFileElementType> fileElementType = Latent.basic(() -> createFileElementType());
+    private final @Getter(lazy = true) DBLanguageSyntaxHighlighter syntaxHighlighter = createSyntaxHighlighter();
+    private final @Getter(lazy = true) DBLanguageParserDefinition parserDefinition = createParserDefinition();
+    private final @Getter(lazy = true) IFileElementType fileElementType = createFileElementType();
 
     private Set<ChameleonTokenType> chameleonTokens;
 
@@ -68,20 +67,6 @@ public abstract class DBLanguageDialect extends Language implements DBFileElemen
         return getBaseLanguage().getSharedTokenTypes();
     }
 
-    public DBLanguageSyntaxHighlighter getSyntaxHighlighter() {
-        return syntaxHighlighter.get();
-    }
-
-    @NotNull
-    public DBLanguageParserDefinition getParserDefinition() {
-        return parserDefinition.get();
-    }
-
-    @Override
-    public IFileElementType getFileElementType() {
-        return fileElementType.get();
-    }
-
     public TokenTypeBundle getParserTokenTypes() {
         return getParserDefinition().getParser().getTokenTypes();
     }
@@ -110,8 +95,8 @@ public abstract class DBLanguageDialect extends Language implements DBFileElemen
 
     public static DBLanguageDialect get(DBLanguageDialectIdentifier identifier) {
          // make sure all dialects are loaded before doing this lookup
-         SQLLanguage.INSTANCE.getAvailableLanguageDialects();
-         PSQLLanguage.INSTANCE.getAvailableLanguageDialects();
+         SQLLanguage.INSTANCE.getLanguageDialects();
+         PSQLLanguage.INSTANCE.getLanguageDialects();
          return REGISTRY.get(identifier);
     }
 

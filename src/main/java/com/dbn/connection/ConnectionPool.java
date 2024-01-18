@@ -10,6 +10,7 @@ import com.dbn.connection.jdbc.DBNConnectionPool;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.project.Project;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,14 +30,12 @@ public final class ConnectionPool extends StatefulDisposableBase implements Noti
     }
 
     private final ConnectionRef connection;
-    private final DBNConnectionPool connectionPool;
-    private final DBNConnectionCache connectionCache;
+    private final @Getter(lazy = true) DBNConnectionPool connectionPool = new DBNConnectionPool(getConnection());
+    private final @Getter(lazy = true) DBNConnectionCache connectionCache = new DBNConnectionCache(getConnection());
 
     ConnectionPool(@NotNull ConnectionHandler connection) {
         super(connection);
         this.connection = connection.ref();
-        this.connectionCache = new DBNConnectionCache(connection);
-        this.connectionPool = new DBNConnectionPool(connection);
     }
 
     DBNConnection ensureTestConnection() throws SQLException {
@@ -60,17 +59,17 @@ public final class ConnectionPool extends StatefulDisposableBase implements Noti
 
     @Nullable
     public DBNConnection getMainConnection() {
-        return connectionCache.get(SessionId.MAIN);
+        return getConnectionCache().get(SessionId.MAIN);
     }
 
     @Nullable
     public DBNConnection getTestConnection() {
-        return connectionCache.get(SessionId.TEST);
+        return getConnectionCache().get(SessionId.TEST);
     }
 
     @Nullable
     public DBNConnection getSessionConnection(SessionId sessionId) {
-        return connectionCache.get(sessionId);
+        return getConnectionCache().get(sessionId);
     }
 
     @NotNull
@@ -82,10 +81,10 @@ public final class ConnectionPool extends StatefulDisposableBase implements Noti
     public List<DBNConnection> getConnections(ConnectionType... connectionTypes) {
         List<DBNConnection> connections = new ArrayList<>();
         if (ConnectionType.POOL.matches(connectionTypes)) {
-            connectionPool.visit(c -> connections.add(c));
+            getConnectionPool().visit(c -> connections.add(c));
         }
 
-        connectionCache.visit(
+        getConnectionCache().visit(
                 c -> c.getType().matches(connectionTypes),
                 c -> connections.add(c));
         return connections;
@@ -95,15 +94,15 @@ public final class ConnectionPool extends StatefulDisposableBase implements Noti
     private DBNConnection ensureConnection(SessionId sessionId) throws SQLException {
         ConnectionHandler connection = getConnection();
         ConnectionManager.setLastUsedConnection(connection);
-        return connectionCache.ensure(sessionId);
+        return getConnectionCache().ensure(sessionId);
     }
 
     public void updateLastAccess() {
-        connectionPool.updateLastAccess();
+        getConnectionPool().updateLastAccess();
     }
 
     public long getLastAccess() {
-        return connectionPool.getLastAccess();
+        return getConnectionPool().getLastAccess();
     }
 
     boolean wasNeverAccessed() {
@@ -123,14 +122,14 @@ public final class ConnectionPool extends StatefulDisposableBase implements Noti
 
     @NotNull
     DBNConnection allocateConnection(boolean readonly) throws SQLException {
-        return connectionPool.acquire(readonly);
+        return getConnectionPool().acquire(readonly);
     }
 
     void releaseConnection(@Nullable DBNConnection connection) {
         if (connection == null) return;
 
         if (connection.isPoolConnection()) {
-            connectionPool.release(connection);
+            getConnectionPool().release(connection);
         } else {
             log.error("Trying to release non-POOL connection: " + connection.getType(), new IllegalArgumentException("No POOL connection"));
         }
@@ -147,18 +146,18 @@ public final class ConnectionPool extends StatefulDisposableBase implements Noti
     void closeConnection(DBNConnection connection) {
         SessionId sessionId = connection.getSessionId();
         if (sessionId == SessionId.POOL) {
-            connectionPool.drop(connection);
+            getConnectionPool().drop(connection);
         } else {
-            connectionCache.drop(sessionId);
+            getConnectionCache().drop(sessionId);
         }
     }
 
     public int getSize() {
-        return connectionPool.size();
+        return getConnectionPool().size();
     }
 
     public int getPeakPoolSize() {
-        return connectionPool.peakSize();
+        return getConnectionPool().peakSize();
     }
 
     @Override
@@ -169,18 +168,18 @@ public final class ConnectionPool extends StatefulDisposableBase implements Noti
     public boolean isConnected(SessionId sessionId) {
 
         if (sessionId == SessionId.POOL) {
-            return connectionPool.size() > 0;
+            return getConnectionPool().size() > 0;
         }
 
         if (sessionId != null) {
-            DBNConnection connection = connectionCache.get(sessionId);
+            DBNConnection connection = getConnectionCache().get(sessionId);
             return connection != null && !connection.isClosed() && connection.isValid();
         }
         return false;
     }
 
     void clean() {
-        if (connectionPool.isEmpty()) return;
+        if (getConnectionPool().isEmpty()) return;
         try {
             ConnectionHandler connection = getConnection();
             ConnectionHandlerStatusHolder status = connection.getConnectionStatus();
@@ -193,7 +192,7 @@ public final class ConnectionPool extends StatefulDisposableBase implements Noti
                 ConnectionDetailSettings detailSettings = connection.getSettings().getDetailSettings();
                 int minutesToDisconnect = detailSettings.getIdleMinutesToDisconnectPool();
                 if (lastAccess > 0 && isOlderThan(lastAccess, minutesToDisconnect, TimeUnit.MINUTES)) {
-                    connectionPool.clean(conn -> !conn.isActive() && !conn.isReserved());
+                    getConnectionPool().clean(conn -> !conn.isActive() && !conn.isReserved());
                 }
 
             } finally {

@@ -142,7 +142,7 @@ public class GoToDatabaseObjectAction extends GotoActionBase implements DumbAwar
             return connection.ensure();
         }
 
-        @Override
+        //@Override
         public boolean canBePerformed(@NotNull DataContext context) {
             return true;
         }

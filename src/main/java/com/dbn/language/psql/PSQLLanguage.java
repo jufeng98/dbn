@@ -1,13 +1,13 @@
 package com.dbn.language.psql;
 
+import com.dbn.code.psql.style.PSQLCodeStyle;
+import com.dbn.code.psql.style.options.PSQLCodeStyleSettings;
+import com.dbn.language.common.DBLanguage;
 import com.dbn.language.psql.dialect.PSQLLanguageDialect;
 import com.dbn.language.psql.dialect.mysql.MysqlPSQLLanguageDialect;
 import com.dbn.language.psql.dialect.oracle.OraclePLSQLLanguageDialect;
 import com.dbn.language.psql.dialect.postgres.PostgresPSQLLanguageDialect;
 import com.dbn.language.psql.dialect.sqlite.SqlitePSQLLanguageDialect;
-import com.dbn.code.psql.style.PSQLCodeStyle;
-import com.dbn.code.psql.style.options.PSQLCodeStyleSettings;
-import com.dbn.language.common.DBLanguage;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.tree.IFileElementType;
 import org.jetbrains.annotations.Nullable;
@@ -31,7 +31,7 @@ public class PSQLLanguage extends DBLanguage<PSQLLanguageDialect> {
 
     @Override
     public PSQLLanguageDialect getMainLanguageDialect() {
-        return getAvailableLanguageDialects()[0];
+        return getLanguageDialects()[0];
     }
 
     @Override

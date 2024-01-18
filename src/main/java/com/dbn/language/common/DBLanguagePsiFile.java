@@ -198,7 +198,7 @@ public abstract class DBLanguagePsiFile extends PsiFileImpl implements DatabaseC
                     return languageDialect;
                 }
             } else {
-                return dbLanguage.getAvailableLanguageDialects()[0];
+                return dbLanguage.getLanguageDialects()[0];
             }
         } else if (language instanceof DBLanguageDialect) {
             return (DBLanguageDialect) language;
