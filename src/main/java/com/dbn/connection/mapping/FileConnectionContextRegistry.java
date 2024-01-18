@@ -3,12 +3,12 @@ package com.dbn.connection.mapping;
 import com.dbn.common.dispose.StatefulDisposableBase;
 import com.dbn.common.file.util.VirtualFiles;
 import com.dbn.common.project.ProjectRef;
-import com.dbn.connection.config.ConnectionConfigListener;
-import com.dbn.connection.session.DatabaseSession;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.ConnectionId;
 import com.dbn.connection.SchemaId;
 import com.dbn.connection.SessionId;
+import com.dbn.connection.config.ConnectionConfigListener;
+import com.dbn.connection.session.DatabaseSession;
 import com.dbn.ddl.DDLFileAttachmentManager;
 import com.dbn.object.DBSchema;
 import com.dbn.object.common.DBSchemaObject;
@@ -22,8 +22,9 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 import static com.dbn.common.action.UserDataKeys.FILE_CONNECTION_MAPPING;

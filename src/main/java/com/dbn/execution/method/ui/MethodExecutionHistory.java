@@ -49,10 +49,6 @@ public class MethodExecutionHistory implements PersistentStateElement, Connectio
         return project.ensure();
     }
 
-    public List<MethodExecutionInput> getExecutionInputs() {
-        return executionInputs;
-    }
-
     public void setExecutionInputs(List<MethodExecutionInput> executionInputs) {
         this.executionInputs.clear();
         this.executionInputs.addAll(executionInputs);

@@ -14,8 +14,8 @@ public abstract class StatefulDisposableBase implements StatefulDisposable {
     }
 
     public StatefulDisposableBase(@Nullable Disposable parent) {
-        if (Checks.isValid(parent)) {
-            Disposer.register(parent, this);
-        }
+        if (!Checks.isValid(parent)) return;
+
+        Disposer.register(parent, this);
     }
 }
