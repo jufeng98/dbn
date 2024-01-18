@@ -8,7 +8,7 @@
     <depends optional="true" config-file="dbn-java-support.xml">com.intellij.modules.java</depends>
     <depends optional="true" config-file="dbn-copyright-support.xml">com.intellij.copyright</depends>
     <vendor email="dancioca@bluewin.ch">Dan Cioca</vendor>
-    <idea-version since-build="200.0001" until-build="233.*"/>
+    <idea-version since-build="200.0001" until-build="241.*"/>
     <description><![CDATA[
             <b>Database development, scripting and navigation tool</b><br>
             This software solution enhances the capabilities of the IntelliJ IDEA development environment and its associated products by providing comprehensive features for database development and maintenance.
