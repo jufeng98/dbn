@@ -10,6 +10,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 
+import static com.dbn.common.dispose.Checks.isNotValid;
+
 public class DDLMappedNotificationPanel extends EditorNotificationPanel {
 
     public DDLMappedNotificationPanel(@NotNull final VirtualFile virtualFile, final DBSchemaObject editableObject) {
@@ -21,15 +23,15 @@ public class DDLMappedNotificationPanel extends EditorNotificationPanel {
         setText("This DDL file is attached to the database " + objectName + ". " +
                 "Changes done to the " + objectTypeName + " are mirrored to this DDL file, overwriting any changes you may do to it.");
         createActionLabel("Detach", () -> {
-            if (!project.isDisposed()) {
-                DDLFileAttachmentManager attachmentManager = DDLFileAttachmentManager.getInstance(project);
-                attachmentManager.detachDDLFile(virtualFile);
-                DBSchemaObject object = DBObjectRef.get(editableObjectRef);
-                if (object == null) return;
+            if (isNotValid(project)) return;
 
-                DatabaseFileEditorManager editorManager = DatabaseFileEditorManager.getInstance(project);
-                editorManager.reopenEditor(object);
-            }
+            DDLFileAttachmentManager attachmentManager = DDLFileAttachmentManager.getInstance(project);
+            attachmentManager.detachDDLFile(virtualFile);
+            DBSchemaObject object = DBObjectRef.get(editableObjectRef);
+            if (object == null) return;
+
+            DatabaseFileEditorManager editorManager = DatabaseFileEditorManager.getInstance(project);
+            editorManager.reopenEditor(object);
         });
     }
 }

@@ -2,8 +2,8 @@ package com.dbn.common.ui.form;
 
 import com.dbn.common.color.Colors;
 import com.dbn.common.event.ProjectEvents;
-import com.dbn.common.util.Commons;
 import com.dbn.common.ui.Presentable;
+import com.dbn.common.util.Commons;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.ConnectionHandlerStatusListener;
 import com.dbn.connection.ConnectionId;
@@ -53,27 +53,21 @@ public class DBNHeaderForm extends DBNFormBase {
 
     public DBNHeaderForm(DBNForm parent, @NotNull Presentable presentable) {
         this(parent);
-        objectLabel.setText(presentable.getName());
-        objectLabel.setIcon(presentable.getIcon());
-        updateBorderAndBackground(presentable);
+        update(presentable);
     }
 
     public DBNHeaderForm(DBNForm parent, @NotNull ConnectionHandler connection) {
         this(parent);
-        objectLabel.setText(connection.getName());
-        objectLabel.setIcon(connection.getIcon());
-        updateBorderAndBackground((Presentable) connection);
-        ConnectionId id = connection.getConnectionId();
-        Project project = connection.getProject();
+        update(connection);
+    }
 
-        ProjectEvents.subscribe(project, this, ConnectionHandlerStatusListener.TOPIC, (connectionId) -> {
-            if (connectionId != id) return;
-
-            ConnectionHandler connHandler = ConnectionHandler.get(connectionId);
-            if (connHandler == null) return;
-
-            objectLabel.setIcon(connHandler.getIcon());
-        });
+    public DBNHeaderForm(DBNForm parent, @NotNull Object contextObject) {
+        this(parent);
+        if (contextObject instanceof DBObject) update((DBObject) contextObject); else
+        if (contextObject instanceof DBObjectRef) update((DBObjectRef) contextObject); else
+        if (contextObject instanceof ConnectionHandler) update((ConnectionHandler) contextObject); else
+        if (contextObject instanceof Presentable) update((Presentable) contextObject); else
+            throw new UnsupportedOperationException("Unsupported context object of type " + contextObject.getClass());
     }
 
     public void update(@NotNull DBObject object) {
@@ -92,6 +86,27 @@ public class DBNHeaderForm extends DBNFormBase {
         objectLabel.setText("[" + connectionName + "] " + objectRef.getQualifiedName());
         objectLabel.setIcon(objectRef.getObjectType().getIcon());
         updateBorderAndBackground(objectRef);
+    }
+
+    private void update(@NotNull Presentable presentable) {
+        objectLabel.setText(presentable.getName());
+        objectLabel.setIcon(presentable.getIcon());
+        updateBorderAndBackground(presentable);
+    }
+
+    private void update(@NotNull ConnectionHandler connection) {
+        update((Presentable) connection);
+        ConnectionId id = connection.getConnectionId();
+        Project project = connection.getProject();
+
+        ProjectEvents.subscribe(project, this, ConnectionHandlerStatusListener.TOPIC, (connectionId) -> {
+            if (connectionId != id) return;
+
+            ConnectionHandler connHandler = ConnectionHandler.get(connectionId);
+            if (connHandler == null) return;
+
+            objectLabel.setIcon(connHandler.getIcon());
+        });
     }
 
     private void updateBorderAndBackground(Presentable presentable) {

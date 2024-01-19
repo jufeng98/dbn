@@ -31,7 +31,7 @@ public class FileMappings<T> implements Disposable {
     private final Set<BiPredicate<String, T>> verifiers = new HashSet<>();
     private final WeakRefCache<T, List<String>> urlCache = WeakRefCache.weakKey();
     private final WeakRefCache<T, List<VirtualFile>> fileCache = WeakRefCache.weakKey();
-    private ParametricRunnable<VirtualFile, Throwable> fileChangeHandler;
+    private final List<ParametricRunnable<FileMappingEvent<T>, Throwable>> eventHandlers = new ArrayList<>();
 
     public FileMappings(@Nullable Disposable parentDisposable) {
         VirtualFileManager fileManager = VirtualFileManager.getInstance();
@@ -54,37 +54,54 @@ public class FileMappings<T> implements Disposable {
         if (file == null) return;
         if (!isLocalFileSystem(file)) return;
 
+        T target = null;
         if (event instanceof VFileDeleteEvent) {
             VFileDeleteEvent deleteEvent = (VFileDeleteEvent) event;
-            remove(deleteEvent.getFile().getUrl());
+            target = remove(deleteEvent.getFile().getUrl());
 
         } else if (event instanceof VFileMoveEvent) {
             VFileMoveEvent moveEvent = (VFileMoveEvent) event;
-            updateMapping(file,
+            target = updateMapping(file,
                     moveEvent.getOldPath(),
                     moveEvent.getNewPath());
 
         } else if (event instanceof VFilePropertyChangeEvent) {
             VFilePropertyChangeEvent propertyChangeEvent = (VFilePropertyChangeEvent) event;
-            updateMapping(file,
+            target = updateMapping(file,
                     propertyChangeEvent.getOldPath(),
                     propertyChangeEvent.getNewPath());
+        }
+
+        handleEvent(target, event);
+    }
+
+    @SneakyThrows
+    private void handleEvent(T target, VFileEvent event) {
+        if (eventHandlers.isEmpty()) return;
+
+        FileMappingEvent<T> mappingEvent = new FileMappingEvent<T>(target, event);
+        for (ParametricRunnable<FileMappingEvent<T>, Throwable> handler : eventHandlers) {
+            handler.run(mappingEvent);
         }
     }
 
     @SneakyThrows
-    private void updateMapping(VirtualFile file, String oldPath, String newPath) {
-        if (Objects.equals(oldPath, newPath)) return;
+    private T updateMapping(VirtualFile file, String oldPath, String newPath) {
+        if (Objects.equals(oldPath, newPath)) return null;
 
         String protocol = file.getFileSystem().getProtocol();
         String oldUrl = VirtualFileManager.constructUrl(protocol, oldPath);
         String newUrl = VirtualFileManager.constructUrl(protocol, newPath);
 
         T value = remove(oldUrl);
-        if (value == null) return;
+        if (value == null) return null;
 
         put(newUrl, value);
-        if (fileChangeHandler != null) fileChangeHandler.run(file);
+        return value;
+    }
+
+    public void addEventHandler(ParametricRunnable<FileMappingEvent<T>, Throwable> handler) {
+        eventHandlers.add(handler);
     }
 
     public void addVerifier(BiPredicate<String, T> verifier) {
@@ -170,5 +187,6 @@ public class FileMappings<T> implements Disposable {
     public void dispose() {
         clear();
         verifiers.clear();
+        eventHandlers.clear();
     }
 }

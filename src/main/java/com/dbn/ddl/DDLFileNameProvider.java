@@ -2,6 +2,7 @@ package com.dbn.ddl;
 
 import com.dbn.object.common.DBObject;
 import com.dbn.object.lookup.DBObjectRef;
+import com.dbn.object.type.DBObjectType;
 import lombok.Getter;
 
 import static com.dbn.common.util.Strings.toLowerCase;
@@ -16,6 +17,10 @@ public class DDLFileNameProvider {
         this.object = object;
         this.ddlFileType = ddlFileType;
         this.extension = extension;
+    }
+
+    public DBObjectType getObjectType() {
+        return object.getObjectType();
     }
 
     public DBObject getObject() {

@@ -97,6 +97,11 @@ public class DatabaseFileEditorManager extends ProjectComponentBase {
         });
     }
 
+    public boolean isFileOpen(DBSchemaObject object) {
+        return isFileOpen(object.getEditableVirtualFile());
+    }
+
+
     public boolean isFileOpen(DBEditableObjectVirtualFile databaseFile) {
         FileEditorManager editorManager = FileEditorManager.getInstance(getProject());
         return editorManager.isFileOpen(databaseFile);
@@ -291,7 +296,6 @@ public class DatabaseFileEditorManager extends ProjectComponentBase {
                         when(option == 0, () -> fileAttachmentManager.createDDLFile(objectRef));
                         when(option != 2, callback);
                     });
-            return;
         } else {
             List<VirtualFileInfo> fileInfos = VirtualFileInfo.fromFiles(ddlFiles, project);
             fileAttachmentManager.showFileAttachDialog(object, fileInfos, true,

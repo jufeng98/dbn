@@ -3,8 +3,9 @@ package com.dbn.ddl;
 import com.dbn.DatabaseNavigator;
 import com.dbn.common.component.PersistentState;
 import com.dbn.common.component.ProjectComponentBase;
-import com.dbn.common.dispose.Failsafe;
 import com.dbn.common.event.ProjectEvents;
+import com.dbn.common.file.FileEventType;
+import com.dbn.common.file.FileMappingEvent;
 import com.dbn.common.file.FileMappings;
 import com.dbn.common.file.VirtualFileInfo;
 import com.dbn.common.file.util.FileSearchRequest;
@@ -13,7 +14,7 @@ import com.dbn.common.thread.Background;
 import com.dbn.common.thread.Dispatch;
 import com.dbn.common.thread.Progress;
 import com.dbn.common.thread.Write;
-import com.dbn.common.ui.util.Lists;
+import com.dbn.common.ui.dialog.SelectionListDialog;
 import com.dbn.common.util.Dialogs;
 import com.dbn.common.util.Dialogs.DialogCallback;
 import com.dbn.common.util.Documents;
@@ -47,28 +48,30 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.ui.SelectFromListDialog;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
 import com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
+import com.intellij.ui.components.JBList;
 import lombok.val;
 import org.apache.logging.log4j.util.Strings;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.dbn.common.component.Components.projectService;
+import static com.dbn.common.dispose.Checks.isNotValid;
+import static com.dbn.common.file.FileEventType.*;
 import static com.dbn.common.message.MessageCallback.when;
-import static com.dbn.common.options.setting.Settings.newElement;
-import static com.dbn.common.options.setting.Settings.stringAttribute;
+import static com.dbn.common.options.setting.Settings.*;
+import static com.dbn.common.util.Lists.first;
 import static com.dbn.common.util.Messages.options;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 import static com.dbn.vfs.DatabaseFileSystem.isFileOpened;
@@ -82,6 +85,8 @@ public class DDLFileAttachmentManager extends ProjectComponentBase implements Pe
     public static final String COMPONENT_NAME = "DBNavigator.Project.DDLFileAttachmentManager";
 
     private final FileMappings<DBObjectRef<DBSchemaObject>> mappings = new FileMappings<>(this);
+    private final Map<DBObjectType, String> preferences = new ConcurrentHashMap<>();
+
     private DDLFileAttachmentManager(@NotNull Project project) {
         super(project, COMPONENT_NAME);
 
@@ -95,6 +100,23 @@ public class DDLFileAttachmentManager extends ProjectComponentBase implements Pe
             if (file == null) return false;
 
             return isValidDDLFile(file, o);
+        });
+
+        mappings.addEventHandler((FileMappingEvent<DBObjectRef<DBSchemaObject>> e) -> {
+            FileEventType eventType = e.getEventType();
+            if (!eventType.isOneOf(MOVED, RENAMED, DELETED)) return;
+
+            DBObjectRef<DBSchemaObject> target = e.getTarget();
+            if (target == null) return;
+
+            DBSchemaObject object = target.get();
+            if (object == null) return;
+
+            DatabaseFileEditorManager editorManager = DatabaseFileEditorManager.getInstance(getProject());
+            if (!editorManager.isFileOpen(object)) return;
+
+            Dispatch.run(() -> reopenEditor(object));
+
         });
     }
 
@@ -291,8 +313,7 @@ public class DDLFileAttachmentManager extends ProjectComponentBase implements Pe
                     Messages.showErrorDialog(project, "Could not create file " + parentDirectory + File.separator + fileName + ".", e);
                 }
 
-                DatabaseFileEditorManager editorManager = DatabaseFileEditorManager.getInstance(project);
-                editorManager.reopenEditor(object);
+                reopenEditor(object);
             }
         } else {
             showMissingFileAssociations(objectRef);
@@ -377,12 +398,9 @@ public class DDLFileAttachmentManager extends ProjectComponentBase implements Pe
                     } else {
                         List<VirtualFileInfo> fileInfos = VirtualFileInfo.fromFiles(files, getProject());
                         DBSchemaObject object = objectRef.ensure();
-                        showFileAttachDialog(object, fileInfos, false, (dialog, exitCode) -> {
-                            if (exitCode == DialogWrapper.CANCEL_EXIT_CODE) return;
-
-                            DatabaseFileEditorManager editorManager = DatabaseFileEditorManager.getInstance(object.getProject());
-                            editorManager.reopenEditor(object);
-                        });
+                        showFileAttachDialog(object, fileInfos, false, (dialog, exitCode) ->
+                                when(exitCode != DialogWrapper.CANCEL_EXIT_CODE,
+                                        () -> reopenEditor(object)));
                     }
                 });
 
@@ -399,20 +417,23 @@ public class DDLFileAttachmentManager extends ProjectComponentBase implements Pe
 
                     List<VirtualFileInfo> fileInfos = VirtualFileInfo.fromFiles(files, getProject());
                     DBSchemaObject object = objectRef.ensure();
-                    showFileDetachDialog(object, fileInfos, (dialog, exitCode) -> {
-                            if (exitCode == DialogWrapper.CANCEL_EXIT_CODE) return;
-
-                            DatabaseFileEditorManager editorManager = DatabaseFileEditorManager.getInstance(object.getProject());
-                            editorManager.reopenEditor(object);
-                        });
+                    showFileDetachDialog(object, fileInfos, (dialog, exitCode) ->
+                            when(exitCode != DialogWrapper.CANCEL_EXIT_CODE,
+                                    () -> reopenEditor(object)));
         });
     }
 
+    private void reopenEditor(DBSchemaObject object) {
+        Project project = object.getProject();
+        DatabaseFileEditorManager editorManager = DatabaseFileEditorManager.getInstance(project);
+        editorManager.reopenEditor(object);
+    }
+
     @Nullable
-    private DDLFileNameProvider getDDLFileNameProvider(DBObjectRef<DBSchemaObject> objectRef) {
-        List<DDLFileType> ddlFileTypes = getDdlFileTypes(objectRef);
+    private DDLFileNameProvider getDDLFileNameProvider(DBObjectRef<DBSchemaObject> object) {
+        List<DDLFileType> ddlFileTypes = getDdlFileTypes(object);
         if (ddlFileTypes.isEmpty()) {
-            showMissingFileAssociations(objectRef);
+            showMissingFileAssociations(object);
             return null;
         }
 
@@ -426,32 +447,43 @@ public class DDLFileAttachmentManager extends ProjectComponentBase implements Pe
         if (extensionMappings.size() == 1) {
             String extension = extensionMappings.keySet().iterator().next();
             DDLFileType ddlFileType = extensionMappings.get(extension);
-            return new DDLFileNameProvider(objectRef, ddlFileType, extension);
+            return new DDLFileNameProvider(object, ddlFileType, extension);
         }
 
         List<DDLFileNameProvider> fileNameProviders = new ArrayList<>();
         for (String extension : extensionMappings.keySet()) {
             DDLFileType ddlFileType = extensionMappings.get(extension);
-            DDLFileNameProvider fileNameProvider = new DDLFileNameProvider(objectRef, ddlFileType, extension);
+            DDLFileNameProvider fileNameProvider = new DDLFileNameProvider(object, ddlFileType, extension);
             fileNameProviders.add(fileNameProvider);
         }
 
-        return Dispatch.call(() -> openFileNameProvidersDialog(fileNameProviders));
+        return Dispatch.call(() -> openFileNameProvidersDialog(object, fileNameProviders));
     }
 
-    private DDLFileNameProvider openFileNameProvidersDialog(List<DDLFileNameProvider> fileNameProviders) {
-        SelectFromListDialog fileTypeDialog = new SelectFromListDialog(
+    private DDLFileNameProvider openFileNameProvidersDialog(DBObjectRef<?> object, List<DDLFileNameProvider> providers) {
+        DDLFileNameProvider preferredProvider = first(providers, p -> Objects.equals(preferences.get(p.getObjectType()), p.getExtension()));
+
+        SelectionListDialog<DDLFileNameProvider> fileTypeDialog = new SelectionListDialog<>(
                 getProject(),
-                fileNameProviders.toArray(),
-                Lists.BASIC_TO_STRING_ASPECT,
                 "Select DDL File Type",
-                ListSelectionModel.SINGLE_SELECTION);
-        JList list = Failsafe.nd((JList) fileTypeDialog.getPreferredFocusedComponent());
-        list.setCellRenderer(new DDLFileNameListCellRenderer());
+                providers,
+                preferredProvider,
+                object);
+
+        JBList<DDLFileNameProvider> selectionList = fileTypeDialog.getForm().getSelectionList();
+        selectionList.setCellRenderer(new DDLFileNameListCellRenderer());
+
         fileTypeDialog.show();
-        Object[] selection = fileTypeDialog.getSelection();
-        if (selection == null) throw new ProcessCanceledException();
-        return (DDLFileNameProvider) selection[0];
+        List<DDLFileNameProvider> selection = fileTypeDialog.getSelection();
+        if (selection == null || selection.isEmpty()) throw new ProcessCanceledException();
+
+        DDLFileNameProvider selectedProvider = selection.get(0);
+
+        DBObjectType objectType = selectedProvider.getObjectType();
+        String extension = selectedProvider.getExtension();
+        preferences.put(objectType, extension);
+
+        return selectedProvider;
     }
 
     public void showMissingFileAssociations(DBObjectRef<DBSchemaObject> objectRef) {
@@ -474,11 +506,10 @@ public class DDLFileAttachmentManager extends ProjectComponentBase implements Pe
     private void processFileDeletedEvent(@NotNull VirtualFile file) {
         DBObjectRef<DBSchemaObject> objectRef = mappings.get(file.getUrl());
         DBSchemaObject object = DBObjectRef.get(objectRef);
-        if (object == null) return;
+        if (isNotValid(object)) return;
 
         detachDDLFile(file);
-        DatabaseFileEditorManager editorManager = DatabaseFileEditorManager.getInstance(getProject());
-        editorManager.reopenEditor(object);
+        reopenEditor(object);
     }
 
     /*********************************************
@@ -488,31 +519,56 @@ public class DDLFileAttachmentManager extends ProjectComponentBase implements Pe
     @Override
     public Element getComponentState() {
         Element element = new Element("state");
+
+        Element mappingsElement = newElement(element, "mappings");
         for (String fileUrl : mappings.fileUrls()) {
             val objectRef = mappings.get(fileUrl);
 
-            Element childElement = newElement(element, "mapping");
-            childElement.setAttribute("file-url", fileUrl);
-            objectRef.writeState(childElement);
+            Element mappingElement = newElement(mappingsElement, "mapping");
+            setStringAttribute(mappingElement, "file-url", fileUrl);
+            objectRef.writeState(mappingElement);
         }
+
+        Element preferencesElement = newElement(element, "preferences");
+        for (DBObjectType objectType : preferences.keySet()) {
+            String fileExtension = preferences.get(objectType);
+
+            Element mappingElement = newElement(preferencesElement, "mapping");
+            setEnumAttribute(mappingElement, "object-type", objectType);
+            setStringAttribute(mappingElement, "file-extension", fileExtension);
+        }
+
         return element;
     }
 
     @Override
     public void loadComponentState(@NotNull Element element) {
-        for (Element child : element.getChildren()) {
-            String fileUrl = stringAttribute(child, "file-url");
-            if (StringUtil.isEmpty(fileUrl)) {
-                // TODO backward compatibility. Do cleanup
-                fileUrl = stringAttribute(child, "file");
-            }
+        Element mappingsElement = element.getChild("mappings");
+        List<Element> mappingElements = mappingsElement == null ? // TODO backward compatibility
+                element.getChildren("mapping") :
+                mappingsElement.getChildren();
 
-            if (StringUtil.isNotEmpty(fileUrl)) {
-                fileUrl = VirtualFiles.ensureFileUrl(fileUrl);
-                DBObjectRef<DBSchemaObject> objectRef = DBObjectRef.from(child);
-                if (objectRef != null) mappings.put(fileUrl, objectRef);
+        for (Element mappingElement : mappingElements) {
+            String fileUrl = stringAttribute(mappingElement, "file-url");
+            if (StringUtil.isEmpty(fileUrl)) continue;
+
+            fileUrl = VirtualFiles.ensureFileUrl(fileUrl);
+            DBObjectRef<DBSchemaObject> objectRef = DBObjectRef.from(mappingElement);
+            if (objectRef == null) continue;
+
+            mappings.put(fileUrl, objectRef);
+        }
+
+        Element preferencesElement = element.getChild("preferences");
+        if (preferencesElement != null) {
+            List<Element> preferenceElements = preferencesElement.getChildren();
+            for (Element mappingElement : preferenceElements) {
+                DBObjectType objectType = enumAttribute(mappingElement, "object-type", DBObjectType.UNKNOWN);
+                String fileExtension = stringAttribute(mappingElement, "file-extension");
+                preferences.put(objectType, fileExtension);
             }
         }
+
         Background.run(getProject(), () -> mappings.cleanup());
     }
 
