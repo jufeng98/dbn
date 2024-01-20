@@ -1,21 +1,19 @@
-package com.dbn.debugger.jdbc.config.ui;
+package com.dbn.debugger.common.config.ui;
 
 import com.dbn.common.ui.form.DBNHintForm;
 import com.dbn.debugger.ExecutionConfigManager;
 import com.dbn.debugger.common.config.DBRunConfigCategory;
-import com.dbn.debugger.common.config.ui.DBProgramRunConfigurationEditorForm;
-import com.dbn.debugger.jdbc.config.DBStatementJdbcRunConfig;
+import com.dbn.debugger.common.config.DBStatementRunConfig;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
-public class DBStatementJdbcRunConfigurationEditorForm extends DBProgramRunConfigurationEditorForm<DBStatementJdbcRunConfig> {
+public class DBStatementRunConfigForm extends DBProgramRunConfigForm<DBStatementRunConfig> {
     private JPanel headerPanel;
     private JPanel mainPanel;
-    private JCheckBox compileDependenciesCheckBox;
     private JPanel hintPanel;
 
-    public DBStatementJdbcRunConfigurationEditorForm(DBStatementJdbcRunConfig configuration) {
+    public DBStatementRunConfigForm(DBStatementRunConfig configuration) {
         super(configuration.getProject());
         if (configuration.getCategory() != DBRunConfigCategory.CUSTOM) {
             headerPanel.setVisible(false);
@@ -35,13 +33,10 @@ public class DBStatementJdbcRunConfigurationEditorForm extends DBProgramRunConfi
     }
 
     @Override
-    public void writeConfiguration(DBStatementJdbcRunConfig configuration) {
-        configuration.setCompileDependencies(compileDependenciesCheckBox.isSelected());
-        //selectMethodAction.setConfiguration(configuration);
+    public void writeConfiguration(DBStatementRunConfig configuration) {
     }
 
     @Override
-    public void readConfiguration(DBStatementJdbcRunConfig configuration) {
-        compileDependenciesCheckBox.setSelected(configuration.isCompileDependencies());
+    public void readConfiguration(DBStatementRunConfig configuration) {
     }
 }

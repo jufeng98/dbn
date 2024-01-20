@@ -20,13 +20,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-import static com.dbn.common.options.setting.Settings.*;
+import static com.dbn.common.options.setting.Settings.getEnum;
+import static com.dbn.common.options.setting.Settings.setEnum;
 
 @Getter
 @Setter
 public abstract class DBRunConfig<I extends ExecutionInput> extends RunConfigurationBase implements RunConfigurationWithSuppressedDefaultRunAction, LocatableConfiguration {
     private boolean generatedName = true;
-    private boolean compileDependencies = true;
     private DBRunConfigCategory category;
     private I executionInput;
 
@@ -54,14 +54,12 @@ public abstract class DBRunConfig<I extends ExecutionInput> extends RunConfigura
     public void writeExternal(@NotNull Element element) throws WriteExternalException {
         super.writeExternal(element);
         setEnum(element, "category", category);
-        setBoolean(element, "compile-dependencies", compileDependencies);
     }
 
     @Override
     public void readExternal(@NotNull Element element) throws InvalidDataException {
         super.readExternal(element);
         category = getEnum(element, "category", category);
-        compileDependencies = getBoolean(element, "compile-dependencies", compileDependencies);
     }
 
     public abstract List<DBMethod> getMethods();
@@ -80,8 +78,6 @@ public abstract class DBRunConfig<I extends ExecutionInput> extends RunConfigura
     public boolean excludeCompileBeforeLaunchOption() {
         return true;
     }
-
-
 
     public DBDebuggerType getDebuggerType() {
         DBRunConfigFactory factory = (DBRunConfigFactory) getFactory();

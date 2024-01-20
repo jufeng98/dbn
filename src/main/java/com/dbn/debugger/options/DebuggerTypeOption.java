@@ -2,37 +2,29 @@ package com.dbn.debugger.options;
 
 import com.dbn.common.option.InteractiveOption;
 import com.dbn.debugger.DBDebuggerType;
-import org.jetbrains.annotations.NotNull;
+import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
+@Getter
 public enum DebuggerTypeOption implements InteractiveOption {
     JDBC("Classic (over JDBC)", DBDebuggerType.JDBC),
     JDWP("JDWP (over TCP)", DBDebuggerType.JDWP),
     ASK("Ask"),
     CANCEL("Cancel");
 
-    private String name;
-    private DBDebuggerType debuggerType;
+    private final String name;
+    private final DBDebuggerType debuggerType;
 
     DebuggerTypeOption(String name) {
         this.name = name;
+        this.debuggerType = null;
     }
 
     DebuggerTypeOption(String name, DBDebuggerType debuggerType) {
         this.name = name;
         this.debuggerType = debuggerType;
-    }
-
-    @NotNull
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    public DBDebuggerType getDebuggerType() {
-        return debuggerType;
     }
 
     @Override

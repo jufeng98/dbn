@@ -1,7 +1,8 @@
 package com.dbn.debugger.jdbc.config;
 
-import com.dbn.debugger.common.config.DBRunConfigCategory;
 import com.dbn.debugger.common.config.DBMethodRunConfig;
+import com.dbn.debugger.common.config.DBRunConfigCategory;
+import com.dbn.debugger.common.config.ui.DBMethodRunConfigEditor;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.RunConfiguration;
@@ -16,14 +17,14 @@ public class DBMethodJdbcRunConfig extends DBMethodRunConfig {
         super(project, factory, name, category);
     }
 
-    @Override
-    public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment env) throws ExecutionException {
-        return new DBMethodJdbcRunProfileState(env);
-    }
-
     @NotNull
     @Override
     public SettingsEditor<? extends RunConfiguration> getConfigurationEditor() {
-        return new DBMethodJdbcRunConfigEditor(this);
+        return new DBMethodRunConfigEditor(this);
+    }
+
+    @Override
+    public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment env) throws ExecutionException {
+        return new DBMethodJdbcRunProfileState(env);
     }
 }

@@ -4,6 +4,7 @@ import com.dbn.debugger.DBDebuggerType;
 import com.dbn.debugger.DatabaseDebuggerManager;
 import com.dbn.debugger.common.config.DBRunConfigCategory;
 import com.dbn.debugger.common.config.DBStatementRunConfig;
+import com.dbn.debugger.common.config.ui.DBStatementRunConfigEditor;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.RunConfiguration;
@@ -12,11 +13,8 @@ import com.intellij.execution.configurations.RuntimeConfigurationException;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.InvalidDataException;
-import com.intellij.openapi.util.WriteExternalException;
 import lombok.Getter;
 import lombok.Setter;
-import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 
 @Getter
@@ -30,7 +28,7 @@ public class DBStatementJdwpRunConfig extends DBStatementRunConfig implements DB
     @NotNull
     @Override
     public SettingsEditor<? extends RunConfiguration> getConfigurationEditor() {
-        return new DBStatementJdwpRunConfigEditor(this);
+        return new DBStatementRunConfigEditor(this);
     }
 
     @Override
@@ -49,13 +47,4 @@ public class DBStatementJdwpRunConfig extends DBStatementRunConfig implements DB
         super.checkConfiguration();
     }
 
-    @Override
-    public void readExternal(@NotNull Element element) throws InvalidDataException {
-        super.readExternal(element);
-    }
-
-    @Override
-    public void writeExternal(@NotNull Element element) throws WriteExternalException {
-        super.writeExternal(element);
-    }
 }

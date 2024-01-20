@@ -4,6 +4,8 @@ import com.dbn.common.util.Cloneable;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.database.DatabaseFeature;
 import com.dbn.debugger.DBDebuggerType;
+import com.dbn.debugger.DatabaseDebuggerManager;
+import com.dbn.debugger.options.DebuggerTypeOption;
 import com.dbn.execution.method.MethodExecutionInput;
 import com.dbn.execution.method.MethodExecutionManager;
 import com.dbn.object.DBMethod;
@@ -44,7 +46,14 @@ public abstract class DBMethodRunConfig extends DBRunConfig<MethodExecutionInput
 
     @Override
     public boolean canRun() {
-        return super.canRun() && getMethod() != null;
+        if (!super.canRun()) return false;
+        if (getMethod() == null) return false;
+
+        DebuggerTypeOption debuggerTypeOption = getMethod().getConnection().getSettings().getDebuggerSettings().getDebuggerType().getSelectedOption();
+        if (debuggerTypeOption == DebuggerTypeOption.JDWP) {
+            return DBDebuggerType.JDWP.isSupported();
+        }
+        return true;
     }
 
     @Override
@@ -67,14 +76,20 @@ public abstract class DBMethodRunConfig extends DBRunConfig<MethodExecutionInput
             }
 
             DBMethod method = getMethod();
-            if (method != null) {
-                ConnectionHandler connection = method.getConnection();
-                if (!DatabaseFeature.DEBUGGING.isSupported(connection)){
-                    throw new RuntimeConfigurationError(
-                            "Debugging is not supported for " + connection.getDatabaseType().getName() +" databases.");
-                }
+            if (method == null) return;
+
+            ConnectionHandler connection = method.getConnection();
+            if (!DatabaseFeature.DEBUGGING.isSupported(connection)){
+                throw new RuntimeConfigurationError(
+                        "Debugging is not supported for " + connection.getDatabaseType().getName() +" databases.");
+            }
+
+            DebuggerTypeOption debuggerTypeOption = connection.getSettings().getDebuggerSettings().getDebuggerType().getSelectedOption();
+            if (debuggerTypeOption == DebuggerTypeOption.JDWP) {
+                DatabaseDebuggerManager.checkJdwpConfiguration();
             }
         }
+
     }
 
     @Nullable

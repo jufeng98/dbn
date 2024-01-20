@@ -3,6 +3,7 @@ package com.dbn.debugger;
 import com.dbn.DatabaseNavigator;
 import com.dbn.common.component.PersistentState;
 import com.dbn.common.component.ProjectComponentBase;
+import com.dbn.common.dispose.Checks;
 import com.dbn.common.event.ProjectEvents;
 import com.dbn.common.load.ProgressMonitor;
 import com.dbn.common.notification.NotificationGroup;
@@ -11,7 +12,6 @@ import com.dbn.common.util.Messages;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.ConnectionRef;
 import com.dbn.connection.context.DatabaseContext;
-import com.dbn.connection.operation.options.OperationSettings;
 import com.dbn.database.common.debug.DebuggerVersionInfo;
 import com.dbn.database.interfaces.DatabaseDebuggerInterface;
 import com.dbn.database.interfaces.DatabaseInterfaceInvoker;
@@ -21,7 +21,6 @@ import com.dbn.debugger.jdbc.process.DBMethodJdbcRunner;
 import com.dbn.debugger.jdbc.process.DBStatementJdbcRunner;
 import com.dbn.debugger.jdwp.process.DBMethodJdwpRunner;
 import com.dbn.debugger.jdwp.process.DBStatementJdwpRunner;
-import com.dbn.debugger.options.DebuggerSettings;
 import com.dbn.editor.code.SourceCodeManager;
 import com.dbn.execution.statement.processor.StatementExecutionProcessor;
 import com.dbn.object.*;
@@ -122,7 +121,7 @@ public class DatabaseDebuggerManager extends ProjectComponentBase implements Per
     }
 
     public void startMethodDebugger(@NotNull DBMethod method) {
-        startDebugger((debuggerType) -> {
+        startDebugger(method.getConnection(), (debuggerType) -> {
             Project project = getProject();
             ExecutionConfigManager configManager = ExecutionConfigManager.getInstance(project);
             RunnerAndConfigurationSettings settings = configManager.createConfiguration(method, debuggerType);
@@ -154,7 +153,10 @@ public class DatabaseDebuggerManager extends ProjectComponentBase implements Per
     }
 
     public void startStatementDebugger(@NotNull StatementExecutionProcessor executionProcessor) {
-        startDebugger(debuggerType -> {
+        ConnectionHandler connection = executionProcessor.getConnection();
+        if (Checks.isNotValid(connection)) return;
+
+        startDebugger(connection, debuggerType -> {
             Project project = getProject();
             ExecutionConfigManager configManager = ExecutionConfigManager.getInstance(project);
             RunnerAndConfigurationSettings settings = configManager.createConfiguration(executionProcessor, debuggerType);
@@ -184,8 +186,8 @@ public class DatabaseDebuggerManager extends ProjectComponentBase implements Per
         });
     }
 
-    private void startDebugger(@NotNull Consumer<DBDebuggerType> debuggerStarter) {
-        val debuggerTypeOption = getDebuggerSettings().getDebuggerType();
+    private void startDebugger(@NotNull ConnectionHandler connection, @NotNull Consumer<DBDebuggerType> debuggerStarter) {
+        val debuggerTypeOption = connection.getSettings().getDebuggerSettings().getDebuggerType();
         debuggerTypeOption.resolve(list(), option -> {
             DBDebuggerType debuggerType = option.getDebuggerType();
             if (debuggerType == null) return;
@@ -205,12 +207,6 @@ public class DatabaseDebuggerManager extends ProjectComponentBase implements Per
             }
         });
     }
-
-    private DebuggerSettings getDebuggerSettings() {
-        return OperationSettings.getInstance(getProject()).getDebuggerSettings();
-    }
-
-
 
     public List<DBSchemaObject> loadCompileDependencies(List<DBMethod> methods) {
         // TODO improve this logic (currently only drilling one level down in the dependencies)

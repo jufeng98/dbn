@@ -1,26 +1,24 @@
 package com.dbn.debugger.common.config;
 
 import com.dbn.common.dispose.Disposer;
-import com.dbn.debugger.common.config.ui.DBProgramRunConfigurationEditorForm;
+import com.dbn.debugger.common.config.ui.DBProgramRunConfigForm;
 import com.dbn.execution.ExecutionInput;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
 import static com.dbn.common.dispose.Checks.isValid;
 
-public abstract class DBRunConfigEditor<T extends DBRunConfig, F extends DBProgramRunConfigurationEditorForm<T>, I extends ExecutionInput> extends SettingsEditor<T> {
-    private T configuration;
+@Getter
+public abstract class DBRunConfigEditor<T extends DBRunConfig, F extends DBProgramRunConfigForm<T>, I extends ExecutionInput> extends SettingsEditor<T> {
+    private final T configuration;
     private F configurationEditorForm;
 
     public DBRunConfigEditor(T configuration) {
         this.configuration = configuration;
-    }
-
-    public T getConfiguration() {
-        return configuration;
     }
 
     protected abstract F createConfigurationEditorForm();

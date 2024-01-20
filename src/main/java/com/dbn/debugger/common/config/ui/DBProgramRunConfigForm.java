@@ -5,9 +5,9 @@ import com.dbn.debugger.common.config.DBRunConfig;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 
-public abstract class DBProgramRunConfigurationEditorForm<T extends DBRunConfig> extends DBNFormBase {
+public abstract class DBProgramRunConfigForm<T extends DBRunConfig> extends DBNFormBase {
 
-    public DBProgramRunConfigurationEditorForm(Project project) {
+    public DBProgramRunConfigForm(Project project) {
         super(null, project);
     }
 

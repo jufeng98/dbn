@@ -2,6 +2,7 @@ package com.dbn.debugger.jdbc.config;
 
 import com.dbn.debugger.common.config.DBRunConfigCategory;
 import com.dbn.debugger.common.config.DBStatementRunConfig;
+import com.dbn.debugger.common.config.ui.DBStatementRunConfigEditor;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.RunConfiguration;
@@ -21,7 +22,7 @@ public class DBStatementJdbcRunConfig extends DBStatementRunConfig {
     @NotNull
     @Override
     public SettingsEditor<? extends RunConfiguration> getConfigurationEditor() {
-        return new DBStatementJdbcRunConfigEditor(this);
+        return new DBStatementRunConfigEditor(this);
     }
 
     @Override

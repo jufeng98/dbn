@@ -12,14 +12,12 @@ public class OperationsSettingsForm extends CompositeConfigurationEditorForm<Ope
     private JPanel transactionSettingsPanel;
     private JPanel sessionBrowserSettings;
     private JPanel compilerPanel;
-    private JPanel debuggerPanel;
 
     public OperationsSettingsForm(OperationSettings settings) {
         super(settings);
         transactionSettingsPanel.add(settings.getTransactionManagerSettings().createComponent(), BorderLayout.CENTER);
         sessionBrowserSettings.add(settings.getSessionBrowserSettings().createComponent(), BorderLayout.CENTER);
         compilerPanel.add(settings.getCompilerSettings().createComponent(), BorderLayout.CENTER);
-        debuggerPanel.add(settings.getDebuggerSettings().createComponent(), BorderLayout.CENTER);
         resetFormChanges();
     }
 

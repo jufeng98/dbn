@@ -1,4 +1,4 @@
-package com.dbn.debugger.jdbc.config.ui;
+package com.dbn.debugger.common.config.ui;
 
 import com.dbn.common.action.GroupPopupAction;
 import com.dbn.common.action.ProjectAction;
@@ -12,9 +12,8 @@ import com.dbn.common.ui.util.UserInterface;
 import com.dbn.common.util.Actions;
 import com.dbn.debugger.DBDebuggerType;
 import com.dbn.debugger.ExecutionConfigManager;
+import com.dbn.debugger.common.config.DBMethodRunConfig;
 import com.dbn.debugger.common.config.DBRunConfigCategory;
-import com.dbn.debugger.common.config.ui.DBProgramRunConfigurationEditorForm;
-import com.dbn.debugger.jdbc.config.DBMethodJdbcRunConfig;
 import com.dbn.execution.method.MethodExecutionInput;
 import com.dbn.execution.method.MethodExecutionManager;
 import com.dbn.execution.method.ui.MethodExecutionInputForm;
@@ -23,6 +22,7 @@ import com.dbn.object.lookup.DBObjectRef;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,17 +32,15 @@ import java.awt.*;
 
 import static com.dbn.common.dispose.Disposer.replace;
 
-public class DBMethodJdbcRunConfigEditorForm extends DBProgramRunConfigurationEditorForm<DBMethodJdbcRunConfig> {
+public class DBMethodRunConfigForm<T extends DBMethodRunConfig> extends DBProgramRunConfigForm<T> {
     private JPanel headerPanel;
     private JPanel mainPanel;
     private JPanel methodArgumentsPanel;
-    private JCheckBox compileDependenciesCheckBox;
     private JPanel selectMethodActionPanel;
     private JPanel hintPanel;
-
     private MethodExecutionInputForm inputForm;
 
-    public DBMethodJdbcRunConfigEditorForm(DBMethodJdbcRunConfig configuration) {
+    public DBMethodRunConfigForm(T configuration) {
         super(configuration.getProject());
         readConfiguration(configuration);
         if (configuration.getCategory() != DBRunConfigCategory.CUSTOM) {
@@ -96,6 +94,7 @@ public class DBMethodJdbcRunConfigEditorForm extends DBProgramRunConfigurationEd
             super("Execution History", null, Icons.METHOD_EXECUTION_HISTORY);
         }
 
+
         @Override
         protected void actionPerformed(@NotNull AnActionEvent e, @NotNull Project project) {
             MethodExecutionManager methodExecutionManager = MethodExecutionManager.getInstance(project);
@@ -104,30 +103,28 @@ public class DBMethodJdbcRunConfigEditorForm extends DBProgramRunConfigurationEd
         }
     }
 
+    @Nullable
     public MethodExecutionInput getExecutionInput() {
         return inputForm == null ? null : inputForm.getExecutionInput();
     }
 
     @Override
-    public void writeConfiguration(DBMethodJdbcRunConfig configuration) {
+    public void writeConfiguration(DBMethodRunConfig configuration) throws ConfigurationException {
         if (inputForm != null) {
             inputForm.updateExecutionInput();
             configuration.setExecutionInput(getExecutionInput());
         }
-        configuration.setCompileDependencies(compileDependenciesCheckBox.isSelected());
-        //selectMethodAction.setConfiguration(configuration);
     }
 
     @Override
-    public void readConfiguration(DBMethodJdbcRunConfig configuration) {
+    public void readConfiguration(DBMethodRunConfig configuration) {
         setExecutionInput(configuration.getExecutionInput(), false);
-        compileDependenciesCheckBox.setSelected(configuration.isCompileDependencies());
     }
 
     public void setExecutionInput(@Nullable MethodExecutionInput executionInput, boolean touchForm) {
         Progress.modal(getProject(), executionInput, false,
-                "Loading method arguments",
-                "Loading arguments",
+                "Loading data dictionary",
+                "Loading method information",
                 progress -> {
                     // initialize method and arguments
                     if (executionInput != null) {
@@ -151,7 +148,7 @@ public class DBMethodJdbcRunConfigEditorForm extends DBProgramRunConfigurationEd
                             headerIcon = methodRef.getObjectType().getIcon();
                             DBMethod method = executionInput.getMethod();
                             if (method != null) {
-                                inputForm = new MethodExecutionInputForm(this, executionInput, false, DBDebuggerType.JDBC);
+                                inputForm = new MethodExecutionInputForm(this, executionInput, false, DBDebuggerType.JDWP);
                                 methodArgumentsPanel.add(inputForm.getComponent(), BorderLayout.CENTER);
                                 if (touchForm) inputForm.touch();
                                 headerIcon = method.getOriginalIcon();
