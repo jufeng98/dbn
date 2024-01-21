@@ -1,21 +1,23 @@
 package com.dbn.common.ui.panel;
 
-import com.dbn.common.color.Colors;
-import com.dbn.common.icon.Icons;
 import com.dbn.common.ui.component.DBNComponent;
+import com.dbn.common.ui.form.DBNCollapsibleForm;
 import com.dbn.common.ui.form.DBNFormBase;
 import com.dbn.common.ui.util.Mouse;
+import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 
-public class DBNCollapsiblePanel<P extends DBNComponent> extends DBNFormBase {
-    private JLabel collapseExpandLabel;
+public class DBNCollapsiblePanel extends DBNFormBase {
+    private JLabel toggleLabel;
     private JPanel contentPanel;
     private JPanel mainPanel;
+    private JLabel toggleDetailLabel;
     private boolean expanded;
+    private final DBNCollapsibleForm contentForm;
 
     @NotNull
     @Override
@@ -23,22 +25,31 @@ public class DBNCollapsiblePanel<P extends DBNComponent> extends DBNFormBase {
         return mainPanel;
     }
 
-    public DBNCollapsiblePanel(@NotNull P parent, JComponent contentComponent, String title, boolean expanded) {
+    public DBNCollapsiblePanel(@NotNull DBNComponent parent, DBNCollapsibleForm contentForm, boolean expanded) {
         super(parent);
+        this.contentForm = contentForm;
         this.expanded = expanded;
-        contentPanel.add(contentComponent, BorderLayout.CENTER);
-        contentPanel.setVisible(this.expanded);
-        collapseExpandLabel.setText(title);
-        collapseExpandLabel.setIcon(this.expanded ? Icons.COMMON_DOWN : Icons.COMMON_RIGHT);
-        collapseExpandLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        collapseExpandLabel.setForeground(Colors.HINT_COLOR);
+        this.contentPanel.add(contentForm.getComponent(), BorderLayout.CENTER);
+        this.toggleLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        updateVisibility();
 
-        collapseExpandLabel.addMouseListener(Mouse.listener().onClick(e -> {
+        this.toggleLabel.addMouseListener(Mouse.listener().onClick(e -> {
             if (e.getClickCount() == 1 && e.getButton() == MouseEvent.BUTTON1) {
-                DBNCollapsiblePanel.this.expanded = !DBNCollapsiblePanel.this.expanded;
-                contentPanel.setVisible(DBNCollapsiblePanel.this.expanded);
-                collapseExpandLabel.setIcon(DBNCollapsiblePanel.this.expanded ? Icons.COMMON_DOWN : Icons.COMMON_RIGHT);
+                toggleVisibility();
             }
         }));
+    }
+
+    private void toggleVisibility() {
+        expanded = !expanded;
+        updateVisibility();
+    }
+
+    private void updateVisibility() {
+        contentPanel.setVisible(expanded);
+        toggleDetailLabel.setVisible(!expanded);
+        toggleDetailLabel.setText(contentForm.getCollapsedTitleDetail());
+        toggleLabel.setIcon(expanded ? UIUtil.getTreeExpandedIcon() : UIUtil.getTreeCollapsedIcon());
+        toggleLabel.setText(expanded ? contentForm.getExpandedTitle() : contentForm.getCollapsedTitle());
     }
 }

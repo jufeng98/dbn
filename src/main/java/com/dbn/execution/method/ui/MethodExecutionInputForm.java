@@ -6,6 +6,7 @@ import com.dbn.common.ui.component.DBNComponent;
 import com.dbn.common.ui.form.DBNFormBase;
 import com.dbn.common.ui.form.DBNHeaderForm;
 import com.dbn.common.ui.misc.DBNScrollPane;
+import com.dbn.common.ui.panel.DBNCollapsiblePanel;
 import com.dbn.common.ui.util.Borders;
 import com.dbn.debugger.DBDebuggerType;
 import com.dbn.execution.common.ui.ExecutionOptionsForm;
@@ -14,6 +15,8 @@ import com.dbn.object.DBArgument;
 import com.dbn.object.DBMethod;
 import com.dbn.object.lookup.DBObjectRef;
 import com.intellij.ui.DocumentAdapter;
+import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -44,6 +47,7 @@ public class MethodExecutionInputForm extends DBNFormBase {
     private final ExecutionOptionsForm executionOptionsForm;
     private final Set<ChangeListener> changeListeners = new HashSet<>();
 
+    @Getter @Setter
     private MethodExecutionInput executionInput;
 
     public MethodExecutionInputForm(
@@ -69,8 +73,12 @@ public class MethodExecutionInputForm extends DBNFormBase {
             versionPanel.setVisible(false);
         }
 
+
         executionOptionsForm = new ExecutionOptionsForm(this, executionInput, debuggerType);
-        executionOptionsPanel.add(executionOptionsForm.getComponent());
+
+        DBNCollapsiblePanel collapsiblePanel = new DBNCollapsiblePanel(this, executionOptionsForm, false);
+        executionOptionsPanel.add(collapsiblePanel.getComponent());
+        //executionOptionsPanel.add(executionOptionsForm.getComponent());
 
         //objectPanel.add(new ObjectDetailsPanel(method).getComponent(), BorderLayout.NORTH);
 
@@ -86,7 +94,7 @@ public class MethodExecutionInputForm extends DBNFormBase {
         //topSeparator.setVisible(false);
         DBMethod method = executionInput.getMethod();
         List<DBArgument> arguments = method == null ? java.util.Collections.emptyList() : new ArrayList<>(method.getArguments());
-        noArgumentsLabel.setVisible(arguments.size() == 0);
+        noArgumentsLabel.setVisible(arguments.isEmpty());
         for (DBArgument argument: arguments) {
             if (argument.isInput()) {
                 metrics = addArgumentPanel(argument, metrics);
@@ -99,19 +107,18 @@ public class MethodExecutionInputForm extends DBNFormBase {
             component.adjustMetrics(metrics);
         }
 
-        if (argumentForms.size() > 0) {
+        if (argumentForms.isEmpty()) {
+            argumentsScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+            Dimension preferredSize = argumentsScrollPane.getViewport().getView().getPreferredSize();
+            preferredSize.setSize(preferredSize.getWidth(), preferredSize.getHeight() + 2);
+            argumentsScrollPane.setMinimumSize(preferredSize);
+        } else {
             MethodExecutionInputArgumentForm firstArgumentForm = argumentForms.get(0);
             int scrollUnitIncrement = firstArgumentForm.getScrollUnitIncrement();
             Dimension minSize = new Dimension(-1, Math.min(argumentForms.size(), 10) * scrollUnitIncrement + 2);
             argumentsScrollPane.setMinimumSize(minSize);
             argumentsScrollPane.getVerticalScrollBar().setUnitIncrement(scrollUnitIncrement);
-        } else {
-            argumentsScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-            Dimension preferredSize = argumentsScrollPane.getViewport().getView().getPreferredSize();
-            preferredSize.setSize(preferredSize.getWidth(), preferredSize.getHeight() + 2);
-            argumentsScrollPane.setMinimumSize(preferredSize);
         }
-
 
         Dimension preferredSize = mainPanel.getPreferredSize();
         int width = (int) preferredSize.getWidth() + 24;
@@ -121,14 +128,6 @@ public class MethodExecutionInputForm extends DBNFormBase {
         for (MethodExecutionInputArgumentForm argumentComponent : argumentForms){
             argumentComponent.addDocumentListener(documentListener);
         }
-    }
-
-    public void setExecutionInput(MethodExecutionInput executionInput) {
-        this.executionInput = executionInput;
-    }
-
-    public MethodExecutionInput getExecutionInput() {
-        return executionInput;
     }
 
     @NotNull
