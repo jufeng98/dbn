@@ -19,6 +19,11 @@ public class DBStatementJdbcRunner extends DBProgramRunner<StatementExecutionInp
     }
 
     @Override
+    public DBDebuggerType getDebuggerType() {
+        return DBDebuggerType.JDBC;
+    }
+
+    @Override
     protected DBDebugProcessStarter createProcessStarter(ConnectionHandler connection) {
         return new DBStatementJdbcProcessStarter(connection);
     }

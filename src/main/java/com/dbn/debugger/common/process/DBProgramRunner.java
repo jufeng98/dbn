@@ -8,6 +8,7 @@ import com.dbn.common.thread.Progress;
 import com.dbn.connection.ConnectionAction;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.config.ConnectionDebuggerSettings;
+import com.dbn.debugger.DBDebuggerType;
 import com.dbn.debugger.DatabaseDebuggerManager;
 import com.dbn.debugger.common.config.DBRunConfig;
 import com.dbn.debugger.common.config.ui.CompileDebugDependenciesDialog;
@@ -57,13 +58,19 @@ public abstract class DBProgramRunner<T extends ExecutionInput> extends GenericP
         return doExecute(environment.getProject(), environment.getExecutor(), state, null, environment);
     }
 
+    public abstract DBDebuggerType getDebuggerType();
+
     @Override
     public boolean canRun(@NotNull String executorId, @NotNull RunProfile profile) {
         if (!Objects.equals(executorId, DefaultDebugExecutor.EXECUTOR_ID)) return false;
 
         if (profile instanceof DBRunConfig) {
-            DBRunConfig runConfiguration = (DBRunConfig) profile;
-            return runConfiguration.canRun();
+            DBRunConfig<?> config = (DBRunConfig<?>) profile;
+            if (!Objects.equals(
+                    this.getDebuggerType(),
+                    config.getDebuggerType())) return false;
+
+            return config.canRun();
         }
         return false;
     }
