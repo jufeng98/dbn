@@ -37,11 +37,11 @@ import static com.dbn.common.util.Commons.coalesce;
 @Getter
 public class FileConnectionContextRegistry extends StatefulDisposableBase implements ConnectionConfigListener {
     private final ProjectRef project;
-    private final FileMappings<FileConnectionContext> mappings = new FileMappings<>(this);
+    private final FileMappings<FileConnectionContext> mappings;
 
     public FileConnectionContextRegistry(Project project) {
         this.project = ProjectRef.of(project);
-
+        this.mappings = new FileMappings<>(project, this);
         this.mappings.addVerifier((f, c) -> {
             VirtualFile file = c.getFile();
             if (isNotValid(file)) return false;
