@@ -8,6 +8,7 @@ import com.dbn.common.thread.Dispatch;
 import com.dbn.common.ui.form.DBNFormBase;
 import com.dbn.common.ui.form.DBNHeaderForm;
 import com.dbn.common.ui.misc.DBNScrollPane;
+import com.dbn.common.ui.panel.DBNCollapsiblePanel;
 import com.dbn.common.ui.util.Borders;
 import com.dbn.common.util.Documents;
 import com.dbn.common.util.Editors;
@@ -126,7 +127,9 @@ public class StatementExecutionInputForm extends DBNFormBase {
         }
 
         executionOptionsForm = new ExecutionOptionsForm(this, executionInput, debuggerType);
-        executionOptionsPanel.add(executionOptionsForm.getComponent());
+        DBNCollapsiblePanel collapsiblePanel = new DBNCollapsiblePanel(this, executionOptionsForm, false);
+        executionOptionsPanel.add(collapsiblePanel.getComponent());
+        //executionOptionsPanel.add(executionOptionsForm.getComponent());
 
         updatePreview();
 
@@ -156,10 +159,9 @@ public class StatementExecutionInputForm extends DBNFormBase {
 
     @Override
     public JComponent getPreferredFocusedComponent() {
-        if (variableValueForms.size() > 0) {
-            return variableValueForms.get(0).getEditorComponent();
-        }
-        return null;
+        if (variableValueForms.isEmpty()) return null;
+
+        return variableValueForms.get(0).getEditorComponent();
     }
 
     public void updateExecutionInput() {
