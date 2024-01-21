@@ -6,7 +6,7 @@ import com.dbn.debugger.DBDebuggerType;
 import com.dbn.debugger.DatabaseDebuggerManager;
 import com.dbn.debugger.common.config.ui.DBStatementRunConfigEditor;
 import com.dbn.debugger.jdbc.state.DBJdbcStatementRunProfileState;
-import com.dbn.debugger.jdwp.state.DBJdwpMethodRunProfileState;
+import com.dbn.debugger.jdwp.state.DBJdwpStatementRunProfileState;
 import com.dbn.debugger.options.DebuggerTypeOption;
 import com.dbn.execution.statement.StatementExecutionInput;
 import com.dbn.execution.statement.processor.StatementExecutionProcessor;
@@ -55,7 +55,7 @@ public class DBStatementRunConfig extends DBRunConfig<StatementExecutionInput> {
     public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment env) throws ExecutionException {
         DBDebuggerType debuggerType = getDebuggerType();
         return debuggerType == DBDebuggerType.JDBC ? new DBJdbcStatementRunProfileState(env) :
-               debuggerType == DBDebuggerType.JDWP ? new DBJdwpMethodRunProfileState(env) : null;
+               debuggerType == DBDebuggerType.JDWP ? new DBJdwpStatementRunProfileState(env) : null;
     }
 
     @Override
