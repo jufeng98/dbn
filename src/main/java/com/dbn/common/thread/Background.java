@@ -7,6 +7,7 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Nullable;
 
+import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
@@ -38,8 +39,9 @@ public final class Background {
                             runnable);
                 } catch (ProcessCanceledException | UnsupportedOperationException | InterruptedException e) {
                     conditionallyLog(e);
+                } catch (SQLException e) {
+                    log.warn("Error executing background task", e);
                 } catch (Throwable e) {
-                    conditionallyLog(e);
                     log.error("Error executing background task", e);
                 } finally {
                     PooledThread.exit(taskId);
@@ -77,8 +79,9 @@ public final class Background {
                     }
                 } catch (ProcessCanceledException | UnsupportedOperationException | InterruptedException e) {
                     conditionallyLog(e);
+                } catch (SQLException e) {
+                    log.warn("Error executing background task", e);
                 } catch (Throwable e) {
-                    conditionallyLog(e);
                     log.error("Error executing background task", e);
                 } finally {
                     PooledThread.exit(taskId);

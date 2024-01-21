@@ -1,22 +1,20 @@
-package com.dbn.debugger.jdwp.config.ui;
+package com.dbn.debugger.common.config.ui;
 
 import com.dbn.common.ui.form.DBNHintForm;
 import com.dbn.debugger.ExecutionConfigManager;
 import com.dbn.debugger.common.config.DBRunConfigCategory;
-import com.dbn.debugger.common.config.ui.DBProgramRunConfigurationEditorForm;
-import com.dbn.debugger.jdwp.config.DBStatementJdwpRunConfig;
-import com.intellij.openapi.options.ConfigurationException;
+import com.dbn.debugger.common.config.DBStatementRunConfig;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
-public class DBStatementJdwpRunConfigEditorForm extends DBProgramRunConfigurationEditorForm<DBStatementJdwpRunConfig> {
+public class DBStatementRunConfigForm extends DBProgramRunConfigForm<DBStatementRunConfig> {
     private JPanel headerPanel;
     private JPanel mainPanel;
     private JPanel hintPanel;
 
-    public DBStatementJdwpRunConfigEditorForm(DBStatementJdwpRunConfig configuration) {
-        super(configuration.getProject());
+    public DBStatementRunConfigForm(DBStatementRunConfig configuration) {
+        super(configuration.getProject(), configuration.getDebuggerType());
         if (configuration.getCategory() != DBRunConfigCategory.CUSTOM) {
             headerPanel.setVisible(false);
             DBNHintForm hintForm = new DBNHintForm(this, ExecutionConfigManager.GENERIC_STATEMENT_RUNNER_HINT, null, true);
@@ -25,6 +23,7 @@ public class DBStatementJdwpRunConfigEditorForm extends DBProgramRunConfiguratio
         } else {
             hintPanel.setVisible(false);
         }
+
     }
 
     @NotNull
@@ -34,8 +33,10 @@ public class DBStatementJdwpRunConfigEditorForm extends DBProgramRunConfiguratio
     }
 
     @Override
-    public void writeConfiguration(DBStatementJdwpRunConfig configuration) throws ConfigurationException {}
+    public void writeConfiguration(DBStatementRunConfig configuration) {
+    }
 
     @Override
-    public void readConfiguration(DBStatementJdwpRunConfig configuration) {}
+    public void readConfiguration(DBStatementRunConfig configuration) {
+    }
 }

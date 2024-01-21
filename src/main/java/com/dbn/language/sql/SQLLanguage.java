@@ -1,14 +1,14 @@
 package com.dbn.language.sql;
 
-import com.dbn.language.sql.dialect.mysql.MysqlSQLLanguageDialect;
-import com.dbn.language.sql.dialect.sqlite.SqliteSQLLanguageDialect;
 import com.dbn.code.sql.style.SQLCodeStyle;
 import com.dbn.code.sql.style.options.SQLCodeStyleSettings;
 import com.dbn.language.common.DBLanguage;
 import com.dbn.language.sql.dialect.SQLLanguageDialect;
 import com.dbn.language.sql.dialect.iso92.Iso92SQLLanguageDialect;
+import com.dbn.language.sql.dialect.mysql.MysqlSQLLanguageDialect;
 import com.dbn.language.sql.dialect.oracle.OracleSQLLanguageDialect;
 import com.dbn.language.sql.dialect.postgres.PostgresSQLLanguageDialect;
+import com.dbn.language.sql.dialect.sqlite.SqliteSQLLanguageDialect;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.tree.IFileElementType;
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +34,7 @@ public class SQLLanguage extends DBLanguage<SQLLanguageDialect> {
 
     @Override
     public SQLLanguageDialect getMainLanguageDialect() {
-        return getAvailableLanguageDialects()[0];
+        return getLanguageDialects()[0];
     }
 
     @Override

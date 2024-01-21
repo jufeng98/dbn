@@ -1,8 +1,10 @@
-package com.dbn.debugger.common.config;
+package com.dbn.debugger.common.state;
 
 import com.intellij.execution.configurations.RunProfileState;
 import com.intellij.execution.runners.ExecutionEnvironment;
+import lombok.Getter;
 
+@Getter
 public abstract class DBRunProfileState implements RunProfileState {
     private final ExecutionEnvironment environment;
 
@@ -10,7 +12,4 @@ public abstract class DBRunProfileState implements RunProfileState {
         this.environment = environment;
     }
 
-    public ExecutionEnvironment getEnvironment() {
-        return environment;
-    }
 }

@@ -6,21 +6,23 @@ import com.dbn.execution.compiler.CompileType;
 import com.dbn.object.common.DBSchemaObject;
 import com.dbn.object.lookup.DBObjectRef;
 import com.intellij.openapi.project.Project;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
+@Getter
 public class CompilerTypeSelectionDialog extends DBNDialog<CompilerTypeSelectionForm> {
-    private CompileType selection;  // TODO dialog result - Disposable.nullify(...)
-    private DBObjectRef<DBSchemaObject> objectRef;
+    private CompileType selection;
+    private DBObjectRef<DBSchemaObject> object;
 
     public CompilerTypeSelectionDialog(Project project, @Nullable DBSchemaObject object) {
         super(project, "Compile type", true);
         setModal(true);
         setResizable(false);
-        objectRef = DBObjectRef.of(object);
+        this.object = DBObjectRef.of(object);
         //setVerticalStretch(0);
         init();
     }
@@ -28,7 +30,7 @@ public class CompilerTypeSelectionDialog extends DBNDialog<CompilerTypeSelection
     @NotNull
     @Override
     protected CompilerTypeSelectionForm createForm() {
-        DBSchemaObject object = DBObjectRef.get(objectRef);
+        DBSchemaObject object = DBObjectRef.get(this.object);
         return new CompilerTypeSelectionForm(this, object);
     }
 
@@ -81,9 +83,5 @@ public class CompilerTypeSelectionDialog extends DBNDialog<CompilerTypeSelection
             selection = CompileType.DEBUG;
             doOKAction();
         }
-    }
-
-    public CompileType getSelection() {
-        return selection;
     }
 }

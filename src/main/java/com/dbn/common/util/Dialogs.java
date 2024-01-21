@@ -11,24 +11,20 @@ import java.util.function.Supplier;
 @UtilityClass
 public class Dialogs {
 
-    public static <T extends DBNDialog> void show(@NotNull Supplier<T> builder) {
+    public static <T extends DBNDialog<?>> void show(@NotNull Supplier<T> builder) {
         show(builder, null);
     }
 
-    public static <T extends DBNDialog> void show(@NotNull Supplier<T> builder, @Nullable DialogCallback<T> callback) {
+    public static <T extends DBNDialog<?>> void show(@NotNull Supplier<T> builder, @Nullable DialogCallback<T> callback) {
         Dispatch.run(() -> {
             T dialog = builder.get();
+            dialog.setDialogCallback(callback);
             dialog.show();
-
-            if (callback != null) {
-                int exitCode = dialog.getExitCode();
-                callback.call(dialog, exitCode);
-            }
         });
     }
 
     @FunctionalInterface
-    public interface DialogCallback<T extends DBNDialog> {
+    public interface DialogCallback<T extends DBNDialog<?>> {
         void call(T dialog, int exitCode);
     }
 

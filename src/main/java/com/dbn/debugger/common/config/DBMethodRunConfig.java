@@ -4,12 +4,23 @@ import com.dbn.common.util.Cloneable;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.database.DatabaseFeature;
 import com.dbn.debugger.DBDebuggerType;
+import com.dbn.debugger.DatabaseDebuggerManager;
+import com.dbn.debugger.common.config.ui.DBMethodRunConfigEditor;
+import com.dbn.debugger.jdbc.state.DBJdbcMethodRunProfileState;
+import com.dbn.debugger.jdwp.state.DBJdwpMethodRunProfileState;
+import com.dbn.debugger.options.DebuggerTypeOption;
 import com.dbn.execution.method.MethodExecutionInput;
 import com.dbn.execution.method.MethodExecutionManager;
 import com.dbn.object.DBMethod;
 import com.dbn.object.lookup.DBObjectRef;
+import com.intellij.execution.ExecutionException;
+import com.intellij.execution.Executor;
+import com.intellij.execution.configurations.RunConfiguration;
+import com.intellij.execution.configurations.RunProfileState;
 import com.intellij.execution.configurations.RuntimeConfigurationError;
 import com.intellij.execution.configurations.RuntimeConfigurationException;
+import com.intellij.execution.runners.ExecutionEnvironment;
+import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.WriteExternalException;
@@ -22,11 +33,24 @@ import java.util.*;
 
 import static com.dbn.common.options.setting.Settings.newElement;
 
-public abstract class DBMethodRunConfig extends DBRunConfig<MethodExecutionInput> implements Cloneable<DBMethodRunConfig> {
+public class DBMethodRunConfig extends DBRunConfig<MethodExecutionInput> implements Cloneable<DBMethodRunConfig> {
     private Map<DBObjectRef<DBMethod>, MethodExecutionInput> methodSelectionHistory = new HashMap<>();
 
-    public DBMethodRunConfig(Project project, DBMethodRunConfigFactory factory, String name,DBRunConfigCategory category) {
+    public DBMethodRunConfig(Project project, DBMethodRunConfigFactory factory, String name, DBRunConfigCategory category) {
         super(project, factory, name, category);
+    }
+
+    @NotNull
+    @Override
+    public SettingsEditor<? extends RunConfiguration> getConfigurationEditor() {
+        return new DBMethodRunConfigEditor(this);
+    }
+
+    @Override
+    public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment env) throws ExecutionException {
+        DBDebuggerType debuggerType = getDebuggerType();
+        return debuggerType == DBDebuggerType.JDBC ? new DBJdbcMethodRunProfileState(env) :
+                debuggerType == DBDebuggerType.JDWP ? new DBJdwpMethodRunProfileState(env) : null;
     }
 
     public Collection<MethodExecutionInput> getMethodSelectionHistory() {
@@ -44,7 +68,14 @@ public abstract class DBMethodRunConfig extends DBRunConfig<MethodExecutionInput
 
     @Override
     public boolean canRun() {
-        return super.canRun() && getMethod() != null;
+        if (!super.canRun()) return false;
+        if (getMethod() == null) return false;
+
+        DebuggerTypeOption debuggerTypeOption = getMethod().getConnection().getSettings().getDebuggerSettings().getDebuggerType().getSelectedOption();
+        if (debuggerTypeOption == DebuggerTypeOption.JDWP) {
+            return DBDebuggerType.JDWP.isSupported();
+        }
+        return true;
     }
 
     @Override
@@ -54,32 +85,37 @@ public abstract class DBMethodRunConfig extends DBRunConfig<MethodExecutionInput
 
     @Override
     public void checkConfiguration() throws RuntimeConfigurationException {
-        if (getCategory() == DBRunConfigCategory.CUSTOM) {
-            MethodExecutionInput executionInput = getExecutionInput();
-            if (executionInput == null) {
-                throw new RuntimeConfigurationError("No or invalid method selected. The database connection is down, obsolete or method has been dropped.");
-            }
+        if (getCategory() != DBRunConfigCategory.CUSTOM) return;
 
-            if (executionInput.isObsolete()) {
-                throw new RuntimeConfigurationError(
-                        "Method " + executionInput.getMethodRef().getQualifiedName() + " could not be resolved. " +
-                                "The database connection is down or method has been dropped.");
-            }
+        MethodExecutionInput executionInput = getExecutionInput();
+        if (executionInput == null) {
+            throw new RuntimeConfigurationError("No or invalid method selected. The database connection is down, obsolete or method has been dropped.");
+        }
 
-            DBMethod method = getMethod();
-            if (method != null) {
-                ConnectionHandler connection = method.getConnection();
-                if (!DatabaseFeature.DEBUGGING.isSupported(connection)){
-                    throw new RuntimeConfigurationError(
-                            "Debugging is not supported for " + connection.getDatabaseType().getName() +" databases.");
-                }
-            }
+        if (executionInput.isObsolete()) {
+            throw new RuntimeConfigurationError(
+                    "Method " + executionInput.getMethodRef().getQualifiedName() + " could not be resolved. " +
+                            "The database connection is down or method has been dropped.");
+        }
+
+        DBMethod method = getMethod();
+        if (method == null) return;
+
+        ConnectionHandler connection = method.getConnection();
+        if (!DatabaseFeature.DEBUGGING.isSupported(connection)){
+            throw new RuntimeConfigurationError(
+                    "Debugging is not supported for " + connection.getDatabaseType().getName() +" databases.");
+        }
+
+        DebuggerTypeOption debuggerTypeOption = connection.getSettings().getDebuggerSettings().getDebuggerType().getSelectedOption();
+        if (debuggerTypeOption == DebuggerTypeOption.JDWP) {
+            DatabaseDebuggerManager.checkJdwpConfiguration();
         }
     }
 
     @Nullable
     @Override
-    public DBMethod getSource() {
+    public DBMethod getDatabaseContext() {
         return getMethod();
     }
 

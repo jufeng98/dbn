@@ -158,7 +158,7 @@ public class FileConnectionMappingTable extends DBNTable<FileConnectionMappingTa
 
         actionGroup.addSeparator();
         actionGroup.add(new ConnectionAction(file, null));
-        promptSelector(actionGroup, a -> ((ConnectionAction) a).getConnectionId() == mapping.getConnectionId());
+        promptSelector(actionGroup, a -> a instanceof ConnectionAction && ((ConnectionAction) a).getConnectionId() == mapping.getConnectionId());
     }
 
     private void promptSchemaSelector(@NotNull FileConnectionContext mapping) {
@@ -175,7 +175,7 @@ public class FileConnectionMappingTable extends DBNTable<FileConnectionMappingTa
                     DefaultActionGroup actionGroup = new DefaultActionGroup();
                     VirtualFile file = mapping.getFile();
                     schemas.stream().map(schema -> new SchemaAction(file, schema.getIdentifier())).forEach(a -> actionGroup.add(a));
-                    promptSelector(actionGroup, a -> ((SchemaAction) a).getSchemaId() == mapping.getSchemaId());
+                    promptSelector(actionGroup, a -> a instanceof SchemaAction && ((SchemaAction) a).getSchemaId() == mapping.getSchemaId());
                 });
     }
 
@@ -188,7 +188,7 @@ public class FileConnectionMappingTable extends DBNTable<FileConnectionMappingTa
 
         List<DatabaseSession> sessions = connection.getSessionBundle().getSessions();
         sessions.stream().map(session -> new SessionAction(file, session)).forEach(a -> actionGroup.add(a));
-        promptSelector(actionGroup, a -> ((SessionAction) a).getSession() == mapping.getSession());
+        promptSelector(actionGroup, a -> a instanceof SessionAction && ((SessionAction) a).getSession() == mapping.getSession());
     }
 
     private void promptSelector(ActionGroup actionGroup, Condition<AnAction> preselectCondition) {

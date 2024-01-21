@@ -1,13 +1,14 @@
 package com.dbn.common.ui.dialog;
 
-import com.dbn.common.ui.component.DBNComponent;
-import com.dbn.common.util.Commons;
-import com.dbn.common.util.Titles;
 import com.dbn.common.dispose.Disposer;
 import com.dbn.common.dispose.Failsafe;
 import com.dbn.common.project.ProjectRef;
+import com.dbn.common.ui.component.DBNComponent;
 import com.dbn.common.ui.form.DBNForm;
 import com.dbn.common.ui.util.Listeners;
+import com.dbn.common.util.Commons;
+import com.dbn.common.util.Dialogs;
+import com.dbn.common.util.Titles;
 import com.dbn.diagnostics.Diagnostics;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
@@ -19,13 +20,18 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+import static com.dbn.common.util.Unsafe.cast;
 
 public abstract class DBNDialog<F extends DBNForm> extends DialogWrapper implements DBNComponent {
     private F form;
     private final ProjectRef project;
-    private boolean rememberSelection;
-    private Dimension defaultSize;
     private final Listeners<DBNDialogListener> listeners = Listeners.create(getDisposable());
+
+    private @Getter boolean rememberSelection;
+    private @Getter Dimension defaultSize;
 
     protected DBNDialog(Project project, String title, boolean canBeParent) {
         super(project, canBeParent);
@@ -42,6 +48,20 @@ public abstract class DBNDialog<F extends DBNForm> extends DialogWrapper impleme
                 (int) defaultSize.getHeight());
         }
         super.init();
+    }
+
+    public void setDialogCallback(@Nullable Dialogs.DialogCallback<?> callback) {
+        if (callback == null) return;
+
+        Window window = getPeer().getWindow();
+        if (window == null) return;
+
+        window.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                callback.call(cast(DBNDialog.this), getExitCode());
+            }
+        });
     }
 
     public void addDialogListener(DBNDialogListener listener) {
@@ -115,6 +135,11 @@ public abstract class DBNDialog<F extends DBNForm> extends DialogWrapper impleme
     }
 
     @Override
+    public void doCancelAction() {
+        super.doCancelAction();
+    }
+
+    @Override
     protected void doHelpAction() {
         super.doHelpAction();
     }
@@ -123,10 +148,6 @@ public abstract class DBNDialog<F extends DBNForm> extends DialogWrapper impleme
     @NotNull
     public Project getProject() {
         return project.ensure();
-    }
-
-    public boolean isRememberSelection() {
-        return rememberSelection;
     }
 
     public void registerRememberSelectionCheckBox(JCheckBox rememberSelectionCheckBox) {

@@ -19,6 +19,11 @@ public class DBMethodJdbcRunner extends DBProgramRunner<MethodExecutionInput> {
     }
 
     @Override
+    public DBDebuggerType getDebuggerType() {
+        return DBDebuggerType.JDBC;
+    }
+
+    @Override
     protected DBDebugProcessStarter createProcessStarter(ConnectionHandler connection) {
         return new DBMethodJdbcProcessStarter(connection);
     }

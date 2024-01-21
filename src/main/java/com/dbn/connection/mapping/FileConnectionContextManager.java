@@ -6,6 +6,7 @@ import com.dbn.common.component.PersistentState;
 import com.dbn.common.component.ProjectComponentBase;
 import com.dbn.common.dispose.Disposer;
 import com.dbn.common.event.ProjectEvents;
+import com.dbn.common.file.FileMappings;
 import com.dbn.common.thread.Dispatch;
 import com.dbn.common.thread.Progress;
 import com.dbn.common.util.Dialogs;
@@ -49,7 +50,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
@@ -446,7 +446,7 @@ public class FileConnectionContextManager extends ProjectComponentBase implement
     private final BulkFileListener bulkFileListener = new BulkFileListener() {
         @Override
         public void after(@NotNull List<? extends VFileEvent> events) {
-            Map<String, FileConnectionContext> mappings = registry.getMappings();
+            FileMappings<FileConnectionContext> mappings = registry.getMappings();
             for (VFileEvent event : events) {
                 VirtualFile file = event.getFile();
                 if (file == null) continue;
@@ -483,8 +483,7 @@ public class FileConnectionContextManager extends ProjectComponentBase implement
     private final SessionManagerListener sessionManagerListener = new SessionManagerListener() {
         @Override
         public void sessionDeleted(DatabaseSession session) {
-            Map<String, FileConnectionContext> mappings = registry.getMappings();
-            for (FileConnectionContext mapping : mappings.values()) {
+            for (FileConnectionContext mapping : registry.getMappings().values()) {
                 if (session.getId() == mapping.getSessionId()) {
                     mapping.setSessionId(SessionId.MAIN);
                 }
@@ -498,10 +497,8 @@ public class FileConnectionContextManager extends ProjectComponentBase implement
     @Nullable
     @Override
     public Element getComponentState() {
-        registry.cleanup();
         Element element = new Element("state");
-        Map<String, FileConnectionContext> mappings = registry.getMappings();
-        for (FileConnectionContext mapping : mappings.values()) {
+        for (FileConnectionContext mapping : registry.getMappings().values()) {
             Element mappingElement = newElement(element, "mapping");
             mapping.writeState(mappingElement);
         }
@@ -517,7 +514,7 @@ public class FileConnectionContextManager extends ProjectComponentBase implement
         FileConnectionContextRegistry registry = this.registry;
         if (registry == null) return;
 
-        Map<String, FileConnectionContext> mappings = registry.getMappings();
+        FileMappings<FileConnectionContext> mappings = registry.getMappings();
         List<Element> mappingElements = element.getChildren();
         int size = mappingElements.size();
         for (int i = 0; i < size; i++) {
@@ -535,6 +532,7 @@ public class FileConnectionContextManager extends ProjectComponentBase implement
             String fileUrl = mapping.getFileUrl();
             mappings.put(fileUrl, mapping);
         }
+        mappings.cleanup();
     }
 }
 

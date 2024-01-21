@@ -5,9 +5,8 @@ import com.dbn.common.dispose.Disposer;
 import com.dbn.common.util.Editors;
 import com.dbn.common.util.Strings;
 import com.dbn.connection.*;
-import com.dbn.navigation.object.DBObjectLookupModel;
-import com.dbn.connection.*;
 import com.dbn.editor.DatabaseFileEditorManager;
+import com.dbn.navigation.object.DBObjectLookupModel;
 import com.dbn.navigation.options.ObjectsLookupSettings;
 import com.dbn.object.DBSchema;
 import com.dbn.object.action.AnObjectAction;
@@ -143,7 +142,7 @@ public class GoToDatabaseObjectAction extends GotoActionBase implements DumbAwar
             return connection.ensure();
         }
 
-        @Override
+        //@Override
         public boolean canBePerformed(@NotNull DataContext context) {
             return true;
         }

@@ -16,14 +16,14 @@ import javax.swing.*;
 
 import static com.dbn.common.dispose.Failsafe.nd;
 
-public class DBStatementJdwpRunConfigFactory extends DBStatementRunConfigFactory<DBStatementRunConfigType, DBStatementRunConfig> {
-    public DBStatementJdwpRunConfigFactory(@NotNull DBStatementRunConfigType type) {
+public class DBJdwpStatementRunConfigFactory extends DBStatementRunConfigFactory<DBStatementRunConfigType, DBStatementRunConfig> {
+    public DBJdwpStatementRunConfigFactory(@NotNull DBStatementRunConfigType type) {
         super(type, DBDebuggerType.JDWP);
     }
 
     @Override
-    public DBStatementJdwpRunConfig createConfiguration(Project project, String name, DBRunConfigCategory category) {
-        return new DBStatementJdwpRunConfig(project, this, name, category);
+    public DBStatementRunConfig createConfiguration(Project project, String name, DBRunConfigCategory category) {
+        return new DBStatementRunConfig(project, this, name, category);
     }
 
     @Override
@@ -34,7 +34,7 @@ public class DBStatementJdwpRunConfigFactory extends DBStatementRunConfigFactory
     @NotNull
     @Override
     public RunConfiguration createTemplateConfiguration(@NotNull Project project) {
-        return new DBStatementJdwpRunConfig(project, this, "", DBRunConfigCategory.TEMPLATE);
+        return new DBStatementRunConfig(project, this, "", DBRunConfigCategory.TEMPLATE);
     }
 
     @NotNull
@@ -44,12 +44,12 @@ public class DBStatementJdwpRunConfigFactory extends DBStatementRunConfigFactory
     }
 
     @Override
-    public DBStatementJdwpRunConfig createConfiguration(@NotNull StatementExecutionProcessor executionProcessor) {
+    public DBStatementRunConfig createConfiguration(@NotNull StatementExecutionProcessor executionProcessor) {
         Project project = executionProcessor.getProject();
         VirtualFile virtualFile = nd(executionProcessor.getVirtualFile());
         String runnerName = virtualFile.getName();
 
-        DBStatementJdwpRunConfig configuration = createConfiguration(project, runnerName, DBRunConfigCategory.CUSTOM);
+        DBStatementRunConfig configuration = createConfiguration(project, runnerName, DBRunConfigCategory.CUSTOM);
         configuration.setExecutionInput(executionProcessor.getExecutionInput());
         return configuration;
     }

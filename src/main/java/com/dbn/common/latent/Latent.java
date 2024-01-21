@@ -1,19 +1,26 @@
 package com.dbn.common.latent;
 
 
-import com.dbn.common.latent.impl.*;
 import com.dbn.common.color.Colors;
 import com.dbn.common.latent.impl.*;
 import com.dbn.common.routine.ParametricCallable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
-public interface Latent<T> {
-    T get();
+import static com.dbn.common.dispose.Failsafe.nd;
+
+public interface Latent<T> extends Supplier<T> {
     T value();
     void set(T value);
     void reset();
     boolean loaded();
+
+    @NotNull
+    default T ensure() {
+        return nd(get());
+    }
 
     static <T> Latent<T> basic(Loader<T> loader) {
         return new BasicLatent<>(loader);

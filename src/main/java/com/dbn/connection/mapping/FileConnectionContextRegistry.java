@@ -1,14 +1,15 @@
 package com.dbn.connection.mapping;
 
 import com.dbn.common.dispose.StatefulDisposableBase;
+import com.dbn.common.file.FileMappings;
 import com.dbn.common.file.util.VirtualFiles;
 import com.dbn.common.project.ProjectRef;
-import com.dbn.connection.config.ConnectionConfigListener;
-import com.dbn.connection.session.DatabaseSession;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.ConnectionId;
 import com.dbn.connection.SchemaId;
 import com.dbn.connection.SessionId;
+import com.dbn.connection.config.ConnectionConfigListener;
+import com.dbn.connection.session.DatabaseSession;
 import com.dbn.ddl.DDLFileAttachmentManager;
 import com.dbn.object.DBSchema;
 import com.dbn.object.common.DBSchemaObject;
@@ -22,20 +23,35 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 import static com.dbn.common.action.UserDataKeys.FILE_CONNECTION_MAPPING;
+import static com.dbn.common.dispose.Checks.isNotValid;
+import static com.dbn.common.file.util.VirtualFiles.isDatabaseFileSystem;
+import static com.dbn.common.file.util.VirtualFiles.isLocalFileSystem;
 import static com.dbn.common.util.Commons.coalesce;
 
 @Getter
 public class FileConnectionContextRegistry extends StatefulDisposableBase implements ConnectionConfigListener {
     private final ProjectRef project;
-    private final Map<String, FileConnectionContext> mappings = new ConcurrentHashMap<>();
+    private final FileMappings<FileConnectionContext> mappings = new FileMappings<>(this);
 
     public FileConnectionContextRegistry(Project project) {
         this.project = ProjectRef.of(project);
+
+        this.mappings.addVerifier((f, c) -> {
+            VirtualFile file = c.getFile();
+            if (isNotValid(file)) return false;
+
+            FileConnectionContext parentContext = getFileConnectionContext(file.getParent());
+            if (parentContext == null) return true;
+            if (!parentContext.isSameAs(c)) return true;
+
+            return false;
+        });
     }
 
     @NotNull
@@ -49,35 +65,35 @@ public class FileConnectionContextRegistry extends StatefulDisposableBase implem
     }
 
     public boolean setConnectionHandler(@NotNull VirtualFile file, @Nullable ConnectionHandler connection) {
-        if (VirtualFiles.isDatabaseFileSystem(file)) {
+        if (isDatabaseFileSystem(file)) {
             return false;
         }
 
         FileConnectionContext context = ensureFileConnectionMapping(file);
         boolean changed = context.setConnectionId(connection == null ? null : connection.getConnectionId());
 
-        if (changed) {
-            if (connection == null || connection.isVirtual()) {
-                setDatabaseSession(file, null);
-                setDatabaseSchema(file, null);
-            } else {
-                // restore session if available in new connection
-                SessionId sessionId = context.getSessionId();
-                boolean match = connection.getSessionBundle().hasSession(sessionId);
-                sessionId = match ? sessionId : SessionId.MAIN;
-                context.setSessionId(sessionId);
+        if (!changed) return false;
 
-                // restore schema if available in new connection
-                SchemaId schemaId = context.getSchemaId();
-                DBSchema schema = schemaId == null ? null : connection.getSchema(schemaId);
-                if (schema == null) {
-                    schemaId = connection.getDefaultSchema();
-                }
-                context.setSchemaId(schemaId);
+        if (connection == null || connection.isVirtual()) {
+            setDatabaseSession(file, null);
+            setDatabaseSchema(file, null);
+        } else {
+            // restore session if available in new connection
+            SessionId sessionId = context.getSessionId();
+            boolean match = connection.getSessionBundle().hasSession(sessionId);
+            sessionId = match ? sessionId : SessionId.MAIN;
+            context.setSessionId(sessionId);
+
+            // restore schema if available in new connection
+            SchemaId schemaId = context.getSchemaId();
+            DBSchema schema = schemaId == null ? null : connection.getSchema(schemaId);
+            if (schema == null) {
+                schemaId = connection.getDefaultSchema();
             }
+            context.setSchemaId(schemaId);
         }
 
-        return changed;
+        return true;
     }
 
     public boolean setDatabaseSchema(VirtualFile file, SchemaId schemaId) {
@@ -118,11 +134,11 @@ public class FileConnectionContextRegistry extends StatefulDisposableBase implem
 
     @Nullable
     private <T> T resolveMappingProvider(@NotNull VirtualFile file, Function<DBVirtualFile, T> handler) {
-        if (VirtualFiles.isDatabaseFileSystem(file)) {
-            if (file instanceof DBVirtualFile) {
-                DBVirtualFile databaseFile = (DBVirtualFile) file;
-                return handler.apply(databaseFile);
-            }
+        if (!isDatabaseFileSystem(file)) return null;
+
+        if (file instanceof DBVirtualFile) {
+            DBVirtualFile databaseFile = (DBVirtualFile) file;
+            return handler.apply(databaseFile);
         }
         return null;
     }
@@ -130,23 +146,22 @@ public class FileConnectionContextRegistry extends StatefulDisposableBase implem
     @Nullable
     private <T> T resolveFileMapping(@NotNull VirtualFile file, Function<FileConnectionContext, T> handler) {
         FileConnectionContext connectionMapping = getFileConnectionContext(file);
-        if (connectionMapping != null) {
-            return handler.apply(connectionMapping);
-        }
-        return null;
+        if (connectionMapping == null) return null;
+
+        return handler.apply(connectionMapping);
     }
 
     @Nullable
     private <T> T resolveDdlAttachment(@NotNull VirtualFile file, Function<DBObjectRef<DBSchemaObject>, T> handler) {
-        if (VirtualFiles.isLocalFileSystem(file)) {
-            // if the file is an attached ddl file, then resolve the object which it is
-            // linked to, and return its parent schema
-            Project project = getProject();
-            DDLFileAttachmentManager fileAttachmentManager = DDLFileAttachmentManager.getInstance(project);
-            DBObjectRef<DBSchemaObject> object = fileAttachmentManager.getMappedObjectRef(file);
-            if (object != null && DatabaseFileSystem.isFileOpened(object)) {
-                return handler.apply(object);
-            }
+        if (!isLocalFileSystem(file)) return null;
+
+        // if the file is an attached ddl file, then resolve the object which it is
+        // linked to, and return its parent schema
+        Project project = getProject();
+        DDLFileAttachmentManager fileAttachmentManager = DDLFileAttachmentManager.getInstance(project);
+        DBObjectRef<DBSchemaObject> object = fileAttachmentManager.getMappedObjectRef(file);
+        if (object != null && DatabaseFileSystem.isFileOpened(object)) {
+            return handler.apply(object);
         }
         return null;
     }
@@ -169,7 +184,7 @@ public class FileConnectionContextRegistry extends StatefulDisposableBase implem
             return mappingProvider.getConnectionContext();
         }
 
-        if (VirtualFiles.isDatabaseFileSystem(file)) {
+        if (isDatabaseFileSystem(file)) {
             if (ensure) {
                 throw new UnsupportedOperationException();
             }
@@ -186,7 +201,7 @@ public class FileConnectionContextRegistry extends StatefulDisposableBase implem
             return context;
         }
 
-        if (VirtualFiles.isLocalFileSystem(file)) {
+        if (isLocalFileSystem(file)) {
             context = file.getUserData(FILE_CONNECTION_MAPPING);
             if (context == null) {
                 context = mappings.get(file.getUrl());
@@ -212,23 +227,6 @@ public class FileConnectionContextRegistry extends StatefulDisposableBase implem
         return context;
     }
 
-    public void cleanup() {
-        Set<String> urls = mappings.keySet();
-        for (String url : urls) {
-            FileConnectionContext context = mappings.get(url);
-            VirtualFile file = context.getFile();
-            if (file == null) {
-                mappings.remove(url);
-                continue;
-            }
-
-            FileConnectionContext parentContext = getFileConnectionContext(file.getParent());
-            if (parentContext != null && parentContext.isSameAs(context)) {
-                mappings.remove(url);
-            }
-        }
-    }
-
     public boolean removeMapping(VirtualFile file) {
         FileConnectionContext context = mappings.remove(file.getUrl());
         FileConnectionContext localMapping = file.getUserData(FILE_CONNECTION_MAPPING);
@@ -238,12 +236,7 @@ public class FileConnectionContextRegistry extends StatefulDisposableBase implem
     }
 
     public void removeMappings(ConnectionId connectionId) {
-        for (String url : mappings.keySet()) {
-            FileConnectionContext context = mappings.get(url);
-            if (Objects.equals(context.getConnectionId(), connectionId)) {
-                mappings.remove(url);
-            }
-        }
+        mappings.removeIf(c -> Objects.equals(c.getConnectionId(), connectionId));
     }
 
     public List<VirtualFile> getMappedFiles(ConnectionHandler connection) {
@@ -263,6 +256,5 @@ public class FileConnectionContextRegistry extends StatefulDisposableBase implem
 
     @Override
     public void disposeInner() {
-        mappings.clear();
     }
 }

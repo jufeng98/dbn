@@ -1,5 +1,6 @@
 package com.dbn.editor.code.content;
 
+import com.dbn.common.latent.Latent;
 import com.dbn.common.load.ProgressMonitor;
 import com.dbn.common.util.Commons;
 import com.dbn.common.util.Strings;
@@ -20,7 +21,7 @@ import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 @Setter
 public class SourceCodeContent{
     private static final String EMPTY_CONTENT = "";
-    private final SourceCodeOffsets offsets = new SourceCodeOffsets();
+    private final Latent<SourceCodeOffsets> offsets = Latent.basic(() -> new SourceCodeOffsets());
     protected CharSequence text = EMPTY_CONTENT;
 
     public SourceCodeContent() {
@@ -68,8 +69,14 @@ public class SourceCodeContent{
         return text.toString();
     }
 
+    public SourceCodeOffsets getOffsets() {
+        return offsets.get();
+    }
+
     public void importContent(String content) {
+        SourceCodeOffsets offsets = getOffsets();
         offsets.getGuardedBlocks().reset();
+
         StringBuilder builder = new StringBuilder(Commons.nvl(content, ""));
         int startIndex = builder.indexOf(GuardedBlockMarker.START_OFFSET_IDENTIFIER);
 
@@ -91,7 +98,7 @@ public class SourceCodeContent{
 
     public String exportContent() {
         StringBuilder builder = new StringBuilder(text);
-        List<GuardedBlockMarker> ranges = new ArrayList<>(offsets.getGuardedBlocks().getRanges());
+        List<GuardedBlockMarker> ranges = new ArrayList<>(getOffsets().getGuardedBlocks().getRanges());
         ranges.sort(Collections.reverseOrder());
         for (GuardedBlockMarker range : ranges) {
             builder.insert(range.getEndOffset(), GuardedBlockMarker.END_OFFSET_IDENTIFIER);

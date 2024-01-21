@@ -7,6 +7,7 @@ import com.dbn.common.ui.form.DBNHeaderForm;
 import com.dbn.common.ui.form.DBNHintForm;
 import com.dbn.common.util.Commons;
 import com.dbn.common.util.Lists;
+import com.dbn.connection.context.DatabaseContext;
 import com.dbn.debugger.common.config.DBRunConfig;
 import com.dbn.debugger.common.config.ui.CompileDebugDependenciesDialog;
 import com.dbn.debugger.common.config.ui.ObjectListCellRenderer;
@@ -68,10 +69,10 @@ public class CompileDebugDependenciesForm extends DBNFormBase {
             objectList.ensureIndexIsVisible(selectedIndicesArray.length - 1);
         }
 
-        Presentable source = (Presentable) runConfiguration.getSource();
-        DBNHeaderForm headerForm = source instanceof DBObject ?
-                new DBNHeaderForm(this, (DBObject) source) :
-                new DBNHeaderForm(this, Commons.nvl(source, Presentable.UNKNOWN));
+        DatabaseContext databaseContext = runConfiguration.getDatabaseContext();
+        DBNHeaderForm headerForm = databaseContext instanceof DBObject ?
+                new DBNHeaderForm(this, (DBObject) databaseContext) :
+                new DBNHeaderForm(this, Commons.nvl(databaseContext, Presentable.UNKNOWN));
         headerPanel.add(headerForm.getComponent(), BorderLayout.CENTER);
         parent.registerRememberSelectionCheckBox(rememberSelectionCheckBox);
     }

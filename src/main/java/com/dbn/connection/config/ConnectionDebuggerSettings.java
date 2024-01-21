@@ -1,7 +1,10 @@
 package com.dbn.connection.config;
 
+import com.dbn.common.option.InteractiveOptionBroker;
 import com.dbn.common.options.BasicConfiguration;
 import com.dbn.connection.config.ui.ConnectionDebuggerSettingsForm;
+import com.dbn.debugger.DBDebuggerType;
+import com.dbn.debugger.options.DebuggerTypeOption;
 import com.intellij.util.Range;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,6 +20,16 @@ public class ConnectionDebuggerSettings extends BasicConfiguration<ConnectionSet
     private boolean tcpDriverTunneling;
     private String tcpHostAddress;
     private Range<Integer> tcpPortRange = new Range<>(4000, 4999);
+
+    private final InteractiveOptionBroker<DebuggerTypeOption> debuggerType =
+            new InteractiveOptionBroker<>(
+                    "debugger-type",
+                    "Debugger Type",
+                    "Please select debugger type to use.",
+                    DBDebuggerType.JDWP.isSupported() ? DebuggerTypeOption.ASK : DebuggerTypeOption.JDBC,
+                    DebuggerTypeOption.JDWP,
+                    DebuggerTypeOption.JDBC,
+                    DebuggerTypeOption.CANCEL);
 
     public ConnectionDebuggerSettings() {
         super(null);
@@ -44,6 +57,7 @@ public class ConnectionDebuggerSettings extends BasicConfiguration<ConnectionSet
         int tcpPortFrom = getInteger(element, "tcp-port-from", tcpPortRange.getFrom());
         int tcpPortTo = getInteger(element, "tcp-port-to", tcpPortRange.getTo());
         tcpPortRange = new Range<>(tcpPortFrom, tcpPortTo);
+        debuggerType.readConfiguration(element);
     }
 
     @Override
@@ -53,5 +67,6 @@ public class ConnectionDebuggerSettings extends BasicConfiguration<ConnectionSet
         setString(element, "tcp-host-address", tcpHostAddress);
         setInteger(element, "tcp-port-from", tcpPortRange.getFrom());
         setInteger(element, "tcp-port-to", tcpPortRange.getTo());
+        debuggerType.writeConfiguration(element);
     }
 }

@@ -247,7 +247,7 @@ public class DatabaseFileSystem extends VirtualFileSystem implements /*NonPhysic
         ConnectionHandler connection = ref.getConnection();
         if (isNotValid(connection)) return null;
 
-        DBObject object = ref.value();
+        DBObject object = ref.get();
         if (isNotValid(object) && isTimeSensitiveThread()) {
             DBObjectBundle objectBundle = connection.getObjectBundle();
             objectBundle.getObjectInitializer().initObject(ref);
@@ -256,11 +256,11 @@ public class DatabaseFileSystem extends VirtualFileSystem implements /*NonPhysic
         return filesCache.computeIfAbsent(ref, r -> new DBEditableObjectVirtualFile(project, r));
     }
 
-    public void invalidateDatabaseFile(DBObjectRef objectRef) {
+    public void invalidateDatabaseFile(DBObjectRef<?> objectRef) {
         filesCache.remove(objectRef);
     }
 
-    public static boolean isFileOpened(DBObjectRef object) {
+    public static boolean isFileOpened(DBObjectRef<?> object) {
         Project project = object.getProject();
         if (project == null) return false;
 

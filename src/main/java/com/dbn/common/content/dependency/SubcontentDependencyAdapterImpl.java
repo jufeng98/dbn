@@ -1,8 +1,8 @@
 package com.dbn.common.content.dependency;
 
-import com.dbn.common.dispose.Disposer;
 import com.dbn.common.content.DynamicContent;
 import com.dbn.common.content.DynamicContentType;
+import com.dbn.common.dispose.Disposer;
 import com.dbn.connection.DatabaseEntity;
 import org.jetbrains.annotations.NotNull;
 
@@ -51,8 +51,7 @@ class SubcontentDependencyAdapterImpl extends BasicDependencyAdapter implements 
 
     @Override
     public boolean canLoadFast() {
-        DynamicContent sourceContent = getSourceContent();
-        return sourceContent.isLoaded() && !sourceContent.isDirty();
+        return getSourceContent().isReady();
     }
 
     @Override

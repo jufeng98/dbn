@@ -33,10 +33,10 @@ public class DatasetFilterCreateEditAction extends AbstractDataEditorAction {
             }
 
 
-            filterManager.openFiltersDialog(dataset, false, true, filterType);
+            filterManager.openFiltersDialog(dataset, false, true, filterType, null);
         }
         else {
-            filterManager.openFiltersDialog(dataset, false, false,DatasetFilterType.NONE);
+            filterManager.openFiltersDialog(dataset, false, false,DatasetFilterType.NONE, null);
         }
     }
 

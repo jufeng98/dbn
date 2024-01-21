@@ -8,7 +8,6 @@ import com.dbn.common.dispose.Disposer;
 import com.dbn.common.dispose.StatefulDisposableBase;
 import com.dbn.common.event.ProjectEvents;
 import com.dbn.common.icon.Icons;
-import com.dbn.common.latent.Latent;
 import com.dbn.common.list.FilteredList;
 import com.dbn.common.options.SettingsChangeNotifier;
 import com.dbn.common.project.ProjectRef;
@@ -22,6 +21,7 @@ import com.dbn.object.common.DBObjectBundle;
 import com.dbn.object.type.DBObjectType;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.openapi.project.Project;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,7 +33,7 @@ import static com.intellij.util.containers.ContainerUtil.createConcurrentWeakKey
 public class ConnectionBundle extends StatefulDisposableBase implements BrowserTreeNode {
     private final ProjectRef project;
 
-    private final Latent<Map<ConnectionId, ConnectionHandler>> virtualConnections = Latent.basic(() -> createVirtualConnections());
+    private final @Getter(lazy = true) Map<ConnectionId, ConnectionHandler> virtualConnections = createVirtualConnections();
     private FilteredList<ConnectionHandler> connections = FilteredList.stateful(c -> c.isEnabled());
     private Map<ConnectionId, ConnectionHandler> index = createConcurrentWeakKeyWeakValueMap();
 
@@ -87,10 +87,6 @@ public class ConnectionBundle extends StatefulDisposableBase implements BrowserT
                         92,
                         this));
         return virtualConnections;
-    }
-
-    private Map<ConnectionId, ConnectionHandler> getVirtualConnections() {
-        return virtualConnections.get();
     }
 
     public Collection<ConnectionHandler> listVirtualConnections() {

@@ -15,12 +15,18 @@ import com.intellij.psi.tree.TokenSet;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Supplier;
+
 @Getter
 public abstract class DBLanguageParserDefinition implements ParserDefinition {
-    private final DBLanguageParser parser;
+    private final Supplier<DBLanguageParser> parser;
+
+    public DBLanguageParserDefinition(Supplier<DBLanguageParser> parser) {
+        this.parser = parser;
+    }
 
     public DBLanguageParserDefinition(DBLanguageParser parser) {
-        this.parser = parser;
+        this.parser = () -> parser;
     }
 
     @Override
@@ -36,6 +42,10 @@ public abstract class DBLanguageParserDefinition implements ParserDefinition {
         return new ASTWrapperPsiElement(astNode);
     }
 
+    public DBLanguageParser getParser() {
+        return parser.get();
+    }
+
     @Override
     @NotNull
     public abstract DBLanguageParser createParser(Project project);
@@ -49,7 +59,7 @@ public abstract class DBLanguageParserDefinition implements ParserDefinition {
     @NotNull
     @Override
     public IFileElementType getFileNodeType() {
-        return parser.getLanguageDialect().getBaseLanguage().getFileElementType();
+        return getParser().getLanguageDialect().getBaseLanguage().getFileElementType();
         /*DBLanguageDialect languageDialect = parser.getLanguageDialect();
         return languageDialect.getFileElementType();*/
     }
@@ -57,19 +67,19 @@ public abstract class DBLanguageParserDefinition implements ParserDefinition {
     @Override
     @NotNull
     public TokenSet getWhitespaceTokens() {
-        return parser.getTokenTypes().getSharedTokenTypes().getWhitespaceTokens();
+        return getParser().getTokenTypes().getSharedTokenTypes().getWhitespaceTokens();
     }
 
     @Override
     @NotNull
     public TokenSet getCommentTokens() {
-        return parser.getTokenTypes().getSharedTokenTypes().getCommentTokens();
+        return getParser().getTokenTypes().getSharedTokenTypes().getCommentTokens();
     }
 
     @Override
     @NotNull
     public TokenSet getStringLiteralElements() {
-        return parser.getTokenTypes().getSharedTokenTypes().getStringTokens();
+        return getParser().getTokenTypes().getSharedTokenTypes().getStringTokens();
     }
 
     @NotNull

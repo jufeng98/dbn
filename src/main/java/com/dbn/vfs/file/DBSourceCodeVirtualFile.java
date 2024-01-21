@@ -102,62 +102,64 @@ public class DBSourceCodeVirtualFile extends DBContentVirtualFile implements DBP
     }
 
     public void refreshContentState() {
-        if (isNot(REFRESHING) && isLoaded()) {
-            try {
-                set(REFRESHING, true);
-                DBSchemaObject object = getObject();
+        if (!isLoaded()) return;
+        if (is(REFRESHING)) return;
 
-                if (is(LATEST) || is(MERGED)) {
-                    boolean checkSources = true;
-                    Project project = object.getProject();
-                    SourceCodeManager sourceCodeManager = SourceCodeManager.getInstance(project);
+        try {
+            set(REFRESHING, true);
+            DBSchemaObject object = getObject();
 
-                    ChangeTimestamp latestTimestamp = new ChangeTimestamp();
-                    if (isChangeMonitoringSupported()) {
-                        latestTimestamp = sourceCodeManager.loadChangeTimestamp(object, contentType);
-                        checkSources = databaseTimestamp.isOlderThan(latestTimestamp);
-                        databaseTimestamp = latestTimestamp;
-                    }
+            if (!is(LATEST) && !is(MERGED)) return;
 
-                    databaseTimestamp = latestTimestamp;
 
-                    if (checkSources) {
-                        SourceCodeContent latestContent = sourceCodeManager.loadSourceFromDatabase(object, contentType);
+            boolean checkSources = true;
+            Project project = object.getProject();
+            SourceCodeManager sourceCodeManager = SourceCodeManager.getInstance(project);
 
-                        if (is(LATEST) && !latestContent.matches(originalContent, true)) {
-                            set(OUTDATED, true);
-                            databaseContent = latestContent;
-                        }
-
-                        if (is(MERGED) && !latestContent.matches(databaseContent, true)) {
-                            set(OUTDATED, true);
-                            databaseContent = latestContent;
-                        }
-                    }
-                }
-
-            } catch (SQLException e) {
-                conditionallyLog(e);
-                log.warn("Error refreshing source content state", e);
-            } finally {
-                set(REFRESHING, false);
+            ChangeTimestamp latestTimestamp = new ChangeTimestamp();
+            if (isChangeMonitoringSupported()) {
+                latestTimestamp = sourceCodeManager.loadChangeTimestamp(object, contentType);
+                checkSources = databaseTimestamp.isOlderThan(latestTimestamp);
+                databaseTimestamp = latestTimestamp;
             }
+
+            databaseTimestamp = latestTimestamp;
+
+            if (!checkSources) return;
+            SourceCodeContent latestContent = sourceCodeManager.loadSourceFromDatabase(object, contentType);
+
+            if (is(LATEST) && !latestContent.matches(originalContent, true)) {
+                set(OUTDATED, true);
+                databaseContent = latestContent;
+            }
+
+            if (is(MERGED) && !latestContent.matches(databaseContent, true)) {
+                set(OUTDATED, true);
+                databaseContent = latestContent;
+            }
+
+        } catch (SQLException e) {
+            conditionallyLog(e);
+            log.warn("Error refreshing source content state", e);
+        } finally {
+            set(REFRESHING, false);
         }
     }
 
     public boolean isChangedInDatabase(boolean reload) {
-        if (isNot(REFRESHING) && isLoaded()) {
-            if (reload || databaseTimestamp.isDirty()) {
-                if (ThreadMonitor.isTimeSensitiveThread()) {
-                    Background.run(getProject(), () -> refreshContentState());
-                } else {
-                    refreshContentState();
-                }
+        if (!isLoaded()) return false;
+        if (is(REFRESHING)) return false;
 
+
+        if (reload || databaseTimestamp.isDirty()) {
+            if (ThreadMonitor.isTimeSensitiveThread()) {
+                Background.run(getProject(), () -> refreshContentState());
+            } else {
+                refreshContentState();
             }
-            return isNot(REFRESHING) && (is(OUTDATED) || is(MERGED));
+
         }
-        return false;
+        return isNot(REFRESHING) && (is(OUTDATED) || is(MERGED));
     }
 
     public boolean isMergeRequired() {

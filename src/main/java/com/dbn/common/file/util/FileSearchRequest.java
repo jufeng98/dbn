@@ -32,7 +32,7 @@ public class FileSearchRequest {
         if (names != null) {
             return Arrays.stream(names).anyMatch(name -> Strings.equalsIgnoreCase(file.getName(), name));
         } else if (patterns != null) {
-            throw new UnsupportedOperationException("Not supported"); // TODO implement
+            return Arrays.stream(patterns).anyMatch(pattern -> file.getName().matches(pattern));
         } else if (extensions != null) {
             return Arrays.stream(extensions).anyMatch(extension -> Strings.equalsIgnoreCase(file.getExtension(), extension));
         }

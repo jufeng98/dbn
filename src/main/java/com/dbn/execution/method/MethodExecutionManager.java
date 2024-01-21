@@ -1,7 +1,5 @@
 package com.dbn.execution.method;
 
-import com.dbn.execution.ExecutionManager;
-import com.dbn.execution.ExecutionStatus;
 import com.dbn.DatabaseNavigator;
 import com.dbn.common.component.PersistentState;
 import com.dbn.common.component.ProjectComponentBase;
@@ -22,6 +20,8 @@ import com.dbn.database.DatabaseFeature;
 import com.dbn.database.common.execution.MethodExecutionProcessor;
 import com.dbn.database.interfaces.DatabaseExecutionInterface;
 import com.dbn.debugger.DBDebuggerType;
+import com.dbn.execution.ExecutionManager;
+import com.dbn.execution.ExecutionStatus;
 import com.dbn.execution.method.browser.MethodBrowserSettings;
 import com.dbn.execution.method.browser.ui.MethodExecutionBrowserDialog;
 import com.dbn.execution.method.history.ui.MethodExecutionHistoryDialog;
@@ -229,15 +229,15 @@ public class MethodExecutionManager extends ProjectComponentBase implements Pers
 
     private void cacheArgumentValues(MethodExecutionInput input) {
         ConnectionHandler connection = input.getExecutionContext().getTargetConnection();
-        if (connection != null) {
-            for (val entry : input.getArgumentValueHistory().entrySet()) {
-                MethodExecutionArgumentValue argumentValue = entry.getValue();
+        if (connection == null) return;
 
-                argumentValuesHistory.cacheVariable(
-                        connection.getConnectionId(),
-                        argumentValue.getName(),
-                        argumentValue.getValue());
-            }
+        for (val entry : input.getArgumentValueHistory().entrySet()) {
+            MethodExecutionArgumentValue argumentValue = entry.getValue();
+
+            argumentValuesHistory.cacheVariable(
+                    connection.getConnectionId(),
+                    argumentValue.getName(),
+                    argumentValue.getValue());
         }
     }
 
@@ -247,21 +247,21 @@ public class MethodExecutionManager extends ProjectComponentBase implements Pers
             DBDebuggerType debuggerType) throws SQLException {
 
         DBMethod method = input.getMethod();
-        if (method != null) {
-            ConnectionHandler connection = method.getConnection();
-            DatabaseExecutionInterface executionInterface = connection.getInterfaces().getExecutionInterface();
-            MethodExecutionProcessor executionProcessor = debuggerType == DBDebuggerType.JDWP ?
-                    executionInterface.createExecutionProcessor(method) :
-                    executionInterface.createDebugExecutionProcessor(method);
+        if (method == null) return;
 
-            executionProcessor.execute(input, conn, debuggerType);
-            MethodExecutionContext context = input.getExecutionContext();
-            if (context.isNot(ExecutionStatus.CANCELLED)) {
-                ExecutionManager executionManager = ExecutionManager.getInstance(method.getProject());
-                executionManager.addExecutionResult(input.getExecutionResult());
-            }
-            context.set(ExecutionStatus.CANCELLED, false);
+        ConnectionHandler connection = method.getConnection();
+        DatabaseExecutionInterface executionInterface = connection.getInterfaces().getExecutionInterface();
+        MethodExecutionProcessor executionProcessor = debuggerType == DBDebuggerType.JDWP ?
+                executionInterface.createExecutionProcessor(method) :
+                executionInterface.createDebugExecutionProcessor(method);
+
+        executionProcessor.execute(input, conn, debuggerType);
+        MethodExecutionContext context = input.getExecutionContext();
+        if (context.isNot(ExecutionStatus.CANCELLED)) {
+            ExecutionManager executionManager = ExecutionManager.getInstance(method.getProject());
+            executionManager.addExecutionResult(input.getExecutionResult());
         }
+        context.set(ExecutionStatus.CANCELLED, false);
     }
 
     public void promptMethodBrowserDialog(

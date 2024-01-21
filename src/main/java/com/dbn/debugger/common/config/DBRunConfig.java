@@ -20,19 +20,21 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-import static com.dbn.common.options.setting.Settings.*;
+import static com.dbn.common.options.setting.Settings.getEnum;
+import static com.dbn.common.options.setting.Settings.setEnum;
 
 @Getter
 @Setter
 public abstract class DBRunConfig<I extends ExecutionInput> extends RunConfigurationBase implements RunConfigurationWithSuppressedDefaultRunAction, LocatableConfiguration {
     private boolean generatedName = true;
-    private boolean compileDependencies = true;
     private DBRunConfigCategory category;
+    private DBDebuggerType debuggerType = DBDebuggerType.JDBC;
     private I executionInput;
 
     protected DBRunConfig(Project project, DBRunConfigFactory factory, String name, DBRunConfigCategory category) {
         super(project, factory, name);
         this.category = category;
+        this.debuggerType = factory == null ? this.debuggerType : factory.getDebuggerType();
     }
 
     public boolean canRun() {
@@ -54,37 +56,30 @@ public abstract class DBRunConfig<I extends ExecutionInput> extends RunConfigura
     public void writeExternal(@NotNull Element element) throws WriteExternalException {
         super.writeExternal(element);
         setEnum(element, "category", category);
-        setBoolean(element, "compile-dependencies", compileDependencies);
+        setEnum(element, "debugger-type", debuggerType);
     }
 
     @Override
     public void readExternal(@NotNull Element element) throws InvalidDataException {
         super.readExternal(element);
         category = getEnum(element, "category", category);
-        compileDependencies = getBoolean(element, "compile-dependencies", compileDependencies);
+        debuggerType = getEnum(element, "debugger-type", debuggerType);
     }
 
     public abstract List<DBMethod> getMethods();
 
     @Nullable
-    public abstract DatabaseContext getSource();
+    public abstract DatabaseContext getDatabaseContext();
 
     @Nullable
     public final ConnectionHandler getConnection() {
-        DatabaseContext source = getSource();
-        return source == null ? null : source.getConnection();
+        DatabaseContext databaseContext = getDatabaseContext();
+        return databaseContext == null ? null : databaseContext.getConnection();
     }
 
 
     @Override
     public boolean excludeCompileBeforeLaunchOption() {
         return true;
-    }
-
-
-
-    public DBDebuggerType getDebuggerType() {
-        DBRunConfigFactory factory = (DBRunConfigFactory) getFactory();
-        return factory == null ? DBDebuggerType.NONE : factory.getDebuggerType();
     }
 }

@@ -18,6 +18,7 @@ import com.intellij.openapi.vfs.newvfs.events.VFilePropertyChangeEvent;
 import com.intellij.testFramework.LightVirtualFile;
 import com.intellij.util.io.ReadOnlyAttributeUtil;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,6 +29,9 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import static com.dbn.common.dispose.Checks.isNotValid;
+
+@Slf4j
 @UtilityClass
 public final class VirtualFiles {
 
@@ -37,6 +41,26 @@ public final class VirtualFiles {
             return file.getIcon();
         }
         return virtualFile.getFileType().getIcon();
+    }
+
+    @Nullable
+    public static VirtualFile findFileByUrl(String fileUrl) {
+        try {
+            VirtualFileManager fileManager = VirtualFileManager.getInstance();
+            VirtualFile file = fileManager.findFileByUrl(fileUrl);
+
+            if (isNotValid(file)) return null;
+            return file;
+        } catch (Exception e) {
+            log.warn("Failed to resolve file {}", fileUrl, e);
+        }
+
+        return null;
+    }
+
+    public static boolean isValidFile(String fileUrl) {
+        VirtualFile file = findFileByUrl(fileUrl);
+        return file != null;
     }
 
     public static boolean isDatabaseFileSystem(@NotNull VirtualFile file) {

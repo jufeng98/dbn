@@ -85,13 +85,11 @@ public class CompileDebugDependenciesDialog extends DBNDialog<CompileDebugDepend
     @Override
     protected void doOKAction() {
         selection = getForm().getSelection().toArray(new DBObjectRef[0]);
-        runConfiguration.setCompileDependencies(!isRememberSelection());
         super.doOKAction();
     }
 
     @Override
     public void doCancelAction() {
-        runConfiguration.setCompileDependencies(!isRememberSelection());
         super.doCancelAction();
     }
 

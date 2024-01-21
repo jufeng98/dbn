@@ -5,6 +5,7 @@ import com.dbn.common.dispose.Failsafe;
 import com.dbn.common.icon.Icons;
 import com.dbn.common.ui.AutoCommitLabel;
 import com.dbn.common.ui.ValueSelectorOption;
+import com.dbn.common.ui.form.DBNCollapsibleForm;
 import com.dbn.common.ui.form.DBNForm;
 import com.dbn.common.ui.form.DBNFormBase;
 import com.dbn.common.ui.misc.DBNComboBox;
@@ -32,7 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class ExecutionOptionsForm extends DBNFormBase {
+public class ExecutionOptionsForm extends DBNFormBase implements DBNCollapsibleForm {
     private JPanel mainPanel;
     private JPanel timeoutPanel;
     private JLabel connectionLabel;
@@ -131,6 +132,24 @@ public class ExecutionOptionsForm extends DBNFormBase {
         timeoutPanel.add(timeoutForm.getComponent(), BorderLayout.CENTER);
 
         reuseVariablesCheckBox.setVisible(executionInput.hasExecutionVariables());
+    }
+
+    @Override
+    public String getCollapsedTitle() {
+        return "Target context: ";
+    }
+
+    @Override
+    public String getCollapsedTitleDetail() {
+        String connectionToken = getConnection().getName();
+        SchemaId schemaId = getExecutionInput().getTargetSchemaId();
+        String schemaToken = schemaId == null ? "" : (" / " + schemaId);
+        return connectionToken + schemaToken;
+    }
+
+    @Override
+    public String getExpandedTitle() {
+        return "Target context";
     }
 
     @NotNull

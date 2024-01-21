@@ -4,7 +4,6 @@ import com.dbn.common.options.CompositeProjectConfiguration;
 import com.dbn.common.options.Configuration;
 import com.dbn.connection.operation.options.ui.OperationsSettingsForm;
 import com.dbn.connection.transaction.options.TransactionManagerSettings;
-import com.dbn.debugger.options.DebuggerSettings;
 import com.dbn.editor.session.options.SessionBrowserSettings;
 import com.dbn.execution.compiler.options.CompilerSettings;
 import com.dbn.options.ConfigId;
@@ -21,7 +20,6 @@ public class OperationSettings extends CompositeProjectConfiguration<ProjectSett
     private final TransactionManagerSettings transactionManagerSettings = new TransactionManagerSettings(this);
     private final SessionBrowserSettings sessionBrowserSettings         = new SessionBrowserSettings(this);
     private final CompilerSettings compilerSettings                     = new CompilerSettings(this);
-    private final DebuggerSettings debuggerSettings                     = new DebuggerSettings(this);
 
 
     public OperationSettings(ProjectSettings parent) {
@@ -78,7 +76,6 @@ public class OperationSettings extends CompositeProjectConfiguration<ProjectSett
         return new Configuration[] {
                 transactionManagerSettings,
                 sessionBrowserSettings,
-                compilerSettings,
-                debuggerSettings};
+                compilerSettings};
     }
 }

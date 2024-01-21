@@ -2,6 +2,7 @@ package com.dbn.execution.method.history.ui;
 
 import com.dbn.common.dispose.StatefulDisposable;
 import com.dbn.common.icon.Icons;
+import com.dbn.common.thread.Dispatch;
 import com.dbn.common.ui.tree.DBNTreeModel;
 import com.dbn.common.util.Strings;
 import com.dbn.connection.ConnectionHandler;
@@ -187,7 +188,7 @@ public abstract class MethodExecutionHistoryTreeModel extends DBNTreeModel imple
     @Override
     public void disposeInner() {
         super.disposeInner();
-        setRoot(new RootTreeNode());
         executionInputs = Collections.emptyList();
+        Dispatch.run(() -> setRoot(new RootTreeNode()));
     }
 }
