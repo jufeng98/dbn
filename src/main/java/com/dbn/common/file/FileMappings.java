@@ -1,5 +1,6 @@
 package com.dbn.common.file;
 
+import com.dbn.common.compatibility.Compatibility;
 import com.dbn.common.dispose.Disposer;
 import com.dbn.common.event.ProjectEvents;
 import com.dbn.common.ref.WeakRefCache;
@@ -65,16 +66,34 @@ public class FileMappings<T> implements Disposable {
             VFileMoveEvent moveEvent = (VFileMoveEvent) event;
             target = updateMapping(file,
                     moveEvent.getOldPath(),
-                    moveEvent.getNewPath());
+                    getNewPath(moveEvent));
 
         } else if (event instanceof VFilePropertyChangeEvent) {
             VFilePropertyChangeEvent propertyChangeEvent = (VFilePropertyChangeEvent) event;
             target = updateMapping(file,
                     propertyChangeEvent.getOldPath(),
-                    propertyChangeEvent.getNewPath());
+                    getNewPath(propertyChangeEvent));
         }
 
         handleEvent(target, event);
+    }
+
+    @Compatibility
+    public String getNewPath(VFileMoveEvent event) {
+        return event.getNewParent().getPath() + "/" + event.getFile().getName();
+    }
+
+    @Compatibility
+    public String getNewPath(VFilePropertyChangeEvent event) {
+        if (VirtualFile.PROP_NAME.equals(event.getPropertyName())) {
+            VirtualFile parent = event.getFile().getParent();
+            String fileName = (String) event.getNewValue();
+            if (parent == null) {
+                return fileName;
+            }
+            return parent.getPath() + "/" + fileName;
+        }
+        return event.getPath();
     }
 
     @SneakyThrows
