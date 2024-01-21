@@ -16,8 +16,8 @@ import javax.swing.*;
 
 import static com.dbn.common.dispose.Failsafe.nd;
 
-public class DBStatementJdwpRunConfigFactory extends DBStatementRunConfigFactory<DBStatementRunConfigType, DBStatementRunConfig> {
-    public DBStatementJdwpRunConfigFactory(@NotNull DBStatementRunConfigType type) {
+public class DBJdwpStatementRunConfigFactory extends DBStatementRunConfigFactory<DBStatementRunConfigType, DBStatementRunConfig> {
+    public DBJdwpStatementRunConfigFactory(@NotNull DBStatementRunConfigType type) {
         super(type, DBDebuggerType.JDWP);
     }
 

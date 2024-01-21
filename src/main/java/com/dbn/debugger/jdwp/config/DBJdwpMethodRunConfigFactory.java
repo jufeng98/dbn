@@ -13,8 +13,8 @@ import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
-public class DBMethodJdwpRunConfigFactory extends DBMethodRunConfigFactory<DBMethodRunConfigType, DBMethodRunConfig> {
-    public DBMethodJdwpRunConfigFactory(@NotNull DBMethodRunConfigType type) {
+public class DBJdwpMethodRunConfigFactory extends DBMethodRunConfigFactory<DBMethodRunConfigType, DBMethodRunConfig> {
+    public DBJdwpMethodRunConfigFactory(@NotNull DBMethodRunConfigType type) {
         super(type, DBDebuggerType.JDWP);
     }
 

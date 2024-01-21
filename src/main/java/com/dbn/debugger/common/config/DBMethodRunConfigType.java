@@ -3,7 +3,7 @@ package com.dbn.debugger.common.config;
 import com.dbn.common.icon.Icons;
 import com.dbn.debugger.DBDebuggerType;
 import com.dbn.debugger.jdbc.config.DBMethodJdbcRunConfigFactory;
-import com.dbn.debugger.jdwp.config.DBMethodJdwpRunConfigFactory;
+import com.dbn.debugger.jdwp.config.DBJdwpMethodRunConfigFactory;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,7 +15,7 @@ public class DBMethodRunConfigType extends DBRunConfigType<DBMethodRunConfigFact
 
     private final DBMethodRunConfigFactory[] configurationFactories = new DBMethodRunConfigFactory[]{
             new DBMethodJdbcRunConfigFactory(this),
-            new DBMethodJdwpRunConfigFactory(this)};
+            new DBJdwpMethodRunConfigFactory(this)};
 
 
     @NotNull

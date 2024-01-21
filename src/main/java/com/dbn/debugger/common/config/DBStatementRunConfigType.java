@@ -3,7 +3,7 @@ package com.dbn.debugger.common.config;
 import com.dbn.common.icon.Icons;
 import com.dbn.debugger.DBDebuggerType;
 import com.dbn.debugger.jdbc.config.DBStatementJdbcRunConfigFactory;
-import com.dbn.debugger.jdwp.config.DBStatementJdwpRunConfigFactory;
+import com.dbn.debugger.jdwp.config.DBJdwpStatementRunConfigFactory;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,7 +14,7 @@ public class DBStatementRunConfigType extends DBRunConfigType<DBStatementRunConf
     public static final String DEFAULT_RUNNER_NAME = "DB Statement Runner";
     private final DBStatementRunConfigFactory[] configurationFactories = new DBStatementRunConfigFactory[]{
             new DBStatementJdbcRunConfigFactory(this),
-            new DBStatementJdwpRunConfigFactory(this)};
+            new DBJdwpStatementRunConfigFactory(this)};
 
 
     @NotNull

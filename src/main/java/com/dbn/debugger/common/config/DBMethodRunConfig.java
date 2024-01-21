@@ -6,6 +6,8 @@ import com.dbn.database.DatabaseFeature;
 import com.dbn.debugger.DBDebuggerType;
 import com.dbn.debugger.DatabaseDebuggerManager;
 import com.dbn.debugger.common.config.ui.DBMethodRunConfigEditor;
+import com.dbn.debugger.jdbc.state.DBJdbcMethodRunProfileState;
+import com.dbn.debugger.jdwp.state.DBJdwpMethodRunProfileState;
 import com.dbn.debugger.options.DebuggerTypeOption;
 import com.dbn.execution.method.MethodExecutionInput;
 import com.dbn.execution.method.MethodExecutionManager;
@@ -46,7 +48,9 @@ public class DBMethodRunConfig extends DBRunConfig<MethodExecutionInput> impleme
 
     @Override
     public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment env) throws ExecutionException {
-        return new DBMethodRunProfileState(env);
+        DBDebuggerType debuggerType = getDebuggerType();
+        return debuggerType == DBDebuggerType.JDBC ? new DBJdbcMethodRunProfileState(env) :
+                debuggerType == DBDebuggerType.JDWP ? new DBJdwpMethodRunProfileState(env) : null;
     }
 
     public Collection<MethodExecutionInput> getMethodSelectionHistory() {
