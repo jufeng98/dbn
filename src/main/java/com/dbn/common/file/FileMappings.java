@@ -45,7 +45,7 @@ public class FileMappings<T> implements Disposable {
     private BulkFileListener createFileListener() {
         return new BulkFileListener() {
             @Override
-            public void after(@NotNull List<? extends @NotNull VFileEvent> events) {
+            public void after(@NotNull List<? extends VFileEvent> events) {
                 events.forEach(e -> handleFileEvent(e));
             }
         };
