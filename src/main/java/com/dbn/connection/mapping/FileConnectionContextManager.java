@@ -34,12 +34,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileManager;
-import com.intellij.openapi.vfs.newvfs.BulkFileListener;
-import com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent;
-import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
-import com.intellij.openapi.vfs.newvfs.events.VFileMoveEvent;
-import com.intellij.openapi.vfs.newvfs.events.VFilePropertyChangeEvent;
 import com.intellij.testFramework.LightVirtualFile;
 import com.intellij.util.IncorrectOperationException;
 import lombok.Getter;
@@ -80,8 +74,7 @@ public class FileConnectionContextManager extends ProjectComponentBase implement
         super(project, COMPONENT_NAME);
         this.registry = new FileConnectionContextRegistry(project);
         Disposer.register(this, this.registry);
-        //VirtualFileManager.getInstance().addVirtualFileListener(virtualFileListener);
-        ProjectEvents.subscribe(project, this, VirtualFileManager.VFS_CHANGES, bulkFileListener);
+
         ProjectEvents.subscribe(project, this, SessionManagerListener.TOPIC, sessionManagerListener);
         ProjectEvents.subscribe(project, this, ConnectionConfigListener.TOPIC, connectionConfigListener);
     }
@@ -437,45 +430,6 @@ public class FileConnectionContextManager extends ProjectComponentBase implement
                     popupBuilder.showCenteredInCurrentWindow(project);
                 });
     }
-
-
-    /***************************************
-     *         VirtualFileListener         *
-     ***************************************/
-
-    private final BulkFileListener bulkFileListener = new BulkFileListener() {
-        @Override
-        public void after(@NotNull List<? extends VFileEvent> events) {
-            FileMappings<FileConnectionContext> mappings = registry.getMappings();
-            for (VFileEvent event : events) {
-                VirtualFile file = event.getFile();
-                if (file == null) continue;
-                
-                if (event instanceof VFileDeleteEvent) {
-                    registry.removeMapping(file);
-
-                } else if (event instanceof VFileMoveEvent) {
-                    VFileMoveEvent moveEvent = (VFileMoveEvent) event;
-                    String oldFileUrl = moveEvent.getOldParent().getUrl() + "/" + file.getName();
-                    FileConnectionContext mapping = mappings.get(oldFileUrl);
-                    if (mapping != null) {
-                        mapping.setFileUrl(event.getFile().getUrl());
-                    }
-
-                } else if (event instanceof VFilePropertyChangeEvent) {
-                    VFilePropertyChangeEvent propChangeEvent = (VFilePropertyChangeEvent) event;
-                    VirtualFile parent = file.getParent();
-                    if (file.isInLocalFileSystem() && parent != null) {
-                        String oldFileUrl = parent.getUrl() + "/" + propChangeEvent.getOldValue();
-                        FileConnectionContext mapping = mappings.get(oldFileUrl);
-                        if (mapping != null) {
-                            mapping.setFileUrl(file.getUrl());
-                        }
-                    }
-                }
-            }
-        }
-    };
 
     /***************************************
      *         SessionManagerListener      *

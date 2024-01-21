@@ -50,10 +50,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileManager;
-import com.intellij.openapi.vfs.newvfs.BulkFileListener;
-import com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent;
-import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.ui.components.JBList;
 import lombok.val;
 import org.apache.logging.log4j.util.Strings;
@@ -67,7 +63,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.dbn.common.component.Components.projectService;
-import static com.dbn.common.dispose.Checks.isNotValid;
 import static com.dbn.common.file.FileEventType.*;
 import static com.dbn.common.message.MessageCallback.when;
 import static com.dbn.common.options.setting.Settings.*;
@@ -84,16 +79,12 @@ public class DDLFileAttachmentManager extends ProjectComponentBase implements Pe
 
     public static final String COMPONENT_NAME = "DBNavigator.Project.DDLFileAttachmentManager";
 
-    private final FileMappings<DBObjectRef<DBSchemaObject>> mappings = new FileMappings<>(this);
+    private final FileMappings<DBObjectRef<DBSchemaObject>> mappings;
     private final Map<DBObjectType, String> preferences = new ConcurrentHashMap<>();
 
     private DDLFileAttachmentManager(@NotNull Project project) {
         super(project, COMPONENT_NAME);
-
-        //VirtualFileManager.getInstance().addVirtualFileListener(virtualFileListener);
-        ProjectEvents.subscribe(project, this, VirtualFileManager.VFS_CHANGES, bulkFileListener());
-        ProjectEvents.subscribe(project, this, SourceCodeManagerListener.TOPIC, sourceCodeManagerListener());
-        ProjectEvents.subscribe(project, this, ConnectionConfigListener.TOPIC, connectionConfigListener());
+        this.mappings = new FileMappings<>(project, this);
 
         mappings.addVerifier((url, o) -> {
             VirtualFile file = VirtualFiles.findFileByUrl(url);
@@ -113,32 +104,17 @@ public class DDLFileAttachmentManager extends ProjectComponentBase implements Pe
             if (object == null) return;
 
             DatabaseFileEditorManager editorManager = DatabaseFileEditorManager.getInstance(getProject());
-            if (!editorManager.isFileOpen(object)) return;
-
-            Dispatch.run(() -> reopenEditor(object));
-
+            if (editorManager.isFileOpen(object)) {
+                Dispatch.run(() -> reopenEditor(object));
+            }
         });
+
+        ProjectEvents.subscribe(project, this, SourceCodeManagerListener.TOPIC, sourceCodeManagerListener());
+        ProjectEvents.subscribe(project, this, ConnectionConfigListener.TOPIC, connectionConfigListener());
     }
 
     public static DDLFileAttachmentManager getInstance(@NotNull Project project) {
         return projectService(project, DDLFileAttachmentManager.class);
-    }
-
-    @NotNull
-    private BulkFileListener bulkFileListener() {
-        return new BulkFileListener() {
-            @Override
-            public void after(@NotNull List<? extends VFileEvent> events) {
-                for (VFileEvent event : events) {
-                    VirtualFile file = event.getFile();
-                    if (file == null) continue;
-
-                    if (event instanceof VFileDeleteEvent) {
-                        processFileDeletedEvent(file);
-                    }
-                }
-            }
-        };
     }
 
     @NotNull
@@ -501,15 +477,6 @@ public class DDLFileAttachmentManager extends ProjectComponentBase implements Pe
 
     private List<String> getAttachedFileUrls(DBObjectRef<DBSchemaObject> objectRef) {
         return mappings.fileUrls(objectRef);
-    }
-
-    private void processFileDeletedEvent(@NotNull VirtualFile file) {
-        DBObjectRef<DBSchemaObject> objectRef = mappings.get(file.getUrl());
-        DBSchemaObject object = DBObjectRef.get(objectRef);
-        if (isNotValid(object)) return;
-
-        detachDDLFile(file);
-        reopenEditor(object);
     }
 
     /*********************************************

@@ -1,12 +1,14 @@
 package com.dbn.common.file;
 
 import com.dbn.common.dispose.Disposer;
+import com.dbn.common.event.ProjectEvents;
 import com.dbn.common.ref.WeakRefCache;
 import com.dbn.common.routine.ParametricRunnable;
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.vfs.AsyncFileListener;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.openapi.vfs.newvfs.BulkFileListener;
 import com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileMoveEvent;
@@ -33,19 +35,19 @@ public class FileMappings<T> implements Disposable {
     private final WeakRefCache<T, List<VirtualFile>> fileCache = WeakRefCache.weakKey();
     private final List<ParametricRunnable<FileMappingEvent<T>, Throwable>> eventHandlers = new ArrayList<>();
 
-    public FileMappings(@Nullable Disposable parentDisposable) {
-        VirtualFileManager fileManager = VirtualFileManager.getInstance();
-        fileManager.addAsyncFileListener(createFileListener(), this);
-
+    public FileMappings(@NotNull Project project, @Nullable Disposable parentDisposable) {
         addVerifier((f, v) -> isValidFile(f));
         Disposer.register(parentDisposable, this);
+        ProjectEvents.subscribe(project, this, VirtualFileManager.VFS_CHANGES, createFileListener());
     }
 
     @NotNull
-    private AsyncFileListener createFileListener() {
-        return events -> {
-            events.forEach(e -> handleFileEvent(e));
-            return null;
+    private BulkFileListener createFileListener() {
+        return new BulkFileListener() {
+            @Override
+            public void after(@NotNull List<? extends @NotNull VFileEvent> events) {
+                events.forEach(e -> handleFileEvent(e));
+            }
         };
     }
 
