@@ -36,7 +36,7 @@ import static com.dbn.common.options.setting.Settings.newElement;
 public class DBMethodRunConfig extends DBRunConfig<MethodExecutionInput> implements Cloneable<DBMethodRunConfig> {
     private Map<DBObjectRef<DBMethod>, MethodExecutionInput> methodSelectionHistory = new HashMap<>();
 
-    public DBMethodRunConfig(Project project, DBMethodRunConfigFactory factory, String name,DBRunConfigCategory category) {
+    public DBMethodRunConfig(Project project, DBMethodRunConfigFactory factory, String name, DBRunConfigCategory category) {
         super(project, factory, name, category);
     }
 
@@ -115,7 +115,7 @@ public class DBMethodRunConfig extends DBRunConfig<MethodExecutionInput> impleme
 
     @Nullable
     @Override
-    public DBMethod getSource() {
+    public DBMethod getDatabaseContext() {
         return getMethod();
     }
 

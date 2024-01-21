@@ -13,7 +13,7 @@ import javax.swing.*;
 import static com.dbn.common.dispose.Checks.isValid;
 
 @Getter
-public abstract class DBRunConfigEditor<T extends DBRunConfig, F extends DBProgramRunConfigForm<T>, I extends ExecutionInput> extends SettingsEditor<T> {
+public abstract class DBRunConfigEditor<T extends DBRunConfig<?>, F extends DBProgramRunConfigForm<T>, I extends ExecutionInput> extends SettingsEditor<T> {
     private final T configuration;
     private F configurationEditorForm;
 

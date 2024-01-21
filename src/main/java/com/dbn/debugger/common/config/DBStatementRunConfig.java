@@ -95,7 +95,7 @@ public class DBStatementRunConfig extends DBRunConfig<StatementExecutionInput> {
 
     @Nullable
     @Override
-    public DBLanguagePsiFile getSource() {
+    public DBLanguagePsiFile getDatabaseContext() {
         if (executionInput == null) return null;
         return executionInput.getExecutionProcessor().getPsiFile();
     }

@@ -10,7 +10,6 @@ import com.dbn.common.ui.form.DBNHeaderForm;
 import com.dbn.common.ui.form.DBNHintForm;
 import com.dbn.common.ui.util.UserInterface;
 import com.dbn.common.util.Actions;
-import com.dbn.debugger.DBDebuggerType;
 import com.dbn.debugger.ExecutionConfigManager;
 import com.dbn.debugger.common.config.DBMethodRunConfig;
 import com.dbn.debugger.common.config.DBRunConfigCategory;
@@ -41,7 +40,7 @@ public class DBMethodRunConfigForm<T extends DBMethodRunConfig> extends DBProgra
     private MethodExecutionInputForm inputForm;
 
     public DBMethodRunConfigForm(T configuration) {
-        super(configuration.getProject());
+        super(configuration.getProject(), configuration.getDebuggerType());
         readConfiguration(configuration);
         if (configuration.getCategory() != DBRunConfigCategory.CUSTOM) {
             selectMethodActionPanel.setVisible(false);
@@ -148,7 +147,7 @@ public class DBMethodRunConfigForm<T extends DBMethodRunConfig> extends DBProgra
                             headerIcon = methodRef.getObjectType().getIcon();
                             DBMethod method = executionInput.getMethod();
                             if (method != null) {
-                                inputForm = new MethodExecutionInputForm(this, executionInput, false, DBDebuggerType.JDWP);
+                                inputForm = new MethodExecutionInputForm(this, executionInput, false, getDebuggerType());
                                 methodArgumentsPanel.add(inputForm.getComponent(), BorderLayout.CENTER);
                                 if (touchForm) inputForm.touch();
                                 headerIcon = method.getOriginalIcon();

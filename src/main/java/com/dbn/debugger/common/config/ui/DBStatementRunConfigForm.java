@@ -14,7 +14,7 @@ public class DBStatementRunConfigForm extends DBProgramRunConfigForm<DBStatement
     private JPanel hintPanel;
 
     public DBStatementRunConfigForm(DBStatementRunConfig configuration) {
-        super(configuration.getProject());
+        super(configuration.getProject(), configuration.getDebuggerType());
         if (configuration.getCategory() != DBRunConfigCategory.CUSTOM) {
             headerPanel.setVisible(false);
             DBNHintForm hintForm = new DBNHintForm(this, ExecutionConfigManager.GENERIC_STATEMENT_RUNNER_HINT, null, true);

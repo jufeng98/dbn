@@ -51,8 +51,8 @@ public class DatasetFilterManager extends ProjectComponentBase implements Persis
         }
     }
 
-    public void openFiltersDialog(DBDataset dataset, boolean isAutomaticPrompt, boolean createNewFilter, DatasetFilterType defaultFilterType, DialogCallback<DatasetFilterDialog> callback) {
-        Dialogs.show(() -> new DatasetFilterDialog(dataset, isAutomaticPrompt, createNewFilter, defaultFilterType), callback);
+    public void openFiltersDialog(DBDataset dataset, boolean automaticPrompt, boolean createNewFilter, DatasetFilterType defaultFilterType, DialogCallback<DatasetFilterDialog> callback) {
+        Dialogs.show(() -> new DatasetFilterDialog(dataset, automaticPrompt, createNewFilter, defaultFilterType), callback);
     }
 
     public void createBasicFilter(@NotNull DBDataset dataset, String columnName, Object columnValue, ConditionOperator operator, boolean interactive) {
