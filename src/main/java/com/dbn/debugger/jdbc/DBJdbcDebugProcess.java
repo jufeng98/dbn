@@ -592,11 +592,14 @@ public abstract class DBJdbcDebugProcess<T extends ExecutionInput> extends XDebu
         });
     }*/
 
+/*
+    TODO remove (old compatibility code)
     @Override public void startStepOver() {startStepOver(null);}
     @Override public void startStepInto() {startStepInto(null);}
     @Override public void startStepOut() {startStepOut(null);}
     @Override public void resume() {resume(null);}
     @Override public void runToPosition(@NotNull XSourcePosition position) {runToPosition(position, null);}
+*/
 
     @Override
     public DatabaseDebuggerInterface getDebuggerInterface() {
