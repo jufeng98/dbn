@@ -53,6 +53,8 @@ public class DatabaseNavigator extends ApplicationComponentBase implements Persi
     }
 
     private static void registerExecutorExtension() {
+/*
+        // TODO review and cleanup (internal api usage) - initial motivation for this change unknown
         try {
             ExtensionsArea extensionArea = ApplicationManager.getApplication().getExtensionArea();
             boolean available = extensionArea.hasExtensionPoint(Executor.EXECUTOR_EXTENSION_NAME);
