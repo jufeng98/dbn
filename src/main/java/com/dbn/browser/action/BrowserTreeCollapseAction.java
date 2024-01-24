@@ -28,9 +28,4 @@ public class BrowserTreeCollapseAction extends ProjectAction {
             activeBrowserTree.collapseAll();
         }
     }
-
-    @Override
-    public boolean isDumbAware() {
-        return false;
-    }
 }
