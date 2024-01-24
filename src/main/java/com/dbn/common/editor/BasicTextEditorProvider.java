@@ -16,6 +16,14 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 
 public abstract class BasicTextEditorProvider implements FileEditorProvider, NamedComponent, DumbAware {
+
+    @Override
+    public boolean acceptRequiresReadAction() {
+        // DBNE-8836 avoid read-action locks when provider "accept" is invoked
+        // (none of the provider associations are dependent on the content so far)
+        return false;
+    }
+
     @Override
     @NotNull
     public FileEditorState readState(@NotNull Element sourceElement, @NotNull Project project, @NotNull VirtualFile virtualFile) {
