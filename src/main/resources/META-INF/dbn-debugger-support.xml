@@ -1,0 +1,12 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <executor implementation="com.dbn.database.common.debug.DatabaseDebugExecutor"/>
+        <xdebugger.settings implementation="com.dbn.debugger.common.settings.DBProgramDebuggerSettings"/>
+        <xdebugger.breakpointType implementation="com.dbn.debugger.common.breakpoint.DBBreakpointType"/>
+        <programRunner implementation="com.dbn.debugger.jdbc.process.DBMethodJdbcRunner"/>
+        <programRunner implementation="com.dbn.debugger.jdbc.process.DBStatementJdbcRunner"/>
+
+        <configurationType implementation="com.dbn.debugger.common.config.DBMethodRunConfigType"/>
+        <configurationType implementation="com.dbn.debugger.common.config.DBStatementRunConfigType"/>
+    </extensions>
+</idea-plugin>

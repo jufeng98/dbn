@@ -272,15 +272,15 @@ public abstract class DBJdbcDebugProcess<T extends ExecutionInput> extends XDebu
         Collection<XLineBreakpoint<XBreakpointProperties>> breakpoints = DBBreakpointUtil.getDatabaseBreakpoints(getConnection());
         Set<Integer> unregisteredBreakpointIds = new HashSet<>();
         DBBreakpointHandler<?> breakpointHandler = getBreakpointHandler();
-        for (XLineBreakpoint breakpoint : breakpoints) {
+        for (XLineBreakpoint<XBreakpointProperties> breakpoint : breakpoints) {
             Integer breakpointId = DBBreakpointUtil.getBreakpointId(breakpoint);
-            if (breakpointId != null) {
-                if (!unregisteredBreakpointIds.contains(breakpointId)) {
-                    breakpointHandler.unregisterBreakpoint(breakpoint, false);
-                    unregisteredBreakpointIds.add(breakpointId);
-                }
-                DBBreakpointUtil.setBreakpointId(breakpoint, null);
+            if (breakpointId == null) continue;
+
+            if (!unregisteredBreakpointIds.contains(breakpointId)) {
+                breakpointHandler.unregisterBreakpoint(breakpoint, false);
+                unregisteredBreakpointIds.add(breakpointId);
             }
+            DBBreakpointUtil.setBreakpointId(breakpoint, null);
 
         }
         breakpointHandler.unregisterDefaultBreakpoint();

@@ -9,15 +9,11 @@ import com.dbn.common.util.UUIDs;
 import com.dbn.diagnostics.Diagnostics;
 import com.dbn.plugin.DBNPluginStateListener;
 import com.dbn.plugin.PluginConflictManager;
-import com.intellij.execution.Executor;
-import com.intellij.execution.executors.DefaultDebugExecutor;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.ide.plugins.PluginStateManager;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
-import com.intellij.openapi.extensions.ExtensionsArea;
 import com.intellij.openapi.extensions.PluginId;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -43,11 +39,6 @@ public class DatabaseNavigator extends ApplicationComponentBase implements Persi
     public static final PluginId DBN_PLUGIN_ID = PluginId.getId("DBN");
 
     private String clientId = UUIDs.compact();
-    /*static {
-        Extensions.getRootArea().
-                getExtensionPoint(CodeStyleSettingsProvider.EXTENSION_POINT_NAME).
-                registerExtension(new SQLCodeStyleSettingsProvider());
-    }*/
 
     public DatabaseNavigator() {
         super(COMPONENT_NAME);
@@ -69,6 +60,7 @@ public class DatabaseNavigator extends ApplicationComponentBase implements Persi
         } catch (Throwable e) {
             log.error("Failed to register debug executor extension", e);
         }
+*/
     }
 
     public static DatabaseNavigator getInstance() {

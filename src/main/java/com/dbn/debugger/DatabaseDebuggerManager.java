@@ -203,7 +203,7 @@ public class DatabaseDebuggerManager extends ProjectComponentBase implements Per
                                 applicationInfo.getFullVersion() + "\".\n" +
                                 "Do you want to use classic debugger over JDBC instead?",
                         new String[]{"Use " + DBDebuggerType.JDBC.getName(), "Cancel"}, 0,
-                        o -> when(o == 0, () -> debuggerStarter.accept(debuggerType)));
+                        o -> when(o == 0, () -> debuggerStarter.accept(DBDebuggerType.JDBC)));
             }
         });
     }
