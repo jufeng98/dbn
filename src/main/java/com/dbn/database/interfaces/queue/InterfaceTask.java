@@ -1,6 +1,7 @@
 package com.dbn.database.interfaces.queue;
 
 import com.dbn.common.exception.Exceptions;
+import com.dbn.common.load.ProgressMonitor;
 import com.dbn.common.routine.ThrowableCallable;
 import com.dbn.common.thread.ThreadInfo;
 import com.dbn.common.util.Strings;
@@ -66,13 +67,12 @@ class InterfaceTask<R> implements TimeAware {
         }
 
         boolean validCallingThread = verifyCallingTread();
+        boolean modalProcess = isModalProcess();
         while (status.isBefore(FINISHED)) {
             LockSupport.parkNanos(this, validCallingThread ? TEN_SECONDS : ONE_SECOND);
 
-            if (is(InterfaceTaskStatus.CANCELLED)) {
-                break;
-            }
-
+            if (ProgressMonitor.isProgressCancelled()) break;
+            if (is(InterfaceTaskStatus.CANCELLED)) break;
             if (!validCallingThread) break;
 
             if (isOlderThan(5, TimeUnit.MINUTES)) {
@@ -82,7 +82,6 @@ class InterfaceTask<R> implements TimeAware {
         }
 
         if (exception == null) return;
-
         throw Exceptions.toSqlException(exception);
     }
 
