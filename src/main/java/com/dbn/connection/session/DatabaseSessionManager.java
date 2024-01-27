@@ -22,8 +22,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 import static com.dbn.common.component.Components.projectService;
-import static com.dbn.common.message.MessageCallback.when;
 import static com.dbn.common.options.setting.Settings.*;
+import static com.dbn.common.util.Conditional.when;
 
 @State(
     name = DatabaseSessionManager.COMPONENT_NAME,

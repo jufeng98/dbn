@@ -11,7 +11,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static com.dbn.common.message.MessageCallback.when;
+import static com.dbn.common.util.Conditional.when;
 
 public class ParserDiagnosticsDeleteAction extends AbstractParserDiagnosticsAction {
     public ParserDiagnosticsDeleteAction() {

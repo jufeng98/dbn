@@ -54,7 +54,7 @@ import java.util.stream.Collectors;
 import static com.dbn.common.component.Components.projectService;
 import static com.dbn.common.dispose.Checks.isNotValid;
 import static com.dbn.common.dispose.Failsafe.guarded;
-import static com.dbn.common.message.MessageCallback.when;
+import static com.dbn.common.util.Conditional.when;
 import static com.dbn.common.util.Messages.*;
 import static com.dbn.connection.transaction.TransactionAction.actions;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;

@@ -44,8 +44,8 @@ import java.util.Objects;
 import static com.dbn.common.component.Components.projectService;
 import static com.dbn.common.dispose.Checks.isNotValid;
 import static com.dbn.common.file.util.VirtualFiles.*;
-import static com.dbn.common.message.MessageCallback.when;
 import static com.dbn.common.options.setting.Settings.*;
+import static com.dbn.common.util.Conditional.when;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 
 @State(

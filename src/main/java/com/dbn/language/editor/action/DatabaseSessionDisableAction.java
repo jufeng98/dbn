@@ -11,7 +11,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
-import static com.dbn.common.message.MessageCallback.when;
+import static com.dbn.common.util.Conditional.when;
 
 public class DatabaseSessionDisableAction extends ProjectAction {
     private final ConnectionRef connection;
@@ -24,18 +24,18 @@ public class DatabaseSessionDisableAction extends ProjectAction {
     @Override
     protected void actionPerformed(@NotNull AnActionEvent e, @NotNull Project project) {
         Editor editor = Lookups.getEditor(e);
-        if (editor != null) {
-            ConnectionHandler connection = this.connection.ensure();
-            Messages.showQuestionDialog(
-                    project,
-                    "Disable session support",
-                    "Are you sure you want to disable the session support for connection \"" + connection.getName() + "\"\n(you can re-enable at any time in connection details settings)",
-                    Messages.OPTIONS_YES_NO,
-                    0,
-                    option -> when(option == 0, () -> {
-                        ConnectionDetailSettings detailSettings = connection.getSettings().getDetailSettings();
-                        detailSettings.setEnableSessionManagement(false);
-                    }));
-        }
+        if (editor == null) return;
+
+        ConnectionHandler connection = this.connection.ensure();
+        Messages.showQuestionDialog(
+                project,
+                "Disable session support",
+                "Are you sure you want to disable the session support for connection \"" + connection.getName() + "\"\n(you can re-enable at any time in connection details settings)",
+                Messages.OPTIONS_YES_NO,
+                0,
+                option -> when(option == 0, () -> {
+                    ConnectionDetailSettings detailSettings = connection.getSettings().getDetailSettings();
+                    detailSettings.setEnableSessionManagement(false);
+                }));
     }
 }

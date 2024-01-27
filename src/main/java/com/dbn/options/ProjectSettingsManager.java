@@ -1,6 +1,5 @@
 package com.dbn.options;
 
-import com.dbn.options.ui.ProjectSettingsDialog;
 import com.dbn.DatabaseNavigator;
 import com.dbn.browser.options.DatabaseBrowserSettings;
 import com.dbn.code.common.completion.options.CodeCompletionSettings;
@@ -25,6 +24,7 @@ import com.dbn.editor.data.options.DataEditorSettings;
 import com.dbn.execution.common.options.ExecutionEngineSettings;
 import com.dbn.navigation.options.NavigationSettings;
 import com.dbn.options.general.GeneralProjectSettings;
+import com.dbn.options.ui.ProjectSettingsDialog;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.project.Project;
@@ -35,7 +35,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static com.dbn.common.dispose.Failsafe.nd;
-import static com.dbn.common.message.MessageCallback.when;
+import static com.dbn.common.util.Conditional.when;
 
 @State(
     name = ProjectSettingsManager.COMPONENT_NAME,

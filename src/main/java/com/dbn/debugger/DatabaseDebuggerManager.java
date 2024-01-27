@@ -55,8 +55,8 @@ import java.util.*;
 
 import static com.dbn.common.Priority.HIGHEST;
 import static com.dbn.common.component.Components.projectService;
-import static com.dbn.common.message.MessageCallback.when;
 import static com.dbn.common.util.Commons.list;
+import static com.dbn.common.util.Conditional.when;
 import static com.dbn.database.DatabaseFeature.DEBUGGING;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 

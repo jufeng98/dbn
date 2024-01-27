@@ -64,8 +64,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static com.dbn.common.component.Components.projectService;
 import static com.dbn.common.file.FileEventType.*;
-import static com.dbn.common.message.MessageCallback.when;
 import static com.dbn.common.options.setting.Settings.*;
+import static com.dbn.common.util.Conditional.when;
 import static com.dbn.common.util.Lists.first;
 import static com.dbn.common.util.Messages.options;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;

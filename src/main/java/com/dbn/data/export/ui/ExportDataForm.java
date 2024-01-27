@@ -9,12 +9,12 @@ import com.dbn.common.util.Messages;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.ConnectionRef;
 import com.dbn.connection.config.ui.CharsetOption;
-import com.dbn.data.export.processor.DataExportFeature;
-import com.dbn.data.export.processor.DataExportProcessor;
 import com.dbn.data.export.DataExportFormat;
 import com.dbn.data.export.DataExportInstructions;
 import com.dbn.data.export.DataExportManager;
 import com.dbn.data.export.ExportQuotePair;
+import com.dbn.data.export.processor.DataExportFeature;
+import com.dbn.data.export.processor.DataExportProcessor;
 import com.dbn.object.DBTable;
 import com.dbn.object.common.DBObject;
 import com.dbn.object.common.DBSchemaObject;
@@ -33,10 +33,10 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.nio.charset.Charset;
 
-import static com.dbn.common.message.MessageCallback.when;
 import static com.dbn.common.ui.util.ComboBoxes.*;
 import static com.dbn.common.ui.util.TextFields.addDocumentListener;
 import static com.dbn.common.ui.util.TextFields.isEmptyText;
+import static com.dbn.common.util.Conditional.when;
 
 public class ExportDataForm extends DBNFormBase {
     private static final FileChooserDescriptor DIRECTORY_FILE_DESCRIPTOR = new FileChooserDescriptor(false, true, false, false, false, false);

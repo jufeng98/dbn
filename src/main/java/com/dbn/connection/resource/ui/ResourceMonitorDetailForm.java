@@ -1,7 +1,7 @@
 package com.dbn.connection.resource.ui;
 
-import com.dbn.common.icon.Icons;
 import com.dbn.common.event.ProjectEvents;
+import com.dbn.common.icon.Icons;
 import com.dbn.common.thread.Dispatch;
 import com.dbn.common.ui.component.DBNComponent;
 import com.dbn.common.ui.form.DBNFormBase;
@@ -31,8 +31,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
-import static com.dbn.common.message.MessageCallback.when;
 import static com.dbn.common.ui.util.UserInterface.createToolbarDecorator;
+import static com.dbn.common.util.Conditional.when;
 import static com.dbn.connection.transaction.TransactionAction.actions;
 
 
