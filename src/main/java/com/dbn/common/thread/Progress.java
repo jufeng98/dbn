@@ -12,7 +12,6 @@ import com.intellij.openapi.project.Project;
 import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.NotNull;
 
-import static com.dbn.common.dispose.Failsafe.guarded;
 import static com.intellij.openapi.progress.PerformInBackgroundOption.ALWAYS_BACKGROUND;
 import static com.intellij.openapi.progress.PerformInBackgroundOption.DEAF;
 
@@ -82,7 +81,10 @@ public final class Progress {
         if (!Checks.allValid(task, task.getProject())) return;
 
         ProgressManager progressManager = ProgressManager.getInstance();
-        Dispatch.run(() -> progressManager.run(task));
+        progressManager.run(task);
+
+        // TODO cleanup (check why this was initially invoked in the dispatch thread..)
+        // Dispatch.run(() -> progressManager.run(task));
     }
 
     public static double progressOf(int is, int should) {

@@ -2,10 +2,10 @@ package com.dbn.common.thread;
 
 import com.dbn.common.dispose.Failsafe;
 import com.dbn.common.util.Measured;
+import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.application.WriteAction;
-import com.intellij.openapi.application.ex.ApplicationEx;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.ThrowableComputable;
@@ -19,7 +19,7 @@ public final class Write {
     }
 
     public static void run(Project project, Runnable runnable) {
-        ApplicationEx application = (ApplicationEx) ApplicationManager.getApplication();
+        Application application = ApplicationManager.getApplication();
         if (application.isWriteAccessAllowed()) {
             if (project == null) {
                 Measured.run("executing Write action", () -> Failsafe.guarded(runnable, r -> r.run()));
@@ -32,7 +32,7 @@ public final class Write {
 
         } else {
             Background.run(project, () -> {
-                ModalityState modalityState = application.getDefaultModalityState();
+                ModalityState modalityState = ModalityState.defaultModalityState();
                 application.invokeAndWait(() -> run(project, runnable), modalityState);
             });
         }

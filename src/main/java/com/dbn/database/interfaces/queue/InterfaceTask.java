@@ -62,14 +62,12 @@ class InterfaceTask<R> implements TimeAware {
     }
 
     final void awaitCompletion() throws SQLException {
-        if (!source.isWaiting()) {
-            return;
-        }
+        if (!source.isWaiting()) return;
 
         boolean validCallingThread = verifyCallingTread();
         boolean modalProcess = isModalProcess();
         while (status.isBefore(FINISHED)) {
-            LockSupport.parkNanos(this, validCallingThread ? TEN_SECONDS : ONE_SECOND);
+            LockSupport.parkNanos(this, validCallingThread && !modalProcess  ? TEN_SECONDS : ONE_SECOND);
 
             if (ProgressMonitor.isProgressCancelled()) break;
             if (is(InterfaceTaskStatus.CANCELLED)) break;

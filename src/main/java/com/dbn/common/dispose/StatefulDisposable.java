@@ -1,6 +1,7 @@
 package com.dbn.common.dispose;
 
 import com.dbn.common.util.Unsafe;
+import com.intellij.openapi.progress.ProgressIndicator;
 
 import javax.swing.*;
 
@@ -15,6 +16,11 @@ public interface StatefulDisposable extends com.intellij.openapi.Disposable {
 
     default void checkDisposed() {
         if (isDisposed()) throw new AlreadyDisposedException(this);
+    }
+
+    default void checkDisposed(ProgressIndicator progress) {
+        checkDisposed();
+        progress.checkCanceled();
     }
 
     @Override

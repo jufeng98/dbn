@@ -3,11 +3,8 @@ package com.dbn.common.thread;
 import com.dbn.common.dispose.Failsafe;
 import com.dbn.common.routine.Consumer;
 import com.dbn.common.routine.ThrowableCallable;
-import com.dbn.common.util.Commons;
 import com.dbn.diagnostics.Diagnostics;
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.application.Application;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.Alarm;
@@ -17,7 +14,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
-import static com.dbn.common.dispose.Failsafe.guarded;
+import static com.dbn.common.util.Commons.nvl;
+import static com.intellij.openapi.application.ApplicationManager.getApplication;
 
 @UtilityClass
 public final class Dispatch {
@@ -35,9 +33,8 @@ public final class Dispatch {
     }
 
     public static void run(ModalityState modalityState, Runnable runnable) {
-        Application application = ApplicationManager.getApplication();
-        modalityState = Commons.nvl(modalityState, application.getDefaultModalityState());
-        application.invokeLater(() -> Failsafe.guarded(() -> runnable.run()), modalityState/*, ModalityState.NON_MODAL*/);
+        modalityState = nvl(modalityState, () -> ModalityState.defaultModalityState());
+        getApplication().invokeLater(() -> Failsafe.guarded(() -> runnable.run()), modalityState/*, ModalityState.NON_MODAL*/);
     }
 
     public static <T, E extends Throwable> T call(boolean conditional, ThrowableCallable<T, E> callable) throws E{
@@ -64,11 +61,10 @@ public final class Dispatch {
 
 
     public static <T, E extends Throwable> T call(ThrowableCallable<T, E> callable) throws E{
-        Application application = ApplicationManager.getApplication();
-        ModalityState modalityState = application.getDefaultModalityState();
+        ModalityState modalityState = ModalityState.defaultModalityState();
         AtomicReference<T> resultRef = new AtomicReference<>();
         AtomicReference<E> exceptionRef = new AtomicReference<>();
-        application.invokeAndWait(() -> {
+        getApplication().invokeAndWait(() -> {
             T result = null;
             try {
                 result = callable.call();
@@ -108,5 +104,10 @@ public final class Dispatch {
                 }
             }
         });
+    }
+
+
+    public static boolean isModalState() {
+        return ModalityState.defaultModalityState().dominates(ModalityState.nonModal());
     }
 }
