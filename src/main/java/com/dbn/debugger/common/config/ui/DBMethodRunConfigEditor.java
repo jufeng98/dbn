@@ -4,7 +4,7 @@ import com.dbn.debugger.common.config.DBMethodRunConfig;
 import com.dbn.debugger.common.config.DBRunConfigEditor;
 import com.dbn.execution.method.MethodExecutionInput;
 
-public class DBMethodRunConfigEditor extends DBRunConfigEditor<DBMethodRunConfig, DBMethodRunConfigForm<DBMethodRunConfig>, MethodExecutionInput> {
+public class DBMethodRunConfigEditor extends DBRunConfigEditor<DBMethodRunConfig, DBMethodRunConfigForm, MethodExecutionInput> {
     public DBMethodRunConfigEditor(DBMethodRunConfig configuration) {
         super(configuration);
     }

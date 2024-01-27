@@ -107,17 +107,19 @@ public class MethodExecutionHistoryForm extends DBNFormBase {
         if (executionInput != null &&
                 !executionInput.isObsolete() &&
                 !executionInput.isInactive()) {
-            DBObjectRef<DBMethod> methodRef = executionInput.getMethodRef();
-            MethodExecutionInputForm methodExecutionInputForm = methodExecutionForms.get(methodRef);
-            if (methodExecutionInputForm == null) {
-                methodExecutionInputForm = new MethodExecutionInputForm(this, executionInput, true, DBDebuggerType.NONE);
-                methodExecutionInputForm.addChangeListener(getChangeListener());
-                methodExecutionForms.put(methodRef, methodExecutionInputForm);
-            }
+            DBObjectRef<DBMethod> method = executionInput.getMethodRef();
+            MethodExecutionInputForm methodExecutionInputForm = methodExecutionForms.computeIfAbsent(method, m -> createMethodExecutionForm(executionInput));
             argumentsPanel.add(methodExecutionInputForm.getComponent(), BorderLayout.CENTER);
         }
 
         UserInterface.repaint(argumentsPanel);
+    }
+
+    @NotNull
+    private MethodExecutionInputForm createMethodExecutionForm(MethodExecutionInput executionInput) {
+        MethodExecutionInputForm form = new MethodExecutionInputForm(this, executionInput, true, DBDebuggerType.NONE);
+        form.addChangeListener(getChangeListener());
+        return form;
     }
 
     private ChangeListener getChangeListener() {
@@ -203,20 +205,19 @@ public class MethodExecutionHistoryForm extends DBNFormBase {
                             "Loading method details",
                             "Loading details of " + executionInput.getMethodRef().getQualifiedNameWithType(),
                             progress -> {
-                                DBMethod method = executionInput.getMethod();
+                                /*DBMethod method = executionInput.getMethod();
                                 if (method != null) {
                                     method.getArguments();
-                                }
+                                }*/
 
                                 Dispatch.run(() -> {
                                     MethodExecutionHistoryDialog dialog = getParentDialog();
                                     showMethodExecutionPanel(executionInput);
                                     dialog.setSelectedExecutionInput(executionInput);
                                     dialog.updateMainButtons(executionInput);
-                                    if (method != null) {
-                                        MethodExecutionHistory executionHistory = getExecutionHistory();
-                                        executionHistory.setSelection(executionInput.getMethodRef());
-                                    }
+
+                                    MethodExecutionHistory executionHistory = getExecutionHistory();
+                                    executionHistory.setSelection(executionInput.getMethodRef());
                                 });
                             }));
         } else {
