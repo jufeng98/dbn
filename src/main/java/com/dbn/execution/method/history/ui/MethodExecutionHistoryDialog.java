@@ -28,13 +28,14 @@ public class MethodExecutionHistoryDialog extends DBNDialog<MethodExecutionHisto
             @NotNull Project project,
             @Nullable MethodExecutionInput executionInput,
             boolean editable,
+            boolean modal,
             boolean debug) {
 
         super(project, "Method execution history", true);
         this.selectedExecutionInput = WeakRef.of(executionInput);
         this.editable = editable;
         this.debug = debug;
-        setModal(false);
+        setModal(modal);
         setResizable(true);
         setDefaultSize(1200, 800);
         init();

@@ -20,6 +20,6 @@ public class MethodExecutionHistoryAction extends ProjectAction {
         }
 
         MethodExecutionManager executionManager = MethodExecutionManager.getInstance(project);
-        executionManager.showExecutionHistoryDialog(null, true, false, null);
+        executionManager.showExecutionHistoryDialog(null, true, false, false, null);
     }
 }

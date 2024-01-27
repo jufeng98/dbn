@@ -46,9 +46,10 @@ public final class Dispatch {
     }
 
     public static <T> void background(Project project, Supplier<T> supplier, Consumer<T> consumer) {
+        ModalityState modalityState = ModalityState.defaultModalityState();
         Background.run(project, () -> {
             T value = supplier.get();
-            run(() -> consumer.accept(value));
+            run(modalityState, () -> consumer.accept(value));
         });
     }
 

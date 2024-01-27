@@ -110,7 +110,7 @@ public class MethodExecutionManager extends ProjectComponentBase implements Pers
         DBObjectRef<DBMethod> methodRef = executionInput.getMethodRef();
 
         ConnectionAction.invoke("the method execution", false, executionInput,
-                action -> Progress.prompt(project, action, true,
+                action -> Progress.modal(project, action, true,
                         "Loading method details",
                         "Loading details of " + methodRef.getQualifiedNameWithType(),
                         progress -> {
@@ -144,6 +144,7 @@ public class MethodExecutionManager extends ProjectComponentBase implements Pers
     public void showExecutionHistoryDialog(
             MethodExecutionInput selection,
             boolean editable,
+            boolean modal,
             boolean debug,
             Consumer<MethodExecutionInput> callback) {
 
@@ -163,7 +164,7 @@ public class MethodExecutionManager extends ProjectComponentBase implements Pers
 
                     if (!progress.isCanceled()) {
                         Dialogs.show(
-                                () -> new MethodExecutionHistoryDialog(project, selectedInput, editable, debug),
+                                () -> new MethodExecutionHistoryDialog(project, selectedInput, editable, modal, debug),
                                 (dialog, exitCode) -> {
                                     if (exitCode != DialogWrapper.OK_EXIT_CODE) return;
 
@@ -269,7 +270,7 @@ public class MethodExecutionManager extends ProjectComponentBase implements Pers
             @Nullable Consumer<MethodExecutionInput> callback) {
 
         Project project = getProject();
-        Progress.prompt(project, executionInput, true,
+        Progress.modal(project, executionInput, true,
                 "Loading data dictionary",
                 "Loading executable elements",
                 progress -> {

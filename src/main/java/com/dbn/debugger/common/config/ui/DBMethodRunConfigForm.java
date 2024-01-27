@@ -99,7 +99,7 @@ public class DBMethodRunConfigForm extends DBProgramRunConfigForm<DBMethodRunCon
         @Override
         protected void actionPerformed(@NotNull AnActionEvent e, @NotNull Project project) {
             MethodExecutionManager methodExecutionManager = MethodExecutionManager.getInstance(project);
-            methodExecutionManager.showExecutionHistoryDialog(getExecutionInput(), false, true,
+            methodExecutionManager.showExecutionHistoryDialog(getExecutionInput(), false, true, true,
                     (executionInput) -> setExecutionInput(executionInput, true));
         }
     }
