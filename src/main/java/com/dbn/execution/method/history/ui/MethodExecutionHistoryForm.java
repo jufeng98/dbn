@@ -34,6 +34,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.Map;
 
+import static com.dbn.common.dispose.Checks.isNotValid;
 import static com.dbn.common.ui.util.Splitters.makeRegular;
 
 public class MethodExecutionHistoryForm extends DBNFormBase {
@@ -189,10 +190,11 @@ public class MethodExecutionHistoryForm extends DBNFormBase {
             List<MethodExecutionInput> executionInputs = historyTree.getModel().getExecutionInputs();
             historyTree.init(executionInputs, state);
             Project project = Lookups.getProject(e);
-            if (project != null) {
-                MethodExecutionManager executionManager = MethodExecutionManager.getInstance(project);
-                executionManager.getExecutionHistory().setGroupEntries(state);
-            }
+            if (isNotValid(project)) return;
+
+
+            MethodExecutionManager executionManager = MethodExecutionManager.getInstance(project);
+            executionManager.getExecutionHistory().setGroupEntries(state);
         }
     }
 
