@@ -46,8 +46,8 @@ import java.util.List;
 
 import static com.dbn.common.component.Components.projectService;
 import static com.dbn.common.dispose.Checks.isValid;
-import static com.dbn.common.message.MessageCallback.when;
 import static com.dbn.common.options.setting.Settings.newElement;
+import static com.dbn.common.util.Conditional.when;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 
 @State(
@@ -291,6 +291,7 @@ public class MethodExecutionManager extends ProjectComponentBase implements Pers
 
                     Dialogs.show(() -> new MethodExecutionBrowserDialog(project, objectTreeModel, true), (dialog, exitCode) -> {
                         if (exitCode != DialogWrapper.OK_EXIT_CODE) return;
+
                         DBMethod method = dialog.getSelectedMethod();
                         MethodExecutionInput methodExecutionInput = executionManager.getExecutionInput(method);
                         if (callback != null && methodExecutionInput != null) {
