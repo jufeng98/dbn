@@ -1,5 +1,6 @@
 package com.dbn.execution.common.ui;
 
+import com.dbn.common.action.BasicAction;
 import com.dbn.common.action.GroupPopupAction;
 import com.dbn.common.icon.Icons;
 import com.dbn.common.ui.form.DBNForm;
@@ -125,7 +126,7 @@ public abstract class ExecutionTimeoutForm extends DBNFormBase {
         }
     }
 
-    class SaveToSettingsAction extends AnAction {
+    class SaveToSettingsAction extends BasicAction {
         SaveToSettingsAction() {
             super("Save to Settings");
         }
@@ -148,7 +149,7 @@ public abstract class ExecutionTimeoutForm extends DBNFormBase {
         }
     }
 
-    class ReloadDefaultAction extends AnAction {
+    class ReloadDefaultAction extends BasicAction {
 
         ReloadDefaultAction() {
             super("Reload from Settings");

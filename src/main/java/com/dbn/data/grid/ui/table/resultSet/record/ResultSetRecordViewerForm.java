@@ -1,26 +1,26 @@
 package com.dbn.data.grid.ui.table.resultSet.record;
 
-import com.dbn.common.icon.Icons;
+import com.dbn.common.action.BasicAction;
 import com.dbn.common.action.ToggleAction;
 import com.dbn.common.color.Colors;
 import com.dbn.common.dispose.DisposableContainers;
 import com.dbn.common.dispose.Failsafe;
+import com.dbn.common.icon.Icons;
 import com.dbn.common.ui.form.DBNFormBase;
 import com.dbn.common.ui.form.DBNHeaderForm;
 import com.dbn.common.ui.misc.DBNScrollPane;
 import com.dbn.common.ui.util.UserInterface;
 import com.dbn.common.util.Actions;
 import com.dbn.common.util.Strings;
+import com.dbn.data.grid.ui.table.resultSet.ResultSetTable;
 import com.dbn.data.model.ColumnInfo;
 import com.dbn.data.model.resultSet.ResultSetDataModel;
 import com.dbn.data.model.resultSet.ResultSetDataModelCell;
 import com.dbn.data.model.resultSet.ResultSetDataModelRow;
 import com.dbn.data.record.ColumnSortingType;
 import com.dbn.data.record.RecordViewInfo;
-import com.dbn.data.grid.ui.table.resultSet.ResultSetTable;
 import com.dbn.editor.data.DatasetEditorManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBTextField;
@@ -231,7 +231,7 @@ public class ResultSetRecordViewerForm extends DBNFormBase {
         }
     }
 
-    private class FirstRecordAction extends AnAction {
+    private class FirstRecordAction extends BasicAction {
         private FirstRecordAction() {
             super("First Record", null, Icons.DATA_EDITOR_FIRST_RECORD);
         }
@@ -252,7 +252,7 @@ public class ResultSetRecordViewerForm extends DBNFormBase {
         }
     }
 
-    private class PreviousRecordAction extends AnAction {
+    private class PreviousRecordAction extends BasicAction {
         private PreviousRecordAction() {
             super("Previous Record", null, Icons.DATA_EDITOR_PREVIOUS_RECORD);
         }
@@ -277,7 +277,7 @@ public class ResultSetRecordViewerForm extends DBNFormBase {
         }
     }
 
-    private class NextRecordAction extends AnAction {
+    private class NextRecordAction extends BasicAction {
         private NextRecordAction() {
             super("Next Record", null, Icons.DATA_EDITOR_NEXT_RECORD);
         }
@@ -302,7 +302,7 @@ public class ResultSetRecordViewerForm extends DBNFormBase {
         }
     }
 
-    private class LastRecordAction extends AnAction {
+    private class LastRecordAction extends BasicAction {
         private LastRecordAction() {
             super("Last Record", null, Icons.DATA_EDITOR_LAST_RECORD);
         }

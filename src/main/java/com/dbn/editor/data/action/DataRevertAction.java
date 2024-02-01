@@ -1,12 +1,12 @@
 package com.dbn.editor.data.action;
 
+import com.dbn.common.action.BasicAction;
 import com.dbn.common.icon.Icons;
 import com.dbn.editor.data.model.DatasetEditorModelCell;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.jetbrains.annotations.NotNull;
 
-public class DataRevertAction extends AnAction{
+public class DataRevertAction extends BasicAction {
     private final DatasetEditorModelCell cell;
 
     public DataRevertAction(DatasetEditorModelCell cell) {

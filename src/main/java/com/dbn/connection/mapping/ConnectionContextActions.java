@@ -1,5 +1,6 @@
 package com.dbn.connection.mapping;
 
+import com.dbn.common.action.BasicAction;
 import com.dbn.common.action.ProjectAction;
 import com.dbn.common.file.VirtualFileRef;
 import com.dbn.common.icon.Icons;
@@ -15,9 +16,7 @@ import com.dbn.object.DBSchema;
 import com.dbn.object.action.AnObjectAction;
 import com.dbn.options.ConfigId;
 import com.dbn.options.ProjectSettingsManager;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
@@ -134,7 +133,7 @@ public class ConnectionContextActions {
         }
     }
 
-    static class SessionSelectAction extends AnAction {
+    static class SessionSelectAction extends BasicAction {
         private final VirtualFileRef file;
         private final DatabaseSession session;
         private final Runnable callback;
@@ -174,7 +173,7 @@ public class ConnectionContextActions {
         }
     }
 
-    static class SessionCreateAction extends DumbAwareAction {
+    static class SessionCreateAction extends BasicAction {
         private final VirtualFileRef file;
         private final ConnectionRef connection;
 

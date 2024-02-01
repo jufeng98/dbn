@@ -1,11 +1,12 @@
 package com.dbn.editor.session.ui;
 
-import com.dbn.common.icon.Icons;
+import com.dbn.common.action.BasicAction;
 import com.dbn.common.action.ToggleAction;
 import com.dbn.common.action.UserDataKeys;
 import com.dbn.common.color.Colors;
 import com.dbn.common.dispose.Failsafe;
 import com.dbn.common.exception.OutdatedContentException;
+import com.dbn.common.icon.Icons;
 import com.dbn.common.ref.WeakRef;
 import com.dbn.common.thread.Background;
 import com.dbn.common.thread.PooledThread;
@@ -13,12 +14,12 @@ import com.dbn.common.ui.component.DBNComponent;
 import com.dbn.common.ui.form.DBNFormBase;
 import com.dbn.common.ui.util.Borders;
 import com.dbn.common.util.*;
-import com.dbn.editor.session.model.SessionBrowserModelRow;
-import com.dbn.editor.session.ui.table.SessionBrowserTable;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.SchemaId;
 import com.dbn.editor.session.SessionBrowser;
 import com.dbn.editor.session.SessionBrowserManager;
+import com.dbn.editor.session.model.SessionBrowserModelRow;
+import com.dbn.editor.session.ui.table.SessionBrowserTable;
 import com.dbn.language.common.DBLanguageDialect;
 import com.dbn.language.common.DBLanguagePsiFile;
 import com.dbn.language.common.PsiFileRef;
@@ -28,7 +29,6 @@ import com.dbn.object.DBSchema;
 import com.dbn.vfs.DatabaseFileViewProvider;
 import com.dbn.vfs.file.DBSessionStatementVirtualFile;
 import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.EditorSettings;
@@ -207,7 +207,7 @@ public class SessionBrowserCurrentSqlPanel extends DBNFormBase {
         }
     }
 
-    public class RefreshAction extends AnAction {
+    public class RefreshAction extends BasicAction {
         RefreshAction() {
             super("Reload", "", Icons.ACTION_REFRESH);
         }
