@@ -1,6 +1,7 @@
 package com.dbn.debugger.jdwp.process;
 
 import com.dbn.common.dispose.Failsafe;
+import com.dbn.common.util.Arrays;
 import com.dbn.common.util.Classes;
 import com.dbn.common.util.Commons;
 import com.dbn.connection.ConnectionHandler;
@@ -38,7 +39,6 @@ import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.sql.Driver;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
