@@ -556,7 +556,7 @@ public class DatasetEditorTable extends ResultSetTable<DatasetEditorModel> {
 
         DBDataset dataset = getDataset();
         DBColumn column = dataset.getColumn(columnInfo.getName());
-        Progress.modal(getProject(), dataset, true,
+        Progress.prompt(getProject(), dataset, true,
                 "Loading column information",
                 "Loading details of " + column.getQualifiedNameWithType(),
                 progress -> {

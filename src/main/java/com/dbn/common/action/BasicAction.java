@@ -1,5 +1,7 @@
 package com.dbn.common.action;
 
+//import com.intellij.openapi.actionSystem.ActionUpdateThread;
+
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.project.DumbAware;
 import org.jetbrains.annotations.Nullable;
@@ -22,4 +24,11 @@ public abstract class BasicAction extends AnAction implements BackgroundUpdatedA
     public BasicAction(@Nullable String text, @Nullable String description, @Nullable Icon icon) {
         super(text, description, icon);
     }
+
+/*
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.BGT;
+    }
+*/
 }

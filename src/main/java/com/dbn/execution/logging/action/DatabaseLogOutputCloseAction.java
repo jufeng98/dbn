@@ -8,7 +8,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
-import static com.dbn.common.message.MessageCallback.when;
+import static com.dbn.common.util.Conditional.when;
 
 public class DatabaseLogOutputCloseAction extends AbstractDatabaseLoggingAction {
     public DatabaseLogOutputCloseAction() {

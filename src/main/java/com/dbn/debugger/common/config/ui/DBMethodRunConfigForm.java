@@ -3,6 +3,7 @@ package com.dbn.debugger.common.config.ui;
 import com.dbn.common.action.GroupPopupAction;
 import com.dbn.common.action.ProjectAction;
 import com.dbn.common.color.Colors;
+import com.dbn.common.environment.options.EnvironmentSettings;
 import com.dbn.common.icon.Icons;
 import com.dbn.common.thread.Dispatch;
 import com.dbn.common.thread.Progress;
@@ -22,6 +23,7 @@ import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,7 +33,7 @@ import java.awt.*;
 
 import static com.dbn.common.dispose.Disposer.replace;
 
-public class DBMethodRunConfigForm<T extends DBMethodRunConfig> extends DBProgramRunConfigForm<T> {
+public class DBMethodRunConfigForm extends DBProgramRunConfigForm<DBMethodRunConfig> {
     private JPanel headerPanel;
     private JPanel mainPanel;
     private JPanel methodArgumentsPanel;
@@ -39,7 +41,7 @@ public class DBMethodRunConfigForm<T extends DBMethodRunConfig> extends DBProgra
     private JPanel hintPanel;
     private MethodExecutionInputForm inputForm;
 
-    public DBMethodRunConfigForm(T configuration) {
+    public DBMethodRunConfigForm(DBMethodRunConfig configuration) {
         super(configuration.getProject(), configuration.getDebuggerType());
         readConfiguration(configuration);
         if (configuration.getCategory() != DBRunConfigCategory.CUSTOM) {
@@ -97,7 +99,7 @@ public class DBMethodRunConfigForm<T extends DBMethodRunConfig> extends DBProgra
         @Override
         protected void actionPerformed(@NotNull AnActionEvent e, @NotNull Project project) {
             MethodExecutionManager methodExecutionManager = MethodExecutionManager.getInstance(project);
-            methodExecutionManager.showExecutionHistoryDialog(getExecutionInput(), false, true,
+            methodExecutionManager.showExecutionHistoryDialog(getExecutionInput(), false, true, true,
                     (executionInput) -> setExecutionInput(executionInput, true));
         }
     }
@@ -107,66 +109,77 @@ public class DBMethodRunConfigForm<T extends DBMethodRunConfig> extends DBProgra
         return inputForm == null ? null : inputForm.getExecutionInput();
     }
 
-    @Override
-    public void writeConfiguration(DBMethodRunConfig configuration) throws ConfigurationException {
-        if (inputForm != null) {
-            inputForm.updateExecutionInput();
-            configuration.setExecutionInput(getExecutionInput());
-        }
-    }
-
-    @Override
-    public void readConfiguration(DBMethodRunConfig configuration) {
-        setExecutionInput(configuration.getExecutionInput(), false);
-    }
-
     public void setExecutionInput(@Nullable MethodExecutionInput executionInput, boolean touchForm) {
         Progress.modal(getProject(), executionInput, false,
                 "Loading data dictionary",
                 "Loading method information",
                 progress -> {
                     // initialize method and arguments
-                    if (executionInput != null) {
-                        DBMethod method = executionInput.getMethod();
-                        if (method != null) {
-                            method.getArguments();
-                        }
-                    }
-
-                    Dispatch.run(() -> {
-                        methodArgumentsPanel.removeAll();
-                        inputForm = replace(inputForm, null);
-
-                        String headerTitle = "No method selected";
-                        Icon headerIcon = null;
-                        Color headerBackground = Colors.getPanelBackground();
-
-                        if (executionInput != null) {
-                            DBObjectRef<DBMethod> methodRef = executionInput.getMethodRef();
-                            headerTitle = methodRef.getPath();
-                            headerIcon = methodRef.getObjectType().getIcon();
-                            DBMethod method = executionInput.getMethod();
-                            if (method != null) {
-                                inputForm = new MethodExecutionInputForm(this, executionInput, false, getDebuggerType());
-                                methodArgumentsPanel.add(inputForm.getComponent(), BorderLayout.CENTER);
-                                if (touchForm) inputForm.touch();
-                                headerIcon = method.getOriginalIcon();
-                                if (getEnvironmentSettings(method.getProject()).getVisibilitySettings().getDialogHeaders().value()) {
-                                    headerBackground = method.getEnvironmentType().getColor();
-                                }
-                            }
-                        }
-
-                        DBNHeaderForm headerForm = new DBNHeaderForm(
-                                this, headerTitle,
-                                headerIcon,
-                                headerBackground
-                        );
-                        headerPanel.removeAll();
-                        headerPanel.add(headerForm.getComponent(), BorderLayout.CENTER);
-
-                        UserInterface.repaint(mainPanel);
-                    });
+                    initialiseExecutionInput(executionInput, progress);
+                    Dispatch.run(() -> initializeInputForm(executionInput, touchForm));
                 });
+    }
+
+    private void initializeInputForm(@Nullable MethodExecutionInput executionInput, boolean touchForm) {
+        checkDisposed();
+        methodArgumentsPanel.removeAll();
+        inputForm = replace(inputForm, null);
+
+        String headerTitle = "No method selected";
+        Icon headerIcon = null;
+        Color headerBackground = Colors.getPanelBackground();
+
+        if (executionInput != null) {
+            DBObjectRef<DBMethod> methodRef = executionInput.getMethodRef();
+            headerTitle = methodRef.getPath();
+            headerIcon = methodRef.getObjectType().getIcon();
+            DBMethod method = executionInput.getMethod();
+            if (method != null) {
+                inputForm = new MethodExecutionInputForm(this, executionInput, false, getDebuggerType());
+                methodArgumentsPanel.add(inputForm.getComponent(), BorderLayout.CENTER);
+                if (touchForm) inputForm.touch();
+
+                headerIcon = method.getOriginalIcon();
+                EnvironmentSettings environmentSettings = getEnvironmentSettings(method.getProject());
+                if (environmentSettings.getVisibilitySettings().getDialogHeaders().value()) {
+                    headerBackground = method.getEnvironmentType().getColor();
+                }
+            }
+        }
+
+        DBNHeaderForm headerForm = new DBNHeaderForm(
+                this, headerTitle,
+                headerIcon,
+                headerBackground
+        );
+        headerPanel.removeAll();
+        headerPanel.add(headerForm.getComponent(), BorderLayout.CENTER);
+
+        UserInterface.repaint(mainPanel);
+    }
+
+    private void initialiseExecutionInput(@Nullable MethodExecutionInput executionInput, ProgressIndicator progress) {
+        checkDisposed(progress);
+        if (executionInput == null) return;
+
+        DBMethod method = executionInput.getMethod();
+        if (method == null) return;
+        checkDisposed(progress);
+
+        method.getArguments();
+        checkDisposed(progress);
+    }
+
+    @Override
+    public void writeConfiguration(DBMethodRunConfig configuration) throws ConfigurationException {
+        if (inputForm == null) return;
+
+        inputForm.updateExecutionInput();
+        configuration.setExecutionInput(getExecutionInput());
+    }
+
+    @Override
+    public void readConfiguration(DBMethodRunConfig configuration) {
+        setExecutionInput(configuration.getExecutionInput(), false);
     }
 }

@@ -14,15 +14,12 @@ import com.dbn.editor.console.SQLConsoleEditorListener;
 import com.dbn.language.editor.DBLanguageFileEditorListener;
 import com.dbn.plugin.DBNPluginStateListener;
 import com.dbn.plugin.PluginConflictManager;
-import com.intellij.execution.Executor;
-import com.intellij.execution.executors.DefaultDebugExecutor;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginInstaller;
 import com.intellij.ide.plugins.PluginManager;
+import com.intellij.ide.plugins.PluginStateManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
-import com.intellij.openapi.extensions.Extensions;
-import com.intellij.openapi.extensions.ExtensionsArea;
 import com.intellij.openapi.extensions.PluginId;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -49,11 +46,6 @@ public class DatabaseNavigator extends ApplicationComponentBase implements Persi
     public static final PluginId DBN_PLUGIN_ID = PluginId.getId("DBN");
 
     private String clientId = UUIDs.compact();
-    /*static {
-        Extensions.getRootArea().
-                getExtensionPoint(CodeStyleSettingsProvider.EXTENSION_POINT_NAME).
-                registerExtension(new SQLCodeStyleSettingsProvider());
-    }*/
 
     public DatabaseNavigator() {
         super(COMPONENT_NAME);
@@ -71,11 +63,16 @@ public class DatabaseNavigator extends ApplicationComponentBase implements Persi
     }
 
     private static void registerExecutorExtension() {
-        Unsafe.silent(() -> {
-            ExtensionsArea extensionArea = Extensions.getRootArea();
-            boolean available = extensionArea.hasExtensionPoint(Executor.EXECUTOR_EXTENSION_NAME.getName());
+/*
+        // TODO review and cleanup (internal api usage) - initial motivation for this change unknown
+        try {
+            ExtensionsArea extensionArea = ApplicationManager.getApplication().getExtensionArea();
+            boolean available = extensionArea.hasExtensionPoint(Executor.EXECUTOR_EXTENSION_NAME);
             if (!available) extensionArea.getExtensionPoint(Executor.EXECUTOR_EXTENSION_NAME).registerExtension(new DefaultDebugExecutor());
-        });
+        } catch (Throwable e) {
+            log.error("Failed to register debug executor extension", e);
+        }
+*/
     }
 
     public static DatabaseNavigator getInstance() {

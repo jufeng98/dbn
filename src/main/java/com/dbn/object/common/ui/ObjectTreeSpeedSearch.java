@@ -1,5 +1,6 @@
 package com.dbn.object.common.ui;
 
+import com.dbn.common.compatibility.Compatibility;
 import com.dbn.object.lookup.DBObjectRef;
 import com.intellij.ui.SpeedSearchBase;
 import com.intellij.util.ui.tree.TreeUtil;
@@ -22,21 +23,36 @@ public class ObjectTreeSpeedSearch extends SpeedSearchBase {
     @Override
     protected int getSelectedIndex() {
         TreePath selectionPath = getComponent().getSelectionPath();
-        if (selectionPath != null) {
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectionPath.getLastPathComponent();
-            for (int i=0; i<getAllElements().length; i++) {
-                if (getAllElements()[i] == node) {
-                    return i;
-                }
+        if (selectionPath == null) return -1;
+
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectionPath.getLastPathComponent();
+        for (int i=0; i<getAllElements().length; i++) {
+            if (getAllElements()[i] == node) {
+                return i;
             }
         }
         return 0;
     }
 
+    private Object[] getElements() {
+        return getComponent().getModel().getAllElements();
+    }
+
     @NotNull
     @Override
+    @Compatibility
     protected Object[] getAllElements() {
-        return getComponent().getModel().getAllElements();
+        return getElements();
+    }
+
+    @Override
+    protected int getElementCount() {
+        return getElements().length;
+    }
+
+    //@Override
+    protected Object getElementAt(int viewIndex) {
+        return getElements()[viewIndex];
     }
 
     @Override

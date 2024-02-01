@@ -51,7 +51,7 @@ public final class ProgressMonitor {
         progress().setText2(subtext);
     }
 
-    public static boolean isModal() {
+    public static boolean isProgressModal() {
         return progress().isModal();
     }
 

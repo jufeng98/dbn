@@ -1,10 +1,5 @@
 package com.dbn.execution.script;
 
-import com.dbn.execution.ExecutionManager;
-import com.dbn.execution.ExecutionStatus;
-import com.dbn.execution.script.options.ScriptExecutionSettings;
-import com.dbn.execution.script.ui.CmdLineInterfaceInputDialog;
-import com.dbn.execution.script.ui.ScriptExecutionInputDialog;
 import com.dbn.DatabaseNavigator;
 import com.dbn.common.component.PersistentState;
 import com.dbn.common.component.ProjectComponentBase;
@@ -21,9 +16,14 @@ import com.dbn.connection.SchemaId;
 import com.dbn.connection.mapping.FileConnectionContextManager;
 import com.dbn.database.CmdLineExecutionInput;
 import com.dbn.database.interfaces.DatabaseExecutionInterface;
+import com.dbn.execution.ExecutionManager;
+import com.dbn.execution.ExecutionStatus;
 import com.dbn.execution.common.options.ExecutionEngineSettings;
 import com.dbn.execution.logging.LogOutput;
 import com.dbn.execution.logging.LogOutputContext;
+import com.dbn.execution.script.options.ScriptExecutionSettings;
+import com.dbn.execution.script.ui.CmdLineInterfaceInputDialog;
+import com.dbn.execution.script.ui.ScriptExecutionInputDialog;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
@@ -58,8 +58,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static com.dbn.common.component.Components.projectService;
 import static com.dbn.common.dispose.Failsafe.nd;
-import static com.dbn.common.message.MessageCallback.when;
 import static com.dbn.common.options.setting.Settings.*;
+import static com.dbn.common.util.Conditional.when;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 
 @Getter

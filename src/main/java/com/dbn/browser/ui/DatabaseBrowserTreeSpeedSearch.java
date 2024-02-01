@@ -1,6 +1,7 @@
 package com.dbn.browser.ui;
 
 import com.dbn.browser.model.BrowserTreeNode;
+import com.dbn.common.compatibility.Compatibility;
 import com.dbn.common.dispose.Disposer;
 import com.dbn.common.dispose.StatefulDisposable;
 import com.dbn.common.latent.Latent;
@@ -20,7 +21,7 @@ import javax.swing.tree.TreePath;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DatabaseBrowserTreeSpeedSearch extends SpeedSearchBase<JTree> implements StatefulDisposable {
+public class DatabaseBrowserTreeSpeedSearch extends SpeedSearchBase<JTree> implements StatefulDisposable, TreeModelListener {
     private static final Object[] EMPTY_ARRAY = new Object[0];
     private final Latent<Object[]> elements = Latent.basic(() -> {
         List<BrowserTreeNode> nodes = new ArrayList<>();
@@ -31,7 +32,7 @@ public class DatabaseBrowserTreeSpeedSearch extends SpeedSearchBase<JTree> imple
 
     DatabaseBrowserTreeSpeedSearch(DatabaseBrowserTree tree) {
         super(tree);
-        getComponent().getModel().addTreeModelListener(treeModelListener);
+        getComponent().getModel().addTreeModelListener(this);
 
         Disposer.register(tree, this);
     }
@@ -60,6 +61,7 @@ public class DatabaseBrowserTreeSpeedSearch extends SpeedSearchBase<JTree> imple
 
     @NotNull
     @Override
+    @Compatibility
     protected Object[] getAllElements() {
         return elements.get();
     }
@@ -117,28 +119,17 @@ public class DatabaseBrowserTreeSpeedSearch extends SpeedSearchBase<JTree> imple
 */
     }
 
-    private final TreeModelListener treeModelListener = new TreeModelListener() {
+    @Override
+    public void treeNodesChanged(TreeModelEvent e) { elements.reset(); }
 
-        @Override
-        public void treeNodesChanged(TreeModelEvent e) {
-            elements.reset();
-        }
+    @Override
+    public void treeNodesInserted(TreeModelEvent e) { elements.reset(); }
 
-        @Override
-        public void treeNodesInserted(TreeModelEvent e) {
-            elements.reset();
-        }
+    @Override
+    public void treeNodesRemoved(TreeModelEvent e) { elements.reset(); }
 
-        @Override
-        public void treeNodesRemoved(TreeModelEvent e) {
-            elements.reset();
-        }
-
-        @Override
-        public void treeStructureChanged(TreeModelEvent e) {
-            elements.reset();
-        }
-    };
+    @Override
+    public void treeStructureChanged(TreeModelEvent e) { elements.reset(); }
 
     @Getter
     @Setter
@@ -147,7 +138,7 @@ public class DatabaseBrowserTreeSpeedSearch extends SpeedSearchBase<JTree> imple
 
     @Override
     public void disposeInner() {
-        getComponent().getModel().removeTreeModelListener(treeModelListener);
+        getComponent().getModel().removeTreeModelListener(this);
         elements.set(EMPTY_ARRAY);
         nullify();
     }

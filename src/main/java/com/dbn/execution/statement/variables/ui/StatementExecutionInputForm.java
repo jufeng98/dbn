@@ -76,6 +76,7 @@ public class StatementExecutionInputForm extends DBNFormBase {
             debuggerVersionPanel.setBorder(Borders.BOTTOM_LINE_BORDER);
             debuggerTypeLabel.setText(debuggerType.name());
             debuggerVersionLabel.setText("...");
+
             Dispatch.background(
                     getProject(),
                     () -> executionInput.getDebuggerVersion(),

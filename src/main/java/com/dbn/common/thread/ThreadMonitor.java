@@ -117,7 +117,7 @@ public class ThreadMonitor {
     }
 
     public static boolean isModalProcess() {
-        return ThreadInfo.current().is(ThreadProperty.MODAL) || ProgressMonitor.isModal();
+        return ThreadInfo.current().is(ThreadProperty.MODAL) || ProgressMonitor.isProgressModal();
     }
 
     public static boolean isDisposerProcess() {

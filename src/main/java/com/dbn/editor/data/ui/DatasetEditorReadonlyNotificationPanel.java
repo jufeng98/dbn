@@ -9,7 +9,7 @@ import com.dbn.options.ConfigId;
 import com.dbn.options.ProjectSettingsManager;
 import com.intellij.openapi.project.Project;
 
-import static com.dbn.common.message.MessageCallback.when;
+import static com.dbn.common.util.Conditional.when;
 
 public class DatasetEditorReadonlyNotificationPanel extends DatasetEditorNotificationPanel{
     public DatasetEditorReadonlyNotificationPanel(final DBSchemaObject schemaObject) {

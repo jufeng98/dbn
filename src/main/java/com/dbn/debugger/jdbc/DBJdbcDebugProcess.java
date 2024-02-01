@@ -272,15 +272,15 @@ public abstract class DBJdbcDebugProcess<T extends ExecutionInput> extends XDebu
         Collection<XLineBreakpoint<XBreakpointProperties>> breakpoints = DBBreakpointUtil.getDatabaseBreakpoints(getConnection());
         Set<Integer> unregisteredBreakpointIds = new HashSet<>();
         DBBreakpointHandler<?> breakpointHandler = getBreakpointHandler();
-        for (XLineBreakpoint breakpoint : breakpoints) {
+        for (XLineBreakpoint<XBreakpointProperties> breakpoint : breakpoints) {
             Integer breakpointId = DBBreakpointUtil.getBreakpointId(breakpoint);
-            if (breakpointId != null) {
-                if (!unregisteredBreakpointIds.contains(breakpointId)) {
-                    breakpointHandler.unregisterBreakpoint(breakpoint, false);
-                    unregisteredBreakpointIds.add(breakpointId);
-                }
-                DBBreakpointUtil.setBreakpointId(breakpoint, null);
+            if (breakpointId == null) continue;
+
+            if (!unregisteredBreakpointIds.contains(breakpointId)) {
+                breakpointHandler.unregisterBreakpoint(breakpoint, false);
+                unregisteredBreakpointIds.add(breakpointId);
             }
+            DBBreakpointUtil.setBreakpointId(breakpoint, null);
 
         }
         breakpointHandler.unregisterDefaultBreakpoint();
@@ -592,11 +592,14 @@ public abstract class DBJdbcDebugProcess<T extends ExecutionInput> extends XDebu
         });
     }*/
 
+/*
+    TODO remove (old compatibility code)
     @Override public void startStepOver() {startStepOver(null);}
     @Override public void startStepInto() {startStepInto(null);}
     @Override public void startStepOut() {startStepOut(null);}
     @Override public void resume() {resume(null);}
     @Override public void runToPosition(@NotNull XSourcePosition position) {runToPosition(position, null);}
+*/
 
     @Override
     public DatabaseDebuggerInterface getDebuggerInterface() {

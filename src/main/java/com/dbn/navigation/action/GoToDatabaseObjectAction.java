@@ -2,6 +2,7 @@ package com.dbn.navigation.action;
 
 import com.dbn.common.clipboard.Clipboard;
 import com.dbn.common.dispose.Disposer;
+import com.dbn.common.ui.util.TextFields;
 import com.dbn.common.util.Editors;
 import com.dbn.common.util.Strings;
 import com.dbn.connection.*;
@@ -27,11 +28,14 @@ import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.ListPopup;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import static com.dbn.common.dispose.Checks.isNotValid;
+import static com.dbn.common.ui.util.TextFields.onTextChange;
+import static com.dbn.common.util.Conditional.whenNotEmpty;
 
 public class GoToDatabaseObjectAction extends GotoActionBase implements DumbAware {
     private ConnectionId latestConnectionId;
@@ -193,6 +197,8 @@ public class GoToDatabaseObjectAction extends GotoActionBase implements DumbAwar
             String predefinedText = getPredefinedText(project);
 
             popup = ChooseByNamePopup.createPopup(project, model, getPsiContext(e), predefinedText);
+            JTextField textField = popup.getTextField();
+            onTextChange(textField, event -> whenNotEmpty(TextFields.getText(textField), text -> latestUsedText = text));
             popup.invoke(new Callback(model), ModalityState.current(), false);
         }
     }
@@ -269,7 +275,6 @@ public class GoToDatabaseObjectAction extends GotoActionBase implements DumbAwar
         public void onClose() {
             removeActionLock();
             Disposer.dispose(model);
-            latestUsedText = popup.getEnteredText();
             popup = null;
         }
     }

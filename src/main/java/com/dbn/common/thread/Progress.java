@@ -2,6 +2,7 @@ package com.dbn.common.thread;
 
 import com.dbn.common.dispose.Checks;
 import com.dbn.common.dispose.Failsafe;
+import com.dbn.common.ui.progress.ProgressDialogHandler;
 import com.dbn.common.util.Titles;
 import com.dbn.connection.context.DatabaseContext;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -12,13 +13,10 @@ import com.intellij.openapi.project.Project;
 import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.NotNull;
 
-import static com.dbn.common.dispose.Failsafe.guarded;
 import static com.intellij.openapi.progress.PerformInBackgroundOption.ALWAYS_BACKGROUND;
-import static com.intellij.openapi.progress.PerformInBackgroundOption.DEAF;
 
 @UtilityClass
 public final class Progress {
-
     public static void background(Project project, DatabaseContext context, boolean cancellable, String title, String text, ProgressRunnable runnable) {
         if (Checks.isNotValid(project)) return;
         title = Titles.suffixed(title, context);
@@ -37,24 +35,20 @@ public final class Progress {
         if (Checks.isNotValid(project)) return;
         title = Titles.suffixed(title, context);
 
+        ProgressDialogHandler handler = new ProgressDialogHandler(project, title, text);
         ThreadInfo invoker = ThreadInfo.copy();
-        schedule(new Task.Backgroundable(project, title, cancellable, DEAF) {
+        schedule(new Task.Backgroundable(project, title, cancellable, ALWAYS_BACKGROUND) {
             @Override
             public void run(@NotNull ProgressIndicator indicator) {
-                execute(indicator, ThreadProperty.PROGRESS, project, invoker, text, runnable);
-            }
-
-            @Override
-            public boolean shouldStartInBackground() {
-                return false;
-            }
-
-            @Override
-            public boolean isConditionalModal() {
-                // TODO return true;
-                return false;
+                try {
+                    handler.init(indicator);
+                    execute(indicator, ThreadProperty.PROGRESS, project, invoker, text, runnable);
+                } finally {
+                    handler.release();
+                }
             }
         });
+        handler.trigger();
     }
 
 
@@ -82,7 +76,10 @@ public final class Progress {
         if (!Checks.allValid(task, task.getProject())) return;
 
         ProgressManager progressManager = ProgressManager.getInstance();
-        Dispatch.run(() -> progressManager.run(task));
+        progressManager.run(task);
+
+        // TODO cleanup (check why this was initially invoked in the dispatch thread..)
+        // Dispatch.run(() -> progressManager.run(task));
     }
 
     public static double progressOf(int is, int should) {

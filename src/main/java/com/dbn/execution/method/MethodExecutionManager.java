@@ -46,8 +46,8 @@ import java.util.List;
 
 import static com.dbn.common.component.Components.projectService;
 import static com.dbn.common.dispose.Checks.isValid;
-import static com.dbn.common.message.MessageCallback.when;
 import static com.dbn.common.options.setting.Settings.newElement;
+import static com.dbn.common.util.Conditional.when;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 
 @State(
@@ -144,11 +144,12 @@ public class MethodExecutionManager extends ProjectComponentBase implements Pers
     public void showExecutionHistoryDialog(
             MethodExecutionInput selection,
             boolean editable,
+            boolean modal,
             boolean debug,
             Consumer<MethodExecutionInput> callback) {
 
         Project project = getProject();
-        Progress.modal(project, selection, true,
+        Progress.prompt(project, selection, true,
                 "Loading data dictionary",
                 "Loading method execution history",
                 progress -> {
@@ -163,7 +164,7 @@ public class MethodExecutionManager extends ProjectComponentBase implements Pers
 
                     if (!progress.isCanceled()) {
                         Dialogs.show(
-                                () -> new MethodExecutionHistoryDialog(project, selectedInput, editable, debug),
+                                () -> new MethodExecutionHistoryDialog(project, selectedInput, editable, modal, debug),
                                 (dialog, exitCode) -> {
                                     if (exitCode != DialogWrapper.OK_EXIT_CODE) return;
 
@@ -268,11 +269,11 @@ public class MethodExecutionManager extends ProjectComponentBase implements Pers
             @Nullable MethodExecutionInput executionInput, boolean debug,
             @Nullable Consumer<MethodExecutionInput> callback) {
 
-        Project project = getProject();
-        Progress.prompt(project, executionInput, true,
+        Progress.prompt(getProject(), executionInput, true,
                 "Loading data dictionary",
                 "Loading executable elements",
                 progress -> {
+                    Project project = getProject();
                     MethodExecutionManager executionManager = MethodExecutionManager.getInstance(project);
                     MethodBrowserSettings settings = executionManager.getBrowserSettings();
                     DBMethod currentMethod = executionInput == null ? null : executionInput.getMethod();
@@ -291,6 +292,7 @@ public class MethodExecutionManager extends ProjectComponentBase implements Pers
 
                     Dialogs.show(() -> new MethodExecutionBrowserDialog(project, objectTreeModel, true), (dialog, exitCode) -> {
                         if (exitCode != DialogWrapper.OK_EXIT_CODE) return;
+
                         DBMethod method = dialog.getSelectedMethod();
                         MethodExecutionInput methodExecutionInput = executionManager.getExecutionInput(method);
                         if (callback != null && methodExecutionInput != null) {

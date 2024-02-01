@@ -6,6 +6,7 @@
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
     <depends optional="true" config-file="dbn-java-support.xml">com.intellij.modules.java</depends>
+    <depends optional="true" config-file="dbn-debugger-support.xml">com.intellij.modules.xdebugger</depends>
     <depends optional="true" config-file="dbn-copyright-support.xml">com.intellij.copyright</depends>
     <vendor email="dancioca@bluewin.ch">Dan Cioca</vendor>
     <idea-version since-build="181.0001" until-build="199.*"/>
@@ -752,13 +753,6 @@
 
         <elementSignatureProvider order="last" implementation="com.dbn.language.common.DBLanguageElementSignatureProvider"/>
 
-        <xdebugger.settings implementation="com.dbn.debugger.common.settings.DBProgramDebuggerSettings"/>
-        <xdebugger.breakpointType implementation="com.dbn.debugger.common.breakpoint.DBBreakpointType"/>
-        <programRunner implementation="com.dbn.debugger.jdbc.process.DBMethodJdbcRunner"/>
-        <programRunner implementation="com.dbn.debugger.jdbc.process.DBStatementJdbcRunner"/>
-        <!--<executionTargetProvider implementation="com.dbn.debugger.jdbc.execution.common.DBExecutionTargetProvider"/>-->
-        <configurationType implementation="com.dbn.debugger.common.config.DBMethodRunConfigType"/>
-        <configurationType implementation="com.dbn.debugger.common.config.DBStatementRunConfigType"/>
         <navbar order="last" implementation="com.dbn.navigation.NavigationBarExtension"/>
         <editorTabColorProvider order="first" implementation="com.dbn.editor.DBEditorTabColorProvider"/>
 

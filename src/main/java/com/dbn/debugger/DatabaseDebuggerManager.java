@@ -53,8 +53,8 @@ import java.util.*;
 
 import static com.dbn.common.Priority.HIGHEST;
 import static com.dbn.common.component.Components.projectService;
-import static com.dbn.common.message.MessageCallback.when;
 import static com.dbn.common.util.Commons.list;
+import static com.dbn.common.util.Conditional.when;
 import static com.dbn.database.DatabaseFeature.DEBUGGING;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 
@@ -201,7 +201,7 @@ public class DatabaseDebuggerManager extends ProjectComponentBase implements Per
                                 applicationInfo.getFullVersion() + "\".\n" +
                                 "Do you want to use classic debugger over JDBC instead?",
                         new String[]{"Use " + DBDebuggerType.JDBC.getName(), "Cancel"}, 0,
-                        o -> when(o == 0, () -> debuggerStarter.accept(debuggerType)));
+                        o -> when(o == 0, () -> debuggerStarter.accept(DBDebuggerType.JDBC)));
             }
         });
     }

@@ -1,5 +1,7 @@
 package com.dbn.object.dependency.ui;
 
+import com.dbn.common.compatibility.Compatibility;
+import com.dbn.common.latent.Latent;
 import com.dbn.common.util.Commons;
 import com.dbn.object.common.DBObject;
 import com.intellij.openapi.Disposable;
@@ -7,13 +9,15 @@ import com.intellij.ui.SpeedSearchBase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.JTree;
+import javax.swing.*;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreePath;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ObjectDependencyTreeSpeedSearch extends SpeedSearchBase<JTree> implements Disposable {
-    private static final Object[] EMPTY_ARRAY = new Object[0];
+public class ObjectDependencyTreeSpeedSearch extends SpeedSearchBase<JTree> implements Disposable, TreeModelListener {
+    private final Latent<Object[]> elements = Latent.basic(() -> loadElements());
 
     public ObjectDependencyTreeSpeedSearch(ObjectDependencyTree tree) {
         super(tree);
@@ -23,11 +27,11 @@ public class ObjectDependencyTreeSpeedSearch extends SpeedSearchBase<JTree> impl
     protected int getSelectedIndex() {
         Object[] elements = getAllElements();
         ObjectDependencyTreeNode treeNode = getSelectedTreeElement();
-        if (treeNode != null) {
-            for (int i=0; i<elements.length; i++) {
-                if (treeNode == elements[i]) {
-                    return i;
-                }
+        if (treeNode == null) return -1;
+
+        for (int i=0; i<elements.length; i++) {
+            if (treeNode == elements[i]) {
+                return i;
             }
         }
         return -1;
@@ -35,15 +39,30 @@ public class ObjectDependencyTreeSpeedSearch extends SpeedSearchBase<JTree> impl
 
     private ObjectDependencyTreeNode getSelectedTreeElement() {
         TreePath selectionPath = getComponent().getSelectionPath();
-        if (selectionPath != null) {
-            return (ObjectDependencyTreeNode) selectionPath.getLastPathComponent();
-        }
-        return null;
+        if (selectionPath == null) return null;
+
+        return (ObjectDependencyTreeNode) selectionPath.getLastPathComponent();
     }
 
     @NotNull
     @Override
+    @Compatibility
     protected Object[] getAllElements() {
+        return elements.get();
+    }
+
+    @Override
+    protected int getElementCount() {
+        return elements.get().length;
+    }
+
+    //@Override
+    protected Object getElementAt(int viewIndex) {
+        return elements.get()[viewIndex];
+    }
+
+    @NotNull
+    private Object[] loadElements() {
         List<ObjectDependencyTreeNode> nodes = new ArrayList<>();
         ObjectDependencyTreeNode root = getComponent().getModel().getRoot();
         loadElements(nodes, root);
@@ -78,7 +97,7 @@ public class ObjectDependencyTreeSpeedSearch extends SpeedSearchBase<JTree> impl
             if (Commons.match(rootObject.getSchema(), object.getSchema())) {
                 return object.getName();
             } else {
-                return object.getSchema().getName() + "." + object.getName();
+                return object.getSchemaName() + "." + object.getName();
             }
         }
 
@@ -90,6 +109,19 @@ public class ObjectDependencyTreeSpeedSearch extends SpeedSearchBase<JTree> impl
         ObjectDependencyTreeNode treeNode = (ObjectDependencyTreeNode) o;
         getComponent().selectElement(treeNode);
     }
+
+
+    @Override
+    public void treeNodesChanged(TreeModelEvent e) { elements.reset(); }
+
+    @Override
+    public void treeNodesInserted(TreeModelEvent e) { elements.reset(); }
+
+    @Override
+    public void treeNodesRemoved(TreeModelEvent e) { elements.reset(); }
+
+    @Override
+    public void treeStructureChanged(TreeModelEvent e) { elements.reset(); }
 
 
     @Override

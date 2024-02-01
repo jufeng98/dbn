@@ -13,8 +13,12 @@ import com.dbn.execution.common.ui.ExecutionOptionsForm;
 import com.dbn.execution.method.MethodExecutionInput;
 import com.dbn.object.DBArgument;
 import com.dbn.object.DBMethod;
+import com.dbn.object.common.DBObject;
+import com.dbn.object.common.list.DBObjectList;
 import com.dbn.object.lookup.DBObjectRef;
+import com.dbn.object.type.DBObjectType;
 import com.intellij.ui.DocumentAdapter;
+import com.intellij.util.ui.AsyncProcessIcon;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +29,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -40,8 +44,9 @@ public class MethodExecutionInputForm extends DBNFormBase {
     private JLabel debuggerTypeLabel;
     private JPanel executionOptionsPanel;
     private JPanel argumentsContainerPanel;
+    private JPanel loadingArgumentsPanel;
+    private JPanel loadingArgumentsIconPanel;
     private DBNScrollPane argumentsScrollPane;
-
 
     private final List<MethodExecutionInputArgumentForm> argumentForms = DisposableContainers.list(this);
     private final ExecutionOptionsForm executionOptionsForm;
@@ -88,12 +93,38 @@ public class MethodExecutionInputForm extends DBNFormBase {
         }
         headerPanel.setVisible(showHeader);
 
+
+        initArgumentsPanel();
+    }
+
+    private void initArgumentsPanel() {
+        if (methodArgumentsLoaded()) {
+            loadingArgumentsPanel.setVisible(false);
+            List<DBArgument> arguments = getMethodArguments();
+            initArgumentsPanel(arguments);
+            updatePreferredSize();
+            return;
+        }
+
+        noArgumentsLabel.setVisible(false);
+        loadingArgumentsPanel.setVisible(true);
+        loadingArgumentsIconPanel.add(new AsyncProcessIcon("Loading"), BorderLayout.CENTER);
+
+        //lazy load
+        Dispatch.background(getProject(),
+                () -> getMethodArguments(),
+                a -> initArgumentsPanel(a));
+    }
+
+    private void initArgumentsPanel(List<DBArgument> arguments) {
+        checkDisposed();
+
+        loadingArgumentsPanel.setVisible(false);
+        loadingArgumentsIconPanel.removeAll();
         argumentsPanel.setLayout(new BoxLayout(argumentsPanel, BoxLayout.Y_AXIS));
         int[] metrics = new int[]{0, 0, 0};
 
         //topSeparator.setVisible(false);
-        DBMethod method = executionInput.getMethod();
-        List<DBArgument> arguments = method == null ? java.util.Collections.emptyList() : new ArrayList<>(method.getArguments());
         noArgumentsLabel.setVisible(arguments.isEmpty());
         for (DBArgument argument: arguments) {
             if (argument.isInput()) {
@@ -120,15 +151,34 @@ public class MethodExecutionInputForm extends DBNFormBase {
             argumentsScrollPane.getVerticalScrollBar().setUnitIncrement(scrollUnitIncrement);
         }
 
+        for (MethodExecutionInputArgumentForm argumentComponent : argumentForms){
+            argumentComponent.addDocumentListener(documentListener);
+        }
+        updatePreferredSize();
+    }
+
+    private void updatePreferredSize() {
         Dimension preferredSize = mainPanel.getPreferredSize();
         int width = (int) preferredSize.getWidth() + 24;
         int height = (int) Math.min(preferredSize.getHeight(), 380);
         mainPanel.setPreferredSize(new Dimension(width, height));
-
-        for (MethodExecutionInputArgumentForm argumentComponent : argumentForms){
-            argumentComponent.addDocumentListener(documentListener);
-        }
     }
+
+    private List<DBArgument> getMethodArguments() {
+        DBMethod method = executionInput.getMethod();
+        return method == null ? Collections.emptyList() : method.getArguments();
+    }
+
+    private boolean methodArgumentsLoaded() {
+        if (!executionInput.getMethodRef().isLoaded()) return false;
+
+        DBMethod method = executionInput.getMethod();
+        if (method == null) return false;
+
+        DBObjectList<DBObject> argumentList = method.getChildObjectList(DBObjectType.ARGUMENT);
+        return argumentList != null && argumentList.isLoaded();
+    }
+
 
     @NotNull
     @Override
