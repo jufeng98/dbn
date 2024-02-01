@@ -30,9 +30,9 @@ public class OptionsDialog<O extends Presentable> extends DBNDialog<OptionsDialo
         this.selectedOption = selectedOption;
 
         setDefaultSize(600, 300);
+        setActionsEnabled(selectedOption != null);
         //setResizable(false);
         init();
-        setActionsEnabled(selectedOption != null);
     }
 
     @Override
