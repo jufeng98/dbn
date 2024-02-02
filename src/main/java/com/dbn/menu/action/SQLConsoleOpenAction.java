@@ -1,5 +1,6 @@
 package com.dbn.menu.action;
 
+import com.dbn.common.action.BasicAction;
 import com.dbn.common.action.ProjectAction;
 import com.dbn.common.icon.Icons;
 import com.dbn.common.util.Actions;
@@ -105,7 +106,7 @@ public class SQLConsoleOpenAction extends ProjectAction {
         }
     }
 
-    private static class SelectConsoleAction extends AnAction{
+    private static class SelectConsoleAction extends BasicAction {
         private ConnectionRef connection;
         private DBConsole console;
         private DBConsoleType consoleType;

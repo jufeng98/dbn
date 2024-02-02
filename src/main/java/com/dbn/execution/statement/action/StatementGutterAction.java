@@ -1,20 +1,20 @@
 package com.dbn.execution.statement.action;
 
+import com.dbn.common.action.BasicAction;
 import com.dbn.common.icon.Icons;
 import com.dbn.common.util.Documents;
 import com.dbn.common.util.Editors;
 import com.dbn.execution.ExecutionStatus;
+import com.dbn.execution.statement.StatementExecutionContext;
+import com.dbn.execution.statement.StatementExecutionManager;
 import com.dbn.execution.statement.processor.StatementExecutionCursorProcessor;
 import com.dbn.execution.statement.processor.StatementExecutionProcessor;
 import com.dbn.execution.statement.result.StatementExecutionResult;
 import com.dbn.execution.statement.result.StatementExecutionStatus;
-import com.dbn.execution.statement.StatementExecutionContext;
-import com.dbn.execution.statement.StatementExecutionManager;
 import com.dbn.language.common.DBLanguagePsiFile;
 import com.dbn.language.common.PsiElementRef;
 import com.dbn.language.common.PsiFileRef;
 import com.dbn.language.common.psi.ExecutablePsiElement;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.editor.Document;
@@ -31,7 +31,7 @@ import javax.swing.*;
 import static com.dbn.common.dispose.Checks.isNotValid;
 import static com.dbn.common.dispose.Checks.isValid;
 
-public class StatementGutterAction extends AnAction {
+public class StatementGutterAction extends BasicAction {
     private final PsiFileRef<DBLanguagePsiFile> psiFile;
     private final PsiElementRef<ExecutablePsiElement> psiElement;
 

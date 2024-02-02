@@ -1,5 +1,6 @@
 package com.dbn.editor.data.record.ui;
 
+import com.dbn.common.action.BasicAction;
 import com.dbn.common.action.ToggleAction;
 import com.dbn.common.dispose.DisposableContainers;
 import com.dbn.common.icon.Icons;
@@ -17,7 +18,6 @@ import com.dbn.editor.data.model.DatasetEditorModelCell;
 import com.dbn.editor.data.model.DatasetEditorModelRow;
 import com.dbn.object.DBDataset;
 import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBTextField;
@@ -224,7 +224,7 @@ public class DatasetRecordEditorForm extends DBNFormBase {
         }
     }
 
-    private class FirstRecordAction extends AnAction {
+    private class FirstRecordAction extends BasicAction {
         private FirstRecordAction() {
             super("First Record", null, Icons.DATA_EDITOR_FIRST_RECORD);
         }
@@ -244,7 +244,7 @@ public class DatasetRecordEditorForm extends DBNFormBase {
         }
     }
 
-    private class PreviousRecordAction extends AnAction {
+    private class PreviousRecordAction extends BasicAction {
         private PreviousRecordAction() {
             super("Previous Record", null, Icons.DATA_EDITOR_PREVIOUS_RECORD);
         }
@@ -267,7 +267,7 @@ public class DatasetRecordEditorForm extends DBNFormBase {
         }
     }
 
-    private class NextRecordAction extends AnAction {
+    private class NextRecordAction extends BasicAction {
         private NextRecordAction() {
             super("Next Record", null, Icons.DATA_EDITOR_NEXT_RECORD);
         }
@@ -290,7 +290,7 @@ public class DatasetRecordEditorForm extends DBNFormBase {
         }
     }
 
-    private class LastRecordAction extends AnAction {
+    private class LastRecordAction extends BasicAction {
         private LastRecordAction() {
             super("Last Record", null, Icons.DATA_EDITOR_LAST_RECORD);
         }
