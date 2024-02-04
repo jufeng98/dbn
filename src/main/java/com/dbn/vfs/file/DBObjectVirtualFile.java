@@ -2,6 +2,8 @@ package com.dbn.vfs.file;
 
 import com.dbn.browser.model.BrowserTreeNode;
 import com.dbn.common.DevNullStreams;
+import com.dbn.common.compatibility.Compatibility;
+import com.dbn.common.compatibility.Workaround;
 import com.dbn.common.dispose.Failsafe;
 import com.dbn.common.ref.WeakRefCache;
 import com.dbn.common.util.SlowOps;
@@ -15,7 +17,6 @@ import com.dbn.object.common.list.DBObjectList;
 import com.dbn.object.lookup.DBObjectRef;
 import com.dbn.object.type.DBObjectType;
 import com.dbn.vfs.DBVirtualFileBase;
-import com.intellij.ide.navigationToolbar.NavBarPresentation;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.UnknownFileType;
 import com.intellij.openapi.project.Project;
@@ -127,8 +128,11 @@ public class DBObjectVirtualFile<T extends DBObject> extends DBVirtualFileBase {
 
     @Override
     @Nullable
+    @Workaround
+    @Compatibility
     public VirtualFile getParent() {
-        if (Traces.isCalledThrough(NavBarPresentation.class)) {
+        // TODO review / cleanup
+         if (true || Traces.isCalledThrough("com.intellij.ide.navigationToolbar.NavBarPresentation", "com.intellij.ide.navbar.ide.NavBarServiceKt")) {
             T object = getObject();
             BrowserTreeNode treeParent = object.getParent();
             if (treeParent instanceof DBObjectList<?>) {
