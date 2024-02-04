@@ -89,12 +89,17 @@ public class ProgressDialogHandler {
     }
 
     private boolean finished() {
+        ProgressIndicator progressIndicator = this.progressIndicator;
+        if (progressIndicator == null) return true;
         if (progressIndicator.isCanceled()) return true;
         if (!progressIndicator.isRunning()) return true;
         return false;
     }
 
     public void cancel() {
+        ProgressIndicator progressIndicator = this.progressIndicator;
+        if (progressIndicator == null) return;
+
         progressIndicator.cancel();
         release();
     }
