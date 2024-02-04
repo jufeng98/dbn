@@ -357,7 +357,7 @@ public class DBObjectPsiFile extends UserDataHolderBase implements PsiFile, Disp
     @Override
     @NotNull
     public PsiFile[] getPsiRoots() {
-        return new PsiFile[0];
+        return new PsiFile[] {this};
     }
 
     @Override
