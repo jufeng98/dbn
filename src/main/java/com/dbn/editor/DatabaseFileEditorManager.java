@@ -287,7 +287,15 @@ public class DatabaseFileEditorManager extends ProjectComponentBase {
         DDLFileAttachmentManager fileAttachmentManager = DDLFileAttachmentManager.getInstance(project);
         DBObjectRef<DBSchemaObject> objectRef = DBObjectRef.of(object);
         List<VirtualFile> ddlFiles = fileAttachmentManager.lookupDetachedDDLFiles(objectRef);
-        if (ddlFiles.isEmpty() && ddlFileSettings.isDdlFilesCreationEnabled()) {
+        if (!ddlFiles.isEmpty()) {
+            List<VirtualFileInfo> fileInfos = VirtualFileInfo.fromFiles(ddlFiles, project);
+            fileAttachmentManager.showFileAttachDialog(object, fileInfos, true,
+                    (dialog, exitCode) -> when(exitCode != DialogWrapper.CANCEL_EXIT_CODE, callback));
+
+            return;
+        }
+
+        if (ddlFileSettings.isDdlFilesCreationEnabled()) {
             Messages.showQuestionDialog(
                     project, "No DDL file found",
                     "Could not find any DDL file for " + object.getQualifiedNameWithType() + ". Do you want to create one? \n" +
@@ -296,10 +304,6 @@ public class DatabaseFileEditorManager extends ProjectComponentBase {
                         when(option == 0, () -> fileAttachmentManager.createDDLFile(objectRef));
                         when(option != 2, callback);
                     });
-        } else {
-            List<VirtualFileInfo> fileInfos = VirtualFileInfo.fromFiles(ddlFiles, project);
-            fileAttachmentManager.showFileAttachDialog(object, fileInfos, true,
-                    (dialog, exitCode) -> when(exitCode != DialogWrapper.CANCEL_EXIT_CODE, callback));
         }
     }
 
