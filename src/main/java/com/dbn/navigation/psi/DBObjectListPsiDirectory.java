@@ -6,6 +6,7 @@ import com.dbn.common.ref.WeakRefCache;
 import com.dbn.common.util.Naming;
 import com.dbn.connection.DatabaseEntity;
 import com.dbn.language.common.psi.EmptySearchScope;
+import com.dbn.navigation.ReadonlyPsiStub;
 import com.dbn.object.common.DBObject;
 import com.dbn.object.common.DBObjectBundle;
 import com.dbn.object.common.DBObjectPsiCache;
@@ -35,7 +36,7 @@ import java.util.List;
 
 import static com.dbn.common.dispose.Failsafe.guarded;
 
-public class DBObjectListPsiDirectory implements PsiDirectory, Disposable {
+public class DBObjectListPsiDirectory implements PsiDirectory, ReadonlyPsiStub, Disposable  {
     private static final WeakRefCache<DBObjectList, DBObjectListPsiDirectory> psiDirectoryCache = WeakRefCache.weakKey();
 
     private DBObjectListVirtualFile<?> virtualFile;
@@ -72,6 +73,11 @@ public class DBObjectListPsiDirectory implements PsiDirectory, Disposable {
     @NotNull
     public String getName() {
         return Naming.capitalize(getObjectList().getName());
+    }
+
+    @Override
+    public @NotNull PsiElement setName(@NotNull String name) throws IncorrectOperationException {
+        throw ReadonlyPsiStub.notSupported();
     }
 
     @Override
@@ -261,61 +267,6 @@ public class DBObjectListPsiDirectory implements PsiDirectory, Disposable {
     }
 
     @Override
-    public PsiElement add(@NotNull PsiElement element) throws IncorrectOperationException {
-        throw new IncorrectOperationException("Operation not supported");
-    }
-
-    @Override
-    public PsiElement addBefore(@NotNull PsiElement element, PsiElement anchor) throws IncorrectOperationException {
-        throw new IncorrectOperationException("Operation not supported");
-    }
-
-    @Override
-    public PsiElement addAfter(@NotNull PsiElement element, PsiElement anchor) throws IncorrectOperationException {
-        throw new IncorrectOperationException("Operation not supported");
-    }
-
-    @Override
-    public void checkAdd(@NotNull PsiElement element) throws IncorrectOperationException {
-        throw new IncorrectOperationException("Operation not supported");
-    }
-
-    @Override
-    public PsiElement addRange(PsiElement first, PsiElement last) throws IncorrectOperationException {
-        throw new IncorrectOperationException("Operation not supported");
-    }
-
-    @Override
-    public PsiElement addRangeBefore(@NotNull PsiElement first, @NotNull PsiElement last, PsiElement anchor) throws IncorrectOperationException {
-        throw new IncorrectOperationException("Operation not supported");
-    }
-
-    @Override
-    public PsiElement addRangeAfter(PsiElement first, PsiElement last, PsiElement anchor) throws IncorrectOperationException {
-        throw new IncorrectOperationException("Operation not supported");
-    }
-
-    @Override
-    public void delete() throws IncorrectOperationException {
-
-    }
-
-    @Override
-    public void checkDelete() throws IncorrectOperationException {
-
-    }
-
-    @Override
-    public void deleteChildRange(PsiElement first, PsiElement last) throws IncorrectOperationException {
-
-    }
-
-    @Override
-    public PsiElement replace(@NotNull PsiElement newElement) throws IncorrectOperationException {
-        return null;
-    }
-
-    @Override
     public boolean isValid() {
         return true;
     }
@@ -399,12 +350,6 @@ public class DBObjectListPsiDirectory implements PsiDirectory, Disposable {
     @Override
     public boolean processChildren(@NotNull PsiElementProcessor processor) {
         return false;
-    }
-
-    @Override
-    @NotNull
-    public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
-        throw new IncorrectOperationException("Operation not supported");
     }
 
     @Override
