@@ -243,13 +243,12 @@ public class DataSearchComponent extends DBNFormBase implements SelectionListene
         to.setCaseSensitive(from.isCaseSensitive());
         to.setWholeWordsOnly(from.isWholeWordsOnly());
         to.setRegularExpressions(from.isRegularExpressions());
-        to.setInCommentsOnly(from.isInCommentsOnly());
-        to.setInStringLiteralsOnly(from.isInStringLiteralsOnly());
+        to.setSearchContext(from.getSearchContext());
     }
 
     private void updateUIWithFindModel() {
 
-        actionsToolbar.updateActionsImmediately();
+        actionsToolbar.updateActionsAsync();
 
         String stringToFind = findModel.getStringToFind();
 
