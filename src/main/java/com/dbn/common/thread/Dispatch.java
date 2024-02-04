@@ -105,6 +105,7 @@ public final class Dispatch {
 
 
     public static boolean isModalState() {
+        // return ModalityState.defaultModalityState().dominates(ModalityState.NON_MODAL);
         return ModalityState.defaultModalityState().dominates(ModalityState.NON_MODAL);
     }
 }

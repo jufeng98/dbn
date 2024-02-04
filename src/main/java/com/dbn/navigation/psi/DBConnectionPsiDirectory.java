@@ -4,6 +4,7 @@ import com.dbn.common.dispose.Disposer;
 import com.dbn.common.dispose.Failsafe;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.language.common.psi.EmptySearchScope;
+import com.dbn.navigation.ReadonlyPsiStub;
 import com.dbn.object.common.list.DBObjectListContainer;
 import com.dbn.vfs.file.DBConnectionVirtualFile;
 import com.intellij.lang.ASTNode;
@@ -27,7 +28,7 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DBConnectionPsiDirectory implements PsiDirectory, Disposable {
+public class DBConnectionPsiDirectory implements PsiDirectory, Disposable, ReadonlyPsiStub {
     private DBConnectionVirtualFile virtualFile;
 
     public DBConnectionPsiDirectory(ConnectionHandler connection) {
@@ -69,12 +70,6 @@ public class DBConnectionPsiDirectory implements PsiDirectory, Disposable {
     @Override
     public boolean processChildren(@NotNull PsiElementProcessor processor) {
         return false;
-    }
-
-    @Override
-    @NotNull
-    public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
-        throw new IncorrectOperationException("Operation not supported");
     }
 
     @Override
@@ -224,60 +219,6 @@ public class DBConnectionPsiDirectory implements PsiDirectory, Disposable {
         return null;  
     }
 
-    @Override
-    public PsiElement add(@NotNull PsiElement element) throws IncorrectOperationException {
-        return null;  
-    }
-
-    @Override
-    public PsiElement addBefore(@NotNull PsiElement element, PsiElement anchor) throws IncorrectOperationException {
-        return null;  
-    }
-
-    @Override
-    public PsiElement addAfter(@NotNull PsiElement element, PsiElement anchor) throws IncorrectOperationException {
-        return null;  
-    }
-
-    @Override
-    public void checkAdd(@NotNull PsiElement element) throws IncorrectOperationException {
-        
-    }
-
-    @Override
-    public PsiElement addRange(PsiElement first, PsiElement last) throws IncorrectOperationException {
-        return null;  
-    }
-
-    @Override
-    public PsiElement addRangeBefore(@NotNull PsiElement first, @NotNull PsiElement last, PsiElement anchor) throws IncorrectOperationException {
-        return null;  
-    }
-
-    @Override
-    public PsiElement addRangeAfter(PsiElement first, PsiElement last, PsiElement anchor) throws IncorrectOperationException {
-        return null;  
-    }
-
-    @Override
-    public void delete() throws IncorrectOperationException {
-        
-    }
-
-    @Override
-    public void checkDelete() throws IncorrectOperationException {
-        
-    }
-
-    @Override
-    public void deleteChildRange(PsiElement first, PsiElement last) throws IncorrectOperationException {
-        
-    }
-
-    @Override
-    public PsiElement replace(@NotNull PsiElement newElement) throws IncorrectOperationException {
-        return null;  
-    }
 
     @Override
     public boolean isValid() {

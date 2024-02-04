@@ -6,6 +6,7 @@ import com.dbn.connection.SchemaId;
 import com.dbn.connection.context.DatabaseContextBase;
 import com.dbn.language.common.psi.EmptySearchScope;
 import com.dbn.language.sql.SQLLanguage;
+import com.dbn.navigation.ReadonlyPsiStub;
 import com.dbn.object.lookup.DBObjectRef;
 import com.dbn.object.type.DBObjectType;
 import com.intellij.lang.ASTNode;
@@ -20,14 +21,13 @@ import com.intellij.psi.scope.PsiScopeProcessor;
 import com.intellij.psi.search.EverythingGlobalScope;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.SearchScope;
-import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-public class DBObjectPsiElement implements PsiNamedElement, NavigationItem, DatabaseContextBase {
+public class DBObjectPsiElement implements PsiNamedElement, ReadonlyPsiStub, NavigationItem, DatabaseContextBase {
     private final DBObjectRef<?> object;
 
     public DBObjectPsiElement(DBObjectRef<?> object) {
@@ -61,10 +61,6 @@ public class DBObjectPsiElement implements PsiNamedElement, NavigationItem, Data
     /*********************************************************
      *                    PsiNamedElement                    *
      *********************************************************/
-    @Override
-    public final PsiElement setName(@NonNls @NotNull String name) {
-        throw new IncorrectOperationException("Operation not supported");
-    }
 
     @Override
     public PsiManager getManager() {return PsiManager.getInstance(getProject());}
@@ -130,39 +126,6 @@ public class DBObjectPsiElement implements PsiNamedElement, NavigationItem, Data
 
     @Override
     public PsiElement copy() {return this;}
-
-    @Override
-    public PsiElement add(@NotNull PsiElement element) {return null;}
-
-    @Override
-    public PsiElement addBefore(@NotNull PsiElement element, PsiElement anchor){return null;}
-
-    @Override
-    public PsiElement addAfter(@NotNull PsiElement element, PsiElement anchor) {return null;}
-
-    @Override
-    public void checkAdd(@NotNull PsiElement element) {}
-
-    @Override
-    public PsiElement addRange(PsiElement first, PsiElement last) {return null;}
-
-    @Override
-    public PsiElement addRangeBefore(@NotNull PsiElement first, @NotNull PsiElement last, PsiElement anchor) {return null;}
-
-    @Override
-    public PsiElement addRangeAfter(PsiElement first, PsiElement last, PsiElement anchor) {return null;}
-
-    @Override
-    public void delete() {}
-
-    @Override
-    public void checkDelete() {}
-
-    @Override
-    public void deleteChildRange(PsiElement first, PsiElement last){}
-
-    @Override
-    public PsiElement replace(@NotNull PsiElement newElement) {return null;}
 
     @Override
     public boolean isValid() {
