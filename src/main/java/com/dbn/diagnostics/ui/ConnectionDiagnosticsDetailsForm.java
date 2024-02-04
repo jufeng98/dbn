@@ -48,7 +48,7 @@ public class ConnectionDiagnosticsDetailsForm extends DBNFormBase {
         connectivityTable.getRowSorter().toggleSortOrder(0);
         addTab(connectivityTable, "Database Connectivity");
 
-        diagnosticsTabs.addListener(new TabsListener.Adapter() {
+        diagnosticsTabs.addListener(new TabsListener() {
             @Override
             public void selectionChanged(TabInfo oldSelection, TabInfo newSelection) {
                 int selectedIndex = diagnosticsTabs.getTabs().indexOf(newSelection);

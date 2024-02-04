@@ -7,10 +7,10 @@ import com.dbn.common.ui.form.DBNFormBase;
 import com.dbn.common.ui.tab.TabbedPane;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.database.DatabaseFeature;
+import com.dbn.editor.session.SessionBrowser;
 import com.dbn.editor.session.details.SessionDetailsTable;
 import com.dbn.editor.session.details.SessionDetailsTableModel;
 import com.dbn.editor.session.model.SessionBrowserModelRow;
-import com.dbn.editor.session.SessionBrowser;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.tabs.TabInfo;
 import com.intellij.ui.tabs.TabsListener;
@@ -57,7 +57,7 @@ public class SessionBrowserDetailsForm extends DBNFormBase {
             detailsTabbedPane.addTab(explainPlanTabInfo);
         }
 
-        detailsTabbedPane.addListener(new TabsListener.Adapter(){
+        detailsTabbedPane.addListener(new TabsListener(){
             @Override
             public void selectionChanged(TabInfo oldSelection, TabInfo newSelection) {
                 if (newSelection.getText().equals("Explain Plan")) {

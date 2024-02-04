@@ -175,7 +175,7 @@ public class ExecutionConsoleForm extends DBNFormBase {
         }
     });
 
-    private final TabsListener tabsListener = new TabsListener.Adapter() {
+    private final TabsListener tabsListener = new TabsListener() {
         @Override
         public void selectionChanged(TabInfo oldSelection, TabInfo newSelection) {
             if (canScrollToSource) {
