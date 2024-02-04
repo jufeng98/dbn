@@ -17,7 +17,7 @@ import javax.swing.*;
 
 public abstract class BasicTextEditorProvider implements FileEditorProvider, NamedComponent, DumbAware {
 
-    @Override
+    //@Override
     public boolean acceptRequiresReadAction() {
         // DBNE-8836 avoid read-action locks when provider "accept" is invoked
         // (none of the provider associations are dependent on the content so far)

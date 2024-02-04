@@ -1,13 +1,12 @@
 package com.dbn.common.util;
 
 import com.dbn.common.color.Colors;
-import com.dbn.common.editor.BasicTextEditor;
 import com.dbn.common.dispose.Failsafe;
+import com.dbn.common.editor.BasicTextEditor;
 import com.dbn.common.file.util.VirtualFiles;
 import com.dbn.common.navigation.NavigationInstructions;
 import com.dbn.common.routine.Consumer;
 import com.dbn.common.thread.*;
-import com.dbn.vfs.file.*;
 import com.dbn.common.ui.form.DBNToolbarForm;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.data.editor.text.TextContentType;
@@ -21,6 +20,7 @@ import com.dbn.language.common.DBLanguageDialect;
 import com.dbn.language.common.psi.PsiUtil;
 import com.dbn.object.common.DBObject;
 import com.dbn.object.common.DBSchemaObject;
+import com.dbn.vfs.file.*;
 import com.intellij.ide.highlighter.HighlighterFactory;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -54,6 +54,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;

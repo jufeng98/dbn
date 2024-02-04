@@ -76,7 +76,7 @@ public class ProgressDialogHandler {
         ComponentPopupBuilder builder = JBPopupFactory.getInstance().createComponentPopupBuilder(content, focus);
 
         builder.setProject(getProject());
-        builder.setNormalWindowLevel(true);
+        //builder.setNormalWindowLevel(true);
         builder.setMovable(true);
         builder.setResizable(true);
         builder.setTitle(title);
