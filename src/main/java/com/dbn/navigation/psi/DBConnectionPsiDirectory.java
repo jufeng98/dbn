@@ -53,6 +53,11 @@ public class DBConnectionPsiDirectory implements PsiDirectory, Disposable, Reado
     }
 
     @Override
+    public @NotNull PsiElement setName(@NotNull String name) throws IncorrectOperationException {
+        throw ReadonlyPsiStub.notSupported();
+    }
+
+    @Override
     public ItemPresentation getPresentation() {
         return getConnection().getObjectBundle();
     }
