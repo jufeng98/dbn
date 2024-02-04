@@ -248,7 +248,7 @@ public class DataSearchComponent extends DBNFormBase implements SelectionListene
 
     private void updateUIWithFindModel() {
 
-        actionsToolbar.updateActionsAsync();
+        actionsToolbar.updateActionsImmediately();
 
         String stringToFind = findModel.getStringToFind();
 
