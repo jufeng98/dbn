@@ -66,6 +66,8 @@ public interface ReadonlyPsiStub extends PsiNamedElement {
         throw notSupported();
     }
 
+
+
     static @NotNull IncorrectOperationException notSupported() {
         return new IncorrectOperationException("Operation not supported");
     }
