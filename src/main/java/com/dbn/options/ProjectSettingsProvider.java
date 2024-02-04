@@ -26,6 +26,7 @@ public class ProjectSettingsProvider extends ConfigurableProvider{
      * (initialize the provider upfront)
      */
     @Workaround // https://youtrack.jetbrains.com/issue/IDEA-313711
+    @Deprecated // TODO decommission
     public static void init(Project project) {
         Unsafe.silent(() -> {
             ConfigurableEP<?>[] extensions = Configurable.PROJECT_CONFIGURABLE.getExtensions(project);
