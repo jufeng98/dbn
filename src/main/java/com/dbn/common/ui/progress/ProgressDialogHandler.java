@@ -1,14 +1,19 @@
 package com.dbn.common.ui.progress;
 
 import com.dbn.common.project.ProjectRef;
-import com.dbn.common.util.Dialogs;
+import com.dbn.common.thread.Dispatch;
 import com.dbn.common.util.Timers;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.popup.ComponentPopupBuilder;
+import com.intellij.openapi.ui.popup.JBPopup;
+import com.intellij.openapi.ui.popup.JBPopupFactory;
+import com.intellij.openapi.util.Disposer;
+import com.intellij.util.ui.JBDimension;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -17,12 +22,12 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 @Getter
 public class ProgressDialogHandler {
-    private final static Set<ProgressDialog> progressDialogs = new HashSet<>();
+    private final static Set<JBPopup> progressDialogs = new HashSet<>();
 
     private final ProjectRef project;
     private final String title;
     private final String text;
-    private ProgressDialog progressDialog;
+    private JBPopup progressDialog;
     private ProgressIndicator progressIndicator;
 
     public ProgressDialogHandler(Project project, String title, String text) {
@@ -43,18 +48,42 @@ public class ProgressDialogHandler {
         // delay the creation of the dialog 1 second to reduce number of prompts if background process finishes in acceptable time
         Timers.executeLater("ProgressDialogPrompt", 300, MILLISECONDS, () -> {
             if (finished()) return;
-            openDialog();
+            openPopup();
         });
     }
 
-    private void openDialog() {
-        Dialogs.show(() -> {
-            if (finished()) return null;
-            progressDialog = new ProgressDialog(this);
+    private void openPopup() {
+        Dispatch.run(true, () -> {
+            if (finished()) return;
+
+            closeProgressDialogs();
+
+            progressDialog = createPopup();
+            progressDialog.showCenteredInCurrentWindow(getProject());
+
             progressDialogs.add(progressDialog);
-            return progressDialog;
         });
         if (finished()) release();
+
+    }
+
+    private JBPopup createPopup() {
+        ProgressDialogForm form = new ProgressDialogForm(this);
+        JComponent content = form.getMainComponent();
+        JComponent focus = form.getPreferredFocusedComponent();
+        ComponentPopupBuilder builder = JBPopupFactory.getInstance().createComponentPopupBuilder(content, focus);
+
+        builder.setProject(getProject());
+        builder.setNormalWindowLevel(true);
+        builder.setMovable(true);
+        builder.setResizable(true);
+        builder.setTitle(title);
+        builder.setCancelOnClickOutside(false);
+        builder.setRequestFocus(true);
+        builder.setBelongsToGlobalPopupStack(false);
+        builder.setMinSize(new JBDimension(300, 100));
+        builder.setLocateWithinScreenBounds(false);
+        return builder.createPopup();
     }
 
     private boolean finished() {
@@ -65,17 +94,30 @@ public class ProgressDialogHandler {
 
     public void cancel() {
         progressIndicator.cancel();
+        release();
     }
 
     public void release() {
-        Dialogs.close(progressDialog, DialogWrapper.OK_EXIT_CODE);
+        closePopup(progressDialog);
+        progressDialog = null;
     }
 
-    public static void closeProgressDialogs() {
-        Iterator<ProgressDialog> dialogs = progressDialogs.iterator();
+    private void closePopup(JBPopup popup) {
+        if (popup == null) return;
+
+        Dispatch.run(true, () -> {
+            popup.cancel();
+            Disposer.dispose(popup);
+        });
+
+    }
+
+    private static void closeProgressDialogs() {
+        Iterator<JBPopup> dialogs = progressDialogs.iterator();
         while (dialogs.hasNext()) {
-            ProgressDialog progressDialog = dialogs.next();
-            progressDialog.close(DialogWrapper.OK_EXIT_CODE);
+            JBPopup progressDialog = dialogs.next();
+            progressDialog.cancel();
+            Disposer.dispose(progressDialog);
             dialogs.remove();
         }
     }

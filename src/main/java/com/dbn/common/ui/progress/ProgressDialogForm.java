@@ -1,10 +1,13 @@
 package com.dbn.common.ui.progress;
 
-import com.dbn.common.color.Colors;
 import com.dbn.common.ui.form.DBNFormBase;
+import com.dbn.common.ui.listener.KeyAdapter;
+import com.dbn.common.util.Conditional;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.awt.event.KeyEvent;
 
 public class ProgressDialogForm extends DBNFormBase {
     private JPanel mainPanel;
@@ -13,22 +16,35 @@ public class ProgressDialogForm extends DBNFormBase {
     private JLabel progressTitleLabel;
     private JButton backgroundButton;
     private JButton cancelButton;
-    private JLabel titleLabel;
-    private JPanel titlePanel;
 
-    public ProgressDialogForm(@NotNull ProgressDialog parent, String title, String description) {
-        super(parent);
+    public ProgressDialogForm(@NotNull ProgressDialogHandler handler) {
+        super(null, handler.getProject());
 
         progressBar.setIndeterminate(true);
         progressBar.setVisible(true);
-        titleLabel.setText(title);
-        titlePanel.setBackground(Colors.lafDarker(titlePanel.getBackground(), 1));
-
-        ProgressDialogHandler handler = parent.getHandler();
         progressTitleLabel.setText(handler.getText());
 
-        cancelButton.addActionListener(e -> parent.doCancelAction());
-        backgroundButton.addActionListener(e -> parent.doBackgroundAction());
+        KeyAdapter keyListener = createKeyListener(handler);
+        cancelButton.addKeyListener(keyListener);
+        backgroundButton.addKeyListener(keyListener);
+
+        cancelButton.addActionListener(e -> handler.cancel());
+        backgroundButton.addActionListener(e -> handler.release());
+    }
+
+    @NotNull
+    private static KeyAdapter createKeyListener(@NotNull ProgressDialogHandler handler) {
+        return new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                Conditional.when(e.getKeyCode() == KeyEvent.VK_ESCAPE, () -> handler.cancel());
+            }
+        };
+    }
+
+    @Override
+    public @Nullable JComponent getPreferredFocusedComponent() {
+        return backgroundButton;
     }
 
     @Override

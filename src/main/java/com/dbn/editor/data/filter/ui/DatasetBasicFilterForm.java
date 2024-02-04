@@ -84,8 +84,10 @@ public class DatasetBasicFilterForm extends ConfigurationEditorForm<DatasetBasic
         registerComponent(mainPanel);
 
         if (filter.getError() == null) {
+            errorLabel.setVisible(false);
             errorLabel.setText("");
         } else {
+            errorLabel.setVisible(true);
             errorLabel.setText(filter.getError());
             errorLabel.setIcon(Icons.EXEC_MESSAGES_ERROR);
         }

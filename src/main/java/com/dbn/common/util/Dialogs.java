@@ -2,7 +2,6 @@ package com.dbn.common.util;
 
 import com.dbn.common.thread.Dispatch;
 import com.dbn.common.ui.dialog.DBNDialog;
-import com.dbn.common.ui.progress.ProgressDialogHandler;
 import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,7 +19,6 @@ public class Dialogs {
 
     public static <T extends DBNDialog<?>> void show(@NotNull Supplier<T> builder, @Nullable DialogCallback<T> callback) {
         Dispatch.run(true, () -> {
-            ProgressDialogHandler.closeProgressDialogs();
             T dialog = builder.get();
             dialog.setDialogCallback(callback);
             dialog.show();

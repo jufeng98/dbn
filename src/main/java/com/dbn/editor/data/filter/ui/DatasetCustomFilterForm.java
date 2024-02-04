@@ -86,8 +86,10 @@ public class DatasetCustomFilterForm extends ConfigurationEditorForm<DatasetCust
 
         editorPanel.add(editor.getComponent(), BorderLayout.CENTER);
         if (filter.getError() == null) {
+            errorLabel.setVisible(false);
             errorLabel.setText("");
         } else {
+            errorLabel.setVisible(true);
             errorLabel.setText(filter.getError());
             errorLabel.setIcon(Icons.EXEC_MESSAGES_ERROR);
         }
