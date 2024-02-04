@@ -5,7 +5,6 @@ import com.dbn.editor.code.content.GuardedBlockMarkers;
 import com.dbn.editor.code.content.GuardedBlockType;
 import com.dbn.vfs.file.DBConsoleVirtualFile;
 import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.fileEditor.FileDocumentManagerAdapter;
 import com.intellij.openapi.fileEditor.FileDocumentManagerListener;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import static com.dbn.common.util.GuardedBlocks.createGuardedBlocks;
 import static com.dbn.common.util.GuardedBlocks.removeGuardedBlocks;
 
-public class DatabaseConsoleFileInitializer extends FileDocumentManagerAdapter implements FileDocumentManagerListener {
+public class DatabaseConsoleFileInitializer implements FileDocumentManagerListener {
     @Override
     public void fileContentLoaded(@NotNull VirtualFile file, @NotNull Document document) {
         if (file instanceof DBConsoleVirtualFile) {
