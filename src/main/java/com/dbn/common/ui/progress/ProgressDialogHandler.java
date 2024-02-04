@@ -58,10 +58,12 @@ public class ProgressDialogHandler {
 
             closeProgressDialogs();
 
-            progressDialog = createPopup();
-            progressDialog.showCenteredInCurrentWindow(getProject());
+            JBPopup dialog = createPopup();
+            dialog.showCenteredInCurrentWindow(getProject());
+            progressDialogs.add(dialog);
 
-            progressDialogs.add(progressDialog);
+            this.progressDialog = dialog;
+
         });
         if (finished()) release();
 
@@ -105,6 +107,7 @@ public class ProgressDialogHandler {
     private void closePopup(JBPopup popup) {
         if (popup == null) return;
 
+        progressDialogs.remove(popup);
         Dispatch.run(true, () -> {
             popup.cancel();
             Disposer.dispose(popup);
