@@ -11,6 +11,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 
+import static com.dbn.common.util.Conditional.when;
+
 public class DBNCollapsiblePanel extends DBNFormBase {
     private JLabel toggleLabel;
     private JPanel contentPanel;
@@ -33,11 +35,11 @@ public class DBNCollapsiblePanel extends DBNFormBase {
         this.toggleLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         updateVisibility();
 
-        this.toggleLabel.addMouseListener(Mouse.listener().onClick(e -> {
-            if (e.getClickCount() == 1 && e.getButton() == MouseEvent.BUTTON1) {
-                toggleVisibility();
-            }
-        }));
+        Mouse.Listener mouseListener = Mouse.listener().onClick(e -> when(
+                e.getClickCount() == 1 &&
+                        e.getButton() == MouseEvent.BUTTON1, () -> toggleVisibility()));
+        this.toggleLabel.addMouseListener(mouseListener);
+        this.toggleDetailLabel.addMouseListener(mouseListener);
     }
 
     private void toggleVisibility() {

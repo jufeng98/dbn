@@ -7,7 +7,6 @@ import com.dbn.common.ui.form.DBNFormBase;
 import com.dbn.common.ui.form.DBNHeaderForm;
 import com.dbn.common.ui.misc.DBNScrollPane;
 import com.dbn.common.ui.panel.DBNCollapsiblePanel;
-import com.dbn.common.ui.util.Borders;
 import com.dbn.debugger.DBDebuggerType;
 import com.dbn.execution.common.ui.ExecutionOptionsForm;
 import com.dbn.execution.method.MethodExecutionInput;
@@ -67,7 +66,6 @@ public class MethodExecutionInputForm extends DBNFormBase {
 
         if (debuggerType.isDebug()) {
             versionPanel.setVisible(true);
-            versionPanel.setBorder(Borders.BOTTOM_LINE_BORDER);
             debuggerTypeLabel.setText(debuggerType.name());
             debuggerVersionLabel.setText("...");
             Dispatch.background(
@@ -132,7 +130,6 @@ public class MethodExecutionInputForm extends DBNFormBase {
                 //topSeparator.setVisible(true);
             }
         }
-        argumentsContainerPanel.setBorder(Borders.BOTTOM_LINE_BORDER);
 
         for (MethodExecutionInputArgumentForm component : argumentForms) {
             component.adjustMetrics(metrics);
