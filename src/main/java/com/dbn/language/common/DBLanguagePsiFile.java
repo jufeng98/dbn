@@ -390,7 +390,7 @@ public abstract class DBLanguagePsiFile extends PsiFileImpl implements DatabaseC
     @Nullable
     public static DBLanguagePsiFile createFromText(@NotNull Project project, String fileName, @NotNull DBLanguageDialect languageDialect, String text, ConnectionHandler activeConnection, SchemaId currentSchema) {
         PsiFileFactory psiFileFactory = PsiFileFactory.getInstance(project);
-        PsiFile rawPsiFile = Read.call(() -> psiFileFactory.createFileFromText(fileName, languageDialect, text));
+        PsiFile rawPsiFile = Read.call(psiFileFactory, f -> f.createFileFromText(fileName, languageDialect, text));
         if (rawPsiFile instanceof DBLanguagePsiFile) {
             DBLanguagePsiFile psiFile = (DBLanguagePsiFile) rawPsiFile;
             psiFile.setConnection(activeConnection);
