@@ -227,12 +227,15 @@ public class ConnectionSettingsForm extends CompositeConfigurationEditorForm<Con
                 if (isNotValid(ConnectionSettingsForm.this)) return;
 
                 ConnectionSettings configuration = getConfiguration();
-                if (configuration.getConnectionId().equals(connectionId)) {
-                    if (name != null) headerForm.setTitle(name);
-                    if (icon != null) headerForm.setIcon(icon);
-                    if (color != null) headerForm.setBackground(color); else headerForm.setBackground(Colors.getPanelBackground());
-                    //if (databaseType != null) databaseIconLabel.setIcon(databaseType.getLargeIcon());
-                }
+                if (!configuration.getConnectionId().equals(connectionId)) return;
+
+                DBNHeaderForm header = headerForm;
+                if (header == null) return;
+
+                if (name != null) header.setTitle(name);
+                if (icon != null) header.setIcon(icon);
+                if (color != null) header.setBackground(color); else header.setBackground(Colors.getPanelBackground());
+                //if (databaseType != null) databaseIconLabel.setIcon(databaseType.getLargeIcon());
             });
         }
     };
