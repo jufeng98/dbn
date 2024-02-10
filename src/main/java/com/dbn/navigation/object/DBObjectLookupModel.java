@@ -1,5 +1,6 @@
 package com.dbn.navigation.object;
 
+import com.dbn.common.compatibility.Compatibility;
 import com.dbn.common.consumer.SetCollector;
 import com.dbn.common.dispose.Failsafe;
 import com.dbn.common.dispose.StatefulDisposableBase;
@@ -75,6 +76,12 @@ public class DBObjectLookupModel extends StatefulDisposableBase implements Choos
     @Override
     public String getCheckBoxName() {
         return getSettings().getForceDatabaseLoad().value() ? "Load database objects" : null;
+    }
+
+    @Override
+    @Compatibility
+    public char getCheckBoxMnemonic() {
+        return '&';
     }
 
     @Override
