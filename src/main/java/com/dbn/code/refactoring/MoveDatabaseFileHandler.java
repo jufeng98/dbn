@@ -41,7 +41,7 @@ public class MoveDatabaseFileHandler extends MoveHandlerDelegate {
     }
 
     @Override
-    public PsiElement @Nullable [] adjustForMove(Project project, PsiElement[] sourceElements, PsiElement targetElement) {
+    public PsiElement [] adjustForMove(Project project, PsiElement[] sourceElements, PsiElement targetElement) {
         return super.adjustForMove(project, sourceElements, targetElement);
     }
 
@@ -61,7 +61,7 @@ public class MoveDatabaseFileHandler extends MoveHandlerDelegate {
     }
 
     @Override
-    public @Nullable String getActionName(PsiElement @NotNull [] elements) {
+    public @Nullable String getActionName(PsiElement [] elements) {
         return super.getActionName(elements);
     }
 
