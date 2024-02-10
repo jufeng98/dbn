@@ -15,9 +15,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Set;
 
 public class MoveDatabaseFileHandler extends MoveHandlerDelegate {
-    @Override
+    //@Override
     public boolean canMove(PsiElement[] elements, @Nullable PsiElement targetContainer, @Nullable PsiReference reference) {
-        return super.canMove(elements, targetContainer, reference);
+        return super.canMove(elements, targetContainer);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class MoveDatabaseFileHandler extends MoveHandlerDelegate {
     }
 
     @Override
-    public PsiElement @Nullable [] adjustForMove(Project project, PsiElement[] sourceElements, PsiElement targetElement) {
+    public PsiElement [] adjustForMove(Project project, PsiElement[] sourceElements, PsiElement targetElement) {
         return super.adjustForMove(project, sourceElements, targetElement);
     }
 
@@ -61,7 +61,7 @@ public class MoveDatabaseFileHandler extends MoveHandlerDelegate {
     }
 
     @Override
-    public @Nullable String getActionName(PsiElement @NotNull [] elements) {
+    public @Nullable String getActionName(PsiElement[] elements) {
         return super.getActionName(elements);
     }
 

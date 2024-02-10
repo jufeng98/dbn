@@ -4,7 +4,6 @@ import com.dbn.vfs.DBVirtualFile;
 import com.dbn.vfs.file.DBConsoleVirtualFile;
 import com.dbn.vfs.file.DBSourceCodeVirtualFile;
 import com.intellij.codeInsight.daemon.impl.analysis.FileHighlightingSetting;
-import com.intellij.ide.EssentialHighlightingMode;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
@@ -22,8 +21,6 @@ public class DefaultHighlightingSettingProvider extends com.intellij.codeInsight
 
     @NotNull
     private FileHighlightingSetting getDefaultSetting() {
-        return EssentialHighlightingMode.INSTANCE.isEnabled() ?
-                FileHighlightingSetting.ESSENTIAL :
-                FileHighlightingSetting.FORCE_HIGHLIGHTING;
+        return FileHighlightingSetting.FORCE_HIGHLIGHTING;
     }
 }
