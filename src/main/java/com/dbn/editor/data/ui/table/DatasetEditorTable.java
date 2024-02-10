@@ -64,6 +64,7 @@ import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.util.EventObject;
 
+import static com.dbn.common.dispose.Checks.isNotValid;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 import static com.dbn.editor.data.DatasetLoadInstruction.*;
 import static com.dbn.editor.data.model.RecordStatus.INSERTING;
@@ -556,6 +557,8 @@ public class DatasetEditorTable extends ResultSetTable<DatasetEditorModel> {
 
         DBDataset dataset = getDataset();
         DBColumn column = dataset.getColumn(columnInfo.getName());
+        if (isNotValid(column)) return;
+
         Progress.prompt(getProject(), dataset, true,
                 "Loading column information",
                 "Loading details of " + column.getQualifiedNameWithType(),

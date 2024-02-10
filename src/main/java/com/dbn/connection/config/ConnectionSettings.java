@@ -35,12 +35,12 @@ public class ConnectionSettings extends CompositeProjectConfiguration<Connection
     };
 
     private final ConnectionDatabaseSettings databaseSettings;
-    private final ConnectionPropertiesSettings propertiesSettings = new ConnectionPropertiesSettings(this);
-    private final ConnectionSshTunnelSettings sshTunnelSettings   = new ConnectionSshTunnelSettings(this);
-    private final ConnectionSslSettings sslSettings               = new ConnectionSslSettings(this);
-    private final ConnectionDetailSettings detailSettings         = new ConnectionDetailSettings(this);
-    private final ConnectionDebuggerSettings debuggerSettings     = new ConnectionDebuggerSettings(this);
-    private final ConnectionFilterSettings filterSettings         = new ConnectionFilterSettings(this);
+    private final @Getter(lazy = true) ConnectionPropertiesSettings propertiesSettings = new ConnectionPropertiesSettings(this);
+    private final @Getter(lazy = true) ConnectionSshTunnelSettings sshTunnelSettings   = new ConnectionSshTunnelSettings(this);
+    private final @Getter(lazy = true) ConnectionSslSettings sslSettings               = new ConnectionSslSettings(this);
+    private final @Getter(lazy = true) ConnectionDetailSettings detailSettings         = new ConnectionDetailSettings(this);
+    private final @Getter(lazy = true) ConnectionDebuggerSettings debuggerSettings     = new ConnectionDebuggerSettings(this);
+    private final @Getter(lazy = true) ConnectionFilterSettings filterSettings         = new ConnectionFilterSettings(this);
 
     public ConnectionSettings(ConnectionBundleSettings parent) {
         this(parent, DatabaseType.GENERIC, ConnectionConfigType.CUSTOM);
@@ -54,13 +54,13 @@ public class ConnectionSettings extends CompositeProjectConfiguration<Connection
     @Override
     protected Configuration[] createConfigurations() {
         return new Configuration[] {
-                databaseSettings,
-                propertiesSettings,
-                sshTunnelSettings,
-                sslSettings,
-                detailSettings,
-                debuggerSettings,
-                filterSettings};
+                getDatabaseSettings(),
+                getPropertiesSettings(),
+                getSshTunnelSettings(),
+                getSslSettings(),
+                getDetailSettings(),
+                getDebuggerSettings(),
+                getFilterSettings()};
     }
 
     public void generateNewId() {
@@ -121,9 +121,10 @@ public class ConnectionSettings extends CompositeProjectConfiguration<Connection
     public ConnectionSettings clone() {
         Element element = new Element("Connection");
         writeConfiguration(element);
+        ConnectionDatabaseSettings databaseSettings = getDatabaseSettings();
         ConnectionSettings clone = new ConnectionSettings(getParent() /*TODO config*/, databaseSettings.getDatabaseType(), databaseSettings.getConfigType());
         clone.readConfiguration(element);
-        clone.databaseSettings.setConnectivityStatus(databaseSettings.getConnectivityStatus());
+        clone.getDatabaseSettings().setConnectivityStatus(databaseSettings.getConnectivityStatus());
         clone.generateNewId();
         return clone;
     }

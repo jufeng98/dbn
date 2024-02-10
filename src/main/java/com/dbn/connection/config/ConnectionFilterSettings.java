@@ -29,8 +29,10 @@ import static com.dbn.common.util.Unsafe.cast;
 @Setter
 @EqualsAndHashCode(callSuper = false)
 public class ConnectionFilterSettings extends CompositeProjectConfiguration<ConnectionSettings, ConnectionFilterSettingsForm> {
-    private final ObjectTypeFilterSettings objectTypeFilterSettings;
-    private final ObjectNameFilterSettings objectNameFilterSettings;
+    
+    private final @Getter(lazy = true) ObjectTypeFilterSettings objectTypeFilterSettings = new ObjectTypeFilterSettings(this, getConnectionId());
+    private final @Getter(lazy = true) ObjectNameFilterSettings objectNameFilterSettings = new ObjectNameFilterSettings(this, getConnectionId());;
+    
     private boolean hideEmptySchemas = false;
     private boolean hidePseudoColumns = false;
     private boolean hideAuditColumns = false;
@@ -74,8 +76,6 @@ public class ConnectionFilterSettings extends CompositeProjectConfiguration<Conn
 
     ConnectionFilterSettings(ConnectionSettings connectionSettings) {
         super(connectionSettings);
-        objectTypeFilterSettings = new ObjectTypeFilterSettings(this, connectionSettings.getConnectionId());
-        objectNameFilterSettings = new ObjectNameFilterSettings(this, connectionSettings.getConnectionId());
     }
 
     public ConnectionId getConnectionId() {
@@ -109,8 +109,8 @@ public class ConnectionFilterSettings extends CompositeProjectConfiguration<Conn
     @Override
     protected Configuration[] createConfigurations() {
         return new Configuration[] {
-                objectTypeFilterSettings,
-                objectNameFilterSettings};
+                getObjectTypeFilterSettings(),
+                getObjectNameFilterSettings()};
     }
 
     @Override
@@ -134,6 +134,6 @@ public class ConnectionFilterSettings extends CompositeProjectConfiguration<Conn
         return
             objectType == DBObjectType.SCHEMA ? cast(schemaFilter.get()) :
             objectType == DBObjectType.COLUMN ? cast(columnFilter.get()):
-                cast(objectNameFilterSettings.getFilter(objectType));
+                cast(getObjectNameFilterSettings().getFilter(objectType));
     }
 }

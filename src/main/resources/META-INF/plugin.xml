@@ -715,6 +715,9 @@
         <lang.syntaxHighlighterFactory language="DBN-SQL" implementationClass="com.dbn.language.common.DBSyntaxHighlighterFactory"/>
         <lang.syntaxHighlighterFactory language="DBN-PSQL" implementationClass="com.dbn.language.common.DBSyntaxHighlighterFactory"/>
 
+        <defaultHighlightingSettingProvider id="DBNavigator.DefaultHighlightingSettingProvider"
+                                            implementation="com.dbn.language.common.DefaultHighlightingSettingProvider"/>
+
         <codeStyleSettingsProvider implementation="com.dbn.code.sql.style.options.SQLCodeStyleSettingsProvider"/>
         <codeStyleSettingsProvider implementation="com.dbn.code.psql.style.options.PSQLCodeStyleSettingsProvider"/>
 
@@ -756,6 +759,7 @@
 
         <breadcrumbsInfoProvider implementation="com.dbn.language.psql.PSQLBreadcrumbsInfoProvider"/>
         <renamePsiElementProcessor implementation="com.dbn.language.common.psi.PsiElementRenameProcessor" order="first"/>
+        <!--<refactoring.moveHandler implementation="com.dbn.code.refactoring.MoveDatabaseFileHandler" order="first"/>-->
 
         <elementSignatureProvider order="last" implementation="com.dbn.language.common.DBLanguageElementSignatureProvider"/>
 
