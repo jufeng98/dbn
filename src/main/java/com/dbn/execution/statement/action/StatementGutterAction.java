@@ -70,7 +70,7 @@ public class StatementGutterAction extends BasicAction {
         if (basePsiElement == null) return null;
 
         if (basePsiElement instanceof ExecutablePsiElement) {
-            psiElement = (ExecutablePsiElement) psiElementAtOffset;
+            psiElement = (ExecutablePsiElement) basePsiElement;
         } else {
             psiElement = basePsiElement.findEnclosingElement(ExecutablePsiElement.class);
         }
