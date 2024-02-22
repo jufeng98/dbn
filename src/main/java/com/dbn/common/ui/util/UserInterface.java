@@ -1,9 +1,9 @@
 package com.dbn.common.ui.util;
 
 import com.dbn.common.lookup.Visitor;
+import com.dbn.common.thread.Dispatch;
 import com.dbn.common.util.Strings;
 import com.dbn.common.util.Unsafe;
-import com.dbn.common.thread.Dispatch;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.border.IdeaTitledBorder;
@@ -101,14 +101,14 @@ public class UserInterface {
     }
 
     public static void repaint(JComponent component) {
-        Dispatch.run(() -> {
+        Dispatch.run(true, () -> {
             component.revalidate();
             component.repaint();
         });
     }
 
     public static void repaintAndFocus(JComponent component) {
-        Dispatch.run(() -> {
+        Dispatch.run(true, () -> {
             component.revalidate();
             component.repaint();
             component.requestFocus();
