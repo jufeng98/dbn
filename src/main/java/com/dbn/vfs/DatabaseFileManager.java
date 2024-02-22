@@ -40,6 +40,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.containers.ContainerUtil;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -226,7 +227,7 @@ public class DatabaseFileManager extends ProjectComponentBase implements Persist
             if (objectRef == null) continue;
 
             ConnectionId connectionId = objectRef.getConnectionId();
-            var objectRefs = pendingOpenFiles.computeIfAbsent(connectionId, id -> new ArrayList<>());
+            val objectRefs = pendingOpenFiles.computeIfAbsent(connectionId, id -> new ArrayList<>());
             objectRefs.add(objectRef);
         }
     }
@@ -235,15 +236,15 @@ public class DatabaseFileManager extends ProjectComponentBase implements Persist
         if (pendingOpenFiles == null || pendingOpenFiles.isEmpty()) return;
 
         // overwrite and nullify
-        var pendingOpenFiles = this.pendingOpenFiles;
+        val pendingOpenFiles = this.pendingOpenFiles;
         this.pendingOpenFiles = null;
 
-        for (var entry : pendingOpenFiles.entrySet()) {
+        for (val entry : pendingOpenFiles.entrySet()) {
             ConnectionId connectionId = entry.getKey();
             ConnectionHandler connection = ConnectionHandler.get(connectionId);
             if (connection == null) continue;
 
-            var connectionDetailSettings = connection.getSettings().getDetailSettings();
+            val connectionDetailSettings = connection.getSettings().getDetailSettings();
             if (!connectionDetailSettings.isRestoreWorkspace()) continue;
 
             reopenDatabaseEditors(entry.getValue(), connection);
@@ -263,7 +264,7 @@ public class DatabaseFileManager extends ProjectComponentBase implements Persist
     private static void reopenDatabaseEditors(@NotNull List<DBObjectRef<DBSchemaObject>> objects, @NotNull ConnectionHandler connection, ProgressIndicator progress) {
         Project project = connection.getProject();
         progress.setIndeterminate(true);
-        var editorManager = DatabaseFileEditorManager.getInstance(project);
+        val editorManager = DatabaseFileEditorManager.getInstance(project);
 
         for (DBObjectRef<DBSchemaObject> objectRef : objects) {
             if (progress.isCanceled()) continue;
