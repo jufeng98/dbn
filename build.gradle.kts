@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
   id("java")
   id("org.jetbrains.kotlin.jvm") version "1.9.20"
@@ -87,7 +85,7 @@ tasks {
 
   patchPluginXml {
     sinceBuild.set("200.0001")
-    untilBuild.set("233.*")
+    untilBuild.set("241.*")
   }
 
   signPlugin {
