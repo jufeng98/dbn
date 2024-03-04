@@ -49,7 +49,7 @@ intellij {
   version.set("LATEST-EAP-SNAPSHOT")
   type.set("IC") // Target IDE Platform
 
-  plugins.set(listOf("java"))
+  plugins.set(listOf("java", "copyright"))
 
 }
 
