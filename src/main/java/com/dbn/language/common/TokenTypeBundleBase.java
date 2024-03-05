@@ -8,7 +8,7 @@ import com.dbn.common.util.Strings;
 import com.intellij.lang.Language;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
-import gnu.trove.THashMap;
+import gnu.trove.map.hash.THashMap;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.jdom.Document;

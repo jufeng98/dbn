@@ -14,7 +14,7 @@ import com.dbn.language.common.element.util.ElementTypeDefinition;
 import com.dbn.language.common.element.util.ElementTypeDefinitionException;
 import com.dbn.object.type.DBObjectType;
 import com.intellij.openapi.ide.CopyPasteManager;
-import gnu.trove.THashSet;
+import gnu.trove.set.hash.THashSet;
 import lombok.extern.slf4j.Slf4j;
 import org.jdom.Document;
 import org.jdom.Element;

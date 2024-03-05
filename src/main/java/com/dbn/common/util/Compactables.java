@@ -1,8 +1,8 @@
 package com.dbn.common.util;
 
 import com.dbn.common.list.FilteredList;
-import gnu.trove.THashMap;
-import gnu.trove.THashSet;
+import gnu.trove.map.hash.THashMap;
+import gnu.trove.set.hash.THashSet;
 import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.Nullable;
 

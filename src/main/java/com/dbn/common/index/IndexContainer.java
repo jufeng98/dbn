@@ -1,8 +1,8 @@
 package com.dbn.common.index;
 
 import com.dbn.common.util.Compactable;
-import gnu.trove.TIntHashSet;
-import gnu.trove.TIntIterator;
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.set.hash.TIntHashSet;
 
 import java.util.Collection;
 import java.util.Collections;

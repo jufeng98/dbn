@@ -1,6 +1,7 @@
 package com.dbn.common.index;
 
-import gnu.trove.TIntObjectHashMap;
+
+import gnu.trove.map.hash.TIntObjectHashMap;
 
 public class IndexRegistry<T extends Indexable> {
     private final TIntObjectHashMap<T> INDEX = new TIntObjectHashMap<>();
