@@ -296,7 +296,6 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
 
             String statementText = initStatementText();
             SQLException executionException = null;
-            StatementExecutionResult executionResult = null;
 
             if (statementText != null) {
                 try {
@@ -305,7 +304,8 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
                     initTimeout(context, debug);
                     initLogging(context, debug);
 
-                    executionResult = executeStatement(statementText);
+                    StatementExecutionResult result = executeStatement(statementText);
+                    executionResult = Disposer.replace(executionResult, result);
 
                     // post execution activities
                     if (executionResult != null) {
@@ -323,7 +323,8 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
                     if (context.isNot(CANCEL_REQUESTED)) {
                         executionException = e;
                         DatabaseMessage databaseMessage = getMessageParserInterface().parseExceptionMessage(e);
-                        executionResult = createErrorExecutionResult(databaseMessage);
+                        StatementExecutionResult result = createErrorExecutionResult(databaseMessage);
+                        executionResult = Disposer.replace(executionResult, result);
                         executionResult.calculateExecDuration();
                         consumeLoggerOutput(context);
                     }
@@ -333,7 +334,6 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
             }
 
             assertNotCancelled();
-            this.executionResult = executionResult;
 
             if (executionResult != null) {
                 Project project = getProject();
@@ -385,7 +385,8 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
         executionInput.setExecutableStatementText(statementText);
 
         if (executionVariables.hasErrors()) {
-            executionResult = createErrorExecutionResult(new DatabaseMessage("Could not bind all variables.", null));
+            StatementExecutionResult result = createErrorExecutionResult(new DatabaseMessage("Could not bind all variables.", null));
+            executionResult = Disposer.replace(executionResult, result);
             return null; // cancel execution
         }
         return statementText;
@@ -471,8 +472,7 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
         ConnectionId connectionId = executionInput.getConnectionId();
         StatementExecutionQueue queue = Failsafe.nn(executionManager.getExecutionQueue(connectionId, sessionId));
         queue.cancelExecution(this);
-        Disposer.dispose(executionResult);
-        executionResult = null;
+        executionResult = Disposer.replace(executionResult, null);
 
         Progress.background(
                 getProject(),
@@ -547,16 +547,18 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
 
     private void notifySchemaSelectionChanges(StatementExecutionContext context) {
         DatabaseSession targetSession = getTargetSession();
-        if (targetSession != null && !targetSession.isPool()) {
-            ExecutablePsiElement executablePsiElement = getCachedExecutable();
-            if (executablePsiElement != null && executablePsiElement.isSchemaChange()) {
-                SchemaId schemaId = executablePsiElement.getSchemaChangeTargetId();
-                if (schemaId != null) {
-                    FileConnectionContextManager contextManager = FileConnectionContextManager.getInstance(getProject());
-                    contextManager.setDatabaseSchema(getVirtualFile(), schemaId);
-                }
-            }
-        }
+        if (targetSession == null) return;
+        if (targetSession.isPool()) return;
+
+        ExecutablePsiElement executablePsiElement = getCachedExecutable();
+        if (executablePsiElement == null) return;
+        if (!executablePsiElement.isSchemaChange()) return;
+
+        SchemaId schemaId = executablePsiElement.getSchemaChangeTargetId();
+        if (schemaId == null) return;
+
+        FileConnectionContextManager contextManager = FileConnectionContextManager.getInstance(getProject());
+        contextManager.setDatabaseSchema(getVirtualFile(), schemaId);
     }
 
     @NotNull
@@ -566,21 +568,21 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
 
     private void notifyDataDefinitionChanges(StatementExecutionContext context) {
         Project project = getProject();
-        if (isDataDefinitionStatement()) {
-            DBSchemaObject affectedObject = getAffectedObject();
-            if (affectedObject != null) {
+        if (!isDataDefinitionStatement()) return;
+
+        DBSchemaObject affectedObject = getAffectedObject();
+        if (affectedObject != null) {
+            ProjectEvents.notify(project,
+                    DataDefinitionChangeListener.TOPIC,
+                    (listener) -> listener.dataDefinitionChanged(affectedObject));
+        } else {
+            DBSchema affectedSchema = getAffectedSchema();
+            IdentifierPsiElement subjectPsiElement = getSubjectPsiElement();
+            if (affectedSchema != null && subjectPsiElement != null) {
+                DBObjectType objectType = subjectPsiElement.getObjectType();
                 ProjectEvents.notify(project,
                         DataDefinitionChangeListener.TOPIC,
-                        (listener) -> listener.dataDefinitionChanged(affectedObject));
-            } else {
-                DBSchema affectedSchema = getAffectedSchema();
-                IdentifierPsiElement subjectPsiElement = getSubjectPsiElement();
-                if (affectedSchema != null && subjectPsiElement != null) {
-                    DBObjectType objectType = subjectPsiElement.getObjectType();
-                    ProjectEvents.notify(project,
-                            DataDefinitionChangeListener.TOPIC,
-                            (listener) -> listener.dataDefinitionChanged(affectedSchema, objectType));
-                }
+                        (listener) -> listener.dataDefinitionChanged(affectedSchema, objectType));
             }
         }
     }
