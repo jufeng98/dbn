@@ -99,6 +99,10 @@ public class DBObjectPsiFile extends UserDataHolderBase implements PsiFile, Disp
 
     @Override
     public void navigate(boolean requestFocus) {
+        guarded(this, f -> f.navigateToObject(requestFocus));;
+    }
+
+    private void navigateToObject(boolean requestFocus) {
         DBObject object = getObject();
         if (object.is(DBObjectProperty.EDITABLE)) {
             DatabaseFileEditorManager editorManager = DatabaseFileEditorManager.getInstance(getProject());
