@@ -218,11 +218,6 @@ public class ConnectionBundle extends StatefulDisposableBase implements BrowserT
     }
 
     @Override
-    public String getLocationString() {
-        return null;
-    }
-
-    @Override
     public ItemPresentation getPresentation() {
         return this;
     }

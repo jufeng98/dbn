@@ -487,10 +487,6 @@ public class DBObjectBundleImpl extends StatefulDisposableBase implements DBObje
     /*********************************************************
      *                   NavigationItem                      *
      *********************************************************/
-    @Override
-    public String getLocationString() {
-        return null;
-    }
 
     @Override
     public Icon getIcon(boolean open) {

@@ -513,10 +513,6 @@ public class DBObjectListImpl<T extends DBObject> extends DynamicContentBase<T> 
     /*********************************************************
      *                 ItemPresentation                      *
      *********************************************************/
-    @Override
-    public String getLocationString() {
-        return null;
-    }
 
     @Override
     public Icon getIcon(boolean open) {
