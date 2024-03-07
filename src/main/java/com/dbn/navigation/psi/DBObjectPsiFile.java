@@ -34,6 +34,8 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
+import static com.dbn.common.dispose.Failsafe.guarded;
+
 public class DBObjectPsiFile extends UserDataHolderBase implements PsiFile, Disposable, ReadonlyPsiStub {
     private final DBObjectRef<?> objectRef;
 

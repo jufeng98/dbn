@@ -51,6 +51,7 @@ import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,6 +67,7 @@ import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 import static com.dbn.execution.ExecutionStatus.*;
 import static com.dbn.object.common.property.DBObjectProperty.COMPILABLE;
 
+@Getter
 public class StatementExecutionBasicProcessor extends StatefulDisposableBase implements StatementExecutionProcessor {
     private final ProjectRef project;
     private final WeakRef<FileEditor> fileEditor;
@@ -124,18 +126,6 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
         executionInput = new StatementExecutionInput(sqlStatement, sqlStatement, this);
 
         initEditorProviderId(fileEditor);
-    }
-
-    @NotNull
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Nullable
-    @Override
-    public Icon getIcon() {
-        return icon;
     }
 
     private void initEditorProviderId(FileEditor fileEditor) {
@@ -206,14 +196,8 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
 
     @Override
     @Nullable
-    public EditorProviderId getEditorProviderId() {
-        return editorProviderId;
-    }
-
-    @Override
-    @Nullable
     public ExecutablePsiElement getCachedExecutable() {
-        return cachedExecutable == null ? null : cachedExecutable.get();
+        return PsiElementRef.get(cachedExecutable);
     }
 
     public static boolean contains(PsiElement parent, BasePsiElement childElement, BasePsiElement.MatchType matchType) {
@@ -264,6 +248,11 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
         return executionResult;
     }
 
+    public void setExecutionResult(StatementExecutionResult executionResult) {
+        if (executionResult == this.executionResult) return;
+        this.executionResult = Disposer.replace(this.executionResult, executionResult);
+    }
+
     @Override
     public void initExecutionInput(boolean bulkExecution) {
         // overwrite the input if it was leniently bound
@@ -305,7 +294,7 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
                     initLogging(context, debug);
 
                     StatementExecutionResult result = executeStatement(statementText);
-                    executionResult = Disposer.replace(executionResult, result);
+                    setExecutionResult(result);
 
                     // post execution activities
                     if (executionResult != null) {
@@ -324,7 +313,7 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
                         executionException = e;
                         DatabaseMessage databaseMessage = getMessageParserInterface().parseExceptionMessage(e);
                         StatementExecutionResult result = createErrorExecutionResult(databaseMessage);
-                        executionResult = Disposer.replace(executionResult, result);
+                        setExecutionResult(result);
                         executionResult.calculateExecDuration();
                         consumeLoggerOutput(context);
                     }
@@ -386,7 +375,7 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
 
         if (executionVariables.hasErrors()) {
             StatementExecutionResult result = createErrorExecutionResult(new DatabaseMessage("Could not bind all variables.", null));
-            executionResult = Disposer.replace(executionResult, result);
+            setExecutionResult(result);
             return null; // cancel execution
         }
         return statementText;
@@ -472,7 +461,8 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
         ConnectionId connectionId = executionInput.getConnectionId();
         StatementExecutionQueue queue = Failsafe.nn(executionManager.getExecutionQueue(connectionId, sessionId));
         queue.cancelExecution(this);
-        executionResult = Disposer.replace(executionResult, null);
+
+        setExecutionResult(null);
 
         Progress.background(
                 getProject(),
@@ -746,10 +736,6 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
     public String getStatementName() {
         ExecutablePsiElement executablePsiElement = executionInput.getExecutablePsiElement();
         return executablePsiElement == null ? "SQL statement" : executablePsiElement.getSpecificElementType().getDescription();
-    }
-
-    public int getIndex() {
-        return index;
     }
 
     public boolean canExecute() {
