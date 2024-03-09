@@ -3,8 +3,6 @@ package com.dbn.navigation.psi;
 import com.dbn.common.dispose.Failsafe;
 import com.dbn.connection.DatabaseEntity;
 import com.dbn.editor.DatabaseFileEditorManager;
-import com.dbn.language.common.psi.EmptySearchScope;
-import com.dbn.navigation.ReadonlyPsiStub;
 import com.dbn.object.common.DBObject;
 import com.dbn.object.common.list.DBObjectList;
 import com.dbn.object.common.property.DBObjectProperty;
@@ -19,15 +17,10 @@ import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.UnknownFileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
-import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.UserDataHolderBase;
-import com.intellij.openapi.vcs.FileStatus;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
-import com.intellij.psi.scope.PsiScopeProcessor;
-import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.PsiElementProcessor;
-import com.intellij.psi.search.SearchScope;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,7 +29,7 @@ import javax.swing.*;
 
 import static com.dbn.common.dispose.Failsafe.guarded;
 
-public class DBObjectPsiFile extends UserDataHolderBase implements PsiFile, Disposable, ReadonlyPsiStub {
+public class DBObjectPsiFile extends UserDataHolderBase implements PsiFile, Disposable, ReadonlyPsiElementStub {
     private final DBObjectRef<?> objectRef;
 
     public DBObjectPsiFile(DBObjectRef<?> objectRef) {
@@ -47,11 +40,6 @@ public class DBObjectPsiFile extends UserDataHolderBase implements PsiFile, Disp
     public DBObject getObject() {
         return Failsafe.nn(objectRef.get());
     }
-
-    @Override
-    public void dispose() {
-    }
-
 
     /*********************************************************
      *                      PsiElement                       *
@@ -65,10 +53,6 @@ public class DBObjectPsiFile extends UserDataHolderBase implements PsiFile, Disp
     @Override
     public ItemPresentation getPresentation() {
         return getObject();
-    }
-
-    public FileStatus getFileStatus() {
-        return FileStatus.NOT_CHANGED;
     }
 
     @Override
@@ -85,6 +69,10 @@ public class DBObjectPsiFile extends UserDataHolderBase implements PsiFile, Disp
 
     @Override
     public PsiDirectory getParent() {
+        return guarded(null, this, f -> f.resolveParent());
+    }
+
+    private @Nullable PsiDirectory resolveParent() {
         DBObject object = getObject();
         DatabaseEntity parent = object.getParent();
         if (parent instanceof DBObjectList) {
@@ -115,208 +103,13 @@ public class DBObjectPsiFile extends UserDataHolderBase implements PsiFile, Disp
     }
 
     @Override
-    public boolean canNavigate() {
-        return true;
-    }
-
-    @Override
-    public boolean canNavigateToSource() {
-        return false;
-    }
-
-    @Override
-    public PsiManager getManager() {
-        return PsiManager.getInstance(getProject());
-    }
-
-    @Override
-    @NotNull
-    public PsiElement[] getChildren() {
-        return new PsiElement[0];
-    }
-
-    @Override
-    public PsiElement getFirstChild() {
-        return null;
-    }
-
-    @Override
-    public PsiElement getLastChild() {
-        return null;
-    }
-
-    @Override
-    public PsiElement getNextSibling() {
-        return null;
-    }
-
-    @Override
-    public PsiElement getPrevSibling() {
-        return null;
-    }
-
-    @Override
     public PsiFile getContainingFile() throws PsiInvalidElementAccessException {
         return this;
     }
 
     @Override
-    public TextRange getTextRange() {
-        return null;
-    }
-
-    @Override
-    public int getStartOffsetInParent() {
-        return 0;
-    }
-
-    @Override
-    public int getTextLength() {
-        return 0;
-    }
-
-    @Override
-    public PsiElement findElementAt(int offset) {
-        return null;
-    }
-
-    @Override
-    public PsiReference findReferenceAt(int offset) {
-        return null;
-    }
-
-    @Override
-    public int getTextOffset() {
-        return 0;
-    }
-
-    @Override
-    public String getText() {
-        return null;
-    }
-
-    @Override
-    @NotNull
-    public char[] textToCharArray() {
-        return new char[0];
-    }
-
-    @Override
-    public PsiElement getNavigationElement() {
-        return this;
-    }
-
-    @Override
-    public PsiElement getOriginalElement() {
-        return this;
-    }
-
-    @Override
-    public boolean textMatches(@NotNull CharSequence text) {
-        return false;
-    }
-
-    @Override
-    public boolean textMatches(@NotNull PsiElement element) {
-        return false;
-    }
-
-    @Override
-    public boolean textContains(char c) {
-        return false;
-    }
-
-    @Override
-    public void accept(@NotNull PsiElementVisitor visitor) {
-
-    }
-
-    @Override
-    public void acceptChildren(@NotNull PsiElementVisitor visitor) {
-
-    }
-
-    @Override
-    public PsiElement copy() {
-        return null;
-    }
-
-    @Override
-    public boolean isValid() {
-        return true;
-    }
-
-    @Override
-    public boolean isWritable() {
-        return false;
-    }
-
-    @Override
-    public PsiReference getReference() {
-        return null;
-    }
-
-    @Override
-    @NotNull
-    public PsiReference[] getReferences() {
-        return new PsiReference[0];
-    }
-
-    @Override
-    public <T> T getCopyableUserData(@NotNull Key<T> key) {
-        return null;
-    }
-
-    @Override
-    public <T> void putCopyableUserData(@NotNull Key<T> key, T value) {
-
-    }
-
-    @Override
-    public boolean processDeclarations(@NotNull PsiScopeProcessor processor, @NotNull ResolveState state, @Nullable PsiElement lastParent, @NotNull PsiElement place) {
-        return false;
-    }
-
-    @Override
-    public PsiElement getContext() {
-        return null;
-    }
-
-    @Override
-    public boolean isPhysical() {
-        return true;
-    }
-
-    @Override
-    @NotNull
-    public GlobalSearchScope getResolveScope() {
-        return EmptySearchScope.INSTANCE;
-    }
-
-    @Override
-    @NotNull
-    public SearchScope getUseScope() {
-        return EmptySearchScope.INSTANCE;
-    }
-
-    @Override
-    public boolean isEquivalentTo(PsiElement another) {
-        return false;
-    }
-
-    @Override
     public Icon getIcon(int flags) {
         return getObject().getIcon();
-    }
-
-    @Override
-    public <T> T getUserData(@NotNull Key<T> key) {
-        return null;
-    }
-
-    @Override
-    public <T> void putUserData(@NotNull Key<T> key, @Nullable T value) {
-
     }
 
     /*********************************************************

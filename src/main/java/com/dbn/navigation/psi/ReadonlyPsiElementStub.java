@@ -1,11 +1,11 @@
-package com.dbn.navigation;
+package com.dbn.navigation.psi;
 
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiNamedElement;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 
-public interface ReadonlyPsiStub extends PsiNamedElement {
+public interface ReadonlyPsiElementStub extends NamedPsiElementStub {
+
     @Override
     default PsiElement setName(@NotNull String name) throws IncorrectOperationException {
         throw notSupported();
@@ -65,7 +65,6 @@ public interface ReadonlyPsiStub extends PsiNamedElement {
     default PsiElement replace(@NotNull PsiElement newElement) throws IncorrectOperationException {
         throw notSupported();
     }
-
 
 
     static @NotNull IncorrectOperationException notSupported() {

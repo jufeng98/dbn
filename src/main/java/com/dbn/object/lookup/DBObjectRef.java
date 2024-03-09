@@ -16,7 +16,9 @@ import com.dbn.object.DBSchema;
 import com.dbn.object.common.DBObject;
 import com.dbn.object.common.DBObjectBundle;
 import com.dbn.object.type.DBObjectType;
+import com.intellij.navigation.ItemPresentation;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.NlsSafe;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +27,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -44,7 +47,7 @@ import static com.dbn.vfs.DatabaseFileSystem.PSS;
 @Slf4j
 @Getter
 @Setter
-public class DBObjectRef<T extends DBObject> implements Comparable<DBObjectRef<?>>, Reference<T>, PersistentStateElement, DatabaseContextBase {
+public class DBObjectRef<T extends DBObject> implements Comparable<DBObjectRef<?>>, Reference<T>, PersistentStateElement, DatabaseContextBase, ItemPresentation {
     private static final Pattern PATH_TOKENIZER = Pattern.compile("[^/\"]+|\"([^\"]*)\"");
     private static final String QUOTE = "\"";
 
@@ -570,4 +573,13 @@ public class DBObjectRef<T extends DBObject> implements Comparable<DBObjectRef<?
         return Checks.isValid(object);
     }
 
+    @Override
+    public @Nullable String getPresentableText() {
+        return getObjectName();
+    }
+
+    @Override
+    public @Nullable Icon getIcon(boolean unused) {
+        return getObjectType().getIcon();
+    }
 }
