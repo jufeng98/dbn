@@ -112,15 +112,15 @@ public class ProgressDialogHandler {
     private void closePopup(JBPopup popup) {
         if (popup == null) return;
 
-        progressDialogs.remove(popup);
         Dispatch.run(true, () -> {
+            progressDialogs.remove(popup);
             popup.cancel();
             Disposer.dispose(popup);
         });
 
     }
 
-    private static void closeProgressDialogs() {
+    public static void closeProgressDialogs() {
         Iterator<JBPopup> dialogs = progressDialogs.iterator();
         while (dialogs.hasNext()) {
             JBPopup progressDialog = dialogs.next();
