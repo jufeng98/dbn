@@ -12,6 +12,7 @@ import org.jdom.Element;
 import static com.dbn.common.options.setting.Settings.enumAttribute;
 import static com.dbn.common.util.Strings.cachedUpperCase;
 
+@Deprecated
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)

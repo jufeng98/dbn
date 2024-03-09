@@ -26,6 +26,7 @@ import static com.dbn.common.util.Unsafe.cast;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = false)
+@Deprecated
 public class ObjectNameFilterSettings
         extends BasicProjectConfiguration<ConnectionFilterSettings, ObjectNameFilterSettingsForm>
         implements TreeModel {

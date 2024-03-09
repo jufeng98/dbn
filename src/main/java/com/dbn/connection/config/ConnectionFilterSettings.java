@@ -9,6 +9,7 @@ import com.dbn.connection.config.ui.ConnectionFilterSettingsForm;
 import com.dbn.object.DBColumn;
 import com.dbn.object.DBSchema;
 import com.dbn.object.common.DBObject;
+import com.dbn.object.filter.custom.ObjectCustomFilterSettings;
 import com.dbn.object.filter.generic.CompositeColumnFilter;
 import com.dbn.object.filter.generic.NonEmptySchemaFilter;
 import com.dbn.object.filter.name.ObjectNameFilterSettings;
@@ -30,6 +31,7 @@ import static com.dbn.common.util.Unsafe.cast;
 @EqualsAndHashCode(callSuper = false)
 public class ConnectionFilterSettings extends CompositeProjectConfiguration<ConnectionSettings, ConnectionFilterSettingsForm> {
     
+    private final @Getter(lazy = true) ObjectCustomFilterSettings objectCustomFilterSettings = new ObjectCustomFilterSettings(this, getConnectionId());
     private final @Getter(lazy = true) ObjectTypeFilterSettings objectTypeFilterSettings = new ObjectTypeFilterSettings(this, getConnectionId());
     private final @Getter(lazy = true) ObjectNameFilterSettings objectNameFilterSettings = new ObjectNameFilterSettings(this, getConnectionId());;
     
@@ -47,7 +49,8 @@ public class ConnectionFilterSettings extends CompositeProjectConfiguration<Conn
 
     @Nullable
     private Filter<DBSchema> loadSchemaFilter() {
-        Filter<DBSchema> filter = getObjectNameFilterSettings().getFilter(DBObjectType.SCHEMA);
+        ObjectCustomFilterSettings objectCustomFilterSettings = getObjectCustomFilterSettings();
+        Filter<DBSchema> filter = objectCustomFilterSettings.getFilter(DBObjectType.SCHEMA);
         if (filter == null) {
             return hideEmptySchemas ? NonEmptySchemaFilter.INSTANCE : null;
         } else {
@@ -61,7 +64,8 @@ public class ConnectionFilterSettings extends CompositeProjectConfiguration<Conn
 
     @Nullable
     private Filter<DBColumn> loadColumnFilter() {
-        Filter<DBColumn> filter = getObjectNameFilterSettings().getFilter(DBObjectType.COLUMN);
+        ObjectCustomFilterSettings objectCustomFilterSettings = getObjectCustomFilterSettings();
+        Filter<DBColumn> filter = objectCustomFilterSettings.getFilter(DBObjectType.COLUMN);
         Filter<DBColumn> compositeFilter = CompositeColumnFilter.get(hidePseudoColumns, hideAuditColumns);
         if (filter == null) {
             return compositeFilter;
@@ -109,6 +113,7 @@ public class ConnectionFilterSettings extends CompositeProjectConfiguration<Conn
     @Override
     protected Configuration[] createConfigurations() {
         return new Configuration[] {
+                getObjectCustomFilterSettings(),
                 getObjectTypeFilterSettings(),
                 getObjectNameFilterSettings()};
     }

@@ -1,6 +1,7 @@
 package com.dbn.code.common.completion;
 
 import com.dbn.code.common.completion.options.filter.CodeCompletionFilterSettings;
+import com.dbn.code.common.lookup.CodeCompletionLookupItem;
 import com.dbn.common.routine.Consumer;
 import com.dbn.common.util.Naming;
 import com.dbn.connection.ConnectionHandler;
@@ -22,11 +23,15 @@ import com.dbn.language.common.psi.lookup.LookupAdapters;
 import com.dbn.language.common.psi.lookup.PsiLookupAdapter;
 import com.dbn.object.DBSchema;
 import com.dbn.object.common.*;
+import com.dbn.object.filter.custom.ObjectFilterAttribute;
 import com.dbn.object.type.DBObjectType;
+import com.dbn.vfs.file.DBObjectFilterExpressionFile;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
 import com.intellij.codeInsight.completion.CompletionResultSet;
+import com.intellij.codeInsight.lookup.LookupItem;
 import com.intellij.lang.ASTNode;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -35,6 +40,7 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 
@@ -56,6 +62,8 @@ public class CodeCompletionProvider extends CompletionProvider<CompletionParamet
         PsiFile originalFile = parameters.getOriginalFile();
         if (!(originalFile instanceof DBLanguagePsiFile)) return;
 
+        if (handleFilterExpressionFile(result, originalFile)) return;
+
         DBLanguagePsiFile file = (DBLanguagePsiFile) originalFile;
 
         int caretOffset = parameters.getOffset();
@@ -76,6 +84,19 @@ public class CodeCompletionProvider extends CompletionProvider<CompletionParamet
 
         CodeCompletionLookupConsumer consumer = new CodeCompletionLookupConsumer(context);
         collectCompletionVariants(consumer, leafBeforeCaret);
+    }
+
+    private static boolean handleFilterExpressionFile(@NotNull CompletionResultSet result, PsiFile psiFile) {
+        VirtualFile virtualFile = psiFile.getVirtualFile();
+        if (virtualFile instanceof DBObjectFilterExpressionFile) {
+            DBObjectFilterExpressionFile expressionFile = (DBObjectFilterExpressionFile) virtualFile;
+            Set<ObjectFilterAttribute> attributesTypes = expressionFile.getFilter().getAttributes().getAttributesTypes();
+            attributesTypes.forEach(a -> result.addElement(a.asLookupItem()));
+
+            Arrays.asList("AND", "OR", "IS", "IN", "NOT", "NULL", "LIKE").forEach(s -> result.addElement(new CodeCompletionLookupItem(s, null, s, null, true)));
+            return true;
+        }
+        return false;
     }
 
     private boolean shouldAddCompletions(LeafPsiElement leafAtOffset, LeafPsiElement leafBeforeCaret) {

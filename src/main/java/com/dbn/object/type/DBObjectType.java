@@ -2,6 +2,7 @@ package com.dbn.object.type;
 
 import com.dbn.common.content.DynamicContentType;
 import com.dbn.common.icon.Icons;
+import com.dbn.common.ui.Presentable;
 import com.dbn.common.util.Characters;
 import com.dbn.common.util.Strings;
 import com.dbn.connection.context.DatabaseContext;
@@ -21,7 +22,7 @@ import static com.dbn.common.util.Commons.nvl;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 
 @Getter
-public enum DBObjectType implements DynamicContentType<DBObjectType> {
+public enum DBObjectType implements DynamicContentType<DBObjectType>, Presentable {
     
     ATTRIBUTE(DatabaseObjectTypeId.ATTRIBUTE, "attribute", "attribute", Icons.DBO_ATTRIBUTE, null, Icons.DBO_ATTRIBUTES, false),
     ARGUMENT(DatabaseObjectTypeId.ARGUMENT, "argument", "arguments", Icons.DBO_ARGUMENT, null, Icons.DBO_ARGUMENTS, false),

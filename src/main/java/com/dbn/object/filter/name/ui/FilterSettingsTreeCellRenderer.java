@@ -14,6 +14,7 @@ import java.util.List;
 import static com.dbn.common.util.Strings.cachedLowerCase;
 import static com.dbn.common.util.Strings.cachedUpperCase;
 
+@Deprecated
 class FilterSettingsTreeCellRenderer extends ColoredTreeCellRenderer {
     @Override
     public void customizeCellRenderer(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {

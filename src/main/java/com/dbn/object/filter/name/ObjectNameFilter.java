@@ -9,6 +9,7 @@ import org.jdom.Element;
 
 import static com.dbn.common.options.setting.Settings.stringAttribute;
 
+@Deprecated
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)

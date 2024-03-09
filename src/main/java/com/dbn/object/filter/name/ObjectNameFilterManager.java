@@ -22,6 +22,7 @@ import javax.swing.*;
 import javax.swing.tree.TreePath;
 import java.util.List;
 
+@Deprecated
 @State(
     name = ObjectNameFilterManager.COMPONENT_NAME,
     storages = @Storage(DatabaseNavigator.STORAGE_FILE)

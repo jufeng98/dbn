@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
+@Deprecated
 public class ObjectNameFilterConditionDialog extends DBNDialog<ObjectNameFilterConditionForm> {
     private CompoundFilterCondition parentCondition;
     private WeakRef<SimpleNameFilterCondition> condition;  // TODO dialog result - Disposable.nullify(...)

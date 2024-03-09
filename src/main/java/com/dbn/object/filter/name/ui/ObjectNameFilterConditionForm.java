@@ -15,6 +15,7 @@ import javax.swing.*;
 
 import static com.dbn.common.util.Strings.cachedUpperCase;
 
+@Deprecated
 public class ObjectNameFilterConditionForm extends DBNFormBase {
     private JPanel mainPanel;
     private JLabel objectNameLabel;

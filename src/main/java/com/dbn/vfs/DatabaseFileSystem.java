@@ -50,6 +50,7 @@ public class DatabaseFileSystem extends VirtualFileSystem implements NonPhysical
         CONSOLES("consoles", "consoles"),
         SESSION_BROWSERS("session_browsers", "session browsers"),
         SESSION_STATEMENTS("session_statements", "session statements"),
+        FILTER_EXPRESSIONS("filter_expressions", "filter expressions"),
         DATASET_FILTERS("dataset_filters", "dataset filters"),
         LOOSE_CONTENTS("loose_contents", "loose contents");
 
@@ -329,6 +330,11 @@ public class DatabaseFileSystem extends VirtualFileSystem implements NonPhysical
             if (virtualFile instanceof DBSessionStatementVirtualFile) {
                 DBSessionStatementVirtualFile file = (DBSessionStatementVirtualFile) virtualFile;
                 return connectionId + PSS + SESSION_STATEMENTS + file.getName();
+            }
+
+            if (virtualFile instanceof DBObjectFilterExpressionFile) {
+                DBObjectFilterExpressionFile file = (DBObjectFilterExpressionFile) virtualFile;
+                return connectionId + PSS + FILTER_EXPRESSIONS + PSS + file.getName();
             }
 
             if (virtualFile instanceof DBLooseContentVirtualFile) {

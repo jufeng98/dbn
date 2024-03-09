@@ -18,6 +18,7 @@ import java.util.Objects;
 import static com.dbn.common.options.setting.Settings.newElement;
 import static com.dbn.common.options.setting.Settings.stringAttribute;
 
+@Deprecated
 @Getter
 @Setter
 @EqualsAndHashCode
