@@ -13,9 +13,13 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.Processor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
+
+import static com.dbn.common.dispose.Checks.isValid;
+import static com.dbn.common.dispose.Failsafe.guarded;
 
 public class NavigationBarExtension extends AbstractNavBarModelExtension {
     @Override
@@ -29,22 +33,32 @@ public class NavigationBarExtension extends AbstractNavBarModelExtension {
 
     @Override
     public PsiElement getParent(PsiElement psiElement) {
-        if (psiElement instanceof DBObjectPsiFile || psiElement instanceof DBObjectPsiDirectory || psiElement instanceof DBConnectionPsiDirectory) {
-            return psiElement.getParent();
+        return guarded(null, psiElement, e -> parent(e));
+    }
+
+    private static @Nullable PsiElement parent(PsiElement psiElement) {
+        if (psiElement instanceof DBObjectPsiFile ||
+                psiElement instanceof DBObjectPsiDirectory ||
+                psiElement instanceof DBConnectionPsiDirectory) {
+
+            PsiElement parent = psiElement.getParent();
+            if (isValid(parent)) return parent;
         }
         return null;
     }
 
     @Override
     public PsiElement adjustElement(@NotNull PsiElement psiElement) {
+        return guarded(null, psiElement, e -> adjusted(e));
+    }
+
+    private static PsiElement adjusted(@NotNull PsiElement psiElement) {
         if (psiElement instanceof DBLanguagePsiFile) {
             DBLanguagePsiFile databaseFile = (DBLanguagePsiFile) psiElement;
             VirtualFile virtualFile = databaseFile.getVirtualFile();
             if (virtualFile instanceof DBVirtualFileBase) {
                 DBObject object = databaseFile.getUnderlyingObject();
-                if (object != null) {
-                    return DBObjectPsiCache.asPsiFile(object);
-                }
+                return DBObjectPsiCache.asPsiFile(object);
             }
         }
         return psiElement;
