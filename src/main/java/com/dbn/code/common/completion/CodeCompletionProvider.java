@@ -29,7 +29,6 @@ import com.dbn.vfs.file.DBObjectFilterExpressionFile;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
 import com.intellij.codeInsight.completion.CompletionResultSet;
-import com.intellij.codeInsight.lookup.LookupItem;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiComment;
@@ -42,6 +41,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import static com.dbn.connection.ConnectionHandler.isLiveConnection;
@@ -90,7 +90,7 @@ public class CodeCompletionProvider extends CompletionProvider<CompletionParamet
         VirtualFile virtualFile = psiFile.getVirtualFile();
         if (virtualFile instanceof DBObjectFilterExpressionFile) {
             DBObjectFilterExpressionFile expressionFile = (DBObjectFilterExpressionFile) virtualFile;
-            Set<ObjectFilterAttribute> attributesTypes = expressionFile.getFilter().getAttributes().getAttributesTypes();
+            List<ObjectFilterAttribute> attributesTypes = expressionFile.getFilter().getDefinition().getAttributes();
             attributesTypes.forEach(a -> result.addElement(a.asLookupItem()));
 
             Arrays.asList("AND", "OR", "IS", "IN", "NOT", "NULL", "LIKE").forEach(s -> result.addElement(new CodeCompletionLookupItem(s, null, s, null, true)));

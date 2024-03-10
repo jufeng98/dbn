@@ -11,15 +11,15 @@ import java.util.Map;
 import static com.dbn.common.util.Unsafe.cast;
 
 class ObjectFilterAttributeDefinitions {
-    private static final Map<DBObjectType, ObjectFilterAttributes> REGISTRY = new HashMap<>();
+    private static final Map<DBObjectType, ObjectFilterDefinition> REGISTRY = new HashMap<>();
 
     @NotNull
-    static <T extends DBObject> ObjectFilterAttributes<T> attributesOf(DBObjectType objectType) {
+    static <T extends DBObject> ObjectFilterDefinition<T> attributesOf(DBObjectType objectType) {
         return cast(REGISTRY.computeIfAbsent(objectType, t -> createDefault(t)));
     }
 
-    private static @NotNull ObjectFilterAttributesImpl<DBObject> createDefault(DBObjectType objectType) {
-        return new ObjectFilterAttributesImpl<>(objectType).withAttribute(String.class, objectType.name() + "_NAME", "Object name (literal)", o -> o.getName());
+    private static @NotNull ObjectFilterDefinitionImpl<DBObject> createDefault(DBObjectType objectType) {
+        return new ObjectFilterDefinitionImpl<>(objectType).withAttribute(String.class, objectType.name() + "_NAME", "Object name (literal)", o -> o.getName());
     }
 
     static {
@@ -57,8 +57,8 @@ class ObjectFilterAttributeDefinitions {
 
     }
 
-    private static <T extends DBObject> ObjectFilterAttributesImpl<T> create(Class<T> objectClass, DBObjectType objectType) {
-        ObjectFilterAttributesImpl<T> attributes = new ObjectFilterAttributesImpl<>(objectType);
+    private static <T extends DBObject> ObjectFilterDefinitionImpl<T> create(Class<T> objectClass, DBObjectType objectType) {
+        ObjectFilterDefinitionImpl<T> attributes = new ObjectFilterDefinitionImpl<>(objectType);
         REGISTRY.put(objectType, attributes);
         return attributes;
     }

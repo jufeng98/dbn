@@ -7,17 +7,8 @@ import com.dbn.common.options.ui.ConfigurationEditorForm;
 import com.dbn.common.ui.util.Keyboard;
 import com.dbn.common.ui.util.Mouse;
 import com.dbn.common.util.Actions;
-import com.dbn.object.filter.name.FilterCondition;
-import com.dbn.object.filter.name.ObjectNameFilter;
-import com.dbn.object.filter.name.ObjectNameFilterManager;
-import com.dbn.object.filter.name.ObjectNameFilterSettings;
-import com.dbn.object.filter.name.SimpleNameFilterCondition;
-import com.dbn.object.filter.name.action.FilterConditionCreateAction;
-import com.dbn.object.filter.name.action.FilterConditionJoinTypeSwitchAction;
-import com.dbn.object.filter.name.action.FilterConditionMoveDownAction;
-import com.dbn.object.filter.name.action.FilterConditionMoveUpAction;
-import com.dbn.object.filter.name.action.FilterConditionRemoveAction;
-import com.dbn.object.filter.name.action.FilterCreateAction;
+import com.dbn.object.filter.name.*;
+import com.dbn.object.filter.name.action.*;
 import com.dbn.object.type.DBObjectType;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.Separator;
@@ -26,8 +17,7 @@ import com.intellij.openapi.project.Project;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.JPanel;
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.tree.TreePath;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -131,11 +121,11 @@ public class ObjectNameFilterSettingsForm extends ConfigurationEditorForm<Object
 
     @Override
     public void applyFormChanges() throws ConfigurationException {
-        Set<DBObjectType> filterObjectTypes = new HashSet<>();
         ObjectNameFilterSettings configuration = getConfiguration();
         boolean notifyFilterListeners = configuration.isModified();
 
         // collect before after applying the changes
+        Set<DBObjectType> filterObjectTypes = new HashSet<>();
         filterObjectTypes.addAll(configuration.getFilteredObjectTypes());
 
         Element element = new Element("Temp");

@@ -3,7 +3,6 @@ package com.dbn.object.filter.custom;
 import com.dbn.common.expression.ExpressionEvaluator;
 import com.dbn.common.expression.GroovyExpressionEvaluator;
 import com.dbn.common.options.BasicProjectConfiguration;
-import com.dbn.common.util.Lists;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.ConnectionId;
 import com.dbn.connection.config.ConnectionFilterSettings;
@@ -16,30 +15,31 @@ import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Set;
 
 import static com.dbn.common.options.setting.Settings.newElement;
 import static com.dbn.common.util.Unsafe.cast;
 
 @Getter
 @EqualsAndHashCode(callSuper = false)
-public class ObjectCustomFilterSettings extends BasicProjectConfiguration<ConnectionFilterSettings, ObjectFilterSettingsForm> {
+public class ObjectFilterSettings extends BasicProjectConfiguration<ConnectionFilterSettings, ObjectFilterSettingsForm> {
     private final ConnectionId connectionId;
-    private final List<ObjectFilter<?>> filters = new ArrayList<>();
+    private final EnumMap<DBObjectType, ObjectFilter<?>> filters = new EnumMap<>(DBObjectType.class);
     private final transient ExpressionEvaluator expressionEvaluator = new GroovyExpressionEvaluator();
 
-    public ObjectCustomFilterSettings(ConnectionFilterSettings parent, ConnectionId connectionId) {
+    public ObjectFilterSettings(ConnectionFilterSettings parent, ConnectionId connectionId) {
         super(parent);
         this.connectionId = connectionId;
     }
 
     public <T extends DBObject> ObjectFilter<T> getFilter(DBObjectType objectType) {
-        return cast(Lists.first(filters, f -> f.getObjectType() == objectType));
+        return cast(filters.get(objectType));
     }
 
     public void addFilter(ObjectFilter<?> filter) {
-        filters.removeIf(f -> f.getObjectType() == filter.getObjectType());
-        filters.add(filter);
+        filters.put(filter.getObjectType(), filter);
     }
 
     public <T extends DBObject> ObjectFilter<T> createFilter(DBObjectType objectType, String expression) {
@@ -47,14 +47,23 @@ public class ObjectCustomFilterSettings extends BasicProjectConfiguration<Connec
         filter.setObjectType(objectType);
         filter.setExpression(expression);
 
-        filters.add(filter);
+        filters.put(objectType, filter);
         return filter;
     }
     public <T extends DBObject> ObjectFilter<?> deleteFilter(DBObjectType objectType) {
-        ObjectFilter<T> filter = getFilter(objectType);
-        if (filter == null) return null;
-        filters.remove(filter);
-        return filter;
+        return filters.remove(objectType);
+    }
+
+    public void setFilters(List<ObjectFilter<?>> filters) {
+        filters.forEach(f -> this.filters.put(f.getObjectType(), f));
+    }
+
+    public List<ObjectFilter<?>> getFilters() {
+        return new ArrayList<>(filters.values());
+    }
+
+    public Set<DBObjectType> getFilterObjectTypes() {
+        return filters.keySet();
     }
 
     /*********************************************************
@@ -78,13 +87,13 @@ public class ObjectCustomFilterSettings extends BasicProjectConfiguration<Connec
             ObjectFilter<?> filter = new ObjectFilter<>(this);
             filter.readConfiguration(child);
 
-            filters.add(filter);
+            filters.put(filter.getObjectType(), filter);
         }
     }
 
     @Override
     public void writeConfiguration(Element element) {
-        for (ObjectFilter<?> filter : filters) {
+        for (ObjectFilter<?> filter : filters.values()) {
             Element child = newElement(element, "filter");
             filter.writeConfiguration(child);
         }

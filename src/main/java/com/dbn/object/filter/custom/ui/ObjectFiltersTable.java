@@ -3,7 +3,7 @@ package com.dbn.object.filter.custom.ui;
 import com.dbn.common.ui.component.DBNComponent;
 import com.dbn.common.ui.table.DBNEditableTable;
 import com.dbn.common.ui.util.Mouse;
-import com.dbn.object.filter.custom.ObjectCustomFilterSettings;
+import com.dbn.object.filter.custom.ObjectFilterSettings;
 import com.dbn.object.type.DBObjectType;
 import com.intellij.ui.BooleanTableCellEditor;
 import com.intellij.ui.BooleanTableCellRenderer;
@@ -18,7 +18,7 @@ import java.awt.event.MouseListener;
 
 public class ObjectFiltersTable extends DBNEditableTable<ObjectFiltersTableModel> {
 
-    ObjectFiltersTable(DBNComponent parent, ObjectCustomFilterSettings settings) {
+    ObjectFiltersTable(DBNComponent parent, ObjectFilterSettings settings) {
         super(parent, createModel(settings), true);
         setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         setSelectionBackground(UIUtil.getTableBackground());
@@ -36,7 +36,7 @@ public class ObjectFiltersTable extends DBNEditableTable<ObjectFiltersTableModel
     }
 
     @NotNull
-    private static ObjectFiltersTableModel createModel(ObjectCustomFilterSettings filterSettings) {
+    private static ObjectFiltersTableModel createModel(ObjectFilterSettings filterSettings) {
         return new ObjectFiltersTableModel(filterSettings);
     }
 

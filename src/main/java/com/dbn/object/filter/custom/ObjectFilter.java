@@ -9,6 +9,7 @@ import com.dbn.connection.ConnectionHandler;
 import com.dbn.object.common.DBObject;
 import com.dbn.object.type.DBObjectType;
 import com.intellij.openapi.project.Project;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -16,8 +17,8 @@ import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.dbn.common.options.setting.Settings.*;
@@ -25,18 +26,19 @@ import static com.dbn.common.options.setting.Settings.*;
 @Slf4j
 @Getter
 @Setter
+@EqualsAndHashCode
 public class ObjectFilter<T extends DBObject> implements Filter<T>, PersistentConfiguration {
     private DBObjectType objectType;
     private String expression = "";
     private boolean enabled = true;
-    private final WeakRef<ObjectCustomFilterSettings> settings;
+    private final transient WeakRef<ObjectFilterSettings> settings;
 
-    public ObjectFilter(ObjectCustomFilterSettings settings) {
+    public ObjectFilter(ObjectFilterSettings settings) {
         this.settings = WeakRef.of(settings);
     }
 
     @NotNull
-    public ObjectCustomFilterSettings getSettings() {
+    public ObjectFilterSettings getSettings() {
         return settings.ensure();
     }
 
@@ -47,6 +49,7 @@ public class ObjectFilter<T extends DBObject> implements Filter<T>, PersistentCo
     @Override
     public boolean accepts(T object) {
         if (expression == null) return true;
+        if (!enabled) return true;
 
         var attributeValues = createEvaluatorContext(object);
         ExpressionEvaluator expressionEvaluator = getSettings().getExpressionEvaluator();
@@ -54,7 +57,7 @@ public class ObjectFilter<T extends DBObject> implements Filter<T>, PersistentCo
     }
 
     public ExpressionEvaluatorContext createTestEvaluationContext() {
-        Set<ObjectFilterAttribute> attributesTypes = getAttributes().getAttributesTypes();
+        List<ObjectFilterAttribute> attributesTypes = getDefinition().getAttributes();
         Map<String, Object> bindVariables = attributesTypes.stream().collect(Collectors.toMap(a -> a.getName(), a -> a.getTestValue()));
         ExpressionEvaluatorContext evaluatorContext = new ExpressionEvaluatorContext(bindVariables);
         evaluatorContext.setTemporary(true);
@@ -62,20 +65,20 @@ public class ObjectFilter<T extends DBObject> implements Filter<T>, PersistentCo
     }
 
     private ExpressionEvaluatorContext createEvaluatorContext(T object) {
-        ObjectFilterAttributes<T> attributes = getAttributes();
-        Set<ObjectFilterAttribute> attributeTypes = attributes.getAttributesTypes();
+        ObjectFilterDefinition<T> definition = getDefinition();
+        List<ObjectFilterAttribute> attributeTypes = definition.getAttributes();
 
         Map<String, Object> bindVariables = new HashMap<>();
         for (ObjectFilterAttribute attribute : attributeTypes) {
             String attributeName = attribute.getName();
-            Object attributeValue = attributes.getAttributeValue(object, attributeName);
+            Object attributeValue = definition.getAttributeValue(object, attributeName);
             bindVariables.put(attributeName, attributeValue);
         }
         return new ExpressionEvaluatorContext(bindVariables);
     }
 
-    public ObjectFilterAttributes<T> getAttributes() {
-        return ObjectFilterAttributes.of(objectType);
+    public ObjectFilterDefinition<T> getDefinition() {
+        return ObjectFilterDefinition.of(objectType);
     }
 
     @Override
@@ -101,10 +104,11 @@ public class ObjectFilter<T extends DBObject> implements Filter<T>, PersistentCo
     }
 
     public void createOrUpdate() {
-        ObjectCustomFilterSettings settings = getSettings();
+        ObjectFilterSettings settings = getSettings();
         ObjectFilter<DBObject> filter = settings.getFilter(objectType);
         if (filter == null)
             settings.addFilter(this); else
                 filter.setExpression(expression);
+        settings.setModified(true);
     }
 }

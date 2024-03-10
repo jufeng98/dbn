@@ -25,7 +25,7 @@ public class ConnectionFilterSettingsForm extends CompositeConfigurationEditorFo
 
     public ConnectionFilterSettingsForm(ConnectionFilterSettings settings) {
         super(settings);
-        objectCustomFiltersPanel.add(settings.getObjectCustomFilterSettings().createComponent(), BorderLayout.CENTER);
+        objectCustomFiltersPanel.add(settings.getObjectFilterSettings().createComponent(), BorderLayout.CENTER);
         objectTypesFilterPanel.add(settings.getObjectTypeFilterSettings().createComponent(), BorderLayout.CENTER);
 
         hideEmptySchemasCheckBox.setSelected(settings.isHideEmptySchemas());

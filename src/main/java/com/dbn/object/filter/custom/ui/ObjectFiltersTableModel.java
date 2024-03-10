@@ -2,8 +2,8 @@ package com.dbn.object.filter.custom.ui;
 
 import com.dbn.common.ui.table.DBNEditableTableModel;
 import com.dbn.common.util.Commons;
-import com.dbn.object.filter.custom.ObjectCustomFilterSettings;
 import com.dbn.object.filter.custom.ObjectFilter;
+import com.dbn.object.filter.custom.ObjectFilterSettings;
 import com.dbn.object.type.DBObjectType;
 import lombok.Getter;
 
@@ -11,10 +11,12 @@ import java.util.List;
 
 @Getter
 public class ObjectFiltersTableModel extends DBNEditableTableModel {
-    private final ObjectCustomFilterSettings settings;
+    private final ObjectFilterSettings settings;
+    private final List<ObjectFilter<?>> filters;
 
-    ObjectFiltersTableModel(ObjectCustomFilterSettings settings) {
+    ObjectFiltersTableModel(ObjectFilterSettings settings) {
         this.settings = settings;
+        this.filters = settings.getFilters();
     }
 
     @Override
@@ -62,29 +64,24 @@ public class ObjectFiltersTableModel extends DBNEditableTableModel {
             ObjectFilter<?> filter = getFilter(rowIndex);
             if (columnIndex == 2) {
                 filter.setEnabled((Boolean) o);
+                filter.getSettings().setModified(true);
             }
             notifyListeners(rowIndex, rowIndex, columnIndex);
         }
     }
 
     private ObjectFilter<?> getFilter(int rowIndex) {
-        return getFilters().get(rowIndex);
+        return filters.get(rowIndex);
     }
 
     @Override
     public void insertRow(int rowIndex) {
-        List<ObjectFilter<?>> filters = getFilters();
-        filters.add(rowIndex, new ObjectFilter(settings));
+        filters.add(rowIndex, new ObjectFilter<>(settings));
         notifyListeners(rowIndex, filters.size()-1, -1);
-    }
-
-    private List<ObjectFilter<?>> getFilters() {
-        return settings.getFilters();
     }
 
     @Override
     public void removeRow(int rowIndex) {
-        List<ObjectFilter<?>> filters = getFilters();
         if (filters.size() > rowIndex) {
             filters.remove(rowIndex);
             notifyListeners(rowIndex, filters.size()-1, -1);

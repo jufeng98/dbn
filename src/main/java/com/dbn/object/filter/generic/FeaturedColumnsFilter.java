@@ -5,16 +5,10 @@ import com.dbn.object.DBColumn;
 import org.jetbrains.annotations.Nullable;
 
 
-public class CompositeColumnFilter implements Filter<DBColumn> {
-    public static final CompositeColumnFilter INSTANCE = new CompositeColumnFilter();
-    private enum Signature {
-        AUDIT_AND_PSEUDO,
-        AUDIT,
-        PSEUDO,
-        NONE
-    }
+public class FeaturedColumnsFilter implements Filter<DBColumn> {
+    public static final FeaturedColumnsFilter INSTANCE = new FeaturedColumnsFilter();
 
-    private CompositeColumnFilter() {}
+    private FeaturedColumnsFilter() {}
 
     @Nullable
     public static Filter<DBColumn> get(boolean pseudo, boolean audit) {
@@ -22,13 +16,6 @@ public class CompositeColumnFilter implements Filter<DBColumn> {
         if (pseudo) return NonPseudoColumnsFilter.INSTANCE;
         if (audit) return NonAuditColumnsFilter.INSTANCE;
         return null;
-    }
-
-    public static Object signature(boolean pseudo, boolean audit) {
-        if (pseudo && audit) return Signature.AUDIT_AND_PSEUDO;
-        if (pseudo) return Signature.PSEUDO;
-        if (audit) return Signature.AUDIT;
-        return Signature.NONE;
     }
 
     @Override
