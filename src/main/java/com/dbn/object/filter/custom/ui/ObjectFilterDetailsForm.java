@@ -59,6 +59,10 @@ public class ObjectFilterDetailsForm extends DBNFormBase {
         return mainPanel;
     }
 
+    private ObjectFilterDetailsDialog getDialog() {
+        return getParentComponent();
+    }
+
     private void initErrorLabel(String error, String expression) {
         if (error == null) {
             errorLabel.setVisible(false);
@@ -120,24 +124,31 @@ public class ObjectFilterDetailsForm extends DBNFormBase {
         editorPanel.add(editor.getComponent(), BorderLayout.CENTER);
     }
 
+    public String getExpression() {
+        return document.getText();
+    }
+
     private void verifyExpression() {
         Dispatch.background(getProject(),
                 () -> verifyExpression(filter),
-                c -> getInitErrorLabel(c));
-    }
-
-    private void getInitErrorLabel(ExpressionEvaluatorContext context) {
-        if (this.context != context) return;
-        initErrorLabel(
-                context.isValid() ? null : "Invalid or incomplete expression",
-                context.getExpression());
+                c -> applyVerificationResult(c));
     }
 
     private ExpressionEvaluatorContext verifyExpression(ObjectFilter<?> filter) {
+        getDialog().setActionEnabled(false);
         context = filter.createTestEvaluationContext();
         ExpressionEvaluator evaluator = filter.getSettings().getExpressionEvaluator();
         evaluator.verifyExpression(expression, context, Boolean.class);
         return context;
+    }
+
+    private void applyVerificationResult(ExpressionEvaluatorContext context) {
+        if (this.context != context) return;
+        boolean valid = context.isValid();
+        String error = valid ? null : "Invalid or incomplete expression";
+        initErrorLabel(error, context.getExpression());
+
+        getDialog().setActionEnabled(valid);
     }
 
     public void disposeInner() {

@@ -1,10 +1,10 @@
 package com.dbn.object.filter.custom.ui;
 
-import com.dbn.common.environment.options.ui.EnvironmentTypesTableCellRenderer;
 import com.dbn.common.ui.component.DBNComponent;
 import com.dbn.common.ui.table.DBNEditableTable;
 import com.dbn.common.ui.util.Mouse;
 import com.dbn.object.filter.custom.ObjectCustomFilterSettings;
+import com.dbn.object.type.DBObjectType;
 import com.intellij.ui.BooleanTableCellEditor;
 import com.intellij.ui.BooleanTableCellRenderer;
 import com.intellij.util.ui.UIUtil;
@@ -24,8 +24,8 @@ public class ObjectFiltersTable extends DBNEditableTable<ObjectFiltersTableModel
         setSelectionBackground(UIUtil.getTableBackground());
         setSelectionForeground(UIUtil.getTableForeground());
         setCellSelectionEnabled(true);
-        setDefaultRenderer(String.class, new EnvironmentTypesTableCellRenderer());
-        setDefaultRenderer(Color.class, new EnvironmentTypesTableCellRenderer());
+        setDefaultRenderer(String.class, new ObjectFiltersTableCellRenderer());
+        setDefaultRenderer(DBObjectType.class, new ObjectFiltersTableCellRenderer());
         setDefaultRenderer(Boolean.class, new BooleanTableCellRenderer());
         setDefaultEditor(Boolean.class, new BooleanTableCellEditor());
 
@@ -49,7 +49,7 @@ public class ObjectFiltersTable extends DBNEditableTable<ObjectFiltersTableModel
         if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 1) {
             Point point = e.getPoint();
             int columnIndex = columnAtPoint(point);
-            if (columnIndex == 4) {
+            if (columnIndex == 2) {
                 int rowIndex = rowAtPoint(point);
             }
         }
@@ -67,6 +67,6 @@ public class ObjectFiltersTable extends DBNEditableTable<ObjectFiltersTableModel
 
     @Override
     public boolean isCellEditable(int row, int column) {
-        return column < 4;
+        return column == 2;
     }
 }

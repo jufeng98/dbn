@@ -1,8 +1,9 @@
 package com.dbn.object.filter.custom.ui;
 
 import com.dbn.common.ui.table.DBNEditableTableModel;
-import com.dbn.object.filter.custom.ObjectFilter;
+import com.dbn.common.util.Commons;
 import com.dbn.object.filter.custom.ObjectCustomFilterSettings;
+import com.dbn.object.filter.custom.ObjectFilter;
 import com.dbn.object.type.DBObjectType;
 import lombok.Getter;
 
@@ -47,7 +48,7 @@ public class ObjectFiltersTableModel extends DBNEditableTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        ObjectFilter filter = getFilter(rowIndex);
+        ObjectFilter<?> filter = getFilter(rowIndex);
         return
            columnIndex == 0 ? filter.getObjectType() :
            columnIndex == 1 ? filter.getExpression() :
@@ -56,44 +57,34 @@ public class ObjectFiltersTableModel extends DBNEditableTableModel {
 
     @Override
     public void setValueAt(Object o, int rowIndex, int columnIndex) {
-/*        Object actualValue = getValueAt(rowIndex, columnIndex);
+        Object actualValue = getValueAt(rowIndex, columnIndex);
         if (!Commons.match(actualValue, o)) {
-            EnvironmentType environmentType = environmentTypes.get(rowIndex);
-            if (columnIndex == 0) {
-                environmentType.setName((String) o);
-            } else if (columnIndex == 1) {
-                environmentType.setDescription((String) o);
-            } else if (columnIndex == 2) {
-                environmentType.setReadonlyData((Boolean) o);
-            } else if (columnIndex == 3) {
-                environmentType.setReadonlyCode((Boolean) o);
-            } else if (columnIndex == 4) {
-                Color color = (Color) o;
-                environmentType.setColor(color);
+            ObjectFilter<?> filter = getFilter(rowIndex);
+            if (columnIndex == 2) {
+                filter.setEnabled((Boolean) o);
             }
-
             notifyListeners(rowIndex, rowIndex, columnIndex);
-        }*/
+        }
     }
 
-    private ObjectFilter getFilter(int rowIndex) {
+    private ObjectFilter<?> getFilter(int rowIndex) {
         return getFilters().get(rowIndex);
     }
 
     @Override
     public void insertRow(int rowIndex) {
-        List<ObjectFilter> filters = getFilters();
+        List<ObjectFilter<?>> filters = getFilters();
         filters.add(rowIndex, new ObjectFilter(settings));
         notifyListeners(rowIndex, filters.size()-1, -1);
     }
 
-    private List<ObjectFilter> getFilters() {
+    private List<ObjectFilter<?>> getFilters() {
         return settings.getFilters();
     }
 
     @Override
     public void removeRow(int rowIndex) {
-        List<ObjectFilter> filters = getFilters();
+        List<ObjectFilter<?>> filters = getFilters();
         if (filters.size() > rowIndex) {
             filters.remove(rowIndex);
             notifyListeners(rowIndex, filters.size()-1, -1);

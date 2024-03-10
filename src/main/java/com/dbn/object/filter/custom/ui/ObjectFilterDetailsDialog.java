@@ -2,7 +2,6 @@ package com.dbn.object.filter.custom.ui;
 
 import com.dbn.common.ui.dialog.DBNDialog;
 import com.dbn.object.filter.custom.ObjectFilter;
-import com.intellij.openapi.project.Project;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,9 +9,9 @@ import javax.swing.*;
 
 @Getter
 public class ObjectFilterDetailsDialog extends DBNDialog<ObjectFilterDetailsForm> {
-    private final ObjectFilter filter;
+    private final ObjectFilter<?> filter;
 
-    public ObjectFilterDetailsDialog(ObjectFilter filter, boolean create) {
+    public ObjectFilterDetailsDialog(ObjectFilter<?> filter, boolean create) {
         super(filter.getProject(), getTitle(create), true);
         this.filter = filter;
 
@@ -34,10 +33,15 @@ public class ObjectFilterDetailsDialog extends DBNDialog<ObjectFilterDetailsForm
         return create ? "Create filter" : "Edit filter";
     }
 
+    public void setActionEnabled(boolean enabled) {
+        getOKAction().setEnabled(enabled);
+    }
+
     @Override
     public void doOKAction() {
         ObjectFilterDetailsForm component = getForm();
-        // apply
+        filter.setExpression(component.getExpression());
+        filter.createOrUpdate();
         super.doOKAction();
     }
 

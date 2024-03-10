@@ -1,5 +1,6 @@
 package com.dbn.common.expression;
 
+import com.dbn.common.util.Strings;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,6 +32,6 @@ public class ExpressionEvaluatorContext {
     }
 
     public boolean isValid() {
-        return error == null;
+        return error == null && Strings.isNotEmptyOrSpaces(expression);
     }
 }

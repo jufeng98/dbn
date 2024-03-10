@@ -25,7 +25,7 @@ import static com.dbn.common.util.Unsafe.cast;
 @EqualsAndHashCode(callSuper = false)
 public class ObjectCustomFilterSettings extends BasicProjectConfiguration<ConnectionFilterSettings, ObjectFilterSettingsForm> {
     private final ConnectionId connectionId;
-    private final List<ObjectFilter> filters = new ArrayList<>();
+    private final List<ObjectFilter<?>> filters = new ArrayList<>();
     private final transient ExpressionEvaluator expressionEvaluator = new GroovyExpressionEvaluator();
 
     public ObjectCustomFilterSettings(ConnectionFilterSettings parent, ConnectionId connectionId) {
@@ -37,6 +37,11 @@ public class ObjectCustomFilterSettings extends BasicProjectConfiguration<Connec
         return cast(Lists.first(filters, f -> f.getObjectType() == objectType));
     }
 
+    public void addFilter(ObjectFilter<?> filter) {
+        filters.removeIf(f -> f.getObjectType() == filter.getObjectType());
+        filters.add(filter);
+    }
+
     public <T extends DBObject> ObjectFilter<T> createFilter(DBObjectType objectType, String expression) {
         ObjectFilter<T> filter = new ObjectFilter<>(this);
         filter.setObjectType(objectType);
@@ -45,7 +50,7 @@ public class ObjectCustomFilterSettings extends BasicProjectConfiguration<Connec
         filters.add(filter);
         return filter;
     }
-    public <T extends DBObject> ObjectFilter deleteFilter(DBObjectType objectType) {
+    public <T extends DBObject> ObjectFilter<?> deleteFilter(DBObjectType objectType) {
         ObjectFilter<T> filter = getFilter(objectType);
         if (filter == null) return null;
         filters.remove(filter);
@@ -70,7 +75,7 @@ public class ObjectCustomFilterSettings extends BasicProjectConfiguration<Connec
     public void readConfiguration(Element element) {
         filters.clear();
         for (Element child: element.getChildren()) {
-            ObjectFilter filter = new ObjectFilter(this);
+            ObjectFilter<?> filter = new ObjectFilter<>(this);
             filter.readConfiguration(child);
 
             filters.add(filter);
@@ -79,7 +84,7 @@ public class ObjectCustomFilterSettings extends BasicProjectConfiguration<Connec
 
     @Override
     public void writeConfiguration(Element element) {
-        for (ObjectFilter filter : filters) {
+        for (ObjectFilter<?> filter : filters) {
             Element child = newElement(element, "filter");
             filter.writeConfiguration(child);
         }
