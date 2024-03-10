@@ -36,13 +36,13 @@ public class SqlToGroovyExpressionConverter {
     }
 
     private static String replace_NOT_LIKE(String expression) {
-        Pattern p = Pattern.compile("(?i)(\\w+)\\s+NOT\\s+LIKE\\s+'([%*]?)([^%*]+)([%*]?)'\\b");
+        Pattern p = Pattern.compile("(?i)(\\w+)\\s+NOT\\s+LIKE\\s+('[^']*')");
         Matcher m = p.matcher(expression);
         StringBuilder result = new StringBuilder();
         while (m.find()) {
             String name = m.group(1);
-            String value = m.group(3);
-            String transformed = String.format("%s.toLowerCase().indexOf('%s'.toLowerCase()) == -1", name, value);
+            String value = "/(?i)" + m.group(2).replaceAll("'", "").replaceAll("[%*]", ".*") + "/";
+            String transformed = String.format("!(%s ==~ %s)", name, value);
             m.appendReplacement(result, transformed);
         }
         m.appendTail(result);
@@ -51,14 +51,13 @@ public class SqlToGroovyExpressionConverter {
     }
 
     private static String replace_LIKE(String expression) {
-        Pattern p = Pattern.compile("(?i)(\\w+)\\s+LIKE\\s+'([%*]?)([^%*]*)([%*]?)'\\b", Pattern.CASE_INSENSITIVE);
+        Pattern p = Pattern.compile("(?i)(\\w+)\\s+LIKE\\s+('[^']*')");
         Matcher m = p.matcher(expression);
         StringBuilder result = new StringBuilder();
         while (m.find()) {
             String name = m.group(1);
-            String suffix = m.group(2);
-            String value = m.group(3);
-            String transformed = String.format("%s.toLowerCase().indexOf('%s'.toLowerCase()) " + (suffix.isEmpty() ? "== 0" : "> 0"), name, value);
+            String value = "/(?i)" + m.group(2).replaceAll("'", "").replaceAll("[%*]", ".*") + "/";
+            String transformed = String.format("%s ==~ %s", name, value);
             m.appendReplacement(result, transformed);
         }
         m.appendTail(result);

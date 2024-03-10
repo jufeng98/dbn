@@ -4,6 +4,7 @@ import com.dbn.common.color.Colors;
 import com.dbn.common.expression.ExpressionEvaluator;
 import com.dbn.common.expression.ExpressionEvaluatorContext;
 import com.dbn.common.icon.Icons;
+import com.dbn.common.thread.Dispatch;
 import com.dbn.common.ui.form.DBNFormBase;
 import com.dbn.common.ui.form.DBNHeaderForm;
 import com.dbn.common.ui.util.Borders;
@@ -38,7 +39,8 @@ public class ObjectFilterDetailsForm extends DBNFormBase {
     private JLabel errorLabel;
     private JLabel expressionLabel;
 
-    private final ObjectFilter filter;
+    private final ObjectFilter<?> filter;
+    private ExpressionEvaluatorContext context;
     private Document document;
     private EditorEx editor;
     private String expression;
@@ -119,15 +121,24 @@ public class ObjectFilterDetailsForm extends DBNFormBase {
     }
 
     private void verifyExpression() {
-        ExpressionEvaluator expressionEvaluator = filter.getSettings().getExpressionEvaluator();
-
-        ExpressionEvaluatorContext evaluatorContext = filter.createTestEvaluationContext();
-
-        boolean valid = expressionEvaluator.isValidExpression(expression, Boolean.class, evaluatorContext);
-        initErrorLabel(valid ? null : "Invalid expression", evaluatorContext.getEvaluatedExpression());
-
+        Dispatch.background(getProject(),
+                () -> verifyExpression(filter),
+                c -> getInitErrorLabel(c));
     }
 
+    private void getInitErrorLabel(ExpressionEvaluatorContext context) {
+        if (this.context != context) return;
+        initErrorLabel(
+                context.isValid() ? null : "Invalid or incomplete expression",
+                context.getExpression());
+    }
+
+    private ExpressionEvaluatorContext verifyExpression(ObjectFilter<?> filter) {
+        context = filter.createTestEvaluationContext();
+        ExpressionEvaluator evaluator = filter.getSettings().getExpressionEvaluator();
+        evaluator.verifyExpression(expression, context, Boolean.class);
+        return context;
+    }
 
     public void disposeInner() {
         Editors.releaseEditor(editor);

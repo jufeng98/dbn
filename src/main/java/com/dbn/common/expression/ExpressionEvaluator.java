@@ -2,9 +2,9 @@ package com.dbn.common.expression;
 
 public interface ExpressionEvaluator {
 
-    boolean isValidExpression(String expression, ExpressionEvaluatorContext context);
+    boolean verifyExpression(String expression, ExpressionEvaluatorContext context);
 
-    boolean isValidExpression(String expression, Class<?> expectedOutcome, ExpressionEvaluatorContext context);
+    boolean verifyExpression(String expression, ExpressionEvaluatorContext context, Class<?> expectedOutcome);
 
     boolean evaluateBooleanExpression(String expression, ExpressionEvaluatorContext context);
 

@@ -1,9 +1,6 @@
 package com.dbn.object.filter.custom;
 
-import com.dbn.object.DBColumn;
-import com.dbn.object.DBConstraint;
-import com.dbn.object.DBTable;
-import com.dbn.object.DBView;
+import com.dbn.object.*;
 import com.dbn.object.common.DBObject;
 import com.dbn.object.type.DBObjectType;
 import org.jetbrains.annotations.NotNull;
@@ -26,9 +23,16 @@ class ObjectFilterAttributeDefinitions {
     }
 
     static {
+        create(DBSchema.class, DBObjectType.SCHEMA)
+                .withAttribute(String.class,  "SCHEMA_NAME",     "Table name (literal)", o -> o.getName())
+                .withAttribute(Boolean.class, "EMPTY_SCHEMA",     "Empty schema (boolean)", o -> o.isEmptySchema())
+                .withAttribute(Boolean.class, "USER_SCHEMA",     "User / own schema (boolean)", o -> o.isUserSchema())
+                .withAttribute(Boolean.class, "PUBLIC_SCHEMA",   "Public schema (boolean)", o -> o.isPublicSchema())
+                .withAttribute(Boolean.class, "SYSTEM_SCHEMA",   "System schema (boolean)", o -> o.isSystemSchema());
+
         create(DBTable.class, DBObjectType.TABLE)
                 .withAttribute(String.class,  "TABLE_NAME",     "Table name (literal)", o -> o.getName())
-                .withAttribute(Boolean.class, "TEMPORARY",      "Temporary table (boolean)", o -> o.isTemporary());
+                .withAttribute(Boolean.class, "TEMPORARY_TABLE", "Temporary table (boolean)", o -> o.isTemporary());
 
         create(DBView.class, DBObjectType.VIEW)
                 .withAttribute(String.class,  "VIEW_NAME",       "View name (literal)", o -> o.getName())
@@ -40,8 +44,8 @@ class ObjectFilterAttributeDefinitions {
                 .withAttribute(Integer.class, "DATA_LENGTH",     "Column data length (numeric)", o -> o.getDataType().getLength())
                 .withAttribute(Boolean.class, "AUDIT_COLUMN",    "Audit / tracking column (boolean)", o -> o.isAudit())
                 .withAttribute(Boolean.class, "PSEUDO_COLUMN",   "Pseudo / hidden column (boolean)", o -> o.isHidden())
-                .withAttribute(Boolean.class, "NULLABLE",        "Nullable column (boolean)", o -> o.isNullable())
-                .withAttribute(Boolean.class, "IDENTITY",        "Identity column (boolean)", o -> o.isIdentity())
+                .withAttribute(Boolean.class, "NULLABLE_COLUMN", "Nullable column (boolean)", o -> o.isNullable())
+                .withAttribute(Boolean.class, "IDENTITY_COLUMN", "Identity column (boolean)", o -> o.isIdentity())
                 .withAttribute(Boolean.class, "PRIMARY_KEY",     "Primary key column (boolean)", o -> o.isPrimaryKey())
                 .withAttribute(Boolean.class, "FOREIGN_KEY",     "Foreign key column (boolean)", o -> o.isForeignKey());
 
