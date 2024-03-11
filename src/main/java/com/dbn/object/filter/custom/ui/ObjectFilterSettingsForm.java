@@ -7,6 +7,7 @@ import com.dbn.common.options.ui.ConfigurationEditorForm;
 import com.dbn.common.ui.ValueSelector;
 import com.dbn.common.ui.ValueSelectorOption;
 import com.dbn.common.ui.misc.DBNTableScrollPane;
+import com.dbn.common.ui.util.UserInterface;
 import com.dbn.common.util.Dialogs;
 import com.dbn.object.filter.custom.ObjectFilter;
 import com.dbn.object.filter.custom.ObjectFilterSettings;
@@ -18,10 +19,11 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
+
+import static com.dbn.common.util.Conditional.when;
+import static com.dbn.common.util.Strings.toUpperCase;
 
 public class ObjectFilterSettingsForm extends ConfigurationEditorForm<ObjectFilterSettings> {
     private JPanel mainPanel;
@@ -35,24 +37,39 @@ public class ObjectFilterSettingsForm extends ConfigurationEditorForm<ObjectFilt
         filtersTable = new ObjectFiltersTable(this, configuration);
         filterTableScrollPane.setViewportView(filtersTable);
 
-        actionsPanel.add(new ObjectTypeSelector(), BorderLayout.CENTER);
+        actionsPanel.add(new ObjectTypeSelector(), BorderLayout.WEST);
     }
 
     private class ObjectTypeSelector extends ValueSelector<DBObjectType> {
         ObjectTypeSelector() {
             super(PlatformIcons.ADD_ICON, "Add Filter", null, ValueSelectorOption.HIDE_DESCRIPTION);
-            addListener((oldValue, newValue) -> createFilter(newValue));
+            addListener((oldValue, newValue) -> {createFilter(newValue); resetValues();});
         }
 
         @Override
         public List<DBObjectType> loadValues() {
-            return Arrays.asList(
+            List<DBObjectType> objectTypes = new ArrayList<>(Arrays.asList(
                     DBObjectType.SCHEMA,
                     DBObjectType.TABLE,
                     DBObjectType.VIEW,
                     DBObjectType.COLUMN,
                     DBObjectType.CONSTRAINT,
-                    DBObjectType.INDEX);
+                    DBObjectType.INDEX,
+                    DBObjectType.TRIGGER,
+                    DBObjectType.FUNCTION,
+                    DBObjectType.PROCEDURE,
+                    DBObjectType.PACKAGE,
+                    DBObjectType.TYPE,
+                    DBObjectType.SYNONYM,
+                    DBObjectType.DBLINK));
+
+            objectTypes.removeAll(filtersTable.getModel().getFilterObjectTypes());
+            return objectTypes;
+        }
+
+        @Override
+        public String getOptionDisplayName(DBObjectType value) {
+            return toUpperCase(value.getName());
         }
     }
 
@@ -61,7 +78,11 @@ public class ObjectFilterSettingsForm extends ConfigurationEditorForm<ObjectFilt
         ObjectFilter<?> filter = new ObjectFilter<>(filterSettings);
         filter.setObjectType(objectType);
 
-        Dialogs.show(() -> new ObjectFilterDetailsDialog(filter, true));
+        ObjectFiltersTableModel model = filtersTable.getModel();
+        ObjectFilterDetailsDialog.show(filter, true, () -> {
+            model.createOrUpdate(filter);
+            UserInterface.repaint(filtersTable);
+        });
     }
 
     @NotNull

@@ -91,9 +91,9 @@ public class CodeCompletionProvider extends CompletionProvider<CompletionParamet
         if (virtualFile instanceof DBObjectFilterExpressionFile) {
             DBObjectFilterExpressionFile expressionFile = (DBObjectFilterExpressionFile) virtualFile;
             List<ObjectFilterAttribute> attributesTypes = expressionFile.getFilter().getDefinition().getAttributes();
-            attributesTypes.forEach(a -> result.addElement(a.asLookupItem()));
+            attributesTypes.forEach(a -> result.addElement(a.getLookupItem()));
 
-            Arrays.asList("AND", "OR", "IS", "IN", "NOT", "NULL", "LIKE").forEach(s -> result.addElement(new CodeCompletionLookupItem(s, null, s, null, true)));
+            Arrays.asList("AND", "OR", "IS", "IN", "NOT", "NULL", "LIKE").forEach(s -> result.addElement(new CodeCompletionLookupItem(s, null, s, "keyword", true)));
             return true;
         }
         return false;

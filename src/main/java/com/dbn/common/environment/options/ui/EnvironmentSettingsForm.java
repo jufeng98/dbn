@@ -1,5 +1,6 @@
 package com.dbn.common.environment.options.ui;
 
+import com.dbn.common.action.BasicActionButton;
 import com.dbn.common.environment.options.listener.EnvironmentManagerListener;
 import com.dbn.common.event.ProjectEvents;
 import com.dbn.common.icon.Icons;
@@ -48,7 +49,7 @@ public class EnvironmentSettingsForm extends ConfigurationEditorForm<Environment
         decorator.setRemoveAction(anActionButton -> environmentTypesTable.removeRow());
         decorator.setMoveUpAction(anActionButton -> environmentTypesTable.moveRowUp());
         decorator.setMoveDownAction(anActionButton -> environmentTypesTable.moveRowDown());
-        decorator.addExtraAction(new AnActionButton("Revert Changes", Icons.ACTION_REVERT_CHANGES) {
+        decorator.addExtraAction(new BasicActionButton("Revert Changes", null, Icons.ACTION_REVERT_CHANGES) {
             @Override
             public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
                 TableCellEditor cellEditor = environmentTypesTable.getCellEditor();

@@ -4,6 +4,7 @@ import com.dbn.common.content.DynamicContentType;
 import com.dbn.common.icon.Icons;
 import com.dbn.common.ui.Presentable;
 import com.dbn.common.util.Characters;
+import com.dbn.common.util.Lists;
 import com.dbn.common.util.Strings;
 import com.dbn.connection.context.DatabaseContext;
 import com.dbn.database.DatabaseObjectTypeId;
@@ -472,12 +473,7 @@ public enum DBObjectType implements DynamicContentType<DBObjectType>, Presentabl
     }
 
     public static String toCsv(List<DBObjectType> objectTypes) {
-        StringBuilder buffer = new StringBuilder();
-        for (DBObjectType objectType : objectTypes) {
-            if (buffer.length() != 0) buffer.append(", ");
-            buffer.append(objectType.name);
-        }
-        return buffer.toString();
+        return Lists.toCsv(objectTypes, ", ", ot -> ot.name);
     }
 
     public static List<DBObjectType> fromCsv(String objectTypes) {

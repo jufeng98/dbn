@@ -102,13 +102,4 @@ public class ObjectFilter<T extends DBObject> implements Filter<T>, PersistentCo
     public ConnectionHandler getConnection() {
         return getSettings().getConnection();
     }
-
-    public void createOrUpdate() {
-        ObjectFilterSettings settings = getSettings();
-        ObjectFilter<DBObject> filter = settings.getFilter(objectType);
-        if (filter == null)
-            settings.addFilter(this); else
-                filter.setExpression(expression);
-        settings.setModified(true);
-    }
 }

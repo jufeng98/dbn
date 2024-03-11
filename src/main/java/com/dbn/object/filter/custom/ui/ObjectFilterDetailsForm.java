@@ -4,16 +4,21 @@ import com.dbn.common.color.Colors;
 import com.dbn.common.expression.ExpressionEvaluator;
 import com.dbn.common.expression.ExpressionEvaluatorContext;
 import com.dbn.common.icon.Icons;
+import com.dbn.common.text.TextContent;
 import com.dbn.common.thread.Dispatch;
 import com.dbn.common.ui.form.DBNFormBase;
 import com.dbn.common.ui.form.DBNHeaderForm;
+import com.dbn.common.ui.form.DBNHintForm;
 import com.dbn.common.ui.util.Borders;
+import com.dbn.common.util.Commons;
 import com.dbn.common.util.Documents;
 import com.dbn.common.util.Editors;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.language.sql.SQLFileType;
 import com.dbn.language.sql.SQLLanguage;
 import com.dbn.object.filter.custom.ObjectFilter;
+import com.dbn.object.filter.custom.ObjectFilterAttribute;
+import com.dbn.object.filter.custom.ObjectFilterDefinition;
 import com.dbn.object.type.DBObjectType;
 import com.dbn.vfs.DatabaseFileViewProvider;
 import com.dbn.vfs.file.DBObjectFilterExpressionFile;
@@ -25,12 +30,18 @@ import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import com.intellij.ui.JBColor;
+import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 import static com.dbn.common.util.Commons.nvl;
+import static com.dbn.common.util.Lists.greatest;
+import static com.dbn.common.util.Lists.toCsv;
+import static com.dbn.common.util.Strings.toUpperCase;
+import static org.apache.commons.lang3.StringUtils.rightPad;
 
 public class ObjectFilterDetailsForm extends DBNFormBase {
     private JPanel mainPanel;
@@ -38,6 +49,7 @@ public class ObjectFilterDetailsForm extends DBNFormBase {
     private JPanel editorPanel;
     private JLabel errorLabel;
     private JLabel expressionLabel;
+    private JPanel hintPanel;
 
     private final ObjectFilter<?> filter;
     private ExpressionEvaluatorContext context;
@@ -50,8 +62,32 @@ public class ObjectFilterDetailsForm extends DBNFormBase {
 
         filter = parent.getFilter();
         initHeaderPanel();
+        initHintPanel();
         initExpressionEditor();
         initErrorLabel(null, null);
+    }
+
+    private void initHintPanel() {
+        TextContent hintText = loadHintText();
+        ObjectFilterDefinition<?> definition = filter.getDefinition();
+        List<ObjectFilterAttribute> attributes = definition.getAttributes();
+        int longestAttr = greatest(attributes, a -> a.getName().length());
+
+        String supportedAttributes = toCsv(attributes, "\n    ", s ->
+                "<li>" +
+                rightPad(s.getName(), longestAttr + 1, " ").replaceAll(" ", "&nbsp;") +
+                "- " + s.getDescription() +
+                " (" + s.getTypeName() + ")");
+        hintText = hintText.replaceFields("SUPPORTED_ATTRIBUTES", supportedAttributes);
+        hintText = hintText.replaceFields("SAMPLE_EXPRESSION", definition.getSampleExpression());
+        DBNHintForm disclaimerForm = new DBNHintForm(this, hintText, null, true);
+        hintPanel.add(disclaimerForm.getComponent());
+    }
+
+    @SneakyThrows
+    private static TextContent loadHintText() {
+        String content = Commons.readInputStream(ObjectFilterDetailsForm.class.getResourceAsStream("object_filter_expression_guide.html"));
+        return TextContent.html(content);
     }
 
     @Override
@@ -81,7 +117,7 @@ public class ObjectFilterDetailsForm extends DBNFormBase {
 
         JBColor color = connection.getEnvironmentType().getColor();
         Icon icon = objectType.getIcon();
-        String title = objectType.getName().toUpperCase();
+        String title = toUpperCase(objectType.getName());
 
         DBNHeaderForm headerForm = new DBNHeaderForm(this, title, icon, color);
         headerPanel.add(headerForm.getComponent(), BorderLayout.CENTER);

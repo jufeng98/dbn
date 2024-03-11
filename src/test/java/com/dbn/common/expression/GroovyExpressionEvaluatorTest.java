@@ -107,28 +107,28 @@ public class GroovyExpressionEvaluatorTest {
     public void fromSql_LIKE1() {
         testSqlToGroovy(
                 "COLUMN_NAME LIKE 'TEST1%'",
-                "COLUMN_NAME.toLowerCase().indexOf('TEST1'.toLowerCase()) == 0");
+                "COLUMN_NAME ==~ /(?i)TEST1.*/");
     }
 
     @Test
     public void fromSql_LIKE2() {
         testSqlToGroovy(
                 "COLUMN_NAME LIKE '%TEST1%'",
-                "COLUMN_NAME.toLowerCase().indexOf('TEST1'.toLowerCase()) > 0");
+                "COLUMN_NAME ==~ /(?i).*TEST1.*/");
     }
 
     @Test
     public void fromSql_LIKE3() {
         testSqlToGroovy(
                 "COLUMN_SIZE >= 4 AND (COLUMN_NAME LIKE '%TEST1%' OR COLUMN_NAME LIKE    'TEST2%') AND COLUMN_TYPE = 'VARCHAR'",
-                "COLUMN_SIZE >= 4 && (COLUMN_NAME.toLowerCase().indexOf('TEST1'.toLowerCase()) > 0 || COLUMN_NAME.toLowerCase().indexOf('TEST2'.toLowerCase()) == 0) && COLUMN_TYPE == 'VARCHAR'");
+                "COLUMN_SIZE >= 4 && (COLUMN_NAME ==~ /(?i).*TEST1.*/ || COLUMN_NAME ==~ /(?i)TEST2.*/) && COLUMN_TYPE == 'VARCHAR'");
     }
 
     @Test
     public void fromSql_NOT_LIKE() {
         testSqlToGroovy(
                 "COLUMN_NAME NOT LIKE '%TEST1%'",
-                "COLUMN_NAME.toLowerCase().indexOf('TEST1'.toLowerCase()) == -1");
+                "!(COLUMN_NAME ==~ /(?i).*TEST1.*/)");
     }
 
 

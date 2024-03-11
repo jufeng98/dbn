@@ -3,6 +3,9 @@ package com.dbn.object.filter.custom.ui;
 import com.dbn.common.ui.component.DBNComponent;
 import com.dbn.common.ui.table.DBNEditableTable;
 import com.dbn.common.ui.util.Mouse;
+import com.dbn.common.ui.util.UserInterface;
+import com.dbn.common.util.Dialogs;
+import com.dbn.object.filter.custom.ObjectFilter;
 import com.dbn.object.filter.custom.ObjectFilterSettings;
 import com.dbn.object.type.DBObjectType;
 import com.intellij.ui.BooleanTableCellEditor;
@@ -16,6 +19,8 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import static com.dbn.common.util.Conditional.when;
+
 public class ObjectFiltersTable extends DBNEditableTable<ObjectFiltersTableModel> {
 
     ObjectFiltersTable(DBNComponent parent, ObjectFilterSettings settings) {
@@ -23,7 +28,8 @@ public class ObjectFiltersTable extends DBNEditableTable<ObjectFiltersTableModel
         setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         setSelectionBackground(UIUtil.getTableBackground());
         setSelectionForeground(UIUtil.getTableForeground());
-        setCellSelectionEnabled(true);
+        setCellSelectionEnabled(false);
+        setRowHeight(getRowHeight() + 4);
         setDefaultRenderer(String.class, new ObjectFiltersTableCellRenderer());
         setDefaultRenderer(DBObjectType.class, new ObjectFiltersTableCellRenderer());
         setDefaultRenderer(Boolean.class, new BooleanTableCellRenderer());
@@ -46,12 +52,17 @@ public class ObjectFiltersTable extends DBNEditableTable<ObjectFiltersTableModel
     }
 
     private final MouseListener mouseListener = Mouse.listener().onClick(e -> {
-        if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 1) {
-            Point point = e.getPoint();
-            int columnIndex = columnAtPoint(point);
-            if (columnIndex == 2) {
-                int rowIndex = rowAtPoint(point);
-            }
+        if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
+            int selectedRow = getSelectedRow();
+            if (selectedRow == -1) return;
+
+            ObjectFiltersTableModel model = getModel();
+            ObjectFilter<?> filter = model.getFilters().get(selectedRow);
+
+            ObjectFilterDetailsDialog.show(filter, false, () -> {
+                model.createOrUpdate(filter);
+                UserInterface.repaint(this);
+            });
         }
     });
     

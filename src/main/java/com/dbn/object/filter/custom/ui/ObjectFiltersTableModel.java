@@ -9,6 +9,9 @@ import lombok.Getter;
 
 import java.util.List;
 
+import static com.dbn.common.util.Lists.convert;
+import static com.dbn.common.util.Lists.first;
+
 @Getter
 public class ObjectFiltersTableModel extends DBNEditableTableModel {
     private final ObjectFilterSettings settings;
@@ -45,7 +48,7 @@ public class ObjectFiltersTableModel extends DBNEditableTableModel {
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return true;
+        return columnIndex == 2;
     }
 
     @Override
@@ -76,15 +79,31 @@ public class ObjectFiltersTableModel extends DBNEditableTableModel {
 
     @Override
     public void insertRow(int rowIndex) {
+        checkRowBounds(rowIndex);
         filters.add(rowIndex, new ObjectFilter<>(settings));
         notifyListeners(rowIndex, filters.size()-1, -1);
     }
 
     @Override
     public void removeRow(int rowIndex) {
-        if (filters.size() > rowIndex) {
-            filters.remove(rowIndex);
-            notifyListeners(rowIndex, filters.size()-1, -1);
+        checkRowBounds(rowIndex);
+        filters.remove(rowIndex);
+        notifyListeners(rowIndex, filters.size()-1, -1);
+    }
+
+    public List<DBObjectType> getFilterObjectTypes() {
+        return convert(filters, f -> f.getObjectType());
+    }
+
+    public void createOrUpdate(ObjectFilter<?> filter) {
+        ObjectFilter<?> currentFilter = first(filters, f -> f.getObjectType() == filter.getObjectType());
+        if (currentFilter == null) {
+            filters.add(filter);
+        } else {
+            currentFilter.setExpression(filter.getExpression());
+            currentFilter.setEnabled(filter.isEnabled());
         }
+        int rowIndex = filters.indexOf(filter);
+        notifyListeners(0, rowIndex, -1);
     }
 }
