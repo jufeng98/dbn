@@ -368,7 +368,6 @@
         <projectService serviceImplementation="com.dbn.object.common.operation.DatabaseOperationManager"/>
         <projectService serviceImplementation="com.dbn.object.factory.DatabaseObjectFactory"/>
         <projectService serviceImplementation="com.dbn.object.factory.VirtualObjectFactory"/>
-        <projectService serviceImplementation="com.dbn.object.filter.name.ObjectNameFilterManager"/>
         <projectService serviceImplementation="com.dbn.object.filter.quick.ObjectQuickFilterManager"/>
         <projectService serviceImplementation="com.dbn.object.dependency.ObjectDependencyManager"/>
         <projectService serviceImplementation="com.dbn.object.status.ObjectStatusManager"/>
