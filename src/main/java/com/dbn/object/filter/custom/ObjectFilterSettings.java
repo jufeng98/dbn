@@ -14,10 +14,7 @@ import lombok.Getter;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.dbn.common.options.setting.Settings.newElement;
 import static com.dbn.common.util.Unsafe.cast;

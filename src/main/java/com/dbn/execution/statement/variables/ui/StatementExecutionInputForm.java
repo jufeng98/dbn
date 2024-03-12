@@ -10,6 +10,7 @@ import com.dbn.common.ui.form.DBNHeaderForm;
 import com.dbn.common.ui.misc.DBNScrollPane;
 import com.dbn.common.ui.panel.DBNCollapsiblePanel;
 import com.dbn.common.ui.util.Borders;
+import com.dbn.common.ui.util.ComponentAligner;
 import com.dbn.common.util.Documents;
 import com.dbn.common.util.Editors;
 import com.dbn.common.util.Viewers;
@@ -39,7 +40,7 @@ import java.util.List;
 
 import static com.dbn.common.ui.util.TextFields.onTextChange;
 
-public class StatementExecutionInputForm extends DBNFormBase {
+public class StatementExecutionInputForm extends DBNFormBase implements ComponentAligner.Container {
     private JPanel mainPanel;
     private JPanel variablesPanel;
     private JPanel executionOptionsPanel;
@@ -108,14 +109,7 @@ public class StatementExecutionInputForm extends DBNFormBase {
             preferredSize.setSize(preferredSize.getWidth() + 20, preferredSize.getHeight());
             variablesScrollPane.setPreferredSize(preferredSize);
 
-            int[] metrics = new int[]{0, 0};
-            for (StatementExecutionVariableValueForm variableValueForm : variableValueForms) {
-                metrics = variableValueForm.getMetrics(metrics);
-            }
-
-            for (StatementExecutionVariableValueForm variableValueForm : variableValueForms) {
-                variableValueForm.adjustMetrics(metrics);
-            }
+            ComponentAligner.alignFormComponents(this);
         }
 
         executionOptionsForm = new ExecutionOptionsForm(this, executionInput, debuggerType);
@@ -132,6 +126,11 @@ public class StatementExecutionInputForm extends DBNFormBase {
         } else {
             reuseVariablesCheckBox.setVisible(false);
         }
+    }
+
+    @Override
+    public List<StatementExecutionVariableValueForm> getAlignableForms() {
+        return variableValueForms;
     }
 
     @NotNull

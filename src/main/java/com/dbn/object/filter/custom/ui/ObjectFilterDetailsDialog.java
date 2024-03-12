@@ -14,7 +14,7 @@ import static com.dbn.common.util.Conditional.when;
 public class ObjectFilterDetailsDialog extends DBNDialog<ObjectFilterDetailsForm> {
     private final ObjectFilter<?> filter;
 
-    private ObjectFilterDetailsDialog(ObjectFilter<?> filter, boolean create) {
+    public ObjectFilterDetailsDialog(ObjectFilter<?> filter, boolean create) {
         super(filter.getProject(), getTitle(create), true);
         this.filter = filter;
 
@@ -24,12 +24,6 @@ public class ObjectFilterDetailsDialog extends DBNDialog<ObjectFilterDetailsForm
 
         renameAction(okAction, create ? "Create" : "Update");
         init();
-    }
-
-    public static void show(ObjectFilter<?> filter, boolean create, Runnable callback) {
-        Dialogs.show(
-                () -> new ObjectFilterDetailsDialog(filter, create),
-                (dialog, exitCode) -> when(exitCode == 0, callback));
     }
 
     @NotNull

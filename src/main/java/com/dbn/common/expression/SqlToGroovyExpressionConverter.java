@@ -9,7 +9,7 @@ public class SqlToGroovyExpressionConverter {
     private static final Map<String, String> cache = new ConcurrentHashMap<>();
 
     public static String cachedSqlToGroovy(String expression) {
-        return cache.computeIfAbsent(expression, e -> SqlToGroovyExpressionConverter.sqlToGroovy(e));
+        return cache.computeIfAbsent(expression, e -> sqlToGroovy(e));
     }
 
     public static String sqlToGroovy(String expression) {
@@ -41,7 +41,9 @@ public class SqlToGroovyExpressionConverter {
         StringBuilder result = new StringBuilder();
         while (m.find()) {
             String name = m.group(1);
-            String value = "/(?i)" + m.group(2).replaceAll("'", "").replaceAll("[%*]", ".*") + "/";
+            String value = "/(?i)" + m.group(2)
+                    .replaceAll("'", "")
+                    .replaceAll("[%*]", ".*") + "/";
             String transformed = String.format("!(%s ==~ %s)", name, value);
             m.appendReplacement(result, transformed);
         }
@@ -56,7 +58,9 @@ public class SqlToGroovyExpressionConverter {
         StringBuilder result = new StringBuilder();
         while (m.find()) {
             String name = m.group(1);
-            String value = "/(?i)" + m.group(2).replaceAll("'", "").replaceAll("[%*]", ".*") + "/";
+            String value = "/(?i)" + m.group(2)
+                    .replaceAll("'", "")
+                    .replaceAll("[%*]", ".*") + "/";
             String transformed = String.format("%s ==~ %s", name, value);
             m.appendReplacement(result, transformed);
         }

@@ -1,12 +1,13 @@
 package com.dbn.object.filter.custom.ui;
 
 import com.dbn.browser.options.ObjectFilterChangeListener;
+import com.dbn.common.dispose.DisposableContainers;
 import com.dbn.common.event.ProjectEvents;
 import com.dbn.common.options.SettingsChangeNotifier;
 import com.dbn.common.options.ui.ConfigurationEditorForm;
 import com.dbn.common.ui.ValueSelector;
 import com.dbn.common.ui.ValueSelectorOption;
-import com.dbn.common.ui.misc.DBNTableScrollPane;
+import com.dbn.common.ui.util.ComponentAligner;
 import com.dbn.common.ui.util.UserInterface;
 import com.dbn.common.util.Dialogs;
 import com.dbn.object.filter.custom.ObjectFilter;
@@ -19,31 +20,80 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
+import static com.dbn.common.ui.util.ComponentAligner.alignFormComponents;
 import static com.dbn.common.util.Conditional.when;
+import static com.dbn.common.util.Lists.convert;
 import static com.dbn.common.util.Strings.toUpperCase;
 
-public class ObjectFilterSettingsForm extends ConfigurationEditorForm<ObjectFilterSettings> {
+public class ObjectFilterSettingsForm extends ConfigurationEditorForm<ObjectFilterSettings> implements ComponentAligner.Container {
     private JPanel mainPanel;
+    private JPanel filtersPanel;
     private JPanel actionsPanel;
-    private DBNTableScrollPane filterTableScrollPane;
-    private final ObjectFiltersTable filtersTable;
+
+    private final List<ObjectFilterExpressionForm> filterForms = DisposableContainers.list(this);
+    private final Set<DBObjectType> modifiedFilters = new HashSet<>();
 
     public ObjectFilterSettingsForm(ObjectFilterSettings configuration) {
         super(configuration);
 
-        filtersTable = new ObjectFiltersTable(this, configuration);
-        filterTableScrollPane.setViewportView(filtersTable);
+        filtersPanel.setLayout(new BoxLayout(filtersPanel, BoxLayout.Y_AXIS));
+        //filtersPanel.setBorder(new CompoundBorder(Borders.BOTTOM_LINE_BORDER, JBUI.Borders.emptyBottom(4)));
 
         actionsPanel.add(new ObjectTypeSelector(), BorderLayout.WEST);
+
+        configuration.getFilters().forEach(f -> createFilterPanel(f));
+        alignFormComponents(this);
+    }
+
+    @Override
+    public List<ObjectFilterExpressionForm> getAlignableForms() {
+        return filterForms;
+    }
+
+    public boolean markModified(ObjectFilter<?> filter) {
+        return modifiedFilters.add(filter.getObjectType());
+    }
+
+    private void addFilterPanel(ObjectFilter<?> filter) {
+        markModified(filter);
+        createFilterPanel(filter);
+    }
+    private void createFilterPanel(ObjectFilter<?> filter) {
+        ObjectFilterExpressionForm expressionForm = new ObjectFilterExpressionForm(this, filter);
+        filtersPanel.add(expressionForm.getComponent());
+        filterForms.add(expressionForm);
+        alignFormComponents(this);
+    }
+
+    public void removeFilterPanel(ObjectFilter<?> filter) {
+        markModified(filter);
+        for (ObjectFilterExpressionForm conditionForm : filterForms) {
+            if (conditionForm.getFilter() == filter) {
+                filterForms.remove(conditionForm);
+                filtersPanel.remove(conditionForm.getComponent());
+                break;
+            }
+        }
+
+        alignFormComponents(this);
+        UserInterface.repaint(mainPanel);
+    }
+
+    public void showFilterDetailsDialog(ObjectFilter<?> filter, boolean create, Runnable callback) {
+        Dialogs.show(() -> new ObjectFilterDetailsDialog(filter, create),
+                (dialog, exitCode) -> when(exitCode == 0, callback));
     }
 
     private class ObjectTypeSelector extends ValueSelector<DBObjectType> {
         ObjectTypeSelector() {
             super(PlatformIcons.ADD_ICON, "Add Filter", null, ValueSelectorOption.HIDE_DESCRIPTION);
-            addListener((oldValue, newValue) -> {createFilter(newValue); resetValues();});
+            addListener((oldValue, newValue) -> {
+                createFilter(newValue);
+                resetValues();
+            });
         }
 
         @Override
@@ -63,7 +113,8 @@ public class ObjectFilterSettingsForm extends ConfigurationEditorForm<ObjectFilt
                     DBObjectType.SYNONYM,
                     DBObjectType.DBLINK));
 
-            objectTypes.removeAll(filtersTable.getModel().getFilterObjectTypes());
+            List<DBObjectType> configuredObjectTypes = convert(filterForms, f -> f.getFilter().getObjectType());
+            objectTypes.removeAll(configuredObjectTypes);
             return objectTypes;
         }
 
@@ -78,11 +129,7 @@ public class ObjectFilterSettingsForm extends ConfigurationEditorForm<ObjectFilt
         ObjectFilter<?> filter = new ObjectFilter<>(filterSettings);
         filter.setObjectType(objectType);
 
-        ObjectFiltersTableModel model = filtersTable.getModel();
-        ObjectFilterDetailsDialog.show(filter, true, () -> {
-            model.createOrUpdate(filter);
-            UserInterface.repaint(filtersTable);
-        });
+        showFilterDetailsDialog(filter, true, () -> addFilterPanel(filter));
     }
 
     @NotNull
@@ -96,22 +143,16 @@ public class ObjectFilterSettingsForm extends ConfigurationEditorForm<ObjectFilt
         ObjectFilterSettings configuration = getConfiguration();
         boolean notifyFilterListeners = configuration.isModified();
 
-        // capture before applying changes (consider deleted filters)
-        Set<DBObjectType> filterObjectTypes = new HashSet<>(configuration.getFilterObjectTypes());
-
-        List<ObjectFilter<?>> filters = filtersTable.getModel().getFilters();
+        List<ObjectFilter<?>> filters = convert(filterForms, f -> f.getFilter());
         getConfiguration().setFilters(filters);
-
-        // capture after applying changes
-        filterObjectTypes.addAll(configuration.getFilterObjectTypes());
 
         Project project = configuration.getProject();
         SettingsChangeNotifier.register(() -> {
-            if (notifyFilterListeners) {
-                DBObjectType[] refreshObjectTypes = filterObjectTypes.toArray(new DBObjectType[0]);
-                ProjectEvents.notify(project, ObjectFilterChangeListener.TOPIC,
-                        (listener) -> listener.nameFiltersChanged(configuration.getConnectionId(), refreshObjectTypes));
-            }
+            if (!notifyFilterListeners) return;
+
+            DBObjectType[] refreshObjectTypes = modifiedFilters.toArray(new DBObjectType[0]);
+            ProjectEvents.notify(project, ObjectFilterChangeListener.TOPIC,
+                    (listener) -> listener.nameFiltersChanged(configuration.getConnectionId(), refreshObjectTypes));
         });
     }
 

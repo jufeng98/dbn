@@ -30,7 +30,7 @@ import static com.dbn.common.options.setting.Settings.*;
 public class ObjectFilter<T extends DBObject> implements Filter<T>, PersistentConfiguration {
     private DBObjectType objectType;
     private String expression = "";
-    private boolean enabled = true;
+    private boolean active = true;
     private final transient WeakRef<ObjectFilterSettings> settings;
 
     public ObjectFilter(ObjectFilterSettings settings) {
@@ -49,7 +49,7 @@ public class ObjectFilter<T extends DBObject> implements Filter<T>, PersistentCo
     @Override
     public boolean accepts(T object) {
         if (expression == null) return true;
-        if (!enabled) return true;
+        if (!active) return true;
 
         var attributeValues = createEvaluatorContext(object);
         ExpressionEvaluator expressionEvaluator = getSettings().getExpressionEvaluator();
@@ -84,14 +84,14 @@ public class ObjectFilter<T extends DBObject> implements Filter<T>, PersistentCo
     @Override
     public void readConfiguration(Element element) {
         objectType = enumAttribute(element, "object-type", DBObjectType.class);
-        enabled = booleanAttribute(element, "enabled", enabled);
+        active = booleanAttribute(element, "active", active);
         expression = readCdata(element);
     }
 
     @Override
     public void writeConfiguration(Element element) {
         setEnumAttribute(element, "object-type", objectType);
-        setBooleanAttribute(element, "enabled", enabled);
+        setBooleanAttribute(element, "active", active);
         writeCdata(element, expression);
     }
 

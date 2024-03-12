@@ -9,6 +9,7 @@ import com.dbn.common.icon.Icons;
 import com.dbn.common.ui.form.DBNFormBase;
 import com.dbn.common.ui.form.DBNHeaderForm;
 import com.dbn.common.ui.misc.DBNScrollPane;
+import com.dbn.common.ui.util.ComponentAligner;
 import com.dbn.common.ui.util.UserInterface;
 import com.dbn.common.util.Actions;
 import com.dbn.common.util.Strings;
@@ -32,9 +33,10 @@ import java.util.Comparator;
 import java.util.List;
 
 import static com.dbn.common.dispose.Failsafe.guarded;
+import static com.dbn.common.ui.util.ComponentAligner.alignFormComponents;
 import static com.dbn.common.ui.util.TextFields.onTextChange;
 
-public class ResultSetRecordViewerForm extends DBNFormBase {
+public class ResultSetRecordViewerForm extends DBNFormBase implements ComponentAligner.Container {
     private JPanel actionsPanel;
     private JPanel columnsPanel;
     private JPanel mainPanel;
@@ -90,15 +92,7 @@ public class ResultSetRecordViewerForm extends DBNFormBase {
         }
         ColumnSortingType columnSortingType = DatasetEditorManager.getInstance(project).getRecordViewColumnSortingType();
         sortColumns(columnSortingType);
-
-        int[] metrics = new int[]{0, 0};
-        for (ResultSetRecordViewerColumnForm columnForm : columnForms) {
-            metrics = columnForm.getMetrics(metrics);
-        }
-
-        for (ResultSetRecordViewerColumnForm columnForm : columnForms) {
-            columnForm.adjustMetrics(metrics);
-        }
+        alignFormComponents(this);
 
         Dimension preferredSize = mainPanel.getPreferredSize();
         int width = (int) preferredSize.getWidth() + 24;
@@ -110,6 +104,11 @@ public class ResultSetRecordViewerForm extends DBNFormBase {
 
         int scrollUnitIncrement = (int) columnForms.get(0).getComponent().getPreferredSize().getHeight();
         columnsPanelScrollPane.getVerticalScrollBar().setUnitIncrement(scrollUnitIncrement);
+    }
+
+    @Override
+    public List<ResultSetRecordViewerColumnForm> getAlignableForms() {
+        return columnForms;
     }
 
     private void filterColumForms() {
