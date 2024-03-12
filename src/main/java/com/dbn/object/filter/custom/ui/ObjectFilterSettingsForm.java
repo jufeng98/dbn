@@ -54,6 +54,7 @@ public class ObjectFilterSettingsForm extends ConfigurationEditorForm<ObjectFilt
     }
 
     public boolean markModified(ObjectFilter<?> filter) {
+        getConfiguration().setModified(true);
         return modifiedFilters.add(filter.getObjectType());
     }
 

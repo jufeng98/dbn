@@ -129,7 +129,6 @@ public class ObjectFilterExpressionForm extends DBNFormBase implements Component
         ObjectFilter<?> filter = getFilter();
         ObjectFilterSettingsForm settingsForm = getParentForm();
         settingsForm.markModified(filter);
-        settingsForm.getConfiguration().setModified(true);
     }
 
     private void updateEditorField() {

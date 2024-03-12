@@ -52,6 +52,7 @@ public class ObjectFilterSettings extends BasicProjectConfiguration<ConnectionFi
     }
 
     public void setFilters(List<ObjectFilter<?>> filters) {
+        this.filters.clear();
         filters.forEach(f -> this.filters.put(f.getObjectType(), f));
     }
 
