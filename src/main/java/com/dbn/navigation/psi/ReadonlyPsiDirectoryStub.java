@@ -1,9 +1,12 @@
 package com.dbn.navigation.psi;
 
+import com.dbn.common.compatibility.Compatibility;
 import com.intellij.psi.*;
+import com.intellij.psi.scope.PsiScopeProcessor;
 import com.intellij.psi.search.PsiElementProcessor;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface ReadonlyPsiDirectoryStub extends PsiDirectory, ReadonlyPsiElementStub {
 
@@ -81,8 +84,15 @@ public interface ReadonlyPsiDirectoryStub extends PsiDirectory, ReadonlyPsiEleme
         return null;
     }
 
-    default boolean processChildren(@NotNull PsiElementProcessor<? super PsiFileSystemItem> processor) {
+    @Override
+    @Compatibility
+    default boolean processChildren(@NotNull PsiElementProcessor<PsiFileSystemItem> processor) {
         return false;
     }
 
+    @Override
+    @Compatibility
+    default boolean processDeclarations(@NotNull PsiScopeProcessor processor, @NotNull ResolveState state, @Nullable PsiElement lastParent, @NotNull PsiElement place) {
+        return false;
+    }
 }
