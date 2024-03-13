@@ -25,7 +25,7 @@ public class SqlToGroovyExpressionConverter {
         expression = replace_IN(expression);
         expression = expression.replaceAll("(?i)\\bNOT\\b", "!");
 
-        return expression.trim();
+        return expression.replaceAll("\\s+", " ").trim();
     }
 
     private static String replace_EQUALS(String expression) {
