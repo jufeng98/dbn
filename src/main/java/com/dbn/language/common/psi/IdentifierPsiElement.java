@@ -84,12 +84,6 @@ public abstract class IdentifierPsiElement extends LeafPsiElement<IdentifierElem
 
     @Override
     @Nullable
-    public String getLocationString() {
-        return null;
-    }
-
-    @Override
-    @Nullable
     public Icon getIcon(boolean open) {
         DBObjectType type = getObjectType();
         return type.getIcon();

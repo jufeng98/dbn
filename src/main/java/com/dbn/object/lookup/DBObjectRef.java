@@ -1,6 +1,7 @@
 package com.dbn.object.lookup;
 
 import com.dbn.common.Reference;
+import com.dbn.common.compatibility.Compatibility;
 import com.dbn.common.dispose.Checks;
 import com.dbn.common.ref.WeakRef;
 import com.dbn.common.state.PersistentStateElement;
@@ -18,7 +19,6 @@ import com.dbn.object.common.DBObjectBundle;
 import com.dbn.object.type.DBObjectType;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.NlsSafe;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -574,8 +574,16 @@ public class DBObjectRef<T extends DBObject> implements Comparable<DBObjectRef<?
     }
 
     @Override
-    public @Nullable String getPresentableText() {
+    @Nullable
+    public String getPresentableText() {
         return getObjectName();
+    }
+
+    @Override
+    @Nullable
+    @Compatibility
+    public String getLocationString() {
+        return null;
     }
 
     @Override
