@@ -86,7 +86,7 @@ public interface ReadonlyPsiDirectoryStub extends PsiDirectory, ReadonlyPsiEleme
 
     @Override
     @Compatibility
-    default boolean processChildren(@NotNull PsiElementProcessor<PsiFileSystemItem> processor) {
+    default boolean processChildren(@NotNull PsiElementProcessor processor) {
         return false;
     }
 
