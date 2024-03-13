@@ -200,8 +200,6 @@ public class StatementExecutionInputForm extends DBNFormBase implements Componen
             Editors.setEditorReadonly(viewer, true);
 
             JScrollPane viewerScrollPane = viewer.getScrollPane();
-            viewerScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-            viewerScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
             //viewerScrollPane.setBorder(null);
             viewerScrollPane.setViewportBorder(Borders.lineBorder(Colors.getReadonlyEditorBackground(), 4));
 

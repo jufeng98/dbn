@@ -12,6 +12,7 @@ import com.dbn.common.thread.Background;
 import com.dbn.common.thread.PooledThread;
 import com.dbn.common.ui.component.DBNComponent;
 import com.dbn.common.ui.form.DBNFormBase;
+import com.dbn.common.ui.util.Borderless;
 import com.dbn.common.ui.util.Borders;
 import com.dbn.common.util.*;
 import com.dbn.connection.ConnectionHandler;
@@ -34,6 +35,7 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.EditorSettings;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.project.Project;
+import com.intellij.ui.JBColor;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -62,7 +64,7 @@ public class SessionBrowserCurrentSqlPanel extends DBNFormBase {
 
         ActionToolbar actionToolbar = Actions.createActionToolbar(actionsPanel, "", true, new RefreshAction(), new WrapUnwrapContentAction());
         actionsPanel.add(actionToolbar.getComponent(),BorderLayout.WEST);
-
+        actionsPanel.setBorder(Borders.lineBorder(JBColor.border(), 0, 0, 1, 0));
     }
 
     @NotNull
@@ -157,16 +159,11 @@ public class SessionBrowserCurrentSqlPanel extends DBNFormBase {
 
 
         viewer = Viewers.createViewer(document, project, virtualFile, SQLFileType.INSTANCE);
-        viewer.setEmbeddedIntoDialogWrapper(true);
+        viewer.setEmbeddedIntoDialogWrapper(false);
+        viewer.setBorder(null);
         Editors.setEditorReadonly(viewer, true);
         Editors.initEditorHighlighter(viewer, SQLLanguage.INSTANCE, connection);
         //statementViewer.setBackgroundColor(colorsScheme.getColor(ColorKey.find("CARET_ROW_COLOR")));
-
-        JScrollPane viewerScrollPane = viewer.getScrollPane();
-        viewerScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        viewerScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        //viewerScrollPane.setBorder(null);
-        viewerScrollPane.setViewportBorder(Borders.lineBorder(Colors.getReadonlyEditorBackground(), 4));
 
         EditorSettings settings = viewer.getSettings();
         settings.setFoldingOutlineShown(false);
@@ -177,9 +174,15 @@ public class SessionBrowserCurrentSqlPanel extends DBNFormBase {
         settings.setAdditionalLinesCount(2);
         settings.setRightMarginShown(false);
         settings.setUseSoftWraps(true);
-        viewer.getComponent().setFocusable(false);
+        settings.setCaretRowShown(false);
 
-        viewerPanel.add(viewer.getComponent(), BorderLayout.CENTER);
+        JComponent viewerComponent = viewer.getComponent();
+        viewerComponent.setFocusable(false);
+        viewerPanel.add(viewerComponent, BorderLayout.CENTER);
+
+        JScrollPane viewerScrollPane = viewer.getScrollPane();
+        viewerScrollPane.setViewportBorder(Borders.lineBorder(Colors.getReadonlyEditorBackground(), 4));
+        Borderless.markBorderless(viewerScrollPane.getViewport().getView());
     }
 
 

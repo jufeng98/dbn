@@ -66,8 +66,6 @@ public class DatasetCustomFilterForm extends ConfigurationEditorForm<DatasetCust
         if (!isValidCondition) editor.getSelectionModel().setSelection(conditionStartOffset, document.getTextLength());
 
         JScrollPane editorScrollPane = editor.getScrollPane();
-        editorScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        editorScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         editorScrollPane.setViewportBorder(Borders.lineBorder(Colors.getEditorBackground(), 4));
 
         //viewer.setBackgroundColor(viewer.getColorsScheme().getColor(ColorKey.find("CARET_ROW_COLOR")));

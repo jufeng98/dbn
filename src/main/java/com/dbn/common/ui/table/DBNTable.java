@@ -61,7 +61,7 @@ public class DBNTable<T extends DBNTableModel> extends JTable implements Statefu
         setGridColor(Colors.getTableGridColor());
         Font font = getFont();//UIUtil.getListFont();
         setFont(font);
-        setBackground(Colors.getTextFieldBackground());
+        setBackground(Colors.getListBackground());
         setTransferHandler(DBNTableTransferHandler.INSTANCE);
 
         adjustRowHeight(1);

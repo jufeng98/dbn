@@ -5,6 +5,7 @@ import com.dbn.common.dispose.Failsafe;
 import com.dbn.common.ui.form.DBNFormBase;
 import com.dbn.common.ui.util.ComponentAligner;
 import com.dbn.common.util.Actions;
+import com.dbn.common.util.Editors;
 import com.dbn.language.sql.SQLFileType;
 import com.dbn.object.filter.custom.ObjectFilter;
 import com.dbn.object.filter.custom.ui.action.DeleteObjectFilterAction;
@@ -13,9 +14,12 @@ import com.dbn.object.filter.custom.ui.action.ToggleObjectFilterStatusAction;
 import com.dbn.object.type.DBObjectType;
 import com.intellij.ide.highlighter.HighlighterFactory;
 import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.colors.EditorColorsScheme;
 import com.intellij.openapi.editor.ex.EditorEx;
+import com.intellij.openapi.editor.ex.FocusChangeListener;
 import com.intellij.openapi.editor.highlighter.EditorHighlighter;
+import com.intellij.openapi.fileTypes.PlainTextFileType;
 import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory;
 import com.intellij.ui.EditorSettingsProvider;
@@ -24,9 +28,9 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Objects;
 
 import static com.dbn.common.util.Strings.cachedUpperCase;
+import static com.intellij.openapi.fileTypes.SyntaxHighlighterFactory.getSyntaxHighlighter;
 
 public class ObjectFilterExpressionForm extends DBNFormBase implements ComponentAligner.Form {
     private JPanel mainPanel;
@@ -35,6 +39,9 @@ public class ObjectFilterExpressionForm extends DBNFormBase implements Component
     private EditorTextField expressionTextField;
 
     private final ObjectFilter<?> filter;
+
+    private final SyntaxHighlighter sqlSyntaxHighlighter = getSyntaxHighlighter(SQLFileType.INSTANCE, getProject(), null);
+    private final SyntaxHighlighter txtSyntaxHighlighter = getSyntaxHighlighter(PlainTextFileType.INSTANCE, getProject(), null);
 
     public ObjectFilterExpressionForm(ObjectFilterSettingsForm parent, ObjectFilter<?> filter) {
         super(parent);
@@ -63,16 +70,31 @@ public class ObjectFilterExpressionForm extends DBNFormBase implements Component
 
     private @NotNull EditorSettingsProvider createEditorSettingsProvider() {
         return editor -> {
-            SyntaxHighlighter syntaxHighlighter = SyntaxHighlighterFactory.getSyntaxHighlighter(SQLFileType.INSTANCE, getProject(), null);
-            EditorColorsScheme colorsScheme = editor.getColorsScheme();
-            EditorHighlighter highlighter = HighlighterFactory.createHighlighter(syntaxHighlighter, colorsScheme);
-            editor.setHighlighter(highlighter);
             editor.setViewer(true);
+            editor.getComponent().setPreferredSize(new Dimension(-1, 24));
 
             editor.setBackgroundColor(getFilter().isActive() ?
-                    Colors.getTextFieldBackground() :
+                    Colors.getReadonlyEditorBackground() :
                     Colors.getTextFieldDisabledBackground());
+
+            editor.addFocusListener(new FocusChangeListener() {
+                @Override
+                public void focusGained(@NotNull Editor editor) {
+                    setHighlighter(editor, sqlSyntaxHighlighter);
+                }
+
+                @Override
+                public void focusLost(@NotNull Editor editor) {
+                    setHighlighter(editor, txtSyntaxHighlighter);
+                }
+            });
         };
+    }
+
+    private static void setHighlighter(Editor editor, SyntaxHighlighter syntaxHighlighter) {
+        EditorColorsScheme colorsScheme = editor.getColorsScheme();
+        EditorHighlighter highlighter = HighlighterFactory.createHighlighter(syntaxHighlighter, colorsScheme);
+        ((EditorEx)editor).setHighlighter(highlighter);
     }
 
     public void setExpression(String expression) {

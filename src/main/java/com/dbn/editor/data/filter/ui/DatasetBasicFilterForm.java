@@ -195,8 +195,6 @@ public class DatasetBasicFilterForm extends ConfigurationEditorForm<DatasetBasic
             Editors.setEditorReadonly(this.viewer, true);
 
             JScrollPane viewerScrollPane = this.viewer.getScrollPane();
-            viewerScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-            viewerScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
             //viewerScrollPane.setBorder(null);
             viewerScrollPane.setViewportBorder(Borders.lineBorder(Colors.getReadonlyEditorBackground(), 4));
 
@@ -208,6 +206,7 @@ public class DatasetBasicFilterForm extends ConfigurationEditorForm<DatasetBasic
             settings.setDndEnabled(false);
             settings.setAdditionalLinesCount(2);
             settings.setRightMarginShown(false);
+            settings.setCaretRowShown(false);
             this.viewer.getComponent().setFocusable(false);
             previewPanel.add(this.viewer.getComponent(), BorderLayout.CENTER);
 

@@ -143,8 +143,6 @@ public class ObjectFilterDetailsForm extends DBNFormBase {
         });
 
         JScrollPane editorScrollPane = editor.getScrollPane();
-        editorScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        editorScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         editorScrollPane.setViewportBorder(Borders.lineBorder(Colors.getEditorBackground(), 4));
 
         EditorSettings settings = editor.getSettings();
