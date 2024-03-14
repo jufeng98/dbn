@@ -5,6 +5,7 @@ import com.dbn.common.thread.Dispatch;
 import com.dbn.common.util.Strings;
 import com.dbn.common.util.Unsafe;
 import com.intellij.openapi.util.SystemInfo;
+import com.intellij.openapi.util.registry.Registry;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.border.IdeaTitledBorder;
 import org.jetbrains.annotations.NotNull;
@@ -204,6 +205,10 @@ public class UserInterface {
 
     public static void updateSplitPanes(JComponent component) {
         visitRecursively(component, JSplitPane.class, sp -> Splitters.replaceSplitPane(sp));
+    }
+
+    public static boolean isNewUI() {
+        return Registry.is("ide.experimental.ui");
     }
 
 }
