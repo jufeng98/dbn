@@ -110,10 +110,6 @@ public class ObjectDependencyTreeForm extends DBNFormBase {
     }
 
     public class PreviousSelectionAction extends BasicAction {
-        PreviousSelectionAction() {
-            super("Previous Selection", null, Icons.BROWSER_BACK);
-        }
-
         @Override
         public void actionPerformed(@NotNull AnActionEvent e) {
             DBObject previous = dependencyTree.getSelectionHistory().previous();
@@ -123,15 +119,15 @@ public class ObjectDependencyTreeForm extends DBNFormBase {
         @Override
         public void update(@NotNull AnActionEvent e) {
             Presentation presentation = e.getPresentation();
-            presentation.setEnabled(dependencyTree.getSelectionHistory().hasPrevious());
+            boolean enabled = dependencyTree.getSelectionHistory().hasPrevious();
+
+            presentation.setEnabled(enabled);
+            presentation.setText("Previous Selection");
+            presentation.setIcon(Icons.BROWSER_BACK);
         }
     }
 
     public class NextSelectionAction extends BasicAction {
-        NextSelectionAction() {
-            super("Next Selection", null, Icons.BROWSER_NEXT);
-        }
-
         @Override
         public void actionPerformed(@NotNull AnActionEvent e) {
             DBObject next = dependencyTree.getSelectionHistory().next();
@@ -141,7 +137,10 @@ public class ObjectDependencyTreeForm extends DBNFormBase {
         @Override
         public void update(@NotNull AnActionEvent e) {
             Presentation presentation = e.getPresentation();
-            presentation.setEnabled(dependencyTree.getSelectionHistory().hasNext());
+            boolean enabled = dependencyTree.getSelectionHistory().hasNext();
+            presentation.setEnabled(enabled);
+            presentation.setText("Next Selection");
+            presentation.setIcon(Icons.BROWSER_NEXT);
         }
     }
 

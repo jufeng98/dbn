@@ -11,7 +11,7 @@ public class RevertColumnOrderAction extends BasicAction {
     private final CheckBoxList list;
 
     public RevertColumnOrderAction(CheckBoxList list)  {
-        super("Revert Column Order", null, Icons.ACTION_REVERT_CHANGES);
+        super("Revert Column Order", null, Icons.ACTION_REVERT);
         this.list = list;
     }
 

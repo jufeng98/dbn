@@ -1,19 +1,18 @@
 package com.dbn.common.environment.options.ui;
 
 import com.dbn.common.action.BasicActionButton;
-import com.dbn.common.environment.options.listener.EnvironmentManagerListener;
-import com.dbn.common.event.ProjectEvents;
-import com.dbn.common.icon.Icons;
-import com.dbn.common.ui.util.UserInterface;
 import com.dbn.common.environment.EnvironmentTypeBundle;
 import com.dbn.common.environment.options.EnvironmentSettings;
 import com.dbn.common.environment.options.EnvironmentVisibilitySettings;
+import com.dbn.common.environment.options.listener.EnvironmentManagerListener;
+import com.dbn.common.event.ProjectEvents;
+import com.dbn.common.icon.Icons;
 import com.dbn.common.options.SettingsChangeNotifier;
 import com.dbn.common.options.ui.ConfigurationEditorForm;
+import com.dbn.common.ui.util.UserInterface;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
-import com.intellij.ui.AnActionButton;
 import com.intellij.ui.ToolbarDecorator;
 import org.jetbrains.annotations.NotNull;
 
@@ -49,7 +48,7 @@ public class EnvironmentSettingsForm extends ConfigurationEditorForm<Environment
         decorator.setRemoveAction(anActionButton -> environmentTypesTable.removeRow());
         decorator.setMoveUpAction(anActionButton -> environmentTypesTable.moveRowUp());
         decorator.setMoveDownAction(anActionButton -> environmentTypesTable.moveRowDown());
-        decorator.addExtraAction(new BasicActionButton("Revert Changes", null, Icons.ACTION_REVERT_CHANGES) {
+        decorator.addExtraAction(new BasicActionButton("Revert Changes", null, Icons.ACTION_REVERT) {
             @Override
             public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
                 TableCellEditor cellEditor = environmentTypesTable.getCellEditor();

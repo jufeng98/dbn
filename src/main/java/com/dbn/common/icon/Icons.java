@@ -1,5 +1,6 @@
 package com.dbn.common.icon;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.util.ScalableIcon;
 import com.intellij.ui.RowIcon;
 import lombok.experimental.UtilityClass;
@@ -9,6 +10,7 @@ import javax.swing.*;
 
 import static com.dbn.common.icon.IconLoader.load;
 
+@SuppressWarnings("unused")
 @Slf4j
 @UtilityClass
 public class Icons {
@@ -17,64 +19,62 @@ public class Icons {
     public static final Icon DONATE = load("/img/Donate.png");
     public static final Icon DONATE_DISABLED = load("/img/DonateDisabled.png");
 
-    public static final Icon COMMON_INFO = load("/img/common/Info.png");
-    public static final Icon COMMON_INFO_DISABLED = load("/img/common/InfoDisabled.png");
-    public static final Icon COMMON_WARNING = load("/img/common/Warning.png");
-    public static final Icon COMMON_ERROR = load("/img/common/Error.png");
-    public static final Icon COMMON_CHECK = load("/img/common/Check.png");
-    public static final Icon COMMON_RIGHT = load("/img/common/SplitRight.png");
-    public static final Icon COMMON_LEFT = load("/img/common/SplitLeft.png");
-    public static final Icon COMMON_UP = load("/img/common/SplitUp.png");
-    public static final Icon COMMON_DOWN = load("/img/common/SplitDown.png");
-    public static final Icon COMMON_ARROW_DOWN = load("/img/ComboBoxArrow.png");
-    public static final Icon COMMON_TIMER = load("/img/Timer.png");
-    public static final Icon COMMON_DATA_GRID = load("/img/common/DataGrid.png");
+    public static final Icon COMMON_INFO          = AllIcons.General.Information;
+    public static final Icon COMMON_INFO_DISABLED = AllIcons.General.Note;
+    public static final Icon COMMON_WARNING       = AllIcons.General.Warning;
+    public static final Icon COMMON_ERROR         = AllIcons.General.Error;
+    public static final Icon COMMON_CHECK         = AllIcons.General.InspectionsOK;
+    public static final Icon COMMON_RIGHT         = load("/img/common/SplitRight.png");
+    public static final Icon COMMON_LEFT          = load("/img/common/SplitLeft.png");
+    public static final Icon COMMON_UP            = load("/img/common/SplitUp.png");
+    public static final Icon COMMON_DOWN          = load("/img/common/SplitDown.png");
+    public static final Icon COMMON_ARROW_DOWN    = load("/img/ComboBoxArrow.png");
+    public static final Icon COMMON_TIMER         = load("/img/Timer.png");
+    public static final Icon COMMON_DATA_GRID     = load("/img/common/DataGrid.png");
 
-    public static final Icon COMMON_FILTER_ACTIVE =    load("/img/ActiveFilterCondition.png");
-    public static final Icon COMMON_FILTER_INACTIVE =    load("/img/InactiveFilterCondition.png");
+    public static final Icon COMMON_FILTER_ACTIVE =    AllIcons.Actions.IntentionBulb;
+    public static final Icon COMMON_FILTER_INACTIVE =  AllIcons.Actions.IntentionBulbGrey;
 
-
-
-    public static final Icon ACTION_COPY = load("/img/action/Copy.png");
-    public static final Icon ACTION_SORT_ALPHA = load("/img/action/SortAlphabetically.png");
-    public static final Icon ACTION_SORT_NUMERIC = load("/img/action/SortNumerically.png");
-    public static final Icon ACTION_SORT_ASC = load("/img/action/SortAscending.png");
-    public static final Icon ACTION_SORT_DESC = load("/img/action/SortDescending.png");
-    public static final Icon ACTION_ADD = load("/img/action/Add.png");
-    public static final Icon ACTION_ADD_MORE = load("/img/action/AddMore.png");
-    public static final Icon ACTION_ADD_SPECIAL = load("/img/action/AddSpecial.png");
-    public static final Icon ACTION_REMOVE = load("/img/action/Remove.png");
-    public static final Icon ACTION_MOVE_UP = load("/img/action/MoveUp.png");
-    public static final Icon ACTION_MOVE_DOWN = load("/img/action/MoveDown.png");
-    public static final Icon ACTION_EDIT = load("/img/action/EditSource.png");
-    public static final Icon ACTION_SETTINGS = load("/img/action/Properties.png");
-    public static final Icon ACTION_LOCAL_SETTINGS = load("/img/action/LocalSettings.png");
-    public static final Icon ACTION_COLLAPSE_ALL = load("/img/action/CollapseAll.png");
-    public static final Icon ACTION_EXPAND_ALL = load("/img/action/ExpandAll.png");
-    public static final Icon ACTION_GROUP = load("/img/action/Group.png");
-    public static final Icon ACTION_DELETE = load("/img/action/Delete.png");
-    public static final Icon ACTION_EXECUTE = load("/img/action/Execute.png");
-    public static final Icon ACTION_CLOSE = load("/img/action/Close.png");
-    public static final Icon ACTION_UP_DOWN = load("/img/action/UpDown.png");
-    public static final Icon ACTION_REFRESH = load("/img/action/Synchronize.png");
-    public static final Icon ACTION_TIMED_REFRESH = load("/img/action/TimedSynchronize.png");
+    public static final Icon ACTION_ADD                       = AllIcons.General.Add;
+    public static final Icon ACTION_COPY                      = AllIcons.Actions.Copy;
+    public static final Icon ACTION_REMOVE                    = AllIcons.General.Remove;
+    public static final Icon ACTION_SORT_ALPHA                = AllIcons.ObjectBrowser.Sorted;
+    public static final Icon ACTION_SORT_NUMERIC              = load("/img/action/SortNumerically.png");
+    public static final Icon ACTION_SORT_ASC                  = load("/img/action/SortAscending.png");
+    public static final Icon ACTION_SORT_DESC                 = load("/img/action/SortDescending.png");
+    public static final Icon ACTION_ADD_MORE                  = load("/img/action/AddMore.png");
+    public static final Icon ACTION_ADD_SPECIAL               = load("/img/action/AddSpecial.png");
+    public static final Icon ACTION_MOVE_UP                   = load("/img/action/MoveUp.png");
+    public static final Icon ACTION_MOVE_DOWN                 = load("/img/action/MoveDown.png");
+    public static final Icon ACTION_EDIT                      = load("/img/action/EditSource.png");
+    public static final Icon ACTION_COLLAPSE_ALL              = AllIcons.Actions.Collapseall;
+    public static final Icon ACTION_EXPAND_ALL                = AllIcons.Actions.Expandall;
+    public static final Icon ACTION_GROUP                     = load("/img/action/Group.png");
+    public static final Icon ACTION_DELETE                    = AllIcons.Actions.GC;
+    public static final Icon ACTION_EXECUTE                   = AllIcons.Actions.Execute;
+    public static final Icon ACTION_DEBUG                     = AllIcons.Actions.StartDebugger;
+    public static final Icon ACTION_CLOSE                     = AllIcons.Actions.Cancel;
+    public static final Icon ACTION_UP_DOWN                   = load("/img/action/UpDown.png");
+    public static final Icon ACTION_REFRESH                   = AllIcons.Actions.Refresh;
+    public static final Icon ACTION_TIMED_REFRESH             = load("/img/action/TimedSynchronize.png");
     public static final Icon ACTION_TIMED_REFRESH_INTERRUPTED = load("/img/action/TimedSynchronizeInterrupted.png");
-    public static final Icon ACTION_TIMED_REFRESH_OFF = load("/img/action/TimedSynchronizeOff.png");
-    public static final Icon ACTION_FIND = load("/img/action/Find.png");
-    public static final Icon ACTION_WRAP_TEXT = load("/img/action/WrapText.png");
-    public static final Icon ACTION_RERUN = load("/img/action/Rerun.png");
-    public static final Icon ACTION_PIN = load("/img/action/Pin.png");
-    public static final Icon ACTION_REVERT_CHANGES = load("/img/action/RevertChanges.png");
-    public static final Icon ACTION_SAVE_CHANGES = load("/img/action/Save.png");
-    public static final Icon ACTION_SELECT_ALL = load("/img/action/SelectAll.png");
-    public static final Icon ACTION_OPTIONS = load("/img/action/Options.png");
-    public static final Icon ACTION_OPTIONS_MENU = load("/img/action/OptionsMenu.png");
-    public static final Icon ACTION_NAVIGATE = load("/img/action/Navigate.png");
-    public static final Icon ACTION_DISCONNECT_SESSION = load("/img/action/DisconnectSession.png");
-    public static final Icon ACTION_KILL_SESSION = load("/img/action/KillSession.png");
+    public static final Icon ACTION_TIMED_REFRESH_OFF         = load("/img/action/TimedSynchronizeOff.png");
+    public static final Icon ACTION_WRAP_TEXT                 = load("/img/action/WrapText.png");
+    public static final Icon ACTION_PIN                       = AllIcons.General.Pin_tab;
+    public static final Icon ACTION_FIND                      = AllIcons.Actions.Find;
+    public static final Icon ACTION_PREVIEW                   = AllIcons.Actions.Preview;
+    public static final Icon ACTION_RERUN                     = AllIcons.Actions.Rerun;
+    public static final Icon ACTION_RESUME                    = AllIcons.Actions.Resume;
+    public static final Icon ACTION_STOP                      = AllIcons.Actions.Suspend;
+    public static final Icon ACTION_RELOAD                    = AllIcons.Actions.Refresh;
+    public static final Icon ACTION_REVERT                    = AllIcons.Actions.Rollback;
+    public static final Icon ACTION_SAVE                      = AllIcons.Actions.Menu_saveall;
+    public static final Icon ACTION_SELECT_ALL                = AllIcons.Actions.Selectall;
+    public static final Icon ACTION_OPTIONS                   = AllIcons.General.GearPlain;
+    public static final Icon ACTION_NAVIGATE                  = load("/img/action/Navigate.png");
+    public static final Icon ACTION_DISCONNECT_SESSION        = load("/img/action/DisconnectSession.png");
+    public static final Icon ACTION_KILL_SESSION              = load("/img/action/KillSession.png");
 
-    public static final Icon ACTION_SAVE_TO_SETTINGS = load("/img/action/SaveToSettings.png");
-    public static final Icon ACTION_REVERT_FROM_SETTINGS = load("/img/action/RevertFromSettings.png");
     public static final Icon FOLDER_CONNECTION_ASSOCIATION = load("/img/action/FolderConnectionLink.png");
     public static final Icon FOLDER_SCHEMA_ASSOCIATION = load("/img/action/FolderSchemaLink.png");
 
@@ -98,40 +98,38 @@ public class Icons {
     public static final Icon FILE_BLOCK_SQL = load("FILE_BLOCK_SQL", "/img/file/SQLBlock.png");
 
 
-    public static final Icon DIALOG_INFO = load("/img/dialog/Info.png");
-    public static final Icon DIALOG_INFORMATION = load("/img/dialog/Information.png");
-    public static final Icon DIALOG_WARNING  = load("/img/dialog/Warning.png");
-    public static final Icon DIALOG_ERROR    = load("/img/dialog/Error.png");
-    public static final Icon DIALOG_QUESTION = load("/img/dialog/Question.png");
+    public static final Icon DIALOG_INFORMATION = AllIcons.General.InformationDialog;
+    public static final Icon DIALOG_WARNING     = AllIcons.General.WarningDialog;
+    public static final Icon DIALOG_ERROR       = AllIcons.General.ErrorDialog;
+    public static final Icon DIALOG_QUESTION    = AllIcons.General.QuestionDialog;
 
 
-    public static final Icon METHOD_EXECUTION_RUN     = load("/img/action/ExecuteMethod.png");
-    public static final Icon METHOD_EXECUTION_DEBUG   = load("/img/action/DebugMethod.png");
-    public static final Icon METHOD_EXECUTION_RERUN   = load("/img/RerunMethodExecution.png");
+    public static final Icon METHOD_EXECUTION_RUN     = ACTION_EXECUTE;
+    public static final Icon METHOD_EXECUTION_DEBUG   = ACTION_DEBUG;
+    public static final Icon METHOD_EXECUTION_RERUN   = ACTION_RERUN;
+    public static final Icon METHOD_EXECUTION_STOP    = ACTION_STOP;
     public static final Icon METHOD_EXECUTION_DIALOG  = load("/img/ExecuteMethodDialog.png");
-    public static final Icon METHOD_EXECUTION_STOP    = load("/img/action/ExecutionStop.png");
     public static final Icon METHOD_EXECUTION_HISTORY = load("/img/MethodExecutionHistory.png");
-    public static final Icon METHOD_LOOKUP            = load("/img/MethodLookup.png");
     public static final Icon METHOD_CALL              = load("METHOD_CALL", "/img/MethodCall.png");
     public static final Icon SQL_STATEMENT            = load("SQL_STATEMENT", "/img/SQLStatement.png");
 
 
-    public static final Icon KILL_PROCESS               = load("/img/action/KillProcess.png");
+    public static final Icon KILL_PROCESS               = AllIcons.Debugger.KillProcess;
     public static final Icon EXECUTE_SQL_SCRIPT         = load("/img/action/ExecuteAsScript.png");
 
     public static final Icon STMT_EXECUTION_EXPLAIN       = load("/img/action/StatementExplain.png");
-    public static final Icon STMT_EXECUTION_RUN           = load("/img/action/StatementExecution.png");
-    public static final Icon STMT_EXECUTION_STOP          = load("/img/action/StatementExecutionStop.png");
-    public static final Icon STMT_EXECUTION_STOP_QUEUED   = load("/img/action/StatementExecutionStopQueued.png");
-    public static final Icon STMT_EXECUTION_DEBUG         = load("/img/action/StatementDebug.png");
-    public static final Icon STMT_EXECUTION_RERUN         = load("/img/action/StatementExecutionRerun.png");
-    public static final Icon STMT_EXECUTION_RESUME        = load("/img/action/StatementExecutionResume.png");
-    public static final Icon STMT_EXECUTION_REFRESH       = load("/img/action/Refresh.png");
-    public static final Icon STMT_EXECUTION_ERROR         = load("/img/common/Error.png");
-    public static final Icon STMT_EXECUTION_ERROR_RERUN   = load("/img/action/StatementExecutionError.png");
-    public static final Icon STMT_EXECUTION_WARNING       = load("/img/common/Warning.png");
-    public static final Icon STMT_EXECUTION_WARNING_RERUN = load("/img/action/StatementExecutionWarning.png");
-    public static final Icon STMT_EXECUTION_INFO_RERUN    = load("/img/action/StatementExecutionInfo.png");
+    public static final Icon STMT_EXECUTION_RUN           = ACTION_EXECUTE;
+    public static final Icon STMT_EXECUTION_STOP          = ACTION_STOP;
+    public static final Icon STMT_EXECUTION_STOP_QUEUED   = load("/img/action/ExecutionStopQueued.png");
+    public static final Icon STMT_EXECUTION_DEBUG         = ACTION_DEBUG;
+    public static final Icon STMT_EXECUTION_RERUN         = ACTION_RERUN;
+    public static final Icon STMT_EXECUTION_RESUME        = ACTION_RESUME;
+    public static final Icon STMT_EXECUTION_REFRESH       = AllIcons.Actions.Refresh;
+    public static final Icon STMT_EXECUTION_ERROR         = AllIcons.General.Error;
+    public static final Icon STMT_EXECUTION_WARNING       = AllIcons.General.Warning;
+    public static final Icon STMT_EXECUTION_ERROR_RERUN   = AllIcons.RunConfigurations.TestState.Red2;    // load("/img/action/ExecutionError.png");
+    public static final Icon STMT_EXECUTION_WARNING_RERUN = AllIcons.RunConfigurations.TestState.Yellow2; // load("/img/action/ExecutionWarning.png");
+    public static final Icon STMT_EXECUTION_INFO_RERUN    = AllIcons.RunConfigurations.TestState.Green2;  // load("/img/action/ExecutionInfo.png");
     public static final Icon STMT_EXECUTION_NAVIGATE      = load("/img/action/NavigateToResult.png");
 
     public static final Icon EXPLAIN_PLAN_RESULT        = load("/img/ExplainPlanResult.png");
@@ -139,14 +137,14 @@ public class Icons {
     public static final Icon STMT_EXEC_RESULTSET_RERUN  = load("/img/ExecutionResultSetRerun.png");
     public static final Icon STMT_EXEC_RESULTSET_ORPHAN = load("/img/ExecutionResultSetOrphan.png");
 
-    public static final Icon EXEC_RESULT_RERUN              = load("/img/action/Refresh.png");
     public static final Icon EXEC_RESULT_OPEN_EXEC_DIALOG   = load("/img/ExecuteMethodDialog.png");
-    public static final Icon EXEC_RESULT_RESUME             = load("/img/action/ExecutionResume.png");
-    public static final Icon EXEC_RESULT_STOP               = load("/img/action/ExecutionStop.png");
-    public static final Icon EXEC_RESULT_CLOSE              = load("/img/action/Close.png");
-    public static final Icon EXEC_RESULT_VIEW_STATEMENT     = load("/img/action/Preview.png");
+    public static final Icon EXEC_RESULT_RERUN              = ACTION_RERUN;
+    public static final Icon EXEC_RESULT_RESUME             = ACTION_RESUME;
+    public static final Icon EXEC_RESULT_STOP               = ACTION_STOP;
+    public static final Icon EXEC_RESULT_OPTIONS            = ACTION_OPTIONS;
+    public static final Icon EXEC_RESULT_CLOSE              = ACTION_CLOSE;
+    public static final Icon EXEC_RESULT_VIEW_STATEMENT     = ACTION_PREVIEW;
     public static final Icon EXEC_RESULT_VIEW_RECORD        = load("/img/RecordViewer.png");
-    public static final Icon EXEC_RESULT_OPTIONS            = load("/img/action/Options.png");
     public static final Icon EXEC_RESULT_MESSAGES           = load("/img/common/Messages.png");
     public static final Icon EXEC_CONFIG                    = load("/img/DBProgram.png");
     public static final Icon EXEC_METHOD_CONFIG             = load("/img/DBMethodExecution.png");
@@ -159,10 +157,8 @@ public class Icons {
     public static final Icon NAVIGATION_GO_TO_SPEC       = load("/img/GoToSpec.png");
     public static final Icon NAVIGATION_GO_TO_BODY       = load("/img/GoToBody.png");
 
-    public static final Icon BROWSER_BACK = load("/img/action/BrowserBack.png");
-    public static final Icon BROWSER_NEXT = load("/img/action/BrowserForward.png");
-    public static final Icon BROWSER_AUTOSCROLL_TO_EDITOR = load("/img/action/AutoscrollToSource.png");
-    public static final Icon BROWSER_AUTOSCROLL_FROM_EDITOR = load("/img/action/AutoscrollFromSource.png");
+    public static final Icon BROWSER_BACK = AllIcons.Actions.Back;
+    public static final Icon BROWSER_NEXT = AllIcons.Actions.Forward;
     public static final Icon BROWSER_OBJECT_PROPERTIES = load("/img/ObjectProperties.png");
 
 
@@ -172,33 +168,31 @@ public class Icons {
     public static final Icon DATA_EDITOR_ROW_MODIFIED = load("/img/ModifiedRow.png");
     public static final Icon DATA_EDITOR_ROW_DELETED = load("/img/DeletedRow.png");
 
-    public static final Icon DATA_EDITOR_DUPLICATE_RECORD = load("/img/action/DuplicateRecord.png");
-    public static final Icon DATA_EDITOR_INSERT_RECORD = load("/img/action/InsertRecord.png");
-    public static final Icon DATA_EDITOR_DELETE_RECORD = load("/img/action/DeleteRecord.png");
-    public static final Icon DATA_EDITOR_SWITCH_EDITABLE_STATUS = load("/img/DatasetEditorSwitchEditableStatus.png");
-    public static final Icon DATA_EDITOR_FETCH_NEXT_RECORDS = load("/img/action/ExecutionResume.png");
-    public static final Icon DATA_EDITOR_EDIT_RECORD = load("/img/EditDatasetRecord.png");
-    public static final Icon DATA_EDITOR_NEXT_RECORD = load("/img/NextRecord.png");
-    public static final Icon DATA_EDITOR_PREVIOUS_RECORD = load("/img/PreviousRecord.png");
-    public static final Icon DATA_EDITOR_FIRST_RECORD = load("/img/FirstRecord.png");
-    public static final Icon DATA_EDITOR_LAST_RECORD = load("/img/LastRecord.png");
-    public static final Icon DATA_EDITOR_LOCK_EDITING = load("/img/LockEditing.png");
-    public static final Icon DATA_EDITOR_SORT_ASC = load("/img/action/DataEditorSortAscending.png");
-    public static final Icon DATA_EDITOR_SORT_DESC = load("/img/action/DataEditorSortDescending.png");
-    public static final Icon DATA_EDITOR_STOP_LOADING = load("/img/action/StopLoading.png");
-
-
-    public static final Icon DATA_EDITOR_RELOAD_DATA = load("/img/action/Refresh.png");
-    public static final Icon DATA_EDITOR_BROWSE =    load("/img/ButtonBrowse.png");
-    public static final Icon DATA_EDITOR_CALENDAR =    load("/img/ButtonCalendar.png");
-    public static final Icon DATA_EDITOR_LIST =    load("/img/ButtonList.png");
+    public static final Icon DATA_EDITOR_DUPLICATE_RECORD       = ACTION_COPY;
+    public static final Icon DATA_EDITOR_INSERT_RECORD          = ACTION_ADD;
+    public static final Icon DATA_EDITOR_DELETE_RECORD          = ACTION_REMOVE;
+    public static final Icon DATA_EDITOR_FETCH_NEXT_RECORDS     = ACTION_RESUME;
+    public static final Icon DATA_EDITOR_EDIT_RECORD            = load("/img/RecordViewer.png");
+    public static final Icon DATA_EDITOR_NEXT_RECORD            = AllIcons.Actions.Play_forward;
+    public static final Icon DATA_EDITOR_PREVIOUS_RECORD        = AllIcons.Actions.Play_back;
+    public static final Icon DATA_EDITOR_FIRST_RECORD           = AllIcons.Actions.Play_first;
+    public static final Icon DATA_EDITOR_LAST_RECORD            = AllIcons.Actions.Play_last;
+    public static final Icon DATA_EDITOR_LOCKED                 = AllIcons.Ide.Readonly;
+    public static final Icon DATA_EDITOR_UNLOCKED               = AllIcons.Ide.Readwrite;
+    public static final Icon DATA_EDITOR_SORT_ASC               = load("/img/action/DataEditorSortAscending.png");
+    public static final Icon DATA_EDITOR_SORT_DESC              = load("/img/action/DataEditorSortDescending.png");
+    public static final Icon DATA_EDITOR_STOP_LOADING           = ACTION_STOP;
+    public static final Icon DATA_EDITOR_RELOAD_DATA            = ACTION_RELOAD;
+    public static final Icon DATA_EDITOR_BROWSE                 = load("/img/ButtonBrowse.png");
+    public static final Icon DATA_EDITOR_CALENDAR               = load("/img/ButtonCalendar.png");
+    public static final Icon DATA_EDITOR_LIST                   = load("/img/ButtonList.png");
 
     public static final Icon DATA_EXPORT =    load("/img/action/DataExport.png");
     public static final Icon DATA_IMPORT =    load("/img/action/DataImport.png");
+    public static final Icon DATA_COLUMNS =    load("/img/action/ColumnSetup.png");
     public static final Icon DATA_SORTING =    load("/img/action/DataSorting.png");
     public static final Icon DATA_SORTING_ASC =    load("/img/action/DataSortingAsc.png");
     public static final Icon DATA_SORTING_DESC =    load("/img/action/DataSortingDesc.png");
-    public static final Icon DATA_COLUMNS =    load("/img/action/ColumnSetup.png");
 
     public static final Icon TOP_LEVEL_FILTER =    load("/img/TopLevelFilter.png");
     public static final Icon DATASET_FILTER =    load("/img/filter/DatasetFilter.png");
@@ -233,37 +227,34 @@ public class Icons {
     public static final Icon CALENDAR_PREVIOUS_YEAR = load("/img/CalendarPreviousYear.png");
     public static final Icon CALENDAR_CLEAR_TIME = load("/img/CalendarResetTime.png");
 
-    public static final Icon EXEC_MESSAGES_INFO             = load("/img/common/Info.png");
-    public static final Icon EXEC_MESSAGES_INFO_INACTIVE    = load("/img/common/InfoInactive.png");
-    public static final Icon EXEC_MESSAGES_WARNING          = load("/img/common/Warning.png");
+    public static final Icon EXEC_MESSAGES_INFO             = AllIcons.General.Information;
+    public static final Icon EXEC_MESSAGES_INFO_INACTIVE    = AllIcons.General.Note;
+    public static final Icon EXEC_MESSAGES_WARNING          = AllIcons.General.Warning;
+    public static final Icon EXEC_MESSAGES_ERROR            = AllIcons.General.Error;
     public static final Icon EXEC_MESSAGES_WARNING_INACTIVE = load("/img/common/WarningInactive.png");
-    public static final Icon EXEC_MESSAGES_ERROR            = load("/img/common/Error.png");
     public static final Icon EXEC_MESSAGES_ERROR_INACTIVE   = load("/img/common/ErrorInactive.png");
 
-    public static final Icon CHECK   = load("/img/common/Checked.png");
     public static final Icon PROJECT = load("/img/project/Project.png");
     public static final Icon FILE_CONNECTION_MAPPING = load("/img/FileConnection.png");
     public static final Icon FILE_SCHEMA_MAPPING = load("/img/FileSchema.png");
     public static final Icon FILE_SESSION_MAPPING = load("/img/FileSession.png");
 
-    public static final Icon CODE_EDITOR_SAVE_TO_DATABASE = load("/img/action/SaveToDatabase.png");
-    public static final Icon CODE_EDITOR_SAVE_TO_FILE = load("/img/action/SaveToFile.png");
-    public static final Icon CODE_EDITOR_RESET = load("/img/action/Reset.png");
-    public static final Icon CODE_EDITOR_RELOAD = load("/img/action/Refresh.png");
-    public static final Icon CODE_EDITOR_DIFF = load("/img/action/ShowDiff.png");
-    public static final Icon CODE_EDITOR_DIFF_DB = load("/img/action/ShowDbDiff.png");
-    public static final Icon CODE_EDITOR_DDL_FILE = load("/img/DDLFile.png");
-    public static final Icon CODE_EDITOR_DDL_FILE_NEW = load("/img/DDLFileNew.png");
-    public static final Icon CODE_EDITOR_DDL_FILE_DETACH = load("/img/DDLFileUnbind.png");
-    public static final Icon CODE_EDITOR_DDL_FILE_ATTACH = load("/img/DDLFileBind.png");
-    public static final Icon CODE_EDITOR_SPEC = load("/img/CodeSpec.png");
-    public static final Icon CODE_EDITOR_BODY = load("/img/CodeBody.png");
+    public static final Icon CODE_EDITOR_SAVE_TO_DATABASE = ACTION_SAVE;
+    public static final Icon CODE_EDITOR_SAVE_TO_FILE     = load("/img/action/SaveToFile.png");
+    public static final Icon CODE_EDITOR_RESET            = ACTION_REVERT;
+    public static final Icon CODE_EDITOR_RELOAD           = ACTION_RELOAD;
+    public static final Icon CODE_EDITOR_DIFF             = load("/img/action/ShowDiff.png");
+    public static final Icon CODE_EDITOR_DIFF_DB          = load("/img/action/ShowDbDiff.png");
+    public static final Icon CODE_EDITOR_DDL_FILE         = load("/img/DDLFile.png");
+    public static final Icon CODE_EDITOR_DDL_FILE_NEW     = load("/img/DDLFileNew.png");
+    public static final Icon CODE_EDITOR_SPEC             = load("/img/CodeSpec.png");
+    public static final Icon CODE_EDITOR_BODY             = load("/img/CodeBody.png");
 
     public static final Icon OBEJCT_COMPILE     = load("/img/action/Compile.png");
     public static final Icon OBEJCT_COMPILE_DEBUG = load("/img/action/CompileDebug.png");
     //public static final Icon OBEJCT_COMPILE_KEEP = load("/main.resources.img/CompileKeep.png");
     public static final Icon OBEJCT_COMPILE_ASK = load("/img/action/CompileAsk.png");
-    public static final Icon OBEJCT_EDIT_SOURCE = load("/img/EditSource.png");
+    public static final Icon OBEJCT_EDIT_SOURCE = load("/img/action/EditSource.png");
     public static final Icon OBEJCT_EDIT_DATA = load("/img/EditData.png");
     public static final Icon OBEJCT_VIEW_DATA = load("/img/ViewData.png");
 
@@ -276,13 +267,6 @@ public class Icons {
     public static final Icon COMMON_DIRECTION_IN = load("/img/common/DirectionIn.png");
     public static final Icon COMMON_DIRECTION_OUT = load("/img/common/DirectionOut.png");
     public static final Icon COMMON_DIRECTION_IN_OUT = load("/img/common/DirectionInOut.png");
-
-
-
-
-    public static final Icon CONN_STATUS_INVALID      = load("/img/common/ErrorBig.png");
-    public static final Icon CONN_STATUS_CONNECTED    = load("/img/common/BulbOn.png");
-    public static final Icon CONN_STATUS_DISCONNECTED = load("/img/common/BulbOff.png");
 
     public static final Icon CONNECTION_VIRTUAL       = load("/img/connection/ConnectionVirtual.png");
     public static final Icon CONNECTION_CONNECTED     = load("/img/connection/ConnectionConnected.png");
@@ -432,7 +416,7 @@ public class Icons {
     public static final Icon SB_FILTER_STATUS                    = load("/img/filter/SessionFilterStatus.png");
     public static final Icon SB_FILTER_USER                      = load("/img/filter/SessionFilterUser.png");
 
-    public static final Icon DEBUG_INVALID_BREAKPOINT  = load("/img/InvalidBreakpoint.png");
+    public static final Icon DEBUG_INVALID_BREAKPOINT            = AllIcons.Debugger.Db_invalid_breakpoint;
 
     public static final Icon SPACE                        = load("/img/Space.png");
     public static final Icon TREE_BRANCH                  = load("/img/TreeBranch.png");

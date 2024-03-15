@@ -360,6 +360,8 @@ public enum DBObjectType implements DynamicContentType<DBObjectType>, Presentabl
         PACKAGE_TYPE.addParent(PACKAGE);
         PROCEDURE.addParent(SCHEMA);
         PROCEDURE.addParent(PACKAGE);
+        PROGRAM.addParent(SCHEMA);
+        PROGRAM.addParent(PACKAGE);
         METHOD.addParent(SCHEMA);
         METHOD.addParent(PACKAGE);
         SEQUENCE.addParent(SCHEMA);

@@ -14,6 +14,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractCodeEditorAction extends ProjectAction {
+    AbstractCodeEditorAction() {
+    }
+
     AbstractCodeEditorAction(String text, String description, javax.swing.Icon icon) {
         super(text, description, icon);
     }

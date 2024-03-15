@@ -1,7 +1,7 @@
 package com.dbn.execution.common.ui;
 
 import com.dbn.common.action.BasicAction;
-import com.dbn.common.action.GroupPopupAction;
+import com.dbn.common.action.ProjectActionGroup;
 import com.dbn.common.icon.Icons;
 import com.dbn.common.ui.form.DBNForm;
 import com.dbn.common.ui.form.DBNFormBase;
@@ -13,7 +13,6 @@ import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
-import com.intellij.openapi.project.Project;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -107,21 +106,19 @@ public abstract class ExecutionTimeoutForm extends DBNFormBase {
         return hasErrors;
     }
 
-    public class SettingsAction extends GroupPopupAction {
-        SettingsAction() {
-            super("Settings", null, Icons.ACTION_OPTIONS_MENU);
-        }
+    public class SettingsAction extends ProjectActionGroup {
         @Override
-        protected AnAction[] getActions(AnActionEvent e) {
+        public AnAction[] getChildren(AnActionEvent e) {
             return new AnAction[]{
                     new SaveToSettingsAction(),
-                    new ReloadDefaultAction()
-            };
+                    new ReloadDefaultAction()};
         }
 
         @Override
-        protected void update(@NotNull AnActionEvent e, @NotNull Project project) {
+        public void update(@NotNull AnActionEvent e) {
             Presentation presentation = e.getPresentation();
+            presentation.setText("Settings");
+            presentation.setIcon(Icons.ACTION_OPTIONS);
             presentation.setEnabled(!hasErrors && timeout != getSettingsTimeout());
         }
     }

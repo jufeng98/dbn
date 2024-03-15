@@ -8,16 +8,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.fileEditor.FileEditor;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
-
 public abstract class AbstractSessionBrowserAction extends BasicAction {
-    public AbstractSessionBrowserAction(String text) {
-        super(text);
-    }
-
-    public AbstractSessionBrowserAction(String text, Icon icon) {
-        super(text, null, icon);
-    }
 
     @Nullable
     public static SessionBrowser getSessionBrowser(AnActionEvent e) {

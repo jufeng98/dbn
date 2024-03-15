@@ -101,7 +101,7 @@ public final class DBDataTypeBundle extends StatefulDisposableBase implements Un
             }
 
             name = declaredTypeName;
-            DBNativeDataType nDataType = objectBundle.getNativeDataType(declaredTypeName);
+            DBNativeDataType nDataType = objectBundle.getNativeDataType(dataTypeName);
             if (nDataType != null && nDataType.getDefinition().isPseudoNative()) {
                 nativeDataType = nDataType;
             }

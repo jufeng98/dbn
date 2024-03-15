@@ -13,6 +13,9 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 
 public abstract class AbstractExecutionResultAction extends ContextAction<StatementExecutionCursorResult> {
+    public AbstractExecutionResultAction() {
+    }
+
     protected AbstractExecutionResultAction(String text, Icon icon) {
         super(text, null, icon);
     }

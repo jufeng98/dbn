@@ -1,8 +1,8 @@
 package com.dbn.browser.action;
 
 import com.dbn.browser.DatabaseBrowserManager;
-import com.dbn.common.action.GroupPopupAction;
 import com.dbn.common.action.Lookups;
+import com.dbn.common.action.ProjectPopupAction;
 import com.dbn.common.icon.Icons;
 import com.dbn.common.util.Actions;
 import com.dbn.common.util.Editors;
@@ -23,11 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class SQLConsoleOpenAction extends GroupPopupAction {
-    public SQLConsoleOpenAction() {
-        super("Open SQL Console", "SQL Console", Icons.FILE_SQL_CONSOLE);
-    }
-
+public class SQLConsoleOpenAction extends ProjectPopupAction {
     private static ConnectionHandler getConnection(@NotNull AnActionEvent e) {
         Project project = Lookups.getProject(e);
         if (project != null) {
@@ -38,15 +34,16 @@ public class SQLConsoleOpenAction extends GroupPopupAction {
     }
 
     @Override
-    protected void update(@NotNull AnActionEvent e, @NotNull Project project) {
+    public void update(@NotNull AnActionEvent e, Project project) {
         Presentation presentation = e.getPresentation();
         ConnectionHandler connection = getConnection(e);
         presentation.setEnabled(connection != null);
         presentation.setText("Open SQL Console");
+        presentation.setIcon(Icons.FILE_SQL_CONSOLE);
     }
 
     @Override
-    protected AnAction[] getActions(AnActionEvent e) {
+    public AnAction[] getChildren(AnActionEvent e) {
         ConnectionHandler connection = getConnection(e);
         List<AnAction> actions = new ArrayList<>();
         if (connection != null) {

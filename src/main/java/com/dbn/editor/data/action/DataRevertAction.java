@@ -10,7 +10,7 @@ public class DataRevertAction extends BasicAction {
     private final DatasetEditorModelCell cell;
 
     public DataRevertAction(DatasetEditorModelCell cell) {
-        super("Revert Changes", null, Icons.ACTION_REVERT_CHANGES);
+        super("Revert Changes", null, Icons.ACTION_REVERT);
         this.cell = cell;
     }
 
