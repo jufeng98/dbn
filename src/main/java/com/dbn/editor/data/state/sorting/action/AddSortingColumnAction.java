@@ -11,7 +11,7 @@ public class AddSortingColumnAction extends BasicAction {
     private final DatasetEditorSortingForm form;
 
     public AddSortingColumnAction(DatasetEditorSortingForm form) {
-        super("Add Sorting Column ", null, Icons.DATASET_FILTER_CONDITION_NEW);
+        super("Add Sorting Column ", null, Icons.ACTION_ADD);
         this.form = form;
     }
 

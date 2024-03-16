@@ -11,7 +11,7 @@ public class CreateBasicFilterConditionAction extends BasicAction {
     private final DatasetBasicFilterForm filterForm;
 
     public CreateBasicFilterConditionAction(DatasetBasicFilterForm filterForm) {
-        super("Add condition", null, Icons.DATASET_FILTER_CONDITION_NEW);
+        super("Add condition", null, Icons.ACTION_ADD);
         this.filterForm = filterForm;
     }
 

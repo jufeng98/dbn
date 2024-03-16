@@ -209,7 +209,6 @@ public class Icons {
     public static final Icon DATASET_FILTER_GLOBAL_ERR =    load("/img/filter/DatasetFilterGlobalErr.png");
     public static final Icon DATASET_FILTER_EMPTY =    load("/img/filter/DatasetFilterEmpty.png");
 
-    public static final Icon DATASET_FILTER_CONDITION_REMOVE =    load("/img/RemoveFilterCondition.png");
     public static final Icon DATASET_FILTER_CONDITION_NEW =    load("/img/NewFilterCondition.png");
 
 

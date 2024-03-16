@@ -87,7 +87,7 @@ public abstract class ObjectListForm<T extends ObjectFactoryInput> extends DBNFo
 
     public class CreateObjectAction extends BasicAction {
         CreateObjectAction() {
-            super("Add " + getObjectType().getName(), null, Icons.DATASET_FILTER_CONDITION_NEW);
+            super("Add " + getObjectType().getName(), null, Icons.ACTION_ADD);
         }
 
         @Override

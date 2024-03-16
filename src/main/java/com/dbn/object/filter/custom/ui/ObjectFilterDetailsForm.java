@@ -14,6 +14,7 @@ import com.dbn.common.util.Commons;
 import com.dbn.common.util.Documents;
 import com.dbn.common.util.Editors;
 import com.dbn.connection.ConnectionHandler;
+import com.dbn.diagnostics.Diagnostics;
 import com.dbn.language.sql.SQLFileType;
 import com.dbn.language.sql.SQLLanguage;
 import com.dbn.object.filter.custom.ObjectFilter;
@@ -104,7 +105,7 @@ public class ObjectFilterDetailsForm extends DBNFormBase {
             errorLabel.setVisible(false);
             errorLabel.setText("");
         } else {
-            errorLabel.setVisible(true);
+            errorLabel.setVisible(Diagnostics.isDeveloperMode());
             errorLabel.setText(error);
             errorLabel.setIcon(Icons.EXEC_MESSAGES_ERROR);
         }
