@@ -88,9 +88,12 @@ public class Icons {
     public static final Icon WINDOW_EXECUTION_CONSOLE = load("/img/window/ExecutionConsole.png");
     public static final Icon WINDOW_DATABASE_DIAGNOSTICS = load("/img/window/DatabaseDiagnostics.png");
 
-    public static final Icon FILE_SQL_CONSOLE = load("/img/file/SQLConsole.png");
+    public static final Icon SQL_CONSOLE = load("/img/file/SQLConsole.png");
+    public static final Icon SESSION_BROWSER = load("/img/file/SessionBrowser.png");
+
+    public static final Icon FILE_SQL_CONSOLE = load("/img/file/SQLConsoleFile.png");
     public static final Icon FILE_SQL_DEBUG_CONSOLE = load("/img/file/SQLDebugConsole.png");
-    public static final Icon FILE_SESSION_BROWSER = load("/img/file/SessionBrowser.png");
+    public static final Icon FILE_SESSION_BROWSER = load("/img/file/SessionBrowserFile.png");
     public static final Icon FILE_SQL = load("/img/file/SQLFile.png");
     public static final Icon FILE_PLSQL = load("/img/file/PLSQLFile.png");
     public static final Icon FILE_BLOCK_PLSQL = load("FILE_BLOCK_PLSQL", "/img/PLSQLBlock.png");
@@ -239,7 +242,7 @@ public class Icons {
     public static final Icon FILE_SESSION_MAPPING = load("/img/FileSession.png");
 
     public static final Icon CODE_EDITOR_SAVE_TO_DATABASE = ACTION_SAVE;
-    public static final Icon CODE_EDITOR_SAVE_TO_FILE     = load("/img/action/SaveToFile.png");
+    public static final Icon CODE_EDITOR_SAVE_TO_FILE     = ACTION_SAVE;
     public static final Icon CODE_EDITOR_RESET            = ACTION_REVERT;
     public static final Icon CODE_EDITOR_RELOAD           = ACTION_RELOAD;
     public static final Icon CODE_EDITOR_DIFF             = load("/img/action/ShowDiff.png");

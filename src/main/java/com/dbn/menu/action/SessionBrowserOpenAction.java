@@ -9,6 +9,7 @@ import com.dbn.connection.action.AbstractConnectionAction;
 import com.dbn.editor.session.SessionBrowserManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.ListPopup;
@@ -17,8 +18,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class SessionBrowserOpenAction extends ProjectAction {
-    public SessionBrowserOpenAction() {
-        super("Open Session Browser...", null, Icons.FILE_SESSION_BROWSER);
+    @Override
+    protected void update(@NotNull AnActionEvent e, @NotNull Project project) {
+        Presentation presentation = e.getPresentation();
+        presentation.setText("Open Session Browser...");
+        presentation.setIcon(Icons.SESSION_BROWSER);
     }
 
     @Override

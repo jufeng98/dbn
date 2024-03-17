@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class SQLConsoleOpenAction extends AbstractConnectionAction {
     SQLConsoleOpenAction(ConnectionHandler connection) {
-        super("Open SQL Console", Icons.FILE_SQL_CONSOLE, connection);
+        super("Open SQL Console", Icons.SQL_CONSOLE, connection);
     }
 
     @Override

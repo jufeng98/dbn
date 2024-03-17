@@ -39,7 +39,7 @@ public class SQLConsoleOpenAction extends ProjectPopupAction {
         ConnectionHandler connection = getConnection(e);
         presentation.setEnabled(connection != null);
         presentation.setText("Open SQL Console");
-        presentation.setIcon(Icons.FILE_SQL_CONSOLE);
+        presentation.setIcon(Icons.SQL_CONSOLE);
     }
 
     @Override
