@@ -37,7 +37,7 @@ class IconLoader {
     private static Icon findNewIcon(String path) {
         if (!UserInterface.isNewUI()) return null;
 
-        String svgPath = "/expui" + path.replace(".png", ".svg");
+        String svgPath = path.replace("/img/", "/img/expui/").replace(".png", ".svg");
         return find(svgPath);
     }
 

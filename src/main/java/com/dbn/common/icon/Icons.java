@@ -88,8 +88,8 @@ public class Icons {
     public static final Icon WINDOW_EXECUTION_CONSOLE = load("/img/window/ExecutionConsole.png");
     public static final Icon WINDOW_DATABASE_DIAGNOSTICS = load("/img/window/DatabaseDiagnostics.png");
 
-    public static final Icon SQL_CONSOLE = load("/img/file/SQLConsole.png");
-    public static final Icon SESSION_BROWSER = load("/img/file/SessionBrowser.png");
+    public static final Icon SQL_CONSOLE = load("/img/tools/SQLConsole.png");
+    public static final Icon SESSION_BROWSER = load("/img/tools/SessionBrowser.png");
 
     public static final Icon FILE_SQL_CONSOLE = load("/img/file/SQLConsoleFile.png");
     public static final Icon FILE_SQL_DEBUG_CONSOLE = load("/img/file/SQLDebugConsole.png");
@@ -147,7 +147,7 @@ public class Icons {
     public static final Icon EXEC_RESULT_OPTIONS            = ACTION_OPTIONS;
     public static final Icon EXEC_RESULT_CLOSE              = ACTION_CLOSE;
     public static final Icon EXEC_RESULT_VIEW_STATEMENT     = ACTION_PREVIEW;
-    public static final Icon EXEC_RESULT_VIEW_RECORD        = load("/img/RecordViewer.png");
+    public static final Icon EXEC_RESULT_VIEW_RECORD        = load("/img/tools/RecordViewer.png");
     public static final Icon EXEC_RESULT_MESSAGES           = load("/img/common/Messages.png");
     public static final Icon EXEC_CONFIG                    = load("/img/DBProgram.png");
     public static final Icon EXEC_METHOD_CONFIG             = load("/img/DBMethodExecution.png");
@@ -175,7 +175,7 @@ public class Icons {
     public static final Icon DATA_EDITOR_INSERT_RECORD          = ACTION_ADD;
     public static final Icon DATA_EDITOR_DELETE_RECORD          = ACTION_REMOVE;
     public static final Icon DATA_EDITOR_FETCH_NEXT_RECORDS     = ACTION_RESUME;
-    public static final Icon DATA_EDITOR_EDIT_RECORD            = load("/img/RecordViewer.png");
+    public static final Icon DATA_EDITOR_EDIT_RECORD            = load("/img/tools/RecordViewer.png");
     public static final Icon DATA_EDITOR_NEXT_RECORD            = AllIcons.Actions.Play_forward;
     public static final Icon DATA_EDITOR_PREVIOUS_RECORD        = AllIcons.Actions.Play_back;
     public static final Icon DATA_EDITOR_FIRST_RECORD           = AllIcons.Actions.Play_first;

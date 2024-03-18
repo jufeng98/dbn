@@ -18,6 +18,7 @@ import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.actionSystem.Separator;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,13 +67,23 @@ public class SQLConsoleOpenAction extends ProjectPopupAction {
         private DBConsoleType consoleType;
 
         SelectConsoleAction(@NotNull ConnectionHandler connection, @NotNull DBConsoleType consoleType) {
-            super("New " + consoleType.getName() + "...", connection);
+            super(connection);
             this.consoleType = consoleType;
         }
 
         SelectConsoleAction(DBConsole console) {
-            super(Actions.adjustActionName(console.getName()), null, console.getIcon(), console.getConnection());
+            super(console.getConnection());
             this.console = console;
+        }
+
+        @Override
+        protected void update(@NotNull AnActionEvent e, @NotNull Presentation presentation, @NotNull Project project, @Nullable ConnectionHandler target) {
+            if (console == null) {
+                presentation.setText("New " + consoleType.getName() + "...");
+            } else {
+                presentation.setText(Actions.adjustActionName(console.getName()));
+                presentation.setIcon(console.getIcon());
+            }
         }
 
         @Override

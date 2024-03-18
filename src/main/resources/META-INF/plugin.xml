@@ -394,7 +394,7 @@
             <add-to-group group-id="ProjectViewPopupMenu" relative-to-action="WeighingNewGroup" anchor="after"/>
         </group>
         <group id="DBNavigator.ActionGroup.ConnectionSettings" text="Connections Settings">
-            <action id="DBNavigator.Actions.ConnectionSettings.CreateConnection" class="com.dbn.connection.config.action.CreateConnectionDropdownAction" text="Connection Setup - Create Connection" icon="AllIcons.General.Add"/>
+            <group id="DBNavigator.Actions.ConnectionSettings.CreateConnection" class="com.dbn.connection.config.action.CreateConnectionDropdownAction" text="Connection Setup - Create Connection" icon="AllIcons.General.Add"/>
             <action id="DBNavigator.Actions.ConnectionSettings.RemoveConnection" class="com.dbn.connection.config.action.ConnectionRemoveAction" text="Connection Setup - Remove Connection" icon="/img/action/Remove.png"/>
             <action id="DBNavigator.Actions.ConnectionSettings.MoveConnectionsUp" class="com.dbn.connection.config.action.ConnectionMoveUpAction" text="Connection Setup - Move Connections Up" icon="/img/action/MoveUp.png"/>
             <action id="DBNavigator.Actions.ConnectionSettings.MoveConnectionsDown" class="com.dbn.connection.config.action.ConnectionMoveDownAction" text="Connection Setup - Move Connections Down" icon="/img/action/MoveDown.png"/>
@@ -422,7 +422,7 @@
             <separator/>
             <action id="DBNavigator.Actions.ExecuteAsScript" class="com.dbn.execution.script.action.ExecuteScriptEditorAction" text="Script Editor - Execute as Script" icon="/img/action/ExecuteAsScript.png"/>
             <separator/>
-            <action id="DBNavigator.Actions.EditorOptions" class="com.dbn.language.editor.action.EditorOptionsAction" text="Script Editor - Local Settings" icon="/general/gear.svg" />
+            <group id="DBNavigator.Actions.EditorOptions" class="com.dbn.language.editor.action.EditorOptionsAction" text="Script Editor - Local Settings" icon="/general/gear.svg" />
             <action id="DBNavigator.Actions.EditorSettings" class="com.dbn.language.editor.action.EditorSettingsOpenAction" text="Script Editor - Settings"/>
         </group>
         <group id="DBNavigator.Actions.MainMenu" text="_DB Navigator" popup="true">
@@ -525,7 +525,7 @@
             <action id="DBNavigator.Actions.DataEditor.Export" class="com.dbn.editor.data.action.DataExportAction" text="Data Editor - Export"/>
             <action id="DBNavigator.Actions.DataEditor.Import" class="com.dbn.editor.data.action.DataImportAction" text="Data Editor - Import"/>
             <separator/>
-            <action id="DBNavigator.Actions.DataEditor.Options" class="com.dbn.editor.data.action.DatasetEditorOptionsAction" text="Data Editor - Options"/>
+            <group id="DBNavigator.Actions.DataEditor.Options" class="com.dbn.editor.data.action.DatasetEditorOptionsAction" text="Data Editor - Options"/>
         </group>
         <group id="DBNavigator.ActionGroup.StatementExecutionResult">
             <action id="DBNavigator.Actions.ExecutionResult.Close" class="com.dbn.execution.statement.result.action.ExecutionResultCloseAction" text="Execution Result - Close" icon="/actions/close.svg"/>
@@ -594,7 +594,7 @@
         </action>
 
         <group id="DBNavigator.ActionGroup.Browser.Controls" text="Browser Object Properties">
-            <action id="DBNavigator.Actions.Browser.NewConnection" class="com.dbn.browser.action.ConnectionCreateDropdownAction" text="Browser - New Connection"/>
+            <group id="DBNavigator.Actions.Browser.NewConnection" class="com.dbn.browser.action.ConnectionCreateDropdownAction" text="Browser - New Connection"/>
             <separator/>
             <action id="DBNavigator.Actions.Browser.NavigateBack" class="com.dbn.browser.action.BrowserNavigateBackAction" text="Browser - Back"/>
             <action id="DBNavigator.Actions.Browser.NavigateForward" class="com.dbn.browser.action.BrowserNavigateForwardAction" text="Browser - Forward"/>
@@ -609,7 +609,7 @@
             <action id="DBNavigator.Actions.Browser.OpenSQLConsole" class="com.dbn.browser.action.SQLConsoleOpenAction" text="Browser - SQL Console" icon="/img/file/SQLConsole.png"/>
             <action id="DBNavigator.Actions.Browser.OpenSessionBrowser" class="com.dbn.browser.action.SessionBrowserOpenAction" text="Browser - Session Browser" icon="/img/file/SessionBrowser.png"/>
             <separator/>
-            <action id="DBNavigator.Actions.Browser.OpenSettings" class="com.dbn.browser.action.BrowserOptionsAction" text="Browser - Options"/>
+            <group id="DBNavigator.Actions.Browser.OpenSettings" class="com.dbn.browser.action.BrowserOptionsAction" text="Browser - Options"/>
         </group>
 
         <group id="DBNavigator.ActionGroup.Calendar.Controls" text="Calendar Controls">

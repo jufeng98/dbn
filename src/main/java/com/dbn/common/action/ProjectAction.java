@@ -15,11 +15,6 @@ public abstract class ProjectAction extends BasicAction {
     public ProjectAction() {}
 
     @Deprecated // TODO move presentation in "update"
-    public ProjectAction(@Nullable String text) {
-        super(text);
-    }
-
-    @Deprecated // TODO move presentation in "update"
     public ProjectAction(@Nullable String text, @Nullable String description, @Nullable Icon icon) {
         super(text, description, icon);
     }

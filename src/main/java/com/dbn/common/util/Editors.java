@@ -277,11 +277,11 @@ public class Editors {
             Dispatch.run(true, () -> {
                 Color background = readonly ?
                         Colors.getReadonlyEditorBackground() :
-                        Colors.getEditorBackground();
+                        null; // Colors.getEditorBackground();
 
                 Color caretRowBackground = readonly ?
                         Colors.getReadonlyEditorCaretRowBackground() :
-                        Colors.getEditorCaretRowBackground();
+                        null; // Colors.getEditorCaretRowBackground();
 
                 editorEx.setBackgroundColor(background);
                 scheme.setColor(EditorColors.CARET_ROW_COLOR, caretRowBackground);

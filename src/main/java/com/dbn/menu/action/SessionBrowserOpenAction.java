@@ -14,6 +14,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.ListPopup;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -64,7 +65,17 @@ public class SessionBrowserOpenAction extends ProjectAction {
     private static class SelectConnectionAction extends AbstractConnectionAction{
 
         SelectConnectionAction(ConnectionHandler connection) {
-            super(connection.getName(), connection.getIcon(), connection);
+            super(connection);
+        }
+
+        @Override
+        protected void update(@NotNull AnActionEvent e, @NotNull Presentation presentation, @NotNull Project project, @Nullable ConnectionHandler target) {
+            ConnectionHandler connection = getConnection();
+            if (connection == null) return;
+
+            presentation.setText(connection.getName());
+            presentation.setIcon(connection.getIcon());
+
         }
 
         @Override

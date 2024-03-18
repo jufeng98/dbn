@@ -132,11 +132,11 @@ public final class Colors {
     }
 
     public static Color getEditorBackground() {
-        return cached(22, () -> background(HighlighterColors.TEXT, null, () -> JBColor.WHITE));
+        return cached(22, () -> background(HighlighterColors.NO_HIGHLIGHTING, null, () -> JBColor.WHITE));
     }
 
     public static Color getEditorForeground() {
-        return cached(23, () -> foreground(HighlighterColors.TEXT, null, () -> JBColor.BLACK));
+        return cached(23, () -> foreground(HighlighterColors.NO_HIGHLIGHTING, null, () -> JBColor.BLACK));
     }
 
     public static Color getEditorCaretRowBackground() {

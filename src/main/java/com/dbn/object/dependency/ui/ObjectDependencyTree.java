@@ -194,7 +194,6 @@ public class ObjectDependencyTree extends DBNTree{
         private final DBObjectRef<DBSchemaObject> object;
 
         EditObjectAction(DBSchemaObject object) {
-            super("Edit", null, Icons.ACTION_EDIT);
             this.object = DBObjectRef.of(object);
         }
 

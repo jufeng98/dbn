@@ -97,10 +97,13 @@ public class DBMethodRunConfigForm extends DBProgramRunConfigForm<DBMethodRunCon
         }
     }
     public class MethodHistoryOpenAction extends ProjectAction {
-        MethodHistoryOpenAction() {
-            super("Execution History", null, Icons.METHOD_EXECUTION_HISTORY);
-        }
 
+        @Override
+        protected void update(@NotNull AnActionEvent e, @NotNull Project project) {
+            Presentation presentation = e.getPresentation();
+            presentation.setText("Execution History");
+            presentation.setIcon(Icons.METHOD_EXECUTION_HISTORY);
+        }
 
         @Override
         protected void actionPerformed(@NotNull AnActionEvent e, @NotNull Project project) {

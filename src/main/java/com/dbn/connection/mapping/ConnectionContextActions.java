@@ -17,6 +17,7 @@ import com.dbn.object.action.AnObjectAction;
 import com.dbn.options.ConfigId;
 import com.dbn.options.ProjectSettingsManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
@@ -74,8 +75,14 @@ public class ConnectionContextActions {
         private final ProjectRef project;
 
         ConnectionSetupAction(Project project) {
-            super("Setup New Connection", null, Icons.CONNECTION_NEW);
             this.project = ProjectRef.of(project);
+        }
+
+        @Override
+        protected void update(@NotNull AnActionEvent e, @NotNull Project project) {
+            Presentation presentation = e.getPresentation();
+            presentation.setText("Setup New Connection");
+            presentation.setIcon(Icons.CONNECTION_NEW);
         }
 
         @Override
