@@ -2,6 +2,7 @@ package com.dbn.execution.common.ui;
 
 import com.dbn.common.action.BasicAction;
 import com.dbn.common.action.ProjectActionGroup;
+import com.dbn.common.action.ProjectPopupAction;
 import com.dbn.common.icon.Icons;
 import com.dbn.common.ui.form.DBNForm;
 import com.dbn.common.ui.form.DBNFormBase;
@@ -13,6 +14,7 @@ import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.openapi.project.Project;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -106,7 +108,7 @@ public abstract class ExecutionTimeoutForm extends DBNFormBase {
         return hasErrors;
     }
 
-    public class SettingsAction extends ProjectActionGroup {
+    public class SettingsAction extends ProjectPopupAction {
         @Override
         public AnAction[] getChildren(AnActionEvent e) {
             return new AnAction[]{
@@ -115,7 +117,7 @@ public abstract class ExecutionTimeoutForm extends DBNFormBase {
         }
 
         @Override
-        public void update(@NotNull AnActionEvent e) {
+        protected void update(@NotNull AnActionEvent e, @NotNull Project project) {
             Presentation presentation = e.getPresentation();
             presentation.setText("Settings");
             presentation.setIcon(Icons.ACTION_OPTIONS);

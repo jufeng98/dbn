@@ -130,9 +130,9 @@ public class Icons {
     public static final Icon STMT_EXECUTION_REFRESH       = AllIcons.Actions.Refresh;
     public static final Icon STMT_EXECUTION_ERROR         = AllIcons.General.Error;
     public static final Icon STMT_EXECUTION_WARNING       = AllIcons.General.Warning;
-    public static final Icon STMT_EXECUTION_ERROR_RERUN   = AllIcons.RunConfigurations.TestState.Red2;    // load("/img/action/ExecutionError.png");
-    public static final Icon STMT_EXECUTION_WARNING_RERUN = AllIcons.RunConfigurations.TestState.Yellow2; // load("/img/action/ExecutionWarning.png");
-    public static final Icon STMT_EXECUTION_INFO_RERUN    = AllIcons.RunConfigurations.TestState.Green2;  // load("/img/action/ExecutionInfo.png");
+    public static final Icon STMT_EXECUTION_ERROR_RERUN   = load("/img/action/ExecutionError.png");
+    public static final Icon STMT_EXECUTION_WARNING_RERUN = load("/img/action/ExecutionWarning.png");
+    public static final Icon STMT_EXECUTION_INFO_RERUN    = load("/img/action/ExecutionInfo.png");
     public static final Icon STMT_EXECUTION_NAVIGATE      = load("/img/action/NavigateToResult.png");
 
     public static final Icon EXPLAIN_PLAN_RESULT        = load("/img/ExplainPlanResult.png");
