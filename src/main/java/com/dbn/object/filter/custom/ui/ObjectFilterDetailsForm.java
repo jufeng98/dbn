@@ -105,11 +105,14 @@ public class ObjectFilterDetailsForm extends DBNFormBase {
             errorLabel.setVisible(false);
             errorLabel.setText("");
         } else {
-            errorLabel.setVisible(Diagnostics.isDeveloperMode());
+            errorLabel.setVisible(true);
             errorLabel.setText(error);
             errorLabel.setIcon(Icons.EXEC_MESSAGES_ERROR);
         }
-        expressionLabel.setText(nvl(expression, "").replaceAll("\\n", " "));
+
+        boolean developerMode = Diagnostics.isDeveloperMode();
+        expressionLabel.setVisible(developerMode);
+        expressionLabel.setText(developerMode ? nvl(expression, "").replaceAll("\\n", " ") : "");
     }
 
     private void initHeaderPanel() {
