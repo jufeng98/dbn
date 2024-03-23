@@ -359,12 +359,12 @@ public class Editors {
     /**
      * get all open editors for a virtual file including the attached ddl files
      */
-    public static List<FileEditor> getScriptFileEditors(Project project, VirtualFile virtualFile) {
-        assert virtualFile.isInLocalFileSystem();
+    public static List<FileEditor> getScriptFileEditors(Project project, VirtualFile file) {
+        assert file.isInLocalFileSystem();
 
         List<FileEditor> scriptFileEditors = new ArrayList<>();
         FileEditorManager editorManager = FileEditorManager.getInstance(project);
-        FileEditor[] fileEditors = editorManager.getAllEditors(virtualFile);
+        FileEditor[] fileEditors = editorManager.getAllEditors(file);
         for (FileEditor fileEditor : fileEditors) {
             if (fileEditor instanceof TextEditor) {
                 TextEditor textEditor = (TextEditor) fileEditor;
@@ -372,7 +372,7 @@ public class Editors {
             }
         }
         DDLFileAttachmentManager fileAttachmentManager = DDLFileAttachmentManager.getInstance(project);
-        DBSchemaObject schemaObject = fileAttachmentManager.getMappedObject(virtualFile);
+        DBSchemaObject schemaObject = fileAttachmentManager.getMappedObject(file);
         if (schemaObject != null) {
             DBEditableObjectVirtualFile editableObjectFile = schemaObject.getEditableVirtualFile();
             fileEditors = editorManager.getAllEditors(editableObjectFile);
@@ -381,7 +381,7 @@ public class Editors {
                     DDLFileEditor ddlFileEditor = (DDLFileEditor) fileEditor;
                     Editor editor = ddlFileEditor.getEditor();
                     PsiFile psiFile = PsiUtil.getPsiFile(project, editor.getDocument());
-                    if (psiFile != null && psiFile.getVirtualFile().equals(virtualFile)) {
+                    if (psiFile != null && psiFile.getVirtualFile().equals(file)) {
                         scriptFileEditors.add(ddlFileEditor);
                     }
                 }
@@ -409,8 +409,8 @@ public class Editors {
         Editor editor = Editors.getSelectedEditor(project);
         if (editor == null) return null;
 
-        VirtualFile virtualFile = Documents.getVirtualFile(editor);
-        if (virtualFile != null && virtualFile.getFileType().equals(fileType)) {
+        VirtualFile file = Documents.getVirtualFile(editor);
+        if (file != null && file.getFileType().equals(fileType)) {
             return editor;
         }
         return null;
@@ -499,7 +499,13 @@ public class Editors {
         editorManager.addTopComponent(fileEditor, toolbarComponent);
     }
 
-    @Nullable
+    public static void closeFileEditors(Project project, VirtualFile file) {
+        FileEditorManager editorManager = FileEditorManager.getInstance(project);
+        if (!editorManager.isFileOpen(file)) return;
+
+        editorManager.closeFile(file);
+    }
+
     public static FileEditor[] openFileEditor(Project project, VirtualFile file, boolean focus) {
         AtomicReference<FileEditor[]> fileEditors = new AtomicReference<>();
         openFileEditor(project, file, focus, editors -> fileEditors.set(editors));
