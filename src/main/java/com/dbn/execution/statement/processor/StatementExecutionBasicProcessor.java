@@ -1,6 +1,5 @@
 package com.dbn.execution.statement.processor;
 
-import com.dbn.common.dispose.Disposer;
 import com.dbn.common.dispose.Failsafe;
 import com.dbn.common.dispose.StatefulDisposableBase;
 import com.dbn.common.editor.BasicTextEditor;
@@ -250,7 +249,9 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
 
     public void setExecutionResult(StatementExecutionResult executionResult) {
         if (executionResult == this.executionResult) return;
-        this.executionResult = Disposer.replace(this.executionResult, executionResult);
+        this.executionResult = executionResult;
+        // do not dispose existing result as it may still be hosted as orphan in the execution console
+        //this.executionResult = Disposer.replace(this.executionResult, executionResult);
     }
 
     @Override
