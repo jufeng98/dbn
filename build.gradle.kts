@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.dbn"
-version = "3.4.3207.0"
+version = "3.4.3211.0"
 
 repositories {
   mavenCentral()
