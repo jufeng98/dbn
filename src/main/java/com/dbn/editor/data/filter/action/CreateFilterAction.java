@@ -16,7 +16,7 @@ public class CreateFilterAction extends ProjectActionGroup {
     }
 
     @Override
-    public AnAction[] getChildren(AnActionEvent e) {
+    public AnAction[] loadChildren(AnActionEvent e) {
         return new AnAction[]{
             new CreateBasicFilterAction(filterList),
             new CreateCustomFilterAction(filterList)

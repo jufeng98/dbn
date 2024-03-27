@@ -14,7 +14,7 @@ public class BrowserOptionsAction extends ProjectActionGroup {
 
     @NotNull
     @Override
-    public AnAction[] getChildren(AnActionEvent e) {
+    public AnAction[] loadChildren(AnActionEvent e) {
         return new AnAction[]{
                 new AutoscrollToEditorAction(),
                 new AutoscrollFromEditorAction(),

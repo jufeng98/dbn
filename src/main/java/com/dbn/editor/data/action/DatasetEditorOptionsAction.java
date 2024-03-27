@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 public class DatasetEditorOptionsAction extends ProjectActionGroup {
 
     @Override
-    public AnAction[] getChildren(AnActionEvent e) {
+    public AnAction[] loadChildren(AnActionEvent e) {
         return new AnAction[]{
                 new DataSortingOpenAction(),
                 new ColumnSetupOpenAction(),

@@ -15,7 +15,7 @@ import java.lang.reflect.Method;
 
 /**
  * workaround for action groups which can themselves perform if invoked
- * "canBePerformed" was decommissioned and replaced with "setPeformGroup"
+ * "canBePerformed" was decommissioned and replaced with "setPerformGroup"
  */
 @Workaround
 public abstract class PerformableActionGroup extends ActionGroup implements BackgroundUpdatedAction, DumbAware {

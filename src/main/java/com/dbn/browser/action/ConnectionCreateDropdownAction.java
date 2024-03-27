@@ -29,7 +29,7 @@ public class ConnectionCreateDropdownAction extends ProjectActionGroup {
 
     @NotNull
     @Override
-    public AnAction[] getChildren(AnActionEvent e) {
+    public AnAction[] loadChildren(AnActionEvent e) {
         return actions;
     }
 
