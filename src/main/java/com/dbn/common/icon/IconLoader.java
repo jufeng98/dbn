@@ -63,7 +63,7 @@ class IconLoader {
         return com.intellij.openapi.util.IconLoader.findIcon(path, Icons.class.getClassLoader());
     }
 
-    static Icon load(String key, String path) {
+    static Icon load(String path, String key) {
         Icon icon = load(path);
         REGISTRY.put(key, icon);
         return icon;
