@@ -606,10 +606,10 @@
 -->
             <action id="DBNavigator.Actions.Browser.ExpandTree" class="com.dbn.browser.action.BrowserTreeExpandAction" text="Browser - Expand All"  icon="AllIcons.Actions.Expandall"/>
             <action id="DBNavigator.Actions.Browser.CollapseTree" class="com.dbn.browser.action.BrowserTreeCollapseAction" text="Browser - Collapse All" icon="AllIcons.Actions.Collapseall"/>
-            <action id="DBNavigator.Actions.Browser.ShowObjectProperties" class="com.dbn.browser.action.ObjectPropertiesShowAction" text="Browser - Show Object Properties"/>
             <separator/>
-            <action id="DBNavigator.Actions.Browser.OpenSQLConsole" class="com.dbn.browser.action.SQLConsoleOpenAction" text="Browser - SQL Console" icon="/img/file/SQLConsole.png"/>
-            <action id="DBNavigator.Actions.Browser.OpenSessionBrowser" class="com.dbn.browser.action.SessionBrowserOpenAction" text="Browser - Session Browser" icon="/img/file/SessionBrowser.png"/>
+            <action id="DBNavigator.Actions.Browser.ShowObjectProperties" class="com.dbn.browser.action.ObjectPropertiesShowAction" text="Browser - Show Object Properties"/>
+            <action id="DBNavigator.Actions.Browser.OpenSessionBrowser" class="com.dbn.browser.action.SessionBrowserOpenAction" text="Browser - Session Browser" icon="/img/tools/SessionBrowser.svg"/>
+            <action id="DBNavigator.Actions.Browser.OpenSQLConsole" class="com.dbn.browser.action.SQLConsoleOpenAction" text="Browser - SQL Console" icon="/img/tools/SQLConsole.svg"/>
             <separator/>
             <group id="DBNavigator.Actions.Browser.OpenSettings" class="com.dbn.browser.action.BrowserOptionsAction" text="Browser - Options"/>
         </group>

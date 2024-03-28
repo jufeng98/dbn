@@ -3,6 +3,7 @@ package com.dbn.common.icon;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.util.ScalableIcon;
 import com.intellij.ui.RowIcon;
+import com.intellij.util.IconUtil;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
@@ -81,12 +82,11 @@ public class Icons {
 
     public static final Icon DATABASE_NAVIGATOR = load("/img/project/DatabaseNavigator.svg");
     public static final Icon DATABASE_MODULE = load("/img/project/DatabaseModule.png");
-    public static final Icon DATABASE_MODULE_SMALL_OPEN = load("/img/project/DatabaseModuleOpen.png");
-    public static final Icon DATABASE_MODULE_SMALL_CLOSED = load("/img/project/DatabaseModuleClosed.png");
 
     public static final Icon WINDOW_DATABASE_BROWSER = load("/img/window/DatabaseBrowser.svg");
     public static final Icon WINDOW_EXECUTION_CONSOLE = load("/img/window/ExecutionConsole.svg");
     public static final Icon WINDOW_DATABASE_DIAGNOSTICS = load("/img/window/DatabaseDiagnostics.svg");
+    public static final Icon WINDOW_DATABASE_COMPANION = load("/img/window/DatabaseCompanion.svg");
 
     public static final Icon SQL_CONSOLE = load("/img/tools/SQLConsole.svg");
     public static final Icon SESSION_BROWSER = load("/img/tools/SessionBrowser.svg");
@@ -236,7 +236,6 @@ public class Icons {
     public static final Icon EXEC_MESSAGES_WARNING_INACTIVE = load("/img/common/WarningInactive.svg");
     public static final Icon EXEC_MESSAGES_ERROR_INACTIVE   = load("/img/common/ErrorInactive.svg");
 
-    public static final Icon PROJECT = load("/img/project/Project.png");
     public static final Icon FILE_CONNECTION_MAPPING = load("/img/FileConnection.png");
     public static final Icon FILE_SCHEMA_MAPPING = load("/img/FileSchema.png");
     public static final Icon FILE_SESSION_MAPPING = load("/img/FileSession.png");
@@ -257,7 +256,7 @@ public class Icons {
     //public static final Icon OBEJCT_COMPILE_KEEP = load("/main.resources.img/CompileKeep.png");
     public static final Icon OBEJCT_COMPILE_ASK = load("/img/action/CompileAsk.png");
     public static final Icon OBEJCT_EDIT_SOURCE = load("/img/action/EditSource.svg");
-    public static final Icon OBEJCT_EDIT_DATA = load("/img/EditData.png");
+    public static final Icon OBEJCT_EDIT_DATA = load("/img/action/EditData.png");
     public static final Icon OBEJCT_VIEW_DATA = load("/img/ViewData.png");
 
     public static final Icon CONNECTION_COMMIT   = load("/img/action/ConnectionCommit.svg", "CONNECTION_COMMIT");
@@ -295,16 +294,17 @@ public class Icons {
     public static final Icon SESSION_DEBUG_TRANSACTIONAL  = load("/img/connection/SessionDebugTransactional.png");
 
 
-    public static final Icon DB_ORACLE            = load("/img/database/Oracle.png");
-    public static final Icon DB_ORACLE_LARGE      = load("/img/database/Oracle_large.png");
-    public static final Icon DB_POSTGRESQL        = load("/img/database/PostgreSQL.png");
-    public static final Icon DB_POSTGRESQL_LARGE  = load("/img/database/PostgreSQL_large.png");
-    public static final Icon DB_MYSQL             = load("/img/database/MySQL.png");
-    public static final Icon DB_MYSQL_LARGE       = load("/img/database/MySQL_large.png");
-    public static final Icon DB_SQLITE            = load("/img/database/SQLite.png");
-    public static final Icon DB_SQLITE_LARGE      = load("/img/database/SQLite_large.png");
-    public static final Icon DB_GENERIC           = load("/img/database/Generic.png");
-    public static final Icon DB_GENERIC_LARGE     = load("/img/database/Generic_large.png");
+    public static final Icon DB_ORACLE            = AllIcons.Providers.Oracle;
+    public static final Icon DB_POSTGRESQL        = AllIcons.Providers.Postgresql;
+    public static final Icon DB_MYSQL             = AllIcons.Providers.Mysql;
+    public static final Icon DB_SQLITE            = AllIcons.Providers.Sqlite;
+    public static final Icon DB_GENERIC           = load("/img/database/Generic.svg");
+
+    public static final Icon DB_ORACLE_LARGE      = IconUtil.toSize(AllIcons.Providers.Oracle, 32, 32);
+    public static final Icon DB_POSTGRESQL_LARGE  = IconUtil.toSize(AllIcons.Providers.Postgresql, 32, 32);
+    public static final Icon DB_MYSQL_LARGE       = IconUtil.toSize(AllIcons.Providers.Mysql, 32, 32);
+    public static final Icon DB_SQLITE_LARGE      = IconUtil.toSize(AllIcons.Providers.Sqlite, 32, 32);
+    public static final Icon DB_GENERIC_LARGE     = IconUtil.toSize(DB_GENERIC, 32, 32);
 
 //    public static final Icon DBO_ARGUMENT_IN         = createRowIcon(DBO_ARGUMENT, COMMON_DIRECTION_IN);
 //    public static final Icon DBO_ARGUMENT_OUT        = createRowIcon(DBO_ARGUMENT, COMMON_DIRECTION_OUT);

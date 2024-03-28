@@ -157,7 +157,7 @@ public class ConnectionBundle extends StatefulDisposableBase implements BrowserT
 
     @Override
     public Icon getIcon(int flags) {
-        return Icons.PROJECT;
+        return Icons.CONNECTIONS;
     }
 
     @Override
