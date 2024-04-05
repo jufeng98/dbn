@@ -75,6 +75,7 @@ public class Icons {
     public static final Icon ACTION_NAVIGATE                  = load("/img/action/Navigate.png");
     public static final Icon ACTION_DISCONNECT_SESSION        = load("/img/action/DisconnectSession.png");
     public static final Icon ACTION_KILL_SESSION              = load("/img/action/KillSession.png");
+    public static final Icon ACTION_TOGGLE_LOGGING            = load("/img/action/ToggleLogging.svg");
 
     public static final Icon FOLDER_CONNECTION_ASSOCIATION = load("/img/action/FolderConnectionLink.png");
     public static final Icon FOLDER_SCHEMA_ASSOCIATION = load("/img/action/FolderSchemaLink.png");
@@ -162,7 +163,7 @@ public class Icons {
 
     public static final Icon BROWSER_BACK = AllIcons.Actions.Back;
     public static final Icon BROWSER_NEXT = AllIcons.Actions.Forward;
-    public static final Icon BROWSER_OBJECT_PROPERTIES = load("/img/tools/ObjectProperties.png");
+    public static final Icon BROWSER_OBJECT_PROPERTIES = load("/img/tools/ObjectProperties.svg");
 
 
     public static final Icon DATA_EDITOR_ROW_DEFAULT = load("/img/DefaultRow.png");
@@ -244,8 +245,8 @@ public class Icons {
     public static final Icon CODE_EDITOR_SAVE_TO_FILE     = ACTION_SAVE;
     public static final Icon CODE_EDITOR_RESET            = ACTION_REVERT;
     public static final Icon CODE_EDITOR_RELOAD           = ACTION_RELOAD;
-    public static final Icon CODE_EDITOR_DIFF             = load("/img/action/ShowDiff.png");
-    public static final Icon CODE_EDITOR_DIFF_DB          = load("/img/action/ShowDbDiff.png");
+    public static final Icon CODE_EDITOR_DIFF             = load("/img/action/ShowDiff.svg");
+    public static final Icon CODE_EDITOR_DIFF_DB          = load("/img/action/ShowDbDiff.svg");
     public static final Icon CODE_EDITOR_DDL_FILE         = load("/img/DDLFile.png");
     public static final Icon CODE_EDITOR_DDL_FILE_NEW     = load("/img/DDLFileNew.png");
     public static final Icon CODE_EDITOR_SPEC             = load("/img/CodeSpec.png");
