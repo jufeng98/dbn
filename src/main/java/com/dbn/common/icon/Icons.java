@@ -257,7 +257,7 @@ public class Icons {
     //public static final Icon OBEJCT_COMPILE_KEEP = load("/main.resources.img/CompileKeep.png");
     public static final Icon OBEJCT_COMPILE_ASK = load("/img/action/CompileAsk.png");
     public static final Icon OBEJCT_EDIT_SOURCE = load("/img/action/EditSource.svg");
-    public static final Icon OBEJCT_EDIT_DATA = load("/img/action/EditData.png");
+    public static final Icon OBEJCT_EDIT_DATA = load("/img/action/EditData.svg");
     public static final Icon OBEJCT_VIEW_DATA = load("/img/ViewData.png");
 
     public static final Icon CONNECTION_COMMIT   = load("/img/action/ConnectionCommit.svg", "CONNECTION_COMMIT");
