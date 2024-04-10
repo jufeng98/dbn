@@ -12,9 +12,9 @@ public class CursorResultViewRecordAction extends MethodExecutionCursorResultAct
     @Override
     protected void actionPerformed(@NotNull AnActionEvent e, @NotNull Project project) {
         ResultSetTable resultSetTable = getResultSetTable(e);
-        if (resultSetTable != null) {
-            resultSetTable.showRecordViewDialog();
-        }
+        if (resultSetTable == null) return;
+
+        resultSetTable.showRecordViewDialog();
     }
 
     @Override

@@ -260,14 +260,14 @@ public class ResultSetRecordViewerForm extends DBNFormBase implements ComponentA
         public void actionPerformed(@NotNull AnActionEvent e) {
             ResultSetDataModelRow<?, ?> row = getRow();
             int index = row.getIndex();
-            if (index > 0) {
-                index--;
-                ResultSetDataModelRow<?, ?> previousRow = row.getModel().getRowAtIndex(index);
-                if (previousRow != null) {
-                    setRow(previousRow);
-                    table.selectRow(index);
-                }
-            }
+            if (index <= 0) return;
+
+            index--;
+            ResultSetDataModelRow<?, ?> previousRow = row.getModel().getRowAtIndex(index);
+            if (previousRow == null) return;
+
+            setRow(previousRow);
+            table.selectRow(index);
         }
 
         @Override
@@ -285,14 +285,14 @@ public class ResultSetRecordViewerForm extends DBNFormBase implements ComponentA
         public void actionPerformed(@NotNull AnActionEvent e) {
             ResultSetDataModelRow<?, ?> row = getRow();
             ResultSetDataModel<?, ?> model = row.getModel();
-            if (row.getIndex() < model.getRowCount() -1) {
-                int index = row.getIndex() + 1;
-                ResultSetDataModelRow<?, ?> nextRow = model.getRowAtIndex(index);
-                if (nextRow != null) {
-                    setRow(nextRow);
-                    table.selectRow(index);
-                }
-            }
+            if (row.getIndex() >= model.getRowCount() - 1) return;
+
+            int index = row.getIndex() + 1;
+            ResultSetDataModelRow<?, ?> nextRow = model.getRowAtIndex(index);
+            if (nextRow == null) return;
+
+            setRow(nextRow);
+            table.selectRow(index);
         }
 
         @Override

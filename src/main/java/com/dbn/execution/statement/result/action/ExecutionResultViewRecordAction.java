@@ -16,9 +16,9 @@ public class ExecutionResultViewRecordAction extends AbstractExecutionResultActi
     @Override
     protected void actionPerformed(@NotNull AnActionEvent e, @NotNull Project project, @NotNull StatementExecutionCursorResult executionResult) {
         ResultSetTable resultTable = executionResult.getResultTable();
-        if (resultTable != null) {
-            resultTable.showRecordViewDialog();
-        }
+        if (resultTable == null) return;
+
+        resultTable.showRecordViewDialog();
     }
 
     @Override

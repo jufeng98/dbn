@@ -115,7 +115,6 @@ public class FileConnectionMappingTable extends DBNTable<FileConnectionMappingTa
     public class MouseListener extends MouseAdapter {
         @Override
         public void mouseClicked(MouseEvent e) {
-            int clickCount = e.getClickCount();
             if (e.getButton() != MouseEvent.BUTTON1) return;
 
             int selectedRow = getSelectedRow();
@@ -128,6 +127,7 @@ public class FileConnectionMappingTable extends DBNTable<FileConnectionMappingTa
             VirtualFile file = mapping.getFile();
             if (file == null) return;
 
+            int clickCount = e.getClickCount();
             if (selectedColumn == 0 && clickCount == 2) {
                 Editors.openFileEditor(getProject(), file, true);
             } else if (selectedColumn == 1) {
