@@ -15,6 +15,7 @@ import com.dbn.editor.code.content.GuardedBlockMarkers;
 import com.dbn.editor.code.content.GuardedBlockType;
 import com.dbn.editor.code.content.SourceCodeContent;
 import com.dbn.editor.code.content.SourceCodeOffsets;
+import com.dbn.language.common.DBLanguage;
 import com.dbn.language.common.DBLanguageDialect;
 import com.dbn.language.common.DBLanguagePsiFile;
 import com.dbn.language.common.psi.PsiUtil;
@@ -22,7 +23,6 @@ import com.dbn.object.common.DBSchemaObject;
 import com.dbn.object.common.status.DBObjectStatus;
 import com.dbn.vfs.DBParseableVirtualFile;
 import com.dbn.vfs.DatabaseFileViewProvider;
-import com.intellij.lang.Language;
 import com.intellij.notebook.editor.BackedVirtualFile;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.event.DocumentEvent;
@@ -68,7 +68,7 @@ public class DBSourceCodeVirtualFile extends DBContentVirtualFile implements DBP
     }
 
     @Override
-    public PsiFile initializePsiFile(DatabaseFileViewProvider fileViewProvider, Language language) {
+    public PsiFile initializePsiFile(DatabaseFileViewProvider fileViewProvider, DBLanguage<?> language) {
         ConnectionHandler connection = this.getConnection();
         String parseRootId = getParseRootId();
         if (parseRootId != null) {

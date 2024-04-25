@@ -6,6 +6,7 @@ import com.dbn.common.filter.Filter;
 import com.dbn.common.options.PersistentConfiguration;
 import com.dbn.common.ref.WeakRef;
 import com.dbn.connection.ConnectionHandler;
+import com.dbn.connection.ConnectionId;
 import com.dbn.object.common.DBObject;
 import com.dbn.object.type.DBObjectType;
 import com.intellij.openapi.project.Project;
@@ -97,6 +98,10 @@ public class ObjectFilter<T extends DBObject> implements Filter<T>, PersistentCo
 
     public Project getProject() {
         return getSettings().getProject();
+    }
+
+    public ConnectionId getConnectionId() {
+        return getSettings().getConnectionId();
     }
 
     public ConnectionHandler getConnection() {

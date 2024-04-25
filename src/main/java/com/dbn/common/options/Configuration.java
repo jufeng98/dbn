@@ -7,12 +7,22 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static com.dbn.common.dispose.Failsafe.nd;
+import static com.dbn.common.util.Unsafe.cast;
 
 public interface Configuration<P extends Configuration, E extends ConfigurationEditorForm>
         extends SearchableConfigurable, PersistentConfiguration {
 
     @Nullable
     P getParent();
+
+    @Nullable
+    default <T> T getParentOfType(Class<T> type) {
+        P parent = getParent();
+        if (parent == null) return null;
+        if (type.isAssignableFrom(parent.getClass())) return cast(parent);
+
+        return cast(parent.getParentOfType(type));
+    }
 
     @NotNull
     default P ensureParent() {
