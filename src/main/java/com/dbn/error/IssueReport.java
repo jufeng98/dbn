@@ -6,9 +6,9 @@ import com.intellij.openapi.diagnostic.IdeaLoggingEvent;
 import com.intellij.openapi.diagnostic.SubmittedReportInfo;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.Consumer;
-import kotlinx.coroutines.repackaged.net.bytebuddy.asm.Advice;
 import lombok.Data;
 
+import java.nio.charset.Charset;
 import java.util.Locale;
 
 import static com.dbn.common.util.Commons.nvl;
@@ -75,6 +75,12 @@ public class IssueReport {
 
     public String getSystemLocale() {
         Locale locale = Locale.getDefault();
-        return locale.toLanguageTag() + " (" + locale.getDisplayName() + ")";
+        return locale.toLanguageTag() + " (" +
+                locale.getDisplayLanguage() + " - " +
+                locale.getDisplayCountry() + ")";
+    }
+
+    public String getSystemCharset() {
+        return Charset.defaultCharset().name();
     }
 }
