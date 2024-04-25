@@ -144,10 +144,10 @@ public class ExecutionOptionsForm extends DBNFormBase implements DBNCollapsibleF
         String connectionToken = getConnection().getName();
         LocalExecutionInput executionInput = getExecutionInput();
         SchemaId schemaId = executionInput.getTargetSchemaId();
-        SessionId sessionId = executionInput.getTargetSessionId();
+        String sessionName = executionInput.getTargetSessionName();
 
         String schemaToken = schemaId == null ? "" : (" / " + schemaId);
-        String sessionToken = sessionId == null ? "" : (" / " + sessionId);
+        String sessionToken = sessionName == null ? "" : (" / " + sessionName);
         return connectionToken + schemaToken + sessionToken;
     }
 
