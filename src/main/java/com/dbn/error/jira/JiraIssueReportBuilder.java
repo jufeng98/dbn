@@ -105,6 +105,7 @@ public class JiraIssueReportBuilder implements IssueReportBuilder {
         addEnvironmentInfo(description, "Database Name", report.getDatabaseName());
         addEnvironmentInfo(description, "Database Version", report.getDatabaseVersion());
         addEnvironmentInfo(description, "Database Driver", report.getDatabaseDriver());
+        addEnvironmentInfo(description, "System locale", report.getSystemLocale());
         addEnvironmentInfo(description, "Last Action Id", report.getLastActionId());
         addEnvironmentInfo(description, "Client Id", report.getClientId());
     }
