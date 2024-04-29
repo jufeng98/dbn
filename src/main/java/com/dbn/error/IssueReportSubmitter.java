@@ -67,9 +67,7 @@ public abstract class IssueReportSubmitter extends ErrorReportSubmitter {
             TicketResponse response;
             Consumer<SubmittedReportInfo> consumer = report.getConsumer();
             try {
-                response = submit(
-                        report.getSummary(),
-                        report.getDescription());
+                response = submit(report);
             } catch (Exception e) {
                 conditionallyLog(e);
 
@@ -105,6 +103,6 @@ public abstract class IssueReportSubmitter extends ErrorReportSubmitter {
     }
 
     @NotNull
-    public abstract TicketResponse submit(String summary, String description) throws Exception;
+    public abstract TicketResponse submit(IssueReport report) throws Exception;
 
 }
