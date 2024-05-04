@@ -5,6 +5,7 @@ import com.dbn.common.color.Colors;
 import com.dbn.common.icon.Icons;
 import com.dbn.common.locale.Formatter;
 import com.dbn.common.ui.util.Borders;
+import com.dbn.common.ui.util.Cursors;
 import com.dbn.common.ui.util.Mouse;
 import com.dbn.common.ui.util.UserInterface;
 import com.dbn.common.util.Actions;
@@ -67,7 +68,7 @@ public class CalendarPopupProviderForm extends TextFieldPopupProviderForm implem
         daysTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         daysTable.setDefaultRenderer(Object.class, CELL_RENDERER);
         daysTable.getTableHeader().setDefaultRenderer(HEADER_CELL_RENDERER);
-        daysTable.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        daysTable.setCursor(Cursors.handCursor());
         daysTable.setShowGrid(false);
         daysTable.addMouseListener(Mouse.listener().onClick(e -> {
             if (e.getButton() == MouseEvent.BUTTON1) {

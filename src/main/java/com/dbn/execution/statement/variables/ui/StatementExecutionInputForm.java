@@ -85,7 +85,7 @@ public class StatementExecutionInputForm extends DBNFormBase implements Componen
         DBLanguagePsiFile psiFile = executionProcessor.getPsiFile();
         String headerTitle = executionProcessor.getName();
         Icon headerIcon = executionProcessor.getIcon();
-        JBColor headerBackground = psiFile == null ?
+        Color headerBackground = psiFile == null ?
                 EnvironmentType.DEFAULT.getColor() :
                 psiFile.getEnvironmentType().getColor();
 

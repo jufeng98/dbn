@@ -96,7 +96,7 @@ public class ConnectionSettingsForm extends CompositeConfigurationEditorForm<Con
                    connectivityStatus == ConnectivityStatus.INVALID ? Icons.CONNECTION_INVALID : Icons.CONNECTION_INACTIVE;
 
         String name = connectionSettings.getDatabaseSettings().getName();
-        JBColor color = detailSettings.getEnvironmentType().getColor();
+        Color color = detailSettings.getEnvironmentType().getColor();
 
         headerForm = new DBNHeaderForm(this, name, icon, color);
         headerPanel.add(headerForm.getComponent(), BorderLayout.CENTER);

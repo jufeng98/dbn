@@ -6,8 +6,8 @@ import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.ConnectionHandlerStatusListener;
 import org.jetbrains.annotations.NotNull;
 
-public class TabbedBrowserTreeModel extends BrowserTreeModel {
-    public TabbedBrowserTreeModel(ConnectionHandler connection) {
+public class ConnectionBrowserTreeModel extends BrowserTreeModel {
+    public ConnectionBrowserTreeModel(ConnectionHandler connection) {
         super(connection.getObjectBundle());
         ProjectEvents.subscribe(connection.getProject(), this, ConnectionHandlerStatusListener.TOPIC, connectionHandlerStatusListener());
     }

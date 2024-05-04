@@ -9,9 +9,10 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class SimpleBrowserTreeModel extends BrowserTreeModel {
-    public SimpleBrowserTreeModel(@NotNull Project project, @Nullable ConnectionBundle connectionBundle) {
-        super(new SimpleBrowserTreeRoot(project, connectionBundle));
+public class ConnectionBundleBrowserTreeModel extends BrowserTreeModel {
+    public ConnectionBundleBrowserTreeModel(@NotNull Project project, @Nullable ConnectionBundle connectionBundle) {
+        //super(new ConnectionBundleBrowserTreeRoot(project, connectionBundle));
+        super(connectionBundle);
         ProjectEvents.subscribe(project, this, ConnectionHandlerStatusListener.TOPIC, connectionHandlerStatusListener());
     }
 
@@ -24,9 +25,9 @@ public class SimpleBrowserTreeModel extends BrowserTreeModel {
     private ConnectionHandlerStatusListener connectionHandlerStatusListener() {
         return (connectionId) -> {
             ConnectionHandler connection = ConnectionHandler.get(connectionId);
-            if (connection != null) {
-                notifyListeners(connection.getObjectBundle(), TreeEventType.NODES_CHANGED);
-            }
+            if (connection == null) return;
+
+            notifyListeners(connection.getObjectBundle(), TreeEventType.NODES_CHANGED);
         };
     }
 }

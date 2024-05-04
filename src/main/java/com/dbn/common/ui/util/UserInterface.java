@@ -7,6 +7,7 @@ import com.dbn.common.util.Strings;
 import com.dbn.common.util.Unsafe;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.registry.Registry;
+import com.intellij.ui.JBColor;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.border.IdeaTitledBorder;
 import lombok.Getter;
@@ -20,6 +21,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.TableCellEditor;
 import java.awt.*;
 import java.awt.event.InputEvent;
+import java.util.Arrays;
 import java.util.function.Predicate;
 
 import static com.dbn.common.ui.util.Borderless.isBorderless;
@@ -210,5 +212,16 @@ public class UserInterface {
 
     public static void updateSplitPanes(JComponent component) {
         visitRecursively(component, JSplitPane.class, sp -> Splitters.replaceSplitPane(sp));
+    }
+
+    public static void setBackgroundRecursive(JComponent component, Color color) {
+        component.setBackground(color);
+        Component[] children = component.getComponents();
+        Arrays
+            .stream(children)
+            .filter(child -> child instanceof JComponent)
+            .map(child -> (JComponent) child)
+            .forEach(child -> setBackgroundRecursive(child, color));
+
     }
 }

@@ -7,6 +7,7 @@ import com.dbn.common.database.DatabaseInfo;
 import com.dbn.common.dispose.DisposableContainers;
 import com.dbn.common.dispose.Disposer;
 import com.dbn.common.options.ui.ConfigurationEditorForm;
+import com.dbn.common.ui.CardLayouts;
 import com.dbn.common.ui.util.Fonts;
 import com.dbn.common.util.Actions;
 import com.dbn.common.util.Messages;
@@ -55,7 +56,6 @@ import static com.intellij.openapi.util.text.StringUtil.isNotEmpty;
 
 @Slf4j
 public class ConnectionBundleSettingsForm extends ConfigurationEditorForm<ConnectionBundleSettings> implements ListSelectionListener {
-    private static final String BLANK_PANEL_ID = "BLANK_PANEL";
 
     private JPanel mainPanel;
     private JPanel actionsPanel;
@@ -92,9 +92,7 @@ public class ConnectionBundleSettingsForm extends ConfigurationEditorForm<Connec
         if (!connections.isEmpty()) {
             selectConnection(connections.get(0).getConnectionId());
         }
-        JPanel emptyPanel = new JPanel();
-        connectionSetupPanel.setPreferredSize(new Dimension(500, -1));
-        connectionSetupPanel.add(emptyPanel, BLANK_PANEL_ID);
+        CardLayouts.addBlankCard(connectionSetupPanel, 500, -1);
 
         Disposer.register(this, connectionListModel);
         //DataProviders.register(mainPanel, this);
@@ -159,28 +157,27 @@ public class ConnectionBundleSettingsForm extends ConfigurationEditorForm<Connec
     }
 
     private void switchSettingsPanel(ConnectionSettings connectionSettings) {
-        CardLayout cardLayout = (CardLayout) connectionSetupPanel.getLayout();
         if (connectionSettings == null) {
-            cardLayout.show(connectionSetupPanel, BLANK_PANEL_ID);
-        } else {
-
-            ConnectionSettingsForm currentForm = cachedForms.get(currentPanelId);
-            String selectedTabName = currentForm == null ? null : currentForm.getSelectedTabName();
-
-            currentPanelId = connectionSettings.getConnectionId().id();
-            if (!cachedForms.containsKey(currentPanelId)) {
-                JComponent setupPanel = connectionSettings.createComponent();
-                this.connectionSetupPanel.add(setupPanel, currentPanelId);
-                cachedForms.put(currentPanelId, connectionSettings.getSettingsEditor());
-            }
-
-            ConnectionSettingsForm settingsEditor = connectionSettings.getSettingsEditor();
-            if (settingsEditor != null) {
-                settingsEditor.selectTab(selectedTabName);
-            }
-
-            cardLayout.show(connectionSetupPanel, currentPanelId);
+            CardLayouts.showBlankCard(connectionSetupPanel);
+            return;
         }
+
+        ConnectionSettingsForm currentForm = cachedForms.get(currentPanelId);
+        String selectedTabName = currentForm == null ? null : currentForm.getSelectedTabName();
+
+        currentPanelId = connectionSettings.getConnectionId().id();
+        if (!cachedForms.containsKey(currentPanelId)) {
+            JComponent setupPanel = connectionSettings.createComponent();
+            CardLayouts.addCard(connectionSetupPanel, setupPanel, currentPanelId);
+            cachedForms.put(currentPanelId, connectionSettings.getSettingsEditor());
+        }
+
+        ConnectionSettingsForm settingsEditor = connectionSettings.getSettingsEditor();
+        if (settingsEditor != null) {
+            settingsEditor.selectTab(selectedTabName);
+        }
+
+        CardLayouts.showCard(connectionSetupPanel, currentPanelId);
     }
 
 

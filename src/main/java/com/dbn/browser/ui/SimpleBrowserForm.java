@@ -1,7 +1,7 @@
 package com.dbn.browser.ui;
 
 import com.dbn.browser.model.BrowserTreeNode;
-import com.dbn.browser.model.TabbedBrowserTreeModel;
+import com.dbn.browser.model.ConnectionBrowserTreeModel;
 import com.dbn.browser.options.listener.ObjectDetailSettingsListener;
 import com.dbn.common.dispose.Failsafe;
 import com.dbn.common.event.ProjectEvents;
@@ -20,7 +20,7 @@ public class SimpleBrowserForm extends DatabaseBrowserForm{
     private DBNScrollPane browserScrollPane;
     private final DatabaseBrowserTree browserTree;
 
-    public SimpleBrowserForm(@NotNull TabbedBrowserForm parent, @NotNull ConnectionHandler connection) {
+    public SimpleBrowserForm(@NotNull DatabaseBrowserForm parent, @NotNull ConnectionHandler connection) {
         super(parent);
         browserTree = createBrowserTree(connection);
     }
@@ -46,6 +46,16 @@ public class SimpleBrowserForm extends DatabaseBrowserForm{
         return () -> UserInterface.repaint(browserTree);
     }
 
+    @Override
+    public void selectConnection(ConnectionId connectionId) {
+        // single connection view, no switch allowed
+    }
+
+    @Override
+    public ConnectionId getSelectedConnection() {
+        return getConnectionId();
+    }
+
     @Nullable
     public ConnectionId getConnectionId(){
         ConnectionHandler connection = getConnection();
@@ -55,8 +65,8 @@ public class SimpleBrowserForm extends DatabaseBrowserForm{
     @Nullable
     public ConnectionHandler getConnection(){
         DatabaseBrowserTree browserTree = getBrowserTree();
-        if (browserTree.getModel() instanceof TabbedBrowserTreeModel) {
-            TabbedBrowserTreeModel treeModel = (TabbedBrowserTreeModel) browserTree.getModel();
+        if (browserTree.getModel() instanceof ConnectionBrowserTreeModel) {
+            ConnectionBrowserTreeModel treeModel = (ConnectionBrowserTreeModel) browserTree.getModel();
             return treeModel.getConnection();
         }
         return null;

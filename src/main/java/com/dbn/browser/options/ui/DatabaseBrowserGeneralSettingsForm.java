@@ -28,7 +28,8 @@ public class DatabaseBrowserGeneralSettingsForm extends ConfigurationEditorForm<
 
         initComboBox(browserTypeComboBox,
                 BrowserDisplayMode.SIMPLE,
-                BrowserDisplayMode.TABBED);
+                BrowserDisplayMode.TABBED,
+                BrowserDisplayMode.SELECTOR);
 
         resetFormChanges();
         registerComponent(mainPanel);

@@ -5,11 +5,11 @@ import org.jetbrains.annotations.NotNull;
 
 public enum BrowserDisplayMode implements Presentable{
 
-    @Deprecated SINGLE("Single tree"),
-    SIMPLE("Single tree"),
-    TABBED("Multiple connection tabs");
+    SIMPLE("Single Tree"),
+    TABBED("Connection Tabs"),
+    SELECTOR("Connection Selector");
 
-    private String name;
+    private final String name;
 
     BrowserDisplayMode(String name) {
         this.name = name;

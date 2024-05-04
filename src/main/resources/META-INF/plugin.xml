@@ -600,15 +600,11 @@
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift D"/>
         </action>
 
-        <group id="DBNavigator.ActionGroup.Browser.Controls" text="Browser Object Properties">
+        <group id="DBNavigator.ActionGroup.Browser.Controls" text="Browser Object Properties" >
             <group id="DBNavigator.Actions.Browser.NewConnection" class="com.dbn.browser.action.ConnectionCreateDropdownAction" text="Browser - New Connection"/>
             <separator/>
             <action id="DBNavigator.Actions.Browser.NavigateBack" class="com.dbn.browser.action.BrowserNavigateBackAction" text="Browser - Back"/>
             <action id="DBNavigator.Actions.Browser.NavigateForward" class="com.dbn.browser.action.BrowserNavigateForwardAction" text="Browser - Forward"/>
-<!--
-            <action id="DBNavigator.Actions.Browser.AutoscrollToEditor" class="com.dbn.language.action.browser.AutoscrollToEditorAction" text="Browser - Autoscroll to editor"/>
-            <action id="DBNavigator.Actions.Browser.AutoscrollFromEditor" class="com.dbn.language.action.browser.AutoscrollFromEditorAction" text="Browser - Autoscroll from editor"/>
--->
             <action id="DBNavigator.Actions.Browser.ExpandTree" class="com.dbn.browser.action.BrowserTreeExpandAction" text="Browser - Expand All"  icon="AllIcons.Actions.Expandall"/>
             <action id="DBNavigator.Actions.Browser.CollapseTree" class="com.dbn.browser.action.BrowserTreeCollapseAction" text="Browser - Collapse All" icon="AllIcons.Actions.Collapseall"/>
             <separator/>
@@ -616,7 +612,19 @@
             <action id="DBNavigator.Actions.Browser.OpenSessionBrowser" class="com.dbn.browser.action.SessionBrowserOpenAction" text="Browser - Session Browser" icon="/img/tools/SessionBrowser.svg"/>
             <action id="DBNavigator.Actions.Browser.OpenSQLConsole" class="com.dbn.browser.action.SQLConsoleOpenAction" text="Browser - SQL Console" icon="/img/tools/SQLConsole.svg"/>
             <separator/>
-            <group id="DBNavigator.Actions.Browser.OpenSettings" class="com.dbn.browser.action.BrowserOptionsAction" text="Browser - Options"/>
+            <group id="DBNavigator.Actions.Browser.OpenSettings" text="Options" icon="AllIcons.General.GearPlain" popup="true">
+                <action id="DBNavigator.Actions.Browser.AutoscrollToEditor" class="com.dbn.browser.action.AutoscrollToEditorAction" text="Browser - Autoscroll to Editor"/>
+                <action id="DBNavigator.Actions.Browser.AutoscrollFromEditor" class="com.dbn.browser.action.AutoscrollFromEditorAction" text="Browser - Autoscroll from Editor"/>
+                <separator/>
+                <action class="com.dbn.browser.action.ConnectionFilterSettingsOpenAction" text="Browser - Object Filters..." icon="/img/filter/DatasetFilter.png"/>
+                <separator/>
+                <group id="DBNavigator.Actions.Browser.DisplayMode" text="Display Mode" popup="true">
+                    <action id="DBNavigator.Actions.Browser.DisplayModeSimple" class="com.dbn.browser.action.BrowserDisplayModeAction$Simple" text="Browser - Single Tree"/>
+                    <action id="DBNavigator.Actions.Browser.DisplayModeTabbed" class="com.dbn.browser.action.BrowserDisplayModeAction$Tabbed" text="Browser - Connection Tabs"/>
+                    <action id="DBNavigator.Actions.Browser.DisplayModeSelector" class="com.dbn.browser.action.BrowserDisplayModeAction$Selector" text="Browser - Connection Selector"/>
+                </group>
+                <action class="com.dbn.browser.action.BrowserProjectSettingsAction" text="Browser - Settings"/>
+            </group>
         </group>
 
         <group id="DBNavigator.ActionGroup.Calendar.Controls" text="Calendar Controls">

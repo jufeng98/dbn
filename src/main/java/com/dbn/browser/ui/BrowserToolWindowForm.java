@@ -35,15 +35,14 @@ public class BrowserToolWindowForm extends DBNFormBase {
     private JPanel objectPropertiesPanel;
     private @Getter DatabaseBrowserForm browserForm;
 
-    private @Getter @Setter BrowserDisplayMode displayMode;
+    private BrowserDisplayMode displayMode;
     private final ObjectPropertiesForm objectPropertiesForm;
 
     public BrowserToolWindowForm(Disposable parent, @NotNull Project project) {
         super(parent, project);
         //toolWindow.setIcon(dbBrowser.getIcon(0));
         DatabaseBrowserManager browserManager = DatabaseBrowserManager.getInstance(project);
-
-        rebuildTabs();
+        rebuild();
 
         ActionToolbar actionToolbar = Actions.createActionToolbar(
                 actionsPanel,
@@ -64,24 +63,20 @@ public class BrowserToolWindowForm extends DBNFormBase {
         ProjectEvents.subscribe(project, this,
                 ConnectionConfigListener.TOPIC,
                 ConnectionConfigListener
-                        .whenSetupChanged(() -> rebuildTabs())
+                        .whenSetupChanged(() -> rebuild())
                         .whenNameChanged(id -> refreshTabs(id)));
     }
 
-    public void rebuildTabs() {
+    public void rebuild() {
         Project project = ensureProject();
         DatabaseBrowserSettings browserSettings = DatabaseBrowserSettings.getInstance(project);
         displayMode = browserSettings.getGeneralSettings().getDisplayMode();
         DatabaseBrowserForm oldBrowserForm = this.browserForm;
-        TabbedBrowserForm previousTabbedForm =
-                oldBrowserForm instanceof TabbedBrowserForm ?
-                (TabbedBrowserForm) oldBrowserForm : null;
 
         this.browserForm =
-                displayMode == BrowserDisplayMode.TABBED ? new TabbedBrowserForm(this, previousTabbedForm) :
-                displayMode == BrowserDisplayMode.SIMPLE ? new SimpleBrowserForm(this) : null;
-
-
+                displayMode == BrowserDisplayMode.TABBED ? new TabbedBrowserForm(this) :
+                displayMode == BrowserDisplayMode.SIMPLE ? new SimpleBrowserForm(this) :
+                displayMode == BrowserDisplayMode.SELECTOR ? new SelectorBrowserForm(this) : null;
 
         browserPanel.removeAll();
         browserPanel.add(this.browserForm.getComponent(), BorderLayout.CENTER);
@@ -94,6 +89,11 @@ public class BrowserToolWindowForm extends DBNFormBase {
         if (browserForm instanceof TabbedBrowserForm) {
             TabbedBrowserForm tabbedBrowserForm = (TabbedBrowserForm) browserForm;
             return tabbedBrowserForm.getBrowserTree(connectionId);
+        }
+
+        if (browserForm instanceof SelectorBrowserForm) {
+            SelectorBrowserForm selectorBrowserForm = (SelectorBrowserForm) browserForm;
+            return selectorBrowserForm.getBrowserTree(connectionId);
         }
 
         if (browserForm instanceof SimpleBrowserForm) {
@@ -134,9 +134,9 @@ public class BrowserToolWindowForm extends DBNFormBase {
     }
 
     private void changeDisplayMode(BrowserDisplayMode displayMode) {
-        if (getDisplayMode() != displayMode) {
-            setDisplayMode(displayMode);
-            rebuildTabs();
+        if (this.displayMode != displayMode) {
+            this.displayMode = displayMode;
+            rebuild();
         }
     }
 

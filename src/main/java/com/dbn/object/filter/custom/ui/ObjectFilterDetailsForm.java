@@ -121,7 +121,7 @@ public class ObjectFilterDetailsForm extends DBNFormBase {
     private void initHeaderPanel() {
         DBObjectType objectType = filter.getObjectType();
         EnvironmentType environmentType = getEnvironmentType();
-        JBColor color = environmentType.getColor();
+        Color color = environmentType.getColor();
         Icon icon = objectType.getIcon();
         String title = toUpperCase(objectType.getName());
 

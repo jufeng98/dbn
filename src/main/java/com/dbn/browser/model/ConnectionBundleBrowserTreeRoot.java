@@ -20,11 +20,11 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class SimpleBrowserTreeRoot extends StatefulDisposableBase implements BrowserTreeNode {
+public final class ConnectionBundleBrowserTreeRoot extends StatefulDisposableBase implements BrowserTreeNode {
     private final List<ConnectionBundle> rootChildren = new ArrayList<>();
     private final ProjectRef project;
 
-    SimpleBrowserTreeRoot(@NotNull Project project, @Nullable ConnectionBundle connectionBundle) {
+    ConnectionBundleBrowserTreeRoot(@NotNull Project project, @Nullable ConnectionBundle connectionBundle) {
         this.project = ProjectRef.of(project);
         if (connectionBundle != null) {
             this.rootChildren.add(connectionBundle);

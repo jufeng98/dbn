@@ -1,8 +1,10 @@
 package com.dbn.browser.ui;
 
+import com.dbn.browser.model.BrowserTreeEventListener;
 import com.dbn.browser.model.BrowserTreeNode;
 import com.dbn.common.dispose.Failsafe;
 import com.dbn.common.environment.EnvironmentType;
+import com.dbn.common.environment.options.EnvironmentSettings;
 import com.dbn.common.environment.options.EnvironmentVisibilitySettings;
 import com.dbn.common.environment.options.listener.EnvironmentManagerListener;
 import com.dbn.common.event.ProjectEvents;
@@ -13,9 +15,9 @@ import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.ConnectionId;
 import com.dbn.connection.ConnectionManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.tabs.TabInfo;
+import com.intellij.ui.tabs.TabsListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,7 +32,7 @@ public class TabbedBrowserForm extends DatabaseBrowserForm{
     private final TabbedPane connectionTabs;
     private JPanel mainPanel;
 
-    TabbedBrowserForm(@NotNull BrowserToolWindowForm parent, @Nullable TabbedBrowserForm previous) {
+    TabbedBrowserForm(@NotNull BrowserToolWindowForm parent) {
         super(parent);
         connectionTabs = new TabbedPane(this);
         //connectionTabs.setSingleRow(false);
@@ -38,8 +40,20 @@ public class TabbedBrowserForm extends DatabaseBrowserForm{
         connectionTabs.setAutoscrolls(true);
         //connectionTabs.setBackground(GUIUtil.getListBackground());
         //mainPanel.add(connectionTabs, BorderLayout.CENTER);
-        initTabs(previous);
-        ProjectEvents.subscribe(getProject(), this, EnvironmentManagerListener.TOPIC, environmentManagerListener());
+        initBrowserForms();
+        ProjectEvents.subscribe(ensureProject(), this, EnvironmentManagerListener.TOPIC, environmentManagerListener());
+        connectionTabs.addListener(createTabsListener());
+    }
+
+    private @NotNull TabsListener createTabsListener() {
+        return new TabsListener() {
+            @Override
+            public void selectionChanged(@Nullable TabInfo oldSelection, @Nullable TabInfo newSelection) {
+                ProjectEvents.notify(ensureProject(),
+                        BrowserTreeEventListener.TOPIC,
+                        (listener) -> listener.selectionChanged());
+            }
+        };
     }
 
     @NotNull
@@ -47,28 +61,30 @@ public class TabbedBrowserForm extends DatabaseBrowserForm{
         return new EnvironmentManagerListener() {
             @Override
             public void configurationChanged(Project project) {
-                EnvironmentVisibilitySettings visibilitySettings = getEnvironmentSettings(project).getVisibilitySettings();
+                EnvironmentSettings environmentSettings = getEnvironmentSettings(project);
+                EnvironmentVisibilitySettings visibilitySettings = environmentSettings.getVisibilitySettings();
                 for (TabInfo tabInfo : listTabs()) {
-                    guarded(tabInfo, ti -> {
-                        SimpleBrowserForm browserForm = (SimpleBrowserForm) ti.getObject();
-                        ConnectionHandler connection = browserForm.getConnection();
-                        if (connection == null) return;
-
-                        JBColor environmentColor = connection.getEnvironmentType().getColor();
-                        if (visibilitySettings.getConnectionTabs().value()) {
-                            ti.setTabColor(environmentColor);
-                        } else {
-                            ti.setTabColor(null);
-                        }
-                    });
+                    guarded(tabInfo, ti -> updateTabColor(ti, visibilitySettings));
                 }
             }
         };
     }
 
+    private static void updateTabColor(TabInfo tabInfo, EnvironmentVisibilitySettings visibilitySettings) {
+        SimpleBrowserForm browserForm = (SimpleBrowserForm) tabInfo.getObject();
+        ConnectionHandler connection = browserForm.getConnection();
+        if (connection == null) return;
+
+        if (visibilitySettings.getConnectionTabs().value()) {
+            Color environmentColor = connection.getEnvironmentType().getColor();
+            tabInfo.setTabColor(environmentColor);
+        } else {
+            tabInfo.setTabColor(null);
+        }
+    }
 
 
-    private void initTabs(@Nullable TabbedBrowserForm previous) {
+    private void initBrowserForms() {
         JPanel mainPanel = this.mainPanel;
         if (mainPanel == null) return;
 
@@ -76,13 +92,7 @@ public class TabbedBrowserForm extends DatabaseBrowserForm{
         ConnectionManager connectionManager = ConnectionManager.getInstance(project);
         ConnectionBundle connectionBundle = connectionManager.getConnectionBundle();
         for (ConnectionHandler connection: connectionBundle.getConnections()) {
-            ConnectionId connectionId = connection.getConnectionId();
-            SimpleBrowserForm browserForm = previous == null ? null : previous.removeBrowserForm(connectionId);
-            if (browserForm == null) {
-                browserForm = new SimpleBrowserForm(this, connection);
-            } else {
-                browserForm.setParent(this);
-            }
+            SimpleBrowserForm browserForm = new SimpleBrowserForm(this, connection);
 
             JComponent component = browserForm.getComponent();
             TabInfo tabInfo = new TabInfo(component);
@@ -157,11 +167,27 @@ public class TabbedBrowserForm extends DatabaseBrowserForm{
     @Nullable
     public DatabaseBrowserTree getActiveBrowserTree() {
         TabInfo tabInfo = getConnectionTabs().getSelectedInfo();
-        if (tabInfo != null) {
-            SimpleBrowserForm browserForm = (SimpleBrowserForm) tabInfo.getObject();
-            return browserForm.getBrowserTree();
-        }
-        return null;
+        if (tabInfo == null) return null;
+
+        SimpleBrowserForm browserForm = (SimpleBrowserForm) tabInfo.getObject();
+        return browserForm.getBrowserTree();
+    }
+
+    @Override
+    public ConnectionId getSelectedConnection() {
+        TabInfo tabInfo = getConnectionTabs().getSelectedInfo();
+        if (tabInfo == null) return null;
+
+        SimpleBrowserForm browserForm = (SimpleBrowserForm) tabInfo.getObject();
+        return browserForm.getConnectionId();
+    }
+
+    @Override
+    public void selectConnection(ConnectionId connectionId) {
+        SimpleBrowserForm browserForm = getBrowserForm(connectionId);
+        if (browserForm == null) return;
+
+        getConnectionTabs().select(browserForm.getComponent(), true);
     }
 
     @Override
@@ -170,16 +196,17 @@ public class TabbedBrowserForm extends DatabaseBrowserForm{
         SimpleBrowserForm browserForm = getBrowserForm(connectionId);
         if (browserForm == null) return;
 
-        getConnectionTabs().select(browserForm.getComponent(), focus);
         if (scroll) browserForm.selectElement(treeNode, focus, true);
+
+        selectConnection(connectionId);
     }
 
     @Override
     public void rebuildTree() {
-        for (TabInfo tabInfo : listTabs()) {
-            SimpleBrowserForm browserForm = (SimpleBrowserForm) tabInfo.getObject();
-            browserForm.rebuildTree();
-        }
+        listTabs()
+            .stream()
+            .map(ti -> (SimpleBrowserForm) ti.getObject())
+            .forEach(f -> f.rebuildTree());
     }
 
     @NotNull
@@ -191,11 +218,11 @@ public class TabbedBrowserForm extends DatabaseBrowserForm{
         for (TabInfo tabInfo : listTabs()) {
             SimpleBrowserForm browserForm = (SimpleBrowserForm) tabInfo.getObject();
             ConnectionHandler connection = browserForm.getConnection();
-            if (connection != null) {
-                if (connection.getConnectionId() == connectionId) {
-                    tabInfo.setText(connection.getName());
-                    break;
-                }
+            if (connection == null) continue;
+
+            if (connection.getConnectionId() == connectionId) {
+                tabInfo.setText(connection.getName());
+                break;
             }
         }
 

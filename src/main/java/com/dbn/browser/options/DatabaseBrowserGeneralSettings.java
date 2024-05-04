@@ -41,7 +41,6 @@ public class DatabaseBrowserGeneralSettings
     @Override
     public void readConfiguration(Element element) {
         displayMode = getEnum(element, "display-mode", BrowserDisplayMode.TABBED);
-        if (displayMode == BrowserDisplayMode.SINGLE) displayMode = BrowserDisplayMode.SIMPLE;
         navigationHistorySize.readConfiguration(element);
         showObjectDetails.readConfiguration(element);
     }

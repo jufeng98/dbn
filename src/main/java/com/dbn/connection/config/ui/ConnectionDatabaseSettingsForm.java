@@ -128,7 +128,7 @@ public class ConnectionDatabaseSettingsForm extends ConfigurationEditorForm<Conn
                         connectivityStatus == ConnectivityStatus.INVALID ? Icons.CONNECTION_INVALID : Icons.CONNECTION_INACTIVE;
 
         EnvironmentType environmentType = connectionSettings.getDetailSettings().getEnvironmentType();
-        JBColor color = environmentType.getColor();
+        Color color = environmentType.getColor();
         ConnectionId connectionId = configuration.getConnectionId();
         DatabaseType databaseType = configuration.getDatabaseType();
 

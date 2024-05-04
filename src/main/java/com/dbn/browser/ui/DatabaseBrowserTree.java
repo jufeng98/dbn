@@ -4,6 +4,8 @@ import com.dbn.browser.DatabaseBrowserManager;
 import com.dbn.browser.DatabaseBrowserUtils;
 import com.dbn.browser.TreeNavigationHistory;
 import com.dbn.browser.model.*;
+import com.dbn.browser.options.BrowserDisplayMode;
+import com.dbn.browser.options.DatabaseBrowserSettings;
 import com.dbn.common.dispose.Disposer;
 import com.dbn.common.event.ProjectEvents;
 import com.dbn.common.filter.Filter;
@@ -43,6 +45,8 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 import java.awt.event.*;
 
+import static com.dbn.browser.options.BrowserDisplayMode.SIMPLE;
+import static com.dbn.browser.options.BrowserDisplayMode.TABBED;
 import static com.dbn.common.dispose.Checks.isNotValid;
 
 @Getter
@@ -59,13 +63,15 @@ public final class DatabaseBrowserTree extends DBNTree implements Borderless {
         addMouseListener(createMouseListener());
         addTreeSelectionListener(createTreeSelectionListener());
 
+        DatabaseBrowserSettings settings = DatabaseBrowserSettings.getInstance(ensureProject());
+        BrowserDisplayMode displayMode = settings.getGeneralSettings().getDisplayMode();
+
         setToggleClickCount(0);
-        setRootVisible(treeModel instanceof TabbedBrowserTreeModel);
+        setRootVisible(displayMode == SIMPLE || displayMode == TABBED);
         setShowsRootHandles(true);
         setAutoscrolls(true);
         DatabaseBrowserTreeCellRenderer browserTreeCellRenderer = new DatabaseBrowserTreeCellRenderer(parent.ensureProject());
         setCellRenderer(browserTreeCellRenderer);
-        //setExpandedState(DatabaseBrowserUtils.createTreePath(treeModel.getRoot()), false);
 
         new DatabaseBrowserTreeSpeedSearch(this);
 
@@ -77,8 +83,8 @@ public final class DatabaseBrowserTree extends DBNTree implements Borderless {
     private static BrowserTreeModel createModel(@NotNull Project project, @Nullable ConnectionHandler connection) {
         ConnectionManager connectionManager = ConnectionManager.getInstance(project);
         return connection == null ?
-                new SimpleBrowserTreeModel(project, connectionManager.getConnectionBundle()) :
-                new TabbedBrowserTreeModel(connection);
+                new ConnectionBundleBrowserTreeModel(project, connectionManager.getConnectionBundle()) :
+                new ConnectionBrowserTreeModel(connection);
 
     }
 

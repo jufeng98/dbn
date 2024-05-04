@@ -7,6 +7,7 @@ import com.dbn.common.ui.form.DBNForm;
 import com.dbn.common.ui.tree.Trees;
 import com.dbn.common.ui.util.Borderless;
 import com.dbn.common.ui.util.Borders;
+import com.dbn.common.ui.util.Cursors;
 import com.dbn.common.ui.util.Mouse;
 import com.dbn.common.util.Strings;
 import com.dbn.data.editor.ui.UserValueHolder;
@@ -169,7 +170,7 @@ public class ExplainPlanTreeTable extends TreeTable implements StatefulDisposabl
             //setBorder(new CustomLineBorder(DBNTable.GRID_COLOR, 0, 0, 1, 1));
             ExplainPlanTreeTableModel tableModel = (ExplainPlanTreeTableModel) getTableModel();
             if (tableModel.isLargeValue(column)) {
-                setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                setCursor(Cursors.handCursor());
             }
         }
     };
