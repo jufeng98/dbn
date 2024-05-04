@@ -84,7 +84,7 @@ public class StatementViewerPopup implements Disposable {
         dimension.setSize(Math.min(dimension.getWidth() + 20, 1000), Math.min(dimension.getHeight() + 70, 800) );
         popup.setSize(dimension);
 
-        popup.addListener(new JBPopupAdapter() {
+        popup.addListener(new JBPopupListener() {
             @Override
             public void onClosed(@NotNull LightweightWindowEvent event) {
                 dispose();

@@ -24,7 +24,7 @@ import com.intellij.openapi.editor.colors.EditorColorsScheme;
 import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopup;
-import com.intellij.openapi.ui.popup.JBPopupAdapter;
+import com.intellij.openapi.ui.popup.JBPopupListener;
 import com.intellij.openapi.ui.popup.LightweightWindowEvent;
 import com.intellij.ui.ColoredTableCellRenderer;
 import com.intellij.ui.ColoredTreeCellRenderer;
@@ -199,7 +199,7 @@ public class ExplainPlanTreeTable extends TreeTable implements StatefulDisposabl
 
                 largeValuePopup = viewer.show(this, location);
                 largeValuePopup.addListener(
-                        new JBPopupAdapter() {
+                        new JBPopupListener() {
                             @Override
                             public void onClosed(@NotNull LightweightWindowEvent event) {
                                 largeValuePopup.cancel();

@@ -35,7 +35,6 @@ import com.intellij.history.LocalHistory;
 import com.intellij.openapi.project.Project;
 import com.intellij.xdebugger.XDebugSession;
 import com.intellij.xdebugger.XDebuggerManager;
-import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -51,12 +50,6 @@ import static com.intellij.openapi.ui.DialogWrapper.OK_EXIT_CODE;
 
 public abstract class DBProgramRunner<T extends ExecutionInput> extends GenericProgramRunner {
     public static final String INVALID_RUNNER_ID = "DBNInvalidRunner";
-
-    @Nullable
-    @Override
-    protected RunContentDescriptor doExecute(@NotNull RunProfileState state, @NotNull ExecutionEnvironment environment) throws ExecutionException {
-        return doExecute(environment.getProject(), environment.getExecutor(), state, null, environment);
-    }
 
     public abstract DBDebuggerType getDebuggerType();
 
@@ -75,20 +68,10 @@ public abstract class DBProgramRunner<T extends ExecutionInput> extends GenericP
         return false;
     }
 
-    @Override
     @Nullable
-    @SneakyThrows
-    protected RunContentDescriptor doExecute(@NotNull Project project, @NotNull RunProfileState state, RunContentDescriptor contentToReuse, @NotNull ExecutionEnvironment env) {
-        return doExecute(project, env.getExecutor(), state, contentToReuse, env);
-    }
-
-    private RunContentDescriptor doExecute(
-            Project project,
-            Executor executor,
-            RunProfileState state,
-            RunContentDescriptor contentToReuse,
-            ExecutionEnvironment environment) throws ExecutionException {
-
+    @Override
+    protected RunContentDescriptor doExecute(@NotNull RunProfileState state, @NotNull ExecutionEnvironment environment) {
+        Project project = environment.getProject();
         DBRunConfig runProfile = (DBRunConfig) environment.getRunProfile();
         ConnectionHandler connection = runProfile.getConnection();
         if (connection == null) return null;

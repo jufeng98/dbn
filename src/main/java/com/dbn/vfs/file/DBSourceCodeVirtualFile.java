@@ -33,6 +33,7 @@ import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -47,6 +48,7 @@ import static com.dbn.vfs.file.status.DBFileStatus.*;
 
 @Slf4j
 @Getter
+@Setter
 public class DBSourceCodeVirtualFile extends DBContentVirtualFile implements DBParseableVirtualFile, DocumentListener, BackedVirtualFile {
 
     private SourceCodeContent originalContent = new SourceCodeContent();
@@ -263,10 +265,6 @@ public class DBSourceCodeVirtualFile extends DBContentVirtualFile implements DBP
     @Override
     public long getLength() {
         return localContent.length();
-    }
-
-    public void setSourceLoadError(String sourceLoadError) {
-        this.sourceLoadError = sourceLoadError;
     }
 
     @Override

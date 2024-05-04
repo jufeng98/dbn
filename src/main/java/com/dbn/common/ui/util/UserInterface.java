@@ -5,9 +5,9 @@ import com.dbn.common.lookup.Visitor;
 import com.dbn.common.thread.Dispatch;
 import com.dbn.common.util.Strings;
 import com.dbn.common.util.Unsafe;
+import com.intellij.openapi.actionSystem.ActionToolbarPosition;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.registry.Registry;
-import com.intellij.ui.JBColor;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.border.IdeaTitledBorder;
 import lombok.Getter;
@@ -203,7 +203,7 @@ public class UserInterface {
     @NotNull
     public static ToolbarDecorator createToolbarDecorator(JTable table) {
         ToolbarDecorator decorator = ToolbarDecorator.createDecorator(table);
-        decorator.setAsUsualTopToolbar();
+        decorator.setToolbarPosition(ActionToolbarPosition.TOP);
         decorator.setToolbarBorder(Borders.TOOLBAR_DECORATOR_BORDER);
         decorator.setPanelBorder(Borders.EMPTY_BORDER);
         return decorator;

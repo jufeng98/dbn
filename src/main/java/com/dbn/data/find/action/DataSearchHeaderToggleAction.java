@@ -31,9 +31,10 @@ public abstract class DataSearchHeaderToggleAction extends DBNCheckboxAction imp
         return true;
     }
 
+    @NotNull
     @Override
-    public JComponent createCustomComponent(@NotNull Presentation presentation) {
-        final JComponent customComponent = super.createCustomComponent(presentation);
+    public JComponent createCustomComponent(@NotNull Presentation presentation, @NotNull String place) {
+        final JComponent customComponent = super.createCustomComponent(presentation, place);
         if (customComponent instanceof JCheckBox) {
             JCheckBox checkBox = (JCheckBox) customComponent;
             checkBox.setFocusable(false);

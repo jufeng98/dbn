@@ -790,10 +790,6 @@
         <liveTemplateContext implementation="com.dbn.language.psql.template.PSQLTemplateContextType" contextId="PSQL"/>
         <defaultLiveTemplates file="com/dbn/language/sql/template/default.xml"/>
         <defaultLiveTemplates file="com/dbn/language/psql/template/default.xml"/>
-<!--
-        <defaultLiveTemplatesProvider implementation="com.dbn.language.sql.template.SQLTemplateProvider"/>
-        <defaultLiveTemplatesProvider implementation="com.dbn.language.psql.template.PSQLTemplateProvider"/>
--->
 
         <fileEditorProvider implementation="com.dbn.editor.code.SourceCodeEditorProvider"/>
         <fileEditorProvider implementation="com.dbn.editor.code.SourceCodeBodyEditorProvider"/>
