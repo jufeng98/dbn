@@ -14,6 +14,7 @@ import com.dbn.connection.SchemaId;
 import com.dbn.connection.context.DatabaseContext;
 import com.dbn.connection.context.DatabaseContextBase;
 import com.dbn.object.DBSchema;
+import com.dbn.object.DBSynonym;
 import com.dbn.object.common.DBObject;
 import com.dbn.object.common.DBObjectBundle;
 import com.dbn.object.type.DBObjectType;
@@ -41,6 +42,7 @@ import static com.dbn.common.options.setting.Settings.stringAttribute;
 import static com.dbn.common.util.Commons.nvl;
 import static com.dbn.common.util.Unsafe.cast;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
+import static com.dbn.object.type.DBObjectType.SYNONYM;
 import static com.dbn.vfs.DatabaseFileSystem.PS;
 import static com.dbn.vfs.DatabaseFileSystem.PSS;
 
@@ -396,6 +398,11 @@ public class DBObjectRef<T extends DBObject> implements Comparable<DBObjectRef<?
 
         // update the ref-metadata with more qualified resolved object
         objectType = object.getObjectType();
+        objectName = object.getName();
+        overload = object.getOverload();
+        DBObject parentObject = object.getParentObject();
+        if (parentObject != null) parent = parentObject.ref();
+
         return object;
     }
 
@@ -438,6 +445,8 @@ public class DBObjectRef<T extends DBObject> implements Comparable<DBObjectRef<?
                 if (object == null && genericType != objectType) {
                     object = parentObject.getChildObject(genericType, objectName, overload, true);
                 }
+
+                object = unpackSynonym(object);
             }
         }
         return cast(object);
