@@ -115,8 +115,11 @@ public class SelectorBrowserForm extends DatabaseBrowserForm {
                 () -> popup = null,
                 10,
                 a -> {
-                    SelectConnectionAction connectionAction = (SelectConnectionAction) a;
-                    return Objects.equals(connectionAction.getConnectionId(), selectedConnectionId);
+                    if (a instanceof SelectConnectionAction) {
+                        SelectConnectionAction connectionAction = (SelectConnectionAction) a;
+                        return Objects.equals(connectionAction.getConnectionId(), selectedConnectionId);
+                    }
+                    return false;
                 });
         Popups.showUnderneathOf(popup, connectionLabel, 8, 200);
     }
