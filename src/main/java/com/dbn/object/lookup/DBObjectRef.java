@@ -394,7 +394,7 @@ public class DBObjectRef<T extends DBObject> implements Comparable<DBObjectRef<?
 
         reference = WeakRef.of(object);
 
-        // further qualify the object type if it happens to be generic
+        // update the ref-metadata with more qualified resolved object
         objectType = object.getObjectType();
         return object;
     }
@@ -441,6 +441,19 @@ public class DBObjectRef<T extends DBObject> implements Comparable<DBObjectRef<?
             }
         }
         return cast(object);
+    }
+
+    @Nullable
+    private DBObject unpackSynonym(DBObject object) {
+        if (object instanceof DBSynonym) {
+            if (objectType == SYNONYM) return object;
+
+            DBSynonym synonym = (DBSynonym) object;
+            object = synonym.getUnderlyingObject();
+            if (object == null) return null;
+            if (!object.matches(objectType)) return null;
+        }
+        return object;
     }
 
     @Nullable
