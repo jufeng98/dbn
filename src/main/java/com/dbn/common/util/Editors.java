@@ -482,6 +482,17 @@ public class Editors {
         return EditorNotifications.getInstance(Failsafe.nd(project));
     }
 
+    public static void updateAllNotifications(@NotNull Project project) {
+        updateNotifications(project, null);
+    }
+
+    public static void updateNotifications(@NotNull Project project, @Nullable VirtualFile file) {
+        EditorNotifications notifications = getNotifications(project);
+        if (file == null)
+            notifications.updateAllNotifications(); else
+            notifications.updateNotifications(file);
+    }
+
     public static boolean isDdlFileEditor(FileEditor fileEditor) {
         return fileEditor instanceof DDLFileEditor;
     }
@@ -520,15 +531,18 @@ public class Editors {
             try {
                 markSkipBrowserAutoscroll(file);
                 FileEditorManager fileEditorManager = FileEditorManager.getInstance(project);
+                boolean wasOpen = fileEditorManager.isFileOpen(file);
+
                 FileEditor[] fileEditors = fileEditorManager.openFile(file, focus);
                 if (callback != null) callback.accept(fileEditors);
+
+                if (!wasOpen) updateNotifications(project, file);
             } finally {
                 unmarkSkipBrowserAutoscroll(file);
             }
         }));
 
     }
-
 
     public static EditorEx createEditor(Document document, Project project, @Nullable VirtualFile file, @NotNull FileType fileType) {
         EditorFactory editorFactory = EditorFactory.getInstance();

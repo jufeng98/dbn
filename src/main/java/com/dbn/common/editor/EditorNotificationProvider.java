@@ -3,6 +3,7 @@ package com.dbn.common.editor;
 import com.dbn.common.thread.Dispatch;
 import com.dbn.common.util.Editors;
 import com.dbn.vfs.file.DBContentVirtualFile;
+import com.dbn.vfs.file.DBEditableObjectVirtualFile;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.impl.NonProjectFileWritingAccessExtension;
@@ -21,14 +22,7 @@ public abstract class EditorNotificationProvider<T extends JComponent>
         implements NonProjectFileWritingAccessExtension, Disposable {
 
     public void updateEditorNotification(@NotNull Project project, @Nullable DBContentVirtualFile databaseContentFile) {
-        Dispatch.run(() -> {
-            EditorNotifications notifications = Editors.getNotifications(project);
-            if (databaseContentFile == null) {
-                notifications.updateAllNotifications();
-            } else {
-                notifications.updateNotifications(databaseContentFile.getMainDatabaseFile());
-            }
-        });
+        Dispatch.run(() -> Editors.updateNotifications(project, DBEditableObjectVirtualFile.of(databaseContentFile)));
     }
 
     public final T createNotificationPanel(@NotNull VirtualFile virtualFile, @NotNull FileEditor fileEditor, @NotNull Project project) {

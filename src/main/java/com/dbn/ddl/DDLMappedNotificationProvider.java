@@ -93,10 +93,7 @@ public class DDLMappedNotificationProvider extends EditorNotificationProvider<DD
 
     @NotNull
     private static DDLFileSettingsChangeListener ddlFileSettingsChangeListener() {
-        return (Project project) -> {
-            EditorNotifications notifications = Editors.getNotifications(project);;
-            notifications.updateAllNotifications();
-        };
+        return (Project project) -> Editors.updateNotifications(project, null);
     }
 
     @NotNull
