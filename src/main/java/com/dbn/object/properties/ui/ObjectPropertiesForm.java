@@ -2,11 +2,11 @@ package com.dbn.object.properties.ui;
 
 import com.dbn.browser.DatabaseBrowserManager;
 import com.dbn.browser.model.BrowserTreeEventListener;
-import com.dbn.browser.model.BrowserTreeNode;
-import com.dbn.browser.ui.DatabaseBrowserTree;
 import com.dbn.common.dispose.Disposer;
 import com.dbn.common.environment.EnvironmentType;
 import com.dbn.common.environment.options.EnvironmentSettings;
+import com.dbn.common.environment.options.EnvironmentVisibilitySettings;
+import com.dbn.common.environment.options.listener.EnvironmentManagerListener;
 import com.dbn.common.event.ProjectEvents;
 import com.dbn.common.thread.Background;
 import com.dbn.common.thread.Dispatch;
@@ -14,17 +14,14 @@ import com.dbn.common.thread.PooledThread;
 import com.dbn.common.ui.form.DBNForm;
 import com.dbn.common.ui.form.DBNFormBase;
 import com.dbn.common.ui.util.UserInterface;
-import com.dbn.common.util.Actions;
 import com.dbn.common.util.Naming;
 import com.dbn.object.common.DBObject;
 import com.dbn.object.lookup.DBObjectRef;
-import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
@@ -52,6 +49,7 @@ public class ObjectPropertiesForm extends DBNFormBase {
 
         Project project = ensureProject();
         ProjectEvents.subscribe(project, this, BrowserTreeEventListener.TOPIC, browserTreeEventListener());
+        ProjectEvents.subscribe(project, this, EnvironmentManagerListener.TOPIC, environmentManagerListener());
     }
 
     @NotNull
@@ -71,11 +69,31 @@ public class ObjectPropertiesForm extends DBNFormBase {
     }
 
     @NotNull
+    private EnvironmentManagerListener environmentManagerListener() {
+        return new EnvironmentManagerListener() {
+            @Override
+            public void configurationChanged(Project project) {
+                EnvironmentSettings environmentSettings = getEnvironmentSettings(project);
+                EnvironmentVisibilitySettings visibilitySettings = environmentSettings.getVisibilitySettings();
+                boolean coloredTabs = visibilitySettings.getConnectionTabs().value();
+
+                DBObject object = getObject();
+                EnvironmentType environmentType = object == null || !coloredTabs ?
+                        EnvironmentType.DEFAULT :
+                        object.getEnvironmentType();
+
+                UserInterface.setBackgroundRecursive(headerPanel, environmentType.getColor());
+            }
+        };
+    }
+
+    @NotNull
     @Override
     public JPanel getMainComponent() {
         return mainPanel;
     }
 
+    @Nullable
     public DBObject getObject() {
         return DBObjectRef.get(object);
     }

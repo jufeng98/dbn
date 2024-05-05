@@ -4,11 +4,15 @@ import com.dbn.browser.model.BrowserTreeEventListener;
 import com.dbn.browser.model.BrowserTreeNode;
 import com.dbn.common.dispose.DisposableContainers;
 import com.dbn.common.environment.EnvironmentType;
+import com.dbn.common.environment.options.EnvironmentSettings;
+import com.dbn.common.environment.options.EnvironmentVisibilitySettings;
+import com.dbn.common.environment.options.listener.EnvironmentManagerListener;
 import com.dbn.common.event.ProjectEvents;
 import com.dbn.common.ui.CardLayouts;
 import com.dbn.common.ui.util.Cursors;
 import com.dbn.common.ui.util.Mouse;
 import com.dbn.common.ui.util.Popups;
+import com.dbn.common.ui.util.UserInterface;
 import com.dbn.common.util.Context;
 import com.dbn.connection.*;
 import com.dbn.connection.action.AbstractConnectionAction;
@@ -53,14 +57,39 @@ public class SelectorBrowserForm extends DatabaseBrowserForm {
         connectionLabel.addMouseListener(mouseListener);
         connectionSelectLabel.addMouseListener(mouseListener);
 
-        ProjectEvents.subscribe(ensureProject(), this, ConnectionHandlerStatusListener.TOPIC, (connectionId) -> {
+        Project project = ensureProject();
+        ProjectEvents.subscribe(project, this, ConnectionHandlerStatusListener.TOPIC, connectionHandlerStatusListener());
+        ProjectEvents.subscribe(project, this, EnvironmentManagerListener.TOPIC, environmentManagerListener());
+    }
+
+    @NotNull
+    private ConnectionHandlerStatusListener connectionHandlerStatusListener() {
+        return (connectionId) -> {
             if (connectionId != selectedConnectionId) return;
 
             ConnectionHandler connection = ConnectionHandler.get(connectionId);
             if (connection == null) return;
 
             connectionLabel.setIcon(connection.getIcon());
-        });
+        };
+    }
+
+    @NotNull
+    private EnvironmentManagerListener environmentManagerListener() {
+        return new EnvironmentManagerListener() {
+            @Override
+            public void configurationChanged(Project project) {
+                EnvironmentSettings environmentSettings = getEnvironmentSettings(project);
+                EnvironmentVisibilitySettings visibilitySettings = environmentSettings.getVisibilitySettings();
+                boolean coloredTabs = visibilitySettings.getConnectionTabs().value();
+
+                ConnectionHandler connection = getConnection();
+                EnvironmentType environmentType = connection == null || !coloredTabs ?
+                        EnvironmentType.DEFAULT :
+                        connection.getEnvironmentType();
+                UserInterface.setBackgroundRecursive(headerPanel, environmentType.getColor());
+            }
+        };
     }
 
     public DatabaseBrowserTree getBrowserTree(ConnectionId connectionId) {
@@ -77,7 +106,7 @@ public class SelectorBrowserForm extends DatabaseBrowserForm {
     @Override
     public void selectConnection(ConnectionId connectionId) {
         selectedConnectionId = connectionId;
-        ConnectionHandler connection = ConnectionHandler.get(connectionId);
+        ConnectionHandler connection = getConnection();
 
         if (connection == null) {
             connectionLabel.setText("(no connections)");
@@ -94,6 +123,11 @@ public class SelectorBrowserForm extends DatabaseBrowserForm {
         ProjectEvents.notify(ensureProject(),
                 BrowserTreeEventListener.TOPIC,
                 (listener) -> listener.selectionChanged());
+    }
+
+    @Nullable
+    private ConnectionHandler getConnection() {
+        return ConnectionHandler.get(selectedConnectionId);
     }
 
     private void displayPopup() {
