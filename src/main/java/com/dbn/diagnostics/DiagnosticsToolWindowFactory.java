@@ -6,9 +6,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
 
 public class DiagnosticsToolWindowFactory implements ToolWindowFactory, DumbAware{
     @Override
@@ -25,11 +22,4 @@ public class DiagnosticsToolWindowFactory implements ToolWindowFactory, DumbAwar
     public boolean shouldBeAvailable(@NotNull Project project) {
         return false;
     }
-
-    @Nullable
-    //@Override
-    public Icon getIcon() {
-        return Icons.WINDOW_DATABASE_DIAGNOSTICS;
-    }
-
 }
