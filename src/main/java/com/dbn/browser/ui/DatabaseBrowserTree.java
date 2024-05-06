@@ -61,7 +61,6 @@ public final class DatabaseBrowserTree extends DBNTree implements Borderless {
 
     public DatabaseBrowserTree(@NotNull DBNComponent parent, @Nullable ConnectionHandler connection) {
         super(parent, createModel(parent.ensureProject(), connection));
-        BrowserTreeModel treeModel = getModel();
 
         addKeyListener(createKeyListener());
         addMouseListener(createMouseListener());

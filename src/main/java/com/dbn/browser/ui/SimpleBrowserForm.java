@@ -6,6 +6,8 @@ import com.dbn.browser.options.listener.ObjectDetailSettingsListener;
 import com.dbn.common.dispose.Failsafe;
 import com.dbn.common.event.ProjectEvents;
 import com.dbn.common.ui.misc.DBNScrollPane;
+import com.dbn.common.ui.tree.DBNStickyPathTree;
+import com.dbn.common.ui.tree.Trees;
 import com.dbn.common.ui.util.UserInterface;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.ConnectionId;
@@ -17,7 +19,7 @@ import javax.swing.*;
 
 public class SimpleBrowserForm extends DatabaseBrowserForm{
     private JPanel mainPanel;
-    private DBNScrollPane browserScrollPane;
+    private DBNScrollPane treeScrollPane;
     private final DatabaseBrowserTree browserTree;
 
     public SimpleBrowserForm(@NotNull DatabaseBrowserForm parent, @NotNull ConnectionHandler connection) {
@@ -33,9 +35,11 @@ public class SimpleBrowserForm extends DatabaseBrowserForm{
     @NotNull
     private DatabaseBrowserTree createBrowserTree(@Nullable ConnectionHandler connection) {
         DatabaseBrowserTree browserTree = new DatabaseBrowserTree(this, connection);
-        browserScrollPane.setViewportView(browserTree);
-        browserScrollPane.setBorder(JBUI.Borders.emptyTop(1));
+        treeScrollPane.setViewportView(browserTree);
+        treeScrollPane.setBorder(JBUI.Borders.emptyTop(1));
         ToolTipManager.sharedInstance().registerComponent(browserTree);
+
+        Trees.attachStickyPath(browserTree);
 
         ProjectEvents.subscribe(ensureProject(), this, ObjectDetailSettingsListener.TOPIC, objectDetailSettingsListener());
         return browserTree;

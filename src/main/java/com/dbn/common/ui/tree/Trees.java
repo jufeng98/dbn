@@ -10,8 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.event.TreeModelEvent;
-import javax.swing.event.TreeModelListener;
+import javax.swing.event.*;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
@@ -71,6 +70,10 @@ public final class Trees {
             }
             while (true);
         }
+    }
+
+    public static void attachStickyPath(DBNTree tree) {
+        new DBNStickyPathTree(tree);
     }
 
     public static void notifyTreeModelListeners(Object source, Listeners<TreeModelListener> listeners, @Nullable TreePath path, TreeEventType eventType) {

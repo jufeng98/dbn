@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.tree.TreeCellRenderer;
+import javax.swing.tree.TreeNode;
 import java.awt.*;
 
 public class DatabaseBrowserTreeCellRenderer implements TreeCellRenderer {
@@ -53,6 +54,8 @@ public class DatabaseBrowserTreeCellRenderer implements TreeCellRenderer {
                 append("Loading...", SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES);
                 return;
             }
+
+            if (!(value instanceof BrowserTreeNode)) return;
 
             BrowserTreeNode treeNode = (BrowserTreeNode) value;
             setIcon(treeNode.getIcon(0));
