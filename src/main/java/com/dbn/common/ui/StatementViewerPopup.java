@@ -1,13 +1,18 @@
-package com.dbn.execution.common.ui;
+package com.dbn.common.ui;
 
 import com.dbn.common.color.Colors;
 import com.dbn.common.ui.util.Borders;
+import com.dbn.common.util.Context;
 import com.dbn.common.util.Documents;
 import com.dbn.common.util.Editors;
 import com.dbn.common.util.Viewers;
+import com.dbn.connection.ConnectionHandler;
 import com.dbn.execution.ExecutionResult;
+import com.dbn.language.common.DBLanguage;
+import com.dbn.language.common.DBLanguagePsiFile;
 import com.dbn.language.sql.SQLFileType;
 import com.dbn.language.sql.SQLLanguage;
+import com.intellij.lang.Language;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.EditorSettings;
@@ -23,22 +28,22 @@ import java.awt.*;
 import static com.dbn.common.dispose.Failsafe.nn;
 
 public class StatementViewerPopup implements Disposable {
-    private final String resultName;
+    private final String title;
     private EditorEx viewer;
 
-    public StatementViewerPopup(ExecutionResult executionResult) {
-        this.resultName = executionResult.getName();
-        Project project = executionResult.getProject();
+    public StatementViewerPopup(String title, DBLanguagePsiFile previewFile, ConnectionHandler connection) {
+        this.title = title;
+        Project project = previewFile.getProject();
+        DBLanguage language = DBLanguage.unwrap(previewFile.getLanguage());
 
-        PsiFile previewFile = nn(executionResult.createPreviewFile());
         Document document = Documents.ensureDocument(previewFile);
         viewer = Viewers.createViewer(document, project, null, SQLFileType.INSTANCE);
         viewer.setEmbeddedIntoDialogWrapper(true);
-        Editors.initEditorHighlighter(viewer, SQLLanguage.INSTANCE, executionResult.getConnection());
-        viewer.setBackgroundColor(Colors.getEditorCaretRowBackground());
+        viewer.setBackgroundColor(Colors.getReadonlyEditorBackground());
+        Editors.initEditorHighlighter(viewer, language, connection);
 
         JScrollPane viewerScrollPane = viewer.getScrollPane();
-        viewerScrollPane.setViewportBorder(Borders.lineBorder(Colors.getEditorCaretRowBackground(), 4));
+        viewerScrollPane.setViewportBorder(Borders.lineBorder(Colors.getReadonlyEditorBackground(), 8));
         viewerScrollPane.setBorder(null);
 
 
@@ -50,16 +55,17 @@ public class StatementViewerPopup implements Disposable {
         settings.setDndEnabled(false);
         settings.setAdditionalLinesCount(2);
         settings.setRightMarginShown(false);
+        settings.setCaretRowShown(false);
 
         //mainPanel.setBorder(new LineBorder(Color.BLACK, 1, false));
     }
 
     public void show(Component component) {
         JBPopup popup = createPopup();
-        popup.showInScreenCoordinates(component,
-                new Point(
-                        (int) (component.getLocationOnScreen().getX() + component.getWidth() +8),
-                        (int) component.getLocationOnScreen().getY()));
+        Point point = new Point(
+                (int) (component.getLocationOnScreen().getX() + component.getWidth() + 8),
+                (int) component.getLocationOnScreen().getY());
+        popup.showInScreenCoordinates(component, point);
     }
 
     public void show(Component component, Point point) {
@@ -76,13 +82,14 @@ public class StatementViewerPopup implements Disposable {
         popupBuilder.setMovable(true);
         popupBuilder.setResizable(true);
         popupBuilder.setRequestFocus(true);
-        popupBuilder.setTitle("<html>" + resultName + "</html>");
+        popupBuilder.setTitle(title == null ? null : "<html>" + title + "</html>");
         JBPopup popup = popupBuilder.createPopup();
 
         Dimension dimension = Editors.calculatePreferredSize(viewer);
-        //Dimension dimension = ((EditorImpl) viewer).getPreferredSize();
-        dimension.setSize(Math.min(dimension.getWidth() + 20, 1000), Math.min(dimension.getHeight() + 70, 800) );
-        popup.setSize(dimension);
+        dimension = new Dimension(
+                (int) Math.min(dimension.getWidth() + 20, 1000),
+                (int) Math.min(dimension.getHeight() + 60, 800));
+        viewer.getScrollPane().setPreferredSize(dimension);
 
         popup.addListener(new JBPopupListener() {
             @Override

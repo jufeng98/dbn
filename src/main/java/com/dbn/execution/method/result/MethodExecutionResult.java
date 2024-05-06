@@ -16,12 +16,12 @@ import com.dbn.execution.method.ArgumentValueHolder;
 import com.dbn.execution.method.MethodExecutionContext;
 import com.dbn.execution.method.MethodExecutionInput;
 import com.dbn.execution.method.result.ui.MethodExecutionResultForm;
+import com.dbn.language.common.DBLanguagePsiFile;
 import com.dbn.object.DBArgument;
 import com.dbn.object.DBMethod;
 import com.dbn.object.DBTypeAttribute;
 import com.dbn.object.lookup.DBObjectRef;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -142,7 +142,7 @@ public class MethodExecutionResult extends ExecutionResultBase<MethodExecutionRe
     }
 
     @Override
-    public PsiFile createPreviewFile() {
+    public DBLanguagePsiFile createPreviewFile() {
         return null;
     }
 
