@@ -1,8 +1,11 @@
 package com.dbn.common.color;
 
+import com.dbn.common.compatibility.Compatibility;
 import com.dbn.common.event.ApplicationEvents;
 import com.dbn.common.ui.util.LookAndFeel;
+import com.dbn.common.util.Commons;
 import com.dbn.data.grid.color.DataGridTextAttributesKeys;
+import com.intellij.codeInsight.hint.HintUtil;
 import com.intellij.ide.ui.laf.darcula.DarculaUIUtil;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.editor.HighlighterColors;
@@ -20,10 +23,12 @@ import java.awt.*;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.dbn.common.Reflection.invokeMethod;
 import static com.dbn.common.color.ColorCache.cached;
 import static com.dbn.common.color.ColorSchemes.background;
 import static com.dbn.common.color.ColorSchemes.foreground;
 import static com.dbn.common.dispose.Failsafe.guarded;
+import static com.intellij.util.ObjectUtils.notNull;
 
 @UtilityClass
 public final class Colors {
@@ -165,6 +170,22 @@ public final class Colors {
 
     public static Color getDarkPanelBackground() {
         return cached(30, () -> new JBColor(() -> Colors.lafDarker(UIUtil.getPanelBackground(), 2)));
+    }
+
+
+    public static Color getInfoHintColor() {
+        return cached(31, () -> HintUtil.getInformationColor());
+    }
+
+    @Compatibility
+    public static Color getWarningHintColor() {
+        return cached(32, () -> Commons.coalesce(
+                () -> invokeMethod(HintUtil.class, "getWarningColor"),
+                () -> new JBColor(0xfff8dc, 0x665014)));
+    }
+
+    public static Color getErrorHintColor() {
+        return cached(33, () -> HintUtil.getErrorColor());
     }
 
     public static Color getOutlineColor() {

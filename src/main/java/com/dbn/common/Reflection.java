@@ -37,17 +37,18 @@ public class Reflection {
 
     @SneakyThrows
     public static <T> T invokeMethod(Object object, String methodName, Object... args) {
-        Class[] argTypes = Arrays.stream(args).map(Object::getClass).toArray(Class[]::new);
-        Method method = findMethod(object.getClass(), methodName, argTypes);
+        Class[] parameterTypes = Arrays.stream(args).map(Object::getClass).toArray(Class[]::new);
+        Class<?> objectClass = object instanceof Class ? (Class) object : object.getClass();
+        Method method = findMethod(objectClass, methodName, parameterTypes);
         if (method == null) return null;
 
         return invokeMethod(object, method, args);
     }
 
     @Nullable
-    public static Method findMethod(Class<?> objectClass, String methodName, Class[] argTypes) {
+    public static Method findMethod(Class<?> objectClass, String methodName, Class[] parameterTypes) {
         try {
-            return objectClass.getMethod(methodName, argTypes);
+            return objectClass.getMethod(methodName, parameterTypes);
         } catch (Throwable e) {
             return null;
         }

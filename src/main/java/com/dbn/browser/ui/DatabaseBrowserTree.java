@@ -6,6 +6,7 @@ import com.dbn.browser.TreeNavigationHistory;
 import com.dbn.browser.model.*;
 import com.dbn.browser.options.BrowserDisplayMode;
 import com.dbn.browser.options.DatabaseBrowserSettings;
+import com.dbn.common.color.Colors;
 import com.dbn.common.dispose.Disposer;
 import com.dbn.common.event.ProjectEvents;
 import com.dbn.common.filter.Filter;
@@ -31,9 +32,12 @@ import com.dbn.object.common.DBSchemaObject;
 import com.dbn.object.common.list.DBObjectList;
 import com.dbn.object.common.list.action.ObjectListActionGroup;
 import com.dbn.object.common.property.DBObjectProperty;
+import com.intellij.ide.IdeTooltip;
+import com.intellij.ide.IdeTooltipManager;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionPopupMenu;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.ActionCallback;
 import com.intellij.util.ui.tree.TreeUtil;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -159,7 +163,19 @@ public final class DatabaseBrowserTree extends DBNTree implements Borderless {
     }
 
     private void selectPath(TreePath treePath) {
-        Dispatch.run(() -> TreeUtil.selectPath(DatabaseBrowserTree.this, treePath, true));
+        Dispatch.run(() -> {
+            DatabaseBrowserTree tree = DatabaseBrowserTree.this;
+            ActionCallback callback = TreeUtil.selectPath(tree, treePath, true);
+            if (callback == ActionCallback.REJECTED) {
+                Object target = treePath.getLastPathComponent();
+                if (target instanceof DBObject) {
+                    DBObject object = (DBObject) target;
+                    IdeTooltip tooltip = new IdeTooltip(tree, tree.getMousePosition(), new JLabel("Cannot navigate to " + object.getQualifiedNameWithType() + ". "));
+                    tooltip.setTextBackground(Colors.getWarningHintColor());
+                    IdeTooltipManager.getInstance().show(tooltip, true);
+                }
+            }
+        });
     }
 
 
