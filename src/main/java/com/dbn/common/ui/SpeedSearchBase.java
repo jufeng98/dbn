@@ -12,8 +12,9 @@ public abstract class SpeedSearchBase<C extends JComponent> extends com.intellij
     }
 
     //@Override
+    @NotNull
     @Compatibility
-    protected final Object @NotNull [] getAllElements() {
+    protected final Object[] getAllElements() {
         return getElements();
     }
 
