@@ -136,7 +136,7 @@ public class DatabaseBrowserTreeCellRenderer implements TreeCellRenderer {
             }
 
 
-            if (browserSettings.getGeneralSettings().getShowObjectDetails().value()) {
+            if (browserSettings.getGeneralSettings().isShowObjectDetails()) {
                 String conditionalDetails = treeNode.getPresentableTextConditionalDetails();
                 if (!Strings.isEmptyOrSpaces(conditionalDetails)) {
                     append(" - " + conditionalDetails, SimpleTextAttributes.GRAY_ATTRIBUTES);

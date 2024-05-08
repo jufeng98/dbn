@@ -2,6 +2,7 @@ package com.dbn.browser.ui;
 
 import com.dbn.browser.model.BrowserTreeNode;
 import com.dbn.browser.model.ConnectionBrowserTreeModel;
+import com.dbn.browser.options.DatabaseBrowserSettings;
 import com.dbn.browser.options.listener.ObjectDetailSettingsListener;
 import com.dbn.common.dispose.Failsafe;
 import com.dbn.common.event.ProjectEvents;
@@ -39,10 +40,15 @@ public class SimpleBrowserForm extends DatabaseBrowserForm{
         treeScrollPane.setBorder(JBUI.Borders.emptyTop(1));
         ToolTipManager.sharedInstance().registerComponent(browserTree);
 
-        Trees.attachStickyPath(browserTree);
+        Trees.attachStickyPath(browserTree, () -> isStickyPathEnabled());
 
         ProjectEvents.subscribe(ensureProject(), this, ObjectDetailSettingsListener.TOPIC, objectDetailSettingsListener());
         return browserTree;
+    }
+
+    private boolean isStickyPathEnabled() {
+        DatabaseBrowserSettings browserSettings = DatabaseBrowserSettings.getInstance(ensureProject());
+        return browserSettings.getGeneralSettings().isEnableStickyPaths();
     }
 
     @NotNull

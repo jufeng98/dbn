@@ -22,6 +22,15 @@ public class DatabaseBrowserGeneralSettings
     private BrowserDisplayMode displayMode = BrowserDisplayMode.TABBED;
     private final IntegerSetting navigationHistorySize = new IntegerSetting("navigation-history-size", 100);
     private final BooleanSetting showObjectDetails = new BooleanSetting("show-object-details", false);
+    private final BooleanSetting enableStickyPaths = new BooleanSetting("enable-sticky-paths", true);
+
+    public boolean isShowObjectDetails() {
+        return showObjectDetails.getValue();
+    }
+
+    public boolean isEnableStickyPaths() {
+        return enableStickyPaths.getValue();
+    }
 
     DatabaseBrowserGeneralSettings(DatabaseBrowserSettings parent) {
         super(parent);
@@ -43,6 +52,7 @@ public class DatabaseBrowserGeneralSettings
         displayMode = getEnum(element, "display-mode", BrowserDisplayMode.TABBED);
         navigationHistorySize.readConfiguration(element);
         showObjectDetails.readConfiguration(element);
+        enableStickyPaths.readConfiguration(element);
     }
 
     @Override
@@ -50,6 +60,7 @@ public class DatabaseBrowserGeneralSettings
         setEnum(element, "display-mode", displayMode);
         navigationHistorySize.writeConfiguration(element);
         showObjectDetails.writeConfiguration(element);
+        enableStickyPaths.writeConfiguration(element);
     }
 
 }

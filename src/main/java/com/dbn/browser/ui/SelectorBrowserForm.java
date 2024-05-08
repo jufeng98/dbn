@@ -70,7 +70,7 @@ public class SelectorBrowserForm extends DatabaseBrowserForm {
             ConnectionHandler connection = ConnectionHandler.get(connectionId);
             if (connection == null) return;
 
-            connectionLabel.setIcon(connection.getIcon());
+            //connectionLabel.setIcon(connection.getIcon());
         };
     }
 
@@ -110,12 +110,12 @@ public class SelectorBrowserForm extends DatabaseBrowserForm {
 
         if (connection == null) {
             connectionLabel.setText("(no connections)");
-            connectionLabel.setIcon(null);
+            //connectionLabel.setIcon(null);
             setBackgroundRecursive(headerPanel, EnvironmentType.DEFAULT.getColor());
             CardLayouts.showBlankCard(browserFormsPanel);
         } else {
             connectionLabel.setText(connection.getName());
-            connectionLabel.setIcon(connection.getIcon());
+            //connectionLabel.setIcon(connection.getIcon());
             setBackgroundRecursive(headerPanel, connection.getEnvironmentType().getColor());
             CardLayouts.showCard(browserFormsPanel, connectionId);
         }

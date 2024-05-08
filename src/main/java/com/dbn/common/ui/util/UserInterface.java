@@ -10,6 +10,8 @@ import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.registry.Registry;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.border.IdeaTitledBorder;
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -223,5 +225,33 @@ public class UserInterface {
             .map(child -> (JComponent) child)
             .forEach(child -> setBackgroundRecursive(child, color));
 
+    }
+
+    public static void replaceComponent(JComponent oldComponent, JComponent newComponent) {
+        Container container = oldComponent.getParent();
+        LayoutManager layout = container.getLayout();
+        for (int i = 0; i < container.getComponentCount(); i++) {
+            if (container.getComponent(i) != oldComponent) continue;
+
+            if (layout instanceof GridLayoutManager) {
+                GridLayoutManager gridLayout = (GridLayoutManager) layout;
+                GridConstraints constraints = gridLayout.getConstraintsForComponent(oldComponent);
+                container.remove(i);
+                container.add(newComponent, constraints);
+            } else {
+                container.remove(i);
+                container.add(newComponent, i);
+            }
+
+        }
+    }
+
+    public static int getComponentIndex(Container container, Component component) {
+        for (int i = 0; i < container.getComponentCount(); i++) {
+            if (container.getComponent(i) == component) {
+                return i;
+            }
+        }
+        return -1;
     }
 }

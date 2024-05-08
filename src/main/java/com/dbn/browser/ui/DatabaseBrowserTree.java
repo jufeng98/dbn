@@ -70,7 +70,7 @@ public final class DatabaseBrowserTree extends DBNTree implements Borderless {
         BrowserDisplayMode displayMode = settings.getGeneralSettings().getDisplayMode();
 
         setToggleClickCount(0);
-        setRootVisible(displayMode == SIMPLE || displayMode == TABBED);
+        setRootVisible(true/*displayMode == SIMPLE || displayMode == TABBED*/);
         setShowsRootHandles(true);
         setAutoscrolls(true);
         DatabaseBrowserTreeCellRenderer browserTreeCellRenderer = new DatabaseBrowserTreeCellRenderer(parent.ensureProject());
