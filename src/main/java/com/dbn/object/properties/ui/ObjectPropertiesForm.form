@@ -45,7 +45,14 @@
             </constraints>
             <properties/>
             <border type="none"/>
-            <children/>
+            <children>
+              <component id="69f84" class="javax.swing.JLabel" binding="closeLabel">
+                <constraints border-constraint="North"/>
+                <properties>
+                  <text value="[close]"/>
+                </properties>
+              </component>
+            </children>
           </grid>
         </children>
       </grid>

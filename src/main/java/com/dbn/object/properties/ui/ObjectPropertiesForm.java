@@ -8,20 +8,25 @@ import com.dbn.common.environment.options.EnvironmentSettings;
 import com.dbn.common.environment.options.EnvironmentVisibilitySettings;
 import com.dbn.common.environment.options.listener.EnvironmentManagerListener;
 import com.dbn.common.event.ProjectEvents;
+import com.dbn.common.icon.Icons;
 import com.dbn.common.thread.Background;
 import com.dbn.common.thread.Dispatch;
 import com.dbn.common.thread.PooledThread;
 import com.dbn.common.ui.form.DBNForm;
 import com.dbn.common.ui.form.DBNFormBase;
+import com.dbn.common.ui.util.Cursors;
+import com.dbn.common.ui.util.Mouse;
 import com.dbn.common.ui.util.UserInterface;
 import com.dbn.common.util.Naming;
 import com.dbn.object.common.DBObject;
 import com.dbn.object.lookup.DBObjectRef;
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.awt.event.MouseListener;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
@@ -33,6 +38,7 @@ public class ObjectPropertiesForm extends DBNFormBase {
     private JScrollPane objectPropertiesScrollPane;
     private JPanel closeActionPanel;
     private JPanel headerPanel;
+    private JLabel closeLabel;
     private DBObjectRef<?> object;
 
     private final AtomicReference<PooledThread> refreshHandle = new AtomicReference<>();
@@ -40,16 +46,27 @@ public class ObjectPropertiesForm extends DBNFormBase {
 
     public ObjectPropertiesForm(DBNForm parent) {
         super(parent);
-        //ActionToolbar objectPropertiesActionToolbar = Actions.createActionToolbar(closeActionPanel, "DBNavigator.ActionGroup.Browser.ObjectProperties", "", true);
-        //closeActionPanel.add(objectPropertiesActionToolbar.getComponent(), BorderLayout.EAST);
         objectPropertiesTable = new ObjectPropertiesTable(this, new ObjectPropertiesTableModel());
         objectPropertiesScrollPane.setViewportView(objectPropertiesTable);
         objectTypeLabel.setText("Object properties:");
         objectLabel.setText("(no object selected)");
 
+        closeLabel.setText("");
+        closeLabel.setIcon(Icons.ACTION_CLOSE_SMALL);
+        closeLabel.setCursor(Cursors.handCursor());
+        closeLabel.addMouseListener(closeMouseListener());
+        closeLabel.setToolTipText("Hide Object Properties");
+
         Project project = ensureProject();
         ProjectEvents.subscribe(project, this, BrowserTreeEventListener.TOPIC, browserTreeEventListener());
         ProjectEvents.subscribe(project, this, EnvironmentManagerListener.TOPIC, environmentManagerListener());
+    }
+
+    private MouseListener closeMouseListener() {
+        return Mouse.listener().onClick(e -> {
+            DatabaseBrowserManager browserManager = DatabaseBrowserManager.getInstance(ensureProject());
+            browserManager.showObjectProperties(false);
+        });
     }
 
     @NotNull

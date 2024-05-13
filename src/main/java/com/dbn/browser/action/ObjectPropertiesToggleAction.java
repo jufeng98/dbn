@@ -9,8 +9,8 @@ import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
-public class ObjectPropertiesShowAction extends ToggleAction implements DumbAware {
-    public ObjectPropertiesShowAction() {
+public class ObjectPropertiesToggleAction extends ToggleAction implements DumbAware {
+    public ObjectPropertiesToggleAction() {
         super("Show properties", null, Icons.BROWSER_OBJECT_PROPERTIES);
     }
 

@@ -55,6 +55,7 @@ public class Icons {
     public static final Icon ACTION_EXECUTE                   = AllIcons.Actions.Execute;
     public static final Icon ACTION_DEBUG                     = AllIcons.Actions.StartDebugger;
     public static final Icon ACTION_CLOSE                     = AllIcons.Actions.Cancel;
+    public static final Icon ACTION_CLOSE_SMALL               = load("/img/action/Close.svg");
     public static final Icon ACTION_UP_DOWN                   = load("/img/action/UpDown.svg");
     public static final Icon ACTION_REFRESH                   = AllIcons.Actions.Refresh;
     public static final Icon ACTION_TIMED_REFRESH             = load("/img/action/TimedSynchronize.png");
