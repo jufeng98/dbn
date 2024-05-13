@@ -1,13 +1,11 @@
 package com.dbn.common.ui.tree;
 
-import com.dbn.browser.options.DatabaseBrowserSettings;
 import com.dbn.common.ui.util.Borders;
+import com.dbn.common.ui.util.Mouse;
 import com.dbn.common.ui.util.UserInterface;
 import com.intellij.ide.ui.laf.darcula.DarculaUIUtil;
 import com.intellij.ui.components.JBLayeredPane;
 import com.intellij.util.Alarm;
-import lombok.Getter;
-import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,18 +26,12 @@ import static com.dbn.common.ui.util.UserInterface.getParentOfType;
 
 public class DBNStickyPathTree extends DBNTree{
     private static final TreeModel EMPTY_TREE_MODEL = new EmptyTreeModel();
-    public static final int VERTICAL_SHIFT = 6;
     private final JScrollPane scrollPane;
     private final JPanel headerPanel;
     private final Container container;
 
     private TreePath currentTreePath;
     private final Alarm refreshAlarm = alarm(this);
-
-    @Getter
-    @Setter
-    private boolean featureEnabled;
-
 
     public DBNStickyPathTree(@NotNull DBNTree sourceTree) {
         super(sourceTree);
@@ -49,6 +41,7 @@ public class DBNStickyPathTree extends DBNTree{
         setShowsRootHandles(sourceTree.getShowsRootHandles());
         setRowHeight(sourceTree.getRowHeight());
         setCellRenderer(sourceTree.getCellRenderer());
+        setToggleClickCount(sourceTree.getToggleClickCount());
         setPreferredSize(new Dimension(-1, 0));
         //setBackground(Colors.lafDarker(sourceTree.getBackground(), 1));
 
@@ -96,11 +89,7 @@ public class DBNStickyPathTree extends DBNTree{
         sourceTree.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
-                boolean featureEnabled = checkFeatureEnabled();
-                if (isFeatureEnabled() != featureEnabled) {
-                    setFeatureEnabled(featureEnabled);
-                    refreshHeaderOverlay();
-                }
+                refreshHeaderOverlay();
             }
         });
 
@@ -112,43 +101,41 @@ public class DBNStickyPathTree extends DBNTree{
                 sourceTree.getSelectionModel().setSelectionPath(treePath);
                 sourceTree.collapsePath(treePath);
 
+                int overlayRows = computeOverlayRows(treePath.getParentPath());
+                int overlayHeight = computeOverlayHeight(overlayRows);
+                headerPanel.setPreferredSize(new Dimension(-1, overlayHeight));
+
                 Rectangle bounds = sourceTree.getPathBounds(treePath);
                 if (bounds == null) return;
 
                 int x = (int) bounds.getX();
-                int y = (int) (bounds.getY() - getOverlayHigh());
+                int y = (int) (bounds.getY() - overlayHeight);
                 bounds.setLocation(x, y);
                 sourceTree.scrollRectToVisible(bounds);
                 refreshHeaderOverlay();
             }
         });
+
+        addTreeSelectionListener(e -> {
+            TreePath treePath = e.getPath();
+            getSourceTree().getSelectionModel().setSelectionPath(treePath);
+        });
+
+        addMouseListener(createMouseListener());
     }
 
-    @Override
-    protected void processMouseEvent(MouseEvent e) {
-        // TODO propagate clicks to source tree
-        if (true) {
-            super.processMouseEvent(e);
-            return;
-        }
-        TreePath treePath = Trees.getPathForLocation(this, e.getPoint());
+    private MouseListener createMouseListener() {
+        return Mouse.listener().
+                onRelease(e -> {
+                    if (e.getButton() != MouseEvent.BUTTON3) return;
 
-        DBNTree sourceTree = getSourceTree();
-        Rectangle pathBounds = sourceTree.getPathBounds(treePath);
-        if (pathBounds == null) return;
+                    TreePath path = Trees.getPathAtMousePosition(this, e);
+                    getSourceTree().showContextMenu(path, e.getX(), e.getY() + getVerticalScroll());
+                });
+    }
 
-        sourceTree.dispatchEvent(new MouseEvent(
-                sourceTree,
-                e.getID(),
-                e.getWhen(),
-                e.getModifiersEx(),
-                (int) pathBounds.getX(),
-                (int) pathBounds.getY(),
-                e.getXOnScreen(),
-                e.getYOnScreen(),
-                e.getClickCount(),
-                e.isPopupTrigger(),
-                e.getButton()));
+    private int getVerticalScroll() {
+        return scrollPane.getVerticalScrollBar().getValue();
     }
 
     protected boolean checkFeatureEnabled() {
@@ -186,15 +173,15 @@ public class DBNStickyPathTree extends DBNTree{
         if (Objects.equals(currentTreePath, parentPath)) return;
         currentTreePath = parentPath;
 
-        int visibleRows = parentPath == null ? 0 : rootVisible ? parentPath.getPathCount() : parentPath.getPathCount() - 1;
-        setVisibleRowCount(visibleRows);
+        int overlayRows = computeOverlayRows(parentPath);
+        setVisibleRowCount(overlayRows);
 
-        int height = visibleRows > 0 ? visibleRows * getRowHeight() + 8 : 0;
-        headerPanel.setPreferredSize(new Dimension(-1, height));
+        int overlayHeight = computeOverlayHeight(overlayRows);
+        headerPanel.setPreferredSize(new Dimension(-1, overlayHeight));
         resizeHeaderOverlay();
         resizeScrollPane();
 
-        if (visibleRows > 0) {
+        if (parentPath != null && overlayRows > 0) {
             setVisible(true);
             setModel(new PathTreeModel(parentPath));
             Trees.expandAll(this);
@@ -206,13 +193,21 @@ public class DBNStickyPathTree extends DBNTree{
         UserInterface.repaint(scrollPane);
     }
 
+    private int computeOverlayRows(@Nullable TreePath treePath) {
+        if (treePath == null) return 0;
+
+        return rootVisible ? treePath.getPathCount() : treePath.getPathCount() - 1;
+    }
+
+    private int computeOverlayHeight(int visibleRows) {
+        return visibleRows > 0 ? visibleRows * getRowHeight() + 1 : 0;
+    }
+
     @Nullable
     private TreePath resolveHiddenTreePath() {
-        if (!featureEnabled) return null;
+        if (!checkFeatureEnabled()) return null;
 
-        JScrollBar scrollBar = scrollPane.getVerticalScrollBar();
-
-        int verticalScroll = scrollBar.getValue();
+        int verticalScroll = getVerticalScroll();
         if (verticalScroll < getRowHeight()) return null;
 
         verticalScroll = verticalScroll + getOverlayHigh();

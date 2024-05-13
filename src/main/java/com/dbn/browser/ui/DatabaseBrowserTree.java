@@ -17,6 +17,7 @@ import com.dbn.common.ui.component.DBNComponent;
 import com.dbn.common.ui.tree.DBNTree;
 import com.dbn.common.ui.tree.Trees;
 import com.dbn.common.ui.util.Borderless;
+import com.dbn.common.ui.util.Borders;
 import com.dbn.common.ui.util.Mouse;
 import com.dbn.common.util.Actions;
 import com.dbn.connection.ConnectionBundle;
@@ -66,13 +67,12 @@ public final class DatabaseBrowserTree extends DBNTree implements Borderless {
         addMouseListener(createMouseListener());
         addTreeSelectionListener(createTreeSelectionListener());
 
-        DatabaseBrowserSettings settings = DatabaseBrowserSettings.getInstance(ensureProject());
-        BrowserDisplayMode displayMode = settings.getGeneralSettings().getDisplayMode();
-
         setToggleClickCount(0);
-        setRootVisible(true/*displayMode == SIMPLE || displayMode == TABBED*/);
+        setRootVisible(true);
+        setRowHeight(Math.max(getRowHeight(), 22));
         setShowsRootHandles(true);
         setAutoscrolls(true);
+        setBorder(Borders.EMPTY_BORDER);
         DatabaseBrowserTreeCellRenderer browserTreeCellRenderer = new DatabaseBrowserTreeCellRenderer(parent.ensureProject());
         setCellRenderer(browserTreeCellRenderer);
 
@@ -354,41 +354,46 @@ public final class DatabaseBrowserTree extends DBNTree implements Borderless {
                     if (e.getButton() != MouseEvent.BUTTON3) return;
 
                     TreePath path = Trees.getPathAtMousePosition(this, e);
-                    if (path == null) return;
-
-                    BrowserTreeNode lastPathEntity = (BrowserTreeNode) path.getLastPathComponent();
-                    if (lastPathEntity.isDisposed()) return;
-
-                    ActionGroup actionGroup = null;
-                    if (lastPathEntity instanceof DBObjectList) {
-                        DBObjectList<?> objectList = (DBObjectList<?>) lastPathEntity;
-                        actionGroup = new ObjectListActionGroup(objectList);
-                    } else if (lastPathEntity instanceof DBObject) {
-                        DBObject object = (DBObject) lastPathEntity;
-                        Progress.prompt(
-                                getProject(),
-                                object,
-                                true,
-                                "Loading object properties",
-                                "Loading properties of " + object.getQualifiedNameWithType(),
-                                progress -> showPopupMenu(e, new ObjectActionGroup(object)));
-                    } else if (lastPathEntity instanceof DBObjectBundle) {
-                        DBObjectBundle objectsBundle = (DBObjectBundle) lastPathEntity;
-                        ConnectionHandler connection = objectsBundle.getConnection();
-                        actionGroup = new ConnectionActionGroup(connection);
-                    }
-
-                    showPopupMenu(e, actionGroup);
+                    showContextMenu(path, e.getX(), e.getY());
                 });
     }
 
-    private void showPopupMenu(MouseEvent e, ActionGroup actionGroup) {
+    @Override
+    protected void showContextMenu(TreePath path, int x, int y) {
+        if (isNotValid(path)) return;
+
+        BrowserTreeNode lastPathEntity = (BrowserTreeNode) path.getLastPathComponent();
+        if (isNotValid(lastPathEntity)) return;
+
+        ActionGroup actionGroup = null;
+        if (lastPathEntity instanceof DBObjectList) {
+            DBObjectList<?> objectList = (DBObjectList<?>) lastPathEntity;
+            actionGroup = new ObjectListActionGroup(objectList);
+        } else if (lastPathEntity instanceof DBObject) {
+            DBObject object = (DBObject) lastPathEntity;
+            Progress.prompt(
+                    getProject(),
+                    object,
+                    true,
+                    "Loading object properties",
+                    "Loading properties of " + object.getQualifiedNameWithType(),
+                    progress -> showPopupMenu(new ObjectActionGroup(object), x, y));
+        } else if (lastPathEntity instanceof DBObjectBundle) {
+            DBObjectBundle objectsBundle = (DBObjectBundle) lastPathEntity;
+            ConnectionHandler connection = objectsBundle.getConnection();
+            actionGroup = new ConnectionActionGroup(connection);
+        }
+
+        showPopupMenu(actionGroup, x, y);
+    }
+
+    private void showPopupMenu(ActionGroup actionGroup, int x, int y) {
         if (actionGroup == null) return;
         ActionPopupMenu actionPopupMenu = Actions.createActionPopupMenu(this, "", actionGroup);
         JPopupMenu popupMenu = actionPopupMenu.getComponent();
         Dispatch.run(() -> {
             if (!isShowing()) return;
-            popupMenu.show(this, e.getX(), e.getY());
+            popupMenu.show(this, x, y);
         });
     }
 
