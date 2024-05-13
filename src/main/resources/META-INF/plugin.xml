@@ -615,7 +615,7 @@
             <action id="DBNavigator.Actions.Browser.ExpandTree" class="com.dbn.browser.action.BrowserTreeExpandAction" text="Browser - Expand All"  icon="AllIcons.Actions.Expandall"/>
             <action id="DBNavigator.Actions.Browser.CollapseTree" class="com.dbn.browser.action.BrowserTreeCollapseAction" text="Browser - Collapse All" icon="AllIcons.Actions.Collapseall"/>
             <separator/>
-            <action id="DBNavigator.Actions.Browser.ShowObjectProperties" class="com.dbn.browser.action.ObjectPropertiesShowAction" text="Browser - Show Object Properties"/>
+            <action id="DBNavigator.Actions.Browser.ShowObjectProperties" class="com.dbn.browser.action.ObjectPropertiesToggleAction" text="Browser - Show Object Properties"/>
             <action id="DBNavigator.Actions.Browser.OpenSessionBrowser" class="com.dbn.browser.action.SessionBrowserOpenAction" text="Browser - Session Browser" icon="/img/tools/SessionBrowser.svg"/>
             <action id="DBNavigator.Actions.Browser.OpenSQLConsole" class="com.dbn.browser.action.SQLConsoleOpenAction" text="Browser - SQL Console" icon="/img/tools/SQLConsole.svg"/>
             <separator/>
@@ -810,6 +810,7 @@
 
         <additionalTextAttributes scheme="Default" file="textAttributes/DBNDefaultColors.xml" id="DBN-Default"/>
         <additionalTextAttributes scheme="Darcula" file="textAttributes/DBNDarculaColors.xml" id="DBN-Darcula"/>
+        <additionalTextAttributes scheme="Dark" file="textAttributes/DBNDarkColors.xml" id="DBN-Dark"/>
         <additionalTextAttributes scheme="AllHallowsEve" file="textAttributes/DBNAllHallowsEveColors.xml" id="DBN-AllHallowsEve"/>
         <additionalTextAttributes scheme="Blackboard" file="textAttributes/DBNBlackboardColors.xml" id="DBN-Blackboard"/>
         <additionalTextAttributes scheme="Cobalt" file="textAttributes/DBNCobaltColors.xml" id="DBN-Cobalt"/>
