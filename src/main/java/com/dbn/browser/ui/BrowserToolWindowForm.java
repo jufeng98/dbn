@@ -18,7 +18,6 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.project.Project;
 import lombok.Getter;
-import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,7 +30,6 @@ public class BrowserToolWindowForm extends DBNFormBase {
     private JPanel mainPanel;
     private JPanel actionsPanel;
     private JPanel browserPanel;
-    private JPanel closeActionPanel;
     private JPanel objectPropertiesPanel;
     private @Getter DatabaseBrowserForm browserForm;
 
@@ -47,12 +45,9 @@ public class BrowserToolWindowForm extends DBNFormBase {
         ActionToolbar actionToolbar = Actions.createActionToolbar(
                 actionsPanel,
                 "DBNavigator.ActionGroup.Browser.Controls", "",
-                true
-        );
-        actionsPanel.add(actionToolbar.getComponent());
+                true);
 
-        /*ActionToolbar objectPropertiesActionToolbar = ActionUtil.createActionToolbar("", false, "DBNavigator.ActionGroup.Browser.ObjectProperties");
-        closeActionPanel.add(objectPropertiesActionToolbar.getComponent(), BorderLayout.CENTER);*/
+        actionsPanel.add(actionToolbar.getComponent());
 
         objectPropertiesPanel.setVisible(browserManager.getShowObjectProperties().value());
         objectPropertiesForm = new ObjectPropertiesForm(this);
