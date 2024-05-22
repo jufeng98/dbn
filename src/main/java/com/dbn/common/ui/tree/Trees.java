@@ -17,7 +17,6 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;

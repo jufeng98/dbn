@@ -30,8 +30,12 @@ public class DBNStickyPathTree extends DBNTree{
     private final JPanel headerPanel;
     private final Container container;
 
+    private boolean selectionHandover;
+    private int currentVerticalScroll;
     private TreePath currentTreePath;
+
     private final Alarm refreshAlarm = alarm(this);
+    private final boolean scrollBarOpaque;
 
     public DBNStickyPathTree(@NotNull DBNTree sourceTree) {
         super(sourceTree);
@@ -46,6 +50,7 @@ public class DBNStickyPathTree extends DBNTree{
         //setBackground(Colors.lafDarker(sourceTree.getBackground(), 1));
 
         scrollPane = nn(getParentOfType(sourceTree, JScrollPane.class));
+        //Reflection.invokeMethod(scrollPane, "setOverlappingScrollBar", false);
         container = scrollPane.getParent();
 
         JBLayeredPane layeredPane = new JBLayeredPane();
@@ -69,6 +74,7 @@ public class DBNStickyPathTree extends DBNTree{
         });
 
         JScrollBar scrollBar = scrollPane.getVerticalScrollBar();
+        scrollBarOpaque = scrollBar.isOpaque();
         scrollBar.addAdjustmentListener(e -> {
             //if (e.getValueIsAdjusting()) return;
             refreshHeaderOverlay();
@@ -92,12 +98,12 @@ public class DBNStickyPathTree extends DBNTree{
                 refreshHeaderOverlay();
             }
         });
+        sourceTree.addTreeSelectionListener(e -> selectionHandover(() -> clearSelection()));
 
         addTreeExpansionListener(new TreeExpansionListener() {
             @Override
             public void treeCollapsed(TreeExpansionEvent event) {
                 TreePath treePath = event.getPath();
-                DBNTree sourceTree = getSourceTree();
                 sourceTree.getSelectionModel().setSelectionPath(treePath);
                 sourceTree.collapsePath(treePath);
 
@@ -116,12 +122,20 @@ public class DBNStickyPathTree extends DBNTree{
             }
         });
 
-        addTreeSelectionListener(e -> {
-            TreePath treePath = e.getPath();
-            getSourceTree().getSelectionModel().setSelectionPath(treePath);
-        });
+        addTreeSelectionListener(e -> selectionHandover(() -> sourceTree.getSelectionModel().setSelectionPath(e.getPath())));
 
         addMouseListener(createMouseListener());
+    }
+
+    private void selectionHandover(Runnable runnable) {
+        if (selectionHandover) return;
+
+        try {
+            selectionHandover = true;
+            runnable.run();
+        } finally {
+            selectionHandover = false;
+        }
     }
 
     private MouseListener createMouseListener() {
@@ -143,7 +157,7 @@ public class DBNStickyPathTree extends DBNTree{
     }
 
     private void resizeHeaderOverlay() {
-        int width = container.getWidth() - 10/*- scrollPane.getVerticalScrollBar().getWidth()*/;
+        int width = container.getWidth() - scrollPane.getVerticalScrollBar().getWidth();
         int height = getOverlayHigh();
         headerPanel.setBounds(0, 0, width, height);
     }
@@ -162,8 +176,11 @@ public class DBNStickyPathTree extends DBNTree{
         return getParentComponent();
     }
 
-
     private void refreshHeaderOverlay() {
+        int verticalScroll = getVerticalScroll();
+        if (currentVerticalScroll == verticalScroll) return;
+
+        currentVerticalScroll = verticalScroll;
         alarmRequest(refreshAlarm, 0, true, () -> renderHeaderOverlay());
     }
 
@@ -171,6 +188,7 @@ public class DBNStickyPathTree extends DBNTree{
     private void renderHeaderOverlay() {
         TreePath parentPath = resolveHiddenTreePath();
         if (Objects.equals(currentTreePath, parentPath)) return;
+
         currentTreePath = parentPath;
 
         int overlayRows = computeOverlayRows(parentPath);
@@ -181,13 +199,16 @@ public class DBNStickyPathTree extends DBNTree{
         resizeHeaderOverlay();
         resizeScrollPane();
 
+        JScrollBar scrollBar = scrollPane.getVerticalScrollBar();
         if (parentPath != null && overlayRows > 0) {
+            scrollBar.setOpaque(true);
             setVisible(true);
             setModel(new PathTreeModel(parentPath));
             Trees.expandAll(this);
         } else {
             setVisible(false);
             setModel(EMPTY_TREE_MODEL);
+            scrollBar.setOpaque(scrollBarOpaque);
         }
 
         UserInterface.repaint(scrollPane);

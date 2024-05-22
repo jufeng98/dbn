@@ -1,12 +1,15 @@
 package com.dbn.common;
 
+import com.dbn.common.util.Unsafe;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.dbn.common.util.Commons.nvl;
@@ -49,9 +52,30 @@ public class Reflection {
     public static Method findMethod(Class<?> objectClass, String methodName, Class[] parameterTypes) {
         try {
             return objectClass.getMethod(methodName, parameterTypes);
-        } catch (Throwable e) {
+        } catch (NoSuchMethodException e) {
+            // baldly assuming all parameters are primitives
+            boolean adjusted = replaceWithPrimitives(parameterTypes);
+            if (adjusted) return findMethod(objectClass, methodName, parameterTypes);
+
             return null;
         }
+    }
+
+    private static boolean replaceWithPrimitives(Class[] types) {
+        if (types == null) return false;
+        if (types.length == 0) return false;
+
+        boolean adjusted = false;
+        for (int i = 0; i < types.length; i++) {
+            Class parameterType = types[i];
+            Field type = Unsafe.silent(null, () -> parameterType.getField("TYPE"));
+            if (type == null) continue;
+
+            Class fieldValue = (Class) Unsafe.silent(types[i], () -> type.get(parameterType));
+            adjusted = !Objects.equals(types[i], fieldValue);
+            types[i] = fieldValue;
+        }
+        return adjusted;
     }
 
 }

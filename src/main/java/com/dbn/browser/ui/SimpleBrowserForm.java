@@ -7,7 +7,6 @@ import com.dbn.browser.options.listener.ObjectDetailSettingsListener;
 import com.dbn.common.dispose.Failsafe;
 import com.dbn.common.event.ProjectEvents;
 import com.dbn.common.ui.misc.DBNScrollPane;
-import com.dbn.common.ui.tree.DBNStickyPathTree;
 import com.dbn.common.ui.tree.Trees;
 import com.dbn.common.ui.util.UserInterface;
 import com.dbn.connection.ConnectionHandler;
