@@ -18,13 +18,19 @@ package com.dbn.data.find.action;
 import com.dbn.data.find.DataSearchComponent;
 import com.intellij.find.FindModel;
 import com.intellij.find.FindSettings;
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.jetbrains.annotations.NotNull;
 
-public class ToggleRegex extends DataSearchHeaderToggleAction {
+public class RegexToggleAction extends DataSearchHeaderToggleAction {
 
-    public ToggleRegex(DataSearchComponent searchComponent) {
-        super(searchComponent, "&Regex");
+    public RegexToggleAction(DataSearchComponent searchComponent) {
+        super(
+                searchComponent,
+                "&Regex",
+                AllIcons.Actions.Regex,
+                AllIcons.Actions.RegexHovered,
+                AllIcons.Actions.RegexSelected);
     }
 
     @Override

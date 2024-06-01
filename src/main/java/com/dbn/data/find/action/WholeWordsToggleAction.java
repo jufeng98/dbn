@@ -2,12 +2,18 @@ package com.dbn.data.find.action;
 
 import com.dbn.data.find.DataSearchComponent;
 import com.intellij.find.FindSettings;
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.jetbrains.annotations.NotNull;
 
-public class ToggleWholeWordsOnlyAction extends DataSearchHeaderToggleAction {
-    public ToggleWholeWordsOnlyAction(DataSearchComponent searchComponent) {
-        super(searchComponent, "W&hole Words");
+public class WholeWordsToggleAction extends DataSearchHeaderToggleAction {
+    public WholeWordsToggleAction(DataSearchComponent searchComponent) {
+        super(
+                searchComponent,
+                "W&hole Words",
+                AllIcons.Actions.Words,
+                AllIcons.Actions.WordsHovered,
+                AllIcons.Actions.WordsSelected);
     }
 
     @Override

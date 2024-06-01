@@ -17,22 +17,28 @@ package com.dbn.data.find.action;
 
 import com.dbn.data.find.DataSearchComponent;
 import com.intellij.find.FindSettings;
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.jetbrains.annotations.NotNull;
 
-public class ToggleMatchCase extends DataSearchHeaderToggleAction {
-  public ToggleMatchCase(DataSearchComponent searchComponent) {
-    super(searchComponent, "&Case Sensitive");
-  }
+public class MatchCaseToggleAction extends DataSearchHeaderToggleAction {
+    public MatchCaseToggleAction(DataSearchComponent searchComponent) {
+        super(
+                searchComponent,
+                "&Case Sensitive",
+                AllIcons.Actions.MatchCase,
+                AllIcons.Actions.MatchCaseHovered,
+                AllIcons.Actions.MatchCaseSelected);
+    }
 
-  @Override
-  public boolean isSelected(@NotNull AnActionEvent e) {
-    return getEditorSearchComponent().getFindModel().isCaseSensitive();
-  }
+    @Override
+    public boolean isSelected(@NotNull AnActionEvent e) {
+        return getEditorSearchComponent().getFindModel().isCaseSensitive();
+    }
 
-  @Override
-  public void setSelected(@NotNull AnActionEvent e, boolean state) {
-    getEditorSearchComponent().getFindModel().setCaseSensitive(state);
-    FindSettings.getInstance().setLocalCaseSensitive(state);
-  }
+    @Override
+    public void setSelected(@NotNull AnActionEvent e, boolean state) {
+        getEditorSearchComponent().getFindModel().setCaseSensitive(state);
+        FindSettings.getInstance().setLocalCaseSensitive(state);
+    }
 }

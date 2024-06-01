@@ -12,7 +12,9 @@ import com.intellij.openapi.editor.HighlighterColors;
 import com.intellij.openapi.editor.colors.EditorColors;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.colors.EditorColorsScheme;
+import com.intellij.ui.Gray;
 import com.intellij.ui.JBColor;
+import com.intellij.util.ui.NamedColorUtil;
 import com.intellij.util.ui.UIUtil;
 import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.NotNull;
@@ -171,10 +173,18 @@ public final class Colors {
         return cached(30, () -> new JBColor(() -> Colors.lafDarker(UIUtil.getPanelBackground(), 2)));
     }
 
-
     public static Color getInfoHintColor() {
         return cached(31, () -> HintUtil.getInformationColor());
     }
+
+    public static Color getLabelInfoForeground() {
+        return cached(32, () -> JBColor.namedColor("Label.infoForeground", new JBColor(Gray._120, Gray._135)));
+    }
+
+    public static Color getLabelErrorForeground() {
+        return cached(33, () -> JBColor.namedColor("Label.errorForeground", new JBColor(new Color(0xC7222D), JBColor.RED)));
+    }
+
 
     @Compatibility
     public static Color getWarningHintColor() {

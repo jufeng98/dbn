@@ -29,6 +29,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 
 public class SessionBrowserForm extends DBNFormBase implements SearchableDataComponent {
@@ -147,7 +148,7 @@ public class SessionBrowserForm extends DBNFormBase implements SearchableDataCom
 
         DataSearchComponent dataSearchComponent = getSearchComponent();
         dataSearchComponent.initializeFindModel();
-        JTextField searchField = dataSearchComponent.getSearchField();
+        JTextComponent searchField = dataSearchComponent.getSearchField();
         if (searchPanel.isVisible()) {
             searchField.selectAll();
         } else {

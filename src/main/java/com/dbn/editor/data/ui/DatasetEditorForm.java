@@ -38,6 +38,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.table.TableColumn;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -202,7 +203,7 @@ public class DatasetEditorForm extends DBNFormBase implements SearchableDataComp
         DataSearchComponent dataSearchComponent = getSearchComponent();
         dataSearchComponent.initializeFindModel();
 
-        JTextField searchField = dataSearchComponent.getSearchField();
+        JTextComponent searchField = dataSearchComponent.getSearchField();
         if (searchPanel.isVisible()) {
             searchField.selectAll();
         } else {
