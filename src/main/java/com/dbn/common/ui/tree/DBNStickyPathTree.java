@@ -30,10 +30,7 @@ public class DBNStickyPathTree extends DBNTree{
     private final JPanel headerPanel;
     private final Container container;
 
-    private boolean selectionHandover;
-    private int currentVerticalScroll;
-    private TreePath currentTreePath;
-
+    private final State currentState = new State();
     private final Alarm refreshAlarm = alarm(this);
     private final boolean scrollBarOpaque;
 
@@ -73,12 +70,12 @@ public class DBNStickyPathTree extends DBNTree{
             }
         });
 
-        JScrollBar scrollBar = scrollPane.getVerticalScrollBar();
-        scrollBarOpaque = scrollBar.isOpaque();
-        scrollBar.addAdjustmentListener(e -> {
-            //if (e.getValueIsAdjusting()) return;
-            refreshHeaderOverlay();
-        });
+        JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();
+        JScrollBar horizontalScrollBar = scrollPane.getHorizontalScrollBar();
+
+        scrollBarOpaque = verticalScrollBar.isOpaque();
+        verticalScrollBar.addAdjustmentListener(e -> refreshHeaderOverlay());
+        horizontalScrollBar.addAdjustmentListener(e -> refreshHeaderOverlay());
         
         sourceTree.addTreeExpansionListener(new TreeExpansionListener() {
             @Override
@@ -128,13 +125,13 @@ public class DBNStickyPathTree extends DBNTree{
     }
 
     private void selectionHandover(Runnable runnable) {
-        if (selectionHandover) return;
+        if (currentState.selectionHandover) return;
 
         try {
-            selectionHandover = true;
+            currentState.selectionHandover = true;
             runnable.run();
         } finally {
-            selectionHandover = false;
+            currentState.selectionHandover = false;
         }
     }
 
@@ -178,18 +175,15 @@ public class DBNStickyPathTree extends DBNTree{
 
     private void refreshHeaderOverlay() {
         int verticalScroll = getVerticalScroll();
-        if (currentVerticalScroll == verticalScroll) return;
+        if (currentState.checkScroll(verticalScroll)) return;
 
-        currentVerticalScroll = verticalScroll;
         alarmRequest(refreshAlarm, 0, true, () -> renderHeaderOverlay());
     }
 
 
     private void renderHeaderOverlay() {
         TreePath parentPath = resolveHiddenTreePath();
-        if (Objects.equals(currentTreePath, parentPath)) return;
-
-        currentTreePath = parentPath;
+        if (currentState.checkPath(parentPath)) return;
 
         int overlayRows = computeOverlayRows(parentPath);
         setVisibleRowCount(overlayRows);
@@ -269,6 +263,35 @@ public class DBNStickyPathTree extends DBNTree{
 
         @Override
         public boolean isLeaf(Object node) {
+            return false;
+        }
+    }
+
+
+    private static class State {
+        private int verticalScroll;
+        private int scrollbarWidth;
+        private boolean selectionHandover;
+        private TreePath treePath;
+
+        boolean checkPath(TreePath treePath) {
+            if (Objects.equals(this.treePath, treePath)) return true;
+
+            this.treePath = treePath;
+            return false;
+        }
+
+        boolean checkScroll(int verticalScroll) {
+            if (this.verticalScroll == verticalScroll) return true;
+
+            this.verticalScroll = verticalScroll;
+            return false;
+        }
+
+        boolean checkScrollbarWidth(int scrollbarWidth) {
+            if (this.scrollbarWidth == scrollbarWidth) return true;
+
+            this.scrollbarWidth = scrollbarWidth;
             return false;
         }
     }
