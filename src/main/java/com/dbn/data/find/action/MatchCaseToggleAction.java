@@ -33,12 +33,12 @@ public class MatchCaseToggleAction extends DataSearchHeaderToggleAction {
 
     @Override
     public boolean isSelected(@NotNull AnActionEvent e) {
-        return getEditorSearchComponent().getFindModel().isCaseSensitive();
+        return getFindModel().isCaseSensitive();
     }
 
     @Override
     public void setSelected(@NotNull AnActionEvent e, boolean state) {
-        getEditorSearchComponent().getFindModel().setCaseSensitive(state);
+        getFindModel().setCaseSensitive(state);
         FindSettings.getInstance().setLocalCaseSensitive(state);
     }
 }

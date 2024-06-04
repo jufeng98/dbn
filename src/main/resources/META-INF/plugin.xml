@@ -9,7 +9,7 @@
     <depends optional="true" config-file="dbn-debugger-support.xml">com.intellij.modules.xdebugger</depends>
     <depends optional="true" config-file="dbn-copyright-support.xml">com.intellij.copyright</depends>
     <vendor email="dancioca@bluewin.ch">Dan Cioca</vendor>
-    <idea-version since-build="200.0001" until-build="241.*"/>
+    <idea-version since-build="200.0001" until-build="242.*"/>
     <description><![CDATA[
             <b>Database development, scripting and navigation tool</b><br>
             This software solution enhances the capabilities of the IntelliJ IDEA development environment and its associated products by providing comprehensive features for database development and maintenance.
@@ -711,9 +711,9 @@
 
         <projectConfigurable provider="com.dbn.options.ProjectSettingsProvider" groupId="tools" dynamic="true" id="DBNavigator.Settings" displayName="Database Navigator"/>
 
-        <toolWindow id="DB Browser" icon="/img/window/DatabaseBrowser.svg" anchor="left" factoryClass="com.dbn.browser.DatabaseBrowserToolWindowFactory"/>
-        <toolWindow id="DB Diagnostics" icon="/img/window/DatabaseDiagnostics.svg" anchor="bottom" factoryClass="com.dbn.diagnostics.DiagnosticsToolWindowFactory" canCloseContents="true"/>
-        <toolWindow id="DB Execution Console" icon="/img/window/ExecutionConsole.svg" anchor="bottom" factoryClass="com.dbn.execution.ExecutionConsoleToolWindowFactory" />
+        <toolWindow id="DB Browser" icon="com.dbn.common.icon.Icons.WINDOW_DATABASE_BROWSER" anchor="left" factoryClass="com.dbn.browser.DatabaseBrowserToolWindowFactory"/>
+        <toolWindow id="DB Diagnostics" icon="com.dbn.common.icon.Icons.WINDOW_DATABASE_DIAGNOSTICS" anchor="bottom" factoryClass="com.dbn.diagnostics.DiagnosticsToolWindowFactory" canCloseContents="true"/>
+        <toolWindow id="DB Execution Console" icon="com.dbn.common.icon.Icons.WINDOW_EXECUTION_CONSOLE" anchor="bottom" factoryClass="com.dbn.execution.ExecutionConsoleToolWindowFactory" />
 
         <fileType name="DBN-SQL" language="DBN-SQL" implementationClass="com.dbn.language.sql.SQLFileType" fieldName="INSTANCE" extensions="sql;ddl;vw"/>
         <fileType name="DBN-PSQL" language="DBN-PSQL" implementationClass="com.dbn.language.psql.PSQLFileType" fieldName="INSTANCE" extensions="psql;plsql;trg;prc;fnc;pkg;pks;pkb;tpe;tps;tpb"/>
