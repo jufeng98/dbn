@@ -41,7 +41,10 @@ public class DatabaseBrowserUtils {
                 treeNode = treeNode.getParent();
             }
             return new TreePath(path);
-        } catch (IllegalArgumentException | IllegalStateException | ProcessCanceledException e) {
+        } catch (ProcessCanceledException e) {
+            conditionallyLog(e);
+            return null;
+        } catch (IllegalArgumentException | IllegalStateException e) {
             conditionallyLog(e);
             // workaround for TreePath "Path elements must be non-null"
             return null;
