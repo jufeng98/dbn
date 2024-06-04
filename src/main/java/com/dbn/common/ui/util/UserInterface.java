@@ -46,6 +46,11 @@ public class UserInterface {
         });
     }
 
+
+    public static void removeBorders(JComponent root) {
+        UserInterface.visitRecursively(root, component -> component.setBorder(null));
+    }
+
     @Nullable
     public static Point getRelativeMouseLocation(Component component) {
         try {

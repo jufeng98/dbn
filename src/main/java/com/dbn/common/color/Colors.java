@@ -14,7 +14,6 @@ import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.colors.EditorColorsScheme;
 import com.intellij.ui.Gray;
 import com.intellij.ui.JBColor;
-import com.intellij.util.ui.NamedColorUtil;
 import com.intellij.util.ui.UIUtil;
 import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.NotNull;

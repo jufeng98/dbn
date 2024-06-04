@@ -24,8 +24,6 @@ import com.intellij.openapi.editor.event.SelectionEvent;
 import com.intellij.openapi.editor.event.SelectionListener;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.IdeFocusManager;
-import com.intellij.ui.Gray;
-import com.intellij.ui.JBColor;
 import com.intellij.ui.LightColors;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.ui.UIUtil;
@@ -71,6 +69,8 @@ public class DataSearchComponent extends DBNFormBase implements SelectionListene
         searchFieldPanel.add(searchTextField, BorderLayout.CENTER);
         searchTextField.setExtraActions(createExtraActions());
         searchTextField.setMultilineEnabled(false);
+        //searchTextField.setBorder(Borders.EMPTY_BORDER);
+        //searchTextField.getTextArea().setBorder(Borders.EMPTY_BORDER);
         //searchTextField.setShowNewLineButton(false);
 
         BasicTable<?> table = searchableComponent.getTable();
@@ -121,7 +121,8 @@ public class DataSearchComponent extends DBNFormBase implements SelectionListene
                 }
             }
         });
-        UserInterface.setBackgroundRecursive(mainPanel, searchTextField.getBackground());
+        //UserInterface.setBackgroundRecursive(mainPanel, searchTextField.getBackground());
+        //UserInterface.removeBorders(mainPanel);
     }
 
     private AnAction[] createExtraActions() {
