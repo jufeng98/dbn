@@ -35,7 +35,7 @@ public class RegexToggleAction extends DataSearchHeaderToggleAction {
 
     @Override
     public boolean isSelected(@NotNull AnActionEvent e) {
-        return getEditorSearchComponent().getFindModel().isRegularExpressions();
+        return getFindModel().isRegularExpressions();
     }
 
     @Override
@@ -45,7 +45,7 @@ public class RegexToggleAction extends DataSearchHeaderToggleAction {
 
     @Override
     public void setSelected(@NotNull AnActionEvent e, boolean state) {
-        FindModel findModel = getEditorSearchComponent().getFindModel();
+        FindModel findModel = getFindModel();
         findModel.setRegularExpressions(state);
         if (state) {
             findModel.setWholeWordsOnly(false);
