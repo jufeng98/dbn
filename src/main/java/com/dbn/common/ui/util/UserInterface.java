@@ -3,6 +3,7 @@ package com.dbn.common.ui.util;
 import com.dbn.common.compatibility.Compatibility;
 import com.dbn.common.lookup.Visitor;
 import com.dbn.common.thread.Dispatch;
+import com.dbn.common.util.Environment;
 import com.dbn.common.util.Strings;
 import com.dbn.common.util.Unsafe;
 import com.intellij.openapi.actionSystem.ActionToolbarPosition;
@@ -30,9 +31,15 @@ import static com.dbn.common.ui.util.Borderless.isBorderless;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 
 public class UserInterface {
+
+    public static final String NEW_UI_REGISTRY_KEY = "ide.experimental.ui";
+    public static final String NEW_UI_RELEASE_VERSION = "2022.3";
+
     @Compatibility
     @Getter(lazy = true)
-    private static final boolean newUI = Unsafe.silent(false, () -> Registry.is("ide.experimental.ui"));
+    private static final boolean newUI = Unsafe.silent(false, () ->
+            Environment.isIdeNewerThan(NEW_UI_RELEASE_VERSION) &&
+            Registry.is(NEW_UI_REGISTRY_KEY));
 
     public static void stopTableCellEditing(JComponent root) {
         visitRecursively(root, component -> {
