@@ -71,6 +71,7 @@ public class MethodExecutionInputForm extends DBNFormBase {
             debuggerVersionLabel.setText("...");
             Dispatch.background(
                     getProject(),
+                    debuggerVersionLabel,
                     () -> executionInput.getDebuggerVersion(),
                     v -> debuggerVersionLabel.setText(v));
         } else {
@@ -112,7 +113,9 @@ public class MethodExecutionInputForm extends DBNFormBase {
         loadingArgumentsIconPanel.add(new AsyncProcessIcon("Loading"), BorderLayout.CENTER);
 
         //lazy load
-        Dispatch.background(getProject(),
+        Dispatch.background(
+                getProject(),
+                loadingArgumentsPanel,
                 () -> getMethodArguments(),
                 a -> initArgumentsPanel(a));
     }

@@ -11,6 +11,7 @@ import com.intellij.util.Alarm;
 import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
@@ -46,9 +47,17 @@ public final class Dispatch {
     }
 
     public static <T> void background(Project project, Supplier<T> supplier, Consumer<T> consumer) {
-        ModalityState modalityState = ModalityState.defaultModalityState();
         Background.run(project, () -> {
             T value = supplier.get();
+            ModalityState modalityState = ModalityState.defaultModalityState();
+            run(modalityState, () -> consumer.accept(value));
+        });
+    }
+
+    public static <T> void background(Project project, JComponent component, Supplier<T> supplier, Consumer<T> consumer) {
+        Background.run(project, () -> {
+            T value = supplier.get();
+            ModalityState modalityState = ModalityState.stateForComponent(component);
             run(modalityState, () -> consumer.accept(value));
         });
     }

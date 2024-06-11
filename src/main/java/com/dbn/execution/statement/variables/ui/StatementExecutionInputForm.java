@@ -76,6 +76,7 @@ public class StatementExecutionInputForm extends DBNFormBase implements Componen
 
             Dispatch.background(
                     getProject(),
+                    debuggerVersionLabel,
                     () -> executionInput.getDebuggerVersion(),
                     v -> debuggerVersionLabel.setText(v));
         } else {
