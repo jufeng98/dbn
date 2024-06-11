@@ -15,6 +15,7 @@ import javax.swing.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
+import static com.dbn.common.ui.util.UserInterface.whenShown;
 import static com.dbn.common.util.Commons.nvl;
 import static com.intellij.openapi.application.ApplicationManager.getApplication;
 
@@ -35,7 +36,7 @@ public final class Dispatch {
 
     public static void run(ModalityState modalityState, Runnable runnable) {
         modalityState = nvl(modalityState, () -> ModalityState.defaultModalityState());
-        getApplication().invokeLater(() -> Failsafe.guarded(() -> runnable.run()), modalityState/*, ModalityState.NON_MODAL*/);
+        getApplication().invokeLater(() -> Failsafe.guarded(() -> runnable.run()), modalityState);
     }
 
     public static <T, E extends Throwable> T call(boolean conditional, ThrowableCallable<T, E> callable) throws E{
@@ -46,29 +47,22 @@ public final class Dispatch {
         }
     }
 
-    public static <T> void background(Project project, Supplier<T> supplier, Consumer<T> consumer) {
-        Background.run(project, () -> {
-            T value = supplier.get();
-            ModalityState modalityState = ModalityState.defaultModalityState();
-            run(modalityState, () -> consumer.accept(value));
-        });
+    public static <T> void async(Project project, JComponent component, Supplier<T> supplier, Consumer<T> consumer) {
+        if (component.isShowing()) {
+            background(project, component, supplier, consumer);
+            return;
+        }
+        // invoke when component is shown and the modality state is known
+        whenShown(component, () -> background(project, component, supplier, consumer));
     }
 
-    public static <T> void background(Project project, JComponent component, Supplier<T> supplier, Consumer<T> consumer) {
+    private static <T> void background(Project project, JComponent component, Supplier<T> supplier, Consumer<T> consumer) {
         Background.run(project, () -> {
             T value = supplier.get();
             ModalityState modalityState = ModalityState.stateForComponent(component);
             run(modalityState, () -> consumer.accept(value));
         });
     }
-
-    public static <T> void background(Project project, ModalityState modalityState, Runnable loader, Runnable renderer) {
-        Background.run(project, () -> {
-            loader.run();
-            run(modalityState, renderer);
-        });
-    }
-
 
     public static <T, E extends Throwable> T call(ThrowableCallable<T, E> callable) throws E{
         ModalityState modalityState = ModalityState.defaultModalityState();

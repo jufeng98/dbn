@@ -32,7 +32,6 @@ import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
-import com.intellij.ui.JBColor;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 
@@ -174,7 +173,9 @@ public class ObjectFilterDetailsForm extends DBNFormBase {
     }
 
     private void verifyExpression() {
-        Dispatch.background(getProject(),
+        Dispatch.async(
+                getProject(),
+                mainPanel,
                 () -> verifyExpression(filter),
                 c -> applyVerificationResult(c));
     }

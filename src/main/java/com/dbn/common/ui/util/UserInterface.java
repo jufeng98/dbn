@@ -9,6 +9,7 @@ import com.dbn.common.util.Unsafe;
 import com.intellij.openapi.actionSystem.ActionToolbarPosition;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.registry.Registry;
+import com.intellij.ui.AncestorListenerAdapter;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.border.IdeaTitledBorder;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -21,6 +22,7 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.AncestorEvent;
 import javax.swing.table.TableCellEditor;
 import java.awt.*;
 import java.awt.event.InputEvent;
@@ -49,6 +51,15 @@ public class UserInterface {
                 if (cellEditor != null) {
                     cellEditor.stopCellEditing();
                 }
+            }
+        });
+    }
+
+    public static void whenShown(JComponent component, Runnable runnable) {
+        component.addAncestorListener(new AncestorListenerAdapter() {
+            @Override
+            public void ancestorAdded(AncestorEvent event) {
+                runnable.run();
             }
         });
     }
