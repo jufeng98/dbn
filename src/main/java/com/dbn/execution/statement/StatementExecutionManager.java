@@ -5,6 +5,7 @@ import com.dbn.common.action.UserDataKeys;
 import com.dbn.common.component.PersistentState;
 import com.dbn.common.component.ProjectComponentBase;
 import com.dbn.common.consumer.ListCollector;
+import com.dbn.common.dispose.Disposer;
 import com.dbn.common.dispose.Failsafe;
 import com.dbn.common.event.ProjectEvents;
 import com.dbn.common.notification.NotificationGroup;
@@ -82,6 +83,7 @@ public class StatementExecutionManager extends ProjectComponentBase implements P
         executionVariables = new StatementExecutionVariables(project);
         executionVariableTypes = new StatementExecutionVariableTypes();
 
+        Disposer.register(this, executionVariables);
         ProjectEvents.subscribe(project, this, PsiDocumentTransactionListener.TOPIC, psiDocumentTransactionListener());
     }
 
