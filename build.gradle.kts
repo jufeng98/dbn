@@ -99,8 +99,8 @@ withType<KotlinCompile> {
   }
 
   patchPluginXml {
-    sinceBuild.set("200.0001")
-    untilBuild.set("241.*")
+    sinceBuild.set("201.6668.113")
+    untilBuild.set("242.*")
   }
 
   signPlugin {
