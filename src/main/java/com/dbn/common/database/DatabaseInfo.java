@@ -7,6 +7,7 @@ import com.dbn.connection.DatabaseUrlPattern;
 import com.dbn.connection.DatabaseUrlType;
 import com.dbn.connection.config.file.DatabaseFile;
 import com.dbn.connection.config.file.DatabaseFileBundle;
+import com.dbn.connection.config.tns.TnsAdmin;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -64,6 +65,10 @@ public class DatabaseInfo implements Cloneable<DatabaseInfo> {
                 Strings.isEmpty(tnsFolder) &&
                 Strings.isEmpty(tnsProfile) &&
                 Strings.isEmpty(getFirstFilePath());
+    }
+
+    public String getTnsFolder() {
+        return Strings.isEmptyOrSpaces(tnsFolder) ? TnsAdmin.location() : tnsFolder;
     }
 
     public void reset() {

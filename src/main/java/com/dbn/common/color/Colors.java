@@ -32,8 +32,6 @@ import static com.dbn.common.dispose.Failsafe.guarded;
 
 @UtilityClass
 public final class Colors {
-    private static final AtomicInteger index = new AtomicInteger(0);
-
     public static Color LIGHT_BLUE = new JBColor(new Color(235, 244, 254), new Color(0x2D3548));
     public static Color HINT_COLOR = new JBColor(new Color(-12029286), new Color(-10058060));
 
@@ -187,17 +185,21 @@ public final class Colors {
 
     @Compatibility
     public static Color getWarningHintColor() {
-        return cached(32, () -> Commons.coalesce(
+        return cached(34, () -> Commons.coalesce(
                 () -> invokeMethod(HintUtil.class, "getWarningColor"),
                 () -> new JBColor(0xfff8dc, 0x665014)));
     }
 
     public static Color getErrorHintColor() {
-        return cached(33, () -> HintUtil.getErrorColor());
+        return cached(35, () -> HintUtil.getErrorColor());
     }
 
     public static Color getOutlineColor() {
-        return cached(31, () -> DarculaUIUtil.getOutlineColor(true, false));
+        return cached(36, () -> DarculaUIUtil.getOutlineColor(true, false));
+    }
+
+    public static Color getTextFieldInactiveForeground() {
+        return cached(37, () -> UIManager.getColor("TextField.inactiveForeground"));
     }
 
 

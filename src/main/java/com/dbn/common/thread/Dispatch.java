@@ -23,15 +23,20 @@ import static com.intellij.openapi.application.ApplicationManager.getApplication
 public final class Dispatch {
 
     public static void run(Runnable runnable) {
-        run(null, runnable);
+        run((ModalityState) null, runnable);
     }
 
     public static void run(boolean conditional, Runnable runnable) {
         if (conditional && ThreadMonitor.isDispatchThread()) {
             Failsafe.guarded(runnable, r -> r.run());
         } else {
-            run(null, runnable);
+            run((ModalityState) null, runnable);
         }
+    }
+
+    public static void run(JComponent component, Runnable runnable) {
+        ModalityState modalityState = ModalityState.stateForComponent(component);
+        run(modalityState, runnable);
     }
 
     public static void run(ModalityState modalityState, Runnable runnable) {

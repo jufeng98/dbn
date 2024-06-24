@@ -15,7 +15,7 @@
           </grid>
         </constraints>
         <properties>
-          <text value="Connect &amp;type"/>
+          <text value="Config &amp;type"/>
         </properties>
       </component>
       <hspacer id="1381a">

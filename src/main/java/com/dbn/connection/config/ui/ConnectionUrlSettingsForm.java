@@ -1,7 +1,9 @@
 package com.dbn.connection.config.ui;
 
+import com.dbn.common.color.Colors;
 import com.dbn.common.constant.Constants;
 import com.dbn.common.database.DatabaseInfo;
+import com.dbn.common.thread.Dispatch;
 import com.dbn.common.ui.Presentable;
 import com.dbn.common.ui.form.DBNFormBase;
 import com.dbn.common.ui.misc.DBNComboBox;
@@ -14,12 +16,14 @@ import com.dbn.connection.DatabaseUrlType;
 import com.dbn.connection.config.ConnectionDatabaseSettings;
 import com.dbn.connection.config.file.DatabaseFileBundle;
 import com.dbn.connection.config.file.ui.DatabaseFileSettingsForm;
+import com.dbn.connection.config.tns.TnsAdmin;
 import com.dbn.connection.config.tns.TnsNames;
 import com.dbn.connection.config.tns.TnsNamesParser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.ui.components.fields.ExpandableTextField;
+import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -75,7 +79,10 @@ public class ConnectionUrlSettingsForm extends DBNFormBase {
         onTextChange(portTextField, e -> updateUrlField());
         onTextChange(databaseTextField, e -> updateUrlField());
         onTextChange(tnsFolderTextField, e -> updateUrlField());
+        onTextChange(tnsFolderTextField, e -> updateTnsFolderField());
         tnsProfileComboBox.addActionListener(e -> updateUrlField());
+
+        updateTnsFolderField();
     }
 
     @Override
@@ -122,6 +129,21 @@ public class ConnectionUrlSettingsForm extends DBNFormBase {
 
     public DatabaseUrlType getUrlType() {
         return getSelection(urlTypeComboBox);
+    }
+
+    private void updateTnsFolderField() {
+        String tnsFolder = tnsFolderTextField.getText();
+        if (Strings.isEmptyOrSpaces(tnsFolder)) {
+            tnsFolder = TnsAdmin.location();
+            Dispatch.run(tnsFolderTextField, () -> tnsFolderTextField.setText(TnsAdmin.location()));
+        }
+        boolean isTnsAdmin = Strings.equalsIgnoreCase(tnsFolder, TnsAdmin.location());
+
+        JTextField textField = tnsFolderTextField.getTextField();
+        textField.setForeground(isTnsAdmin ?
+                Colors.getTextFieldInactiveForeground():
+                Colors.getTextFieldForeground());
+
     }
 
     private void updateUrlField() {
