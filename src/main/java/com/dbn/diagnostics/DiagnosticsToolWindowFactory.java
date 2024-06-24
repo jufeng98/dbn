@@ -1,21 +1,28 @@
 package com.dbn.diagnostics;
 
 import com.dbn.common.icon.Icons;
-import com.intellij.openapi.project.DumbAware;
+import com.dbn.common.ui.window.DBNToolWindowFactory;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.openapi.wm.ToolWindowFactory;
 import org.jetbrains.annotations.NotNull;
 
-public class DiagnosticsToolWindowFactory implements ToolWindowFactory, DumbAware{
+import javax.swing.*;
+
+public class DiagnosticsToolWindowFactory extends DBNToolWindowFactory {
     @Override
-    public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
+    public void createContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         toolWindow.setTitle("DB Diagnostics");
         toolWindow.setStripeTitle("DB Diagnostics");
-        toolWindow.setIcon(Icons.WINDOW_DATABASE_DIAGNOSTICS);
         toolWindow.setToHideOnEmptyContent(true);
         toolWindow.setAutoHide(false);
         toolWindow.setAvailable(false, null);
+    }
+
+    @Override
+    protected Icon getIcon(boolean selected) {
+        return selected ?
+                Icons.WINDOW_DATABASE_DIAGNOSTICS_SELECTED :
+                Icons.WINDOW_DATABASE_DIAGNOSTICS;
     }
 
     @Override
