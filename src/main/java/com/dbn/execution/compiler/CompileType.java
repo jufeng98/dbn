@@ -10,8 +10,8 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public enum CompileType implements InteractiveOption {
-    NORMAL("Normal", Icons.OBEJCT_COMPILE, true),
-    DEBUG("Debug", Icons.OBEJCT_COMPILE_DEBUG, true),
+    NORMAL("Normal", Icons.OBJECT_COMPILE, true),
+    DEBUG("Debug", Icons.OBJECT_COMPILE_DEBUG, true),
     KEEP("Keep existing", null/*Icons.OBEJCT_COMPILE_KEEP*/, true),
     ASK("Ask", null/*Icons.OBEJCT_COMPILE_ASK*/, false);
 

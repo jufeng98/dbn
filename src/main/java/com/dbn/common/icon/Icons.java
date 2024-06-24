@@ -4,7 +4,6 @@ import com.intellij.icons.AllIcons;
 import com.intellij.openapi.util.ScalableIcon;
 import com.intellij.ui.RowIcon;
 import com.intellij.util.IconUtil;
-import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -13,7 +12,6 @@ import static com.dbn.common.icon.IconLoader.load;
 
 @SuppressWarnings("unused")
 @Slf4j
-@UtilityClass
 public class Icons {
 
     public static final Icon DBN_SPLASH = load("/img/DBN.png");
@@ -253,13 +251,13 @@ public class Icons {
     public static final Icon CODE_EDITOR_SPEC             = load("/img/CodeSpec.png");
     public static final Icon CODE_EDITOR_BODY             = load("/img/CodeBody.png");
 
-    public static final Icon OBEJCT_COMPILE     = load("/img/action/Compile.png");
-    public static final Icon OBEJCT_COMPILE_DEBUG = load("/img/action/CompileDebug.png");
-    //public static final Icon OBEJCT_COMPILE_KEEP = load("/main.resources.img/CompileKeep.png");
-    public static final Icon OBEJCT_COMPILE_ASK = load("/img/action/CompileAsk.png");
-    public static final Icon OBEJCT_EDIT_SOURCE = load("/img/action/EditSource.svg");
-    public static final Icon OBEJCT_EDIT_DATA = load("/img/action/EditData.svg");
-    public static final Icon OBEJCT_VIEW_DATA = load("/img/ViewData.png");
+    public static final Icon OBJECT_COMPILE = load("/img/action/Compile.png");
+    public static final Icon OBJECT_COMPILE_DEBUG = load("/img/action/CompileDebug.png");
+    //public static final Icon OBJECT_COMPILE_KEEP = load("/main.resources.img/CompileKeep.png");
+    public static final Icon OBJECT_COMPILE_ASK = load("/img/action/CompileAsk.png");
+    public static final Icon OBJECT_EDIT_SOURCE = load("/img/action/EditSource.svg");
+    public static final Icon OBJECT_EDIT_DATA = load("/img/action/EditData.svg");
+    public static final Icon OBJECT_VIEW_DATA = load("/img/ViewData.png");
 
     public static final Icon CONNECTION_COMMIT   = load("/img/action/ConnectionCommit.svg", "CONNECTION_COMMIT");
     public static final Icon CONNECTION_ROLLBACK = load("/img/action/ConnectionRollback.svg", "CONNECTION_ROLLBACK");
