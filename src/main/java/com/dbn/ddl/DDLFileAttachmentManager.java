@@ -48,7 +48,6 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.components.JBList;
 import com.jgoodies.common.base.Strings;
@@ -517,7 +516,7 @@ public class DDLFileAttachmentManager extends ProjectComponentBase implements Pe
 
         for (Element mappingElement : mappingElements) {
             String fileUrl = stringAttribute(mappingElement, "file-url");
-            if (StringUtil.isEmpty(fileUrl)) continue;
+            if (Strings.isEmpty(fileUrl)) continue;
 
             fileUrl = VirtualFiles.ensureFileUrl(fileUrl);
             DBObjectRef<DBSchemaObject> objectRef = DBObjectRef.from(mappingElement);

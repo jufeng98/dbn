@@ -15,6 +15,7 @@ import com.dbn.common.notification.NotificationGroup;
 import com.dbn.common.notification.NotificationSupport;
 import com.dbn.common.project.ProjectRef;
 import com.dbn.common.util.Commons;
+import com.dbn.common.util.Strings;
 import com.dbn.common.util.TimeUtil;
 import com.dbn.connection.config.ConnectionDatabaseSettings;
 import com.dbn.connection.config.ConnectionDetailSettings;
@@ -60,7 +61,7 @@ import static com.dbn.common.util.Commons.coalesce;
 import static com.dbn.common.util.Strings.cachedUpperCase;
 import static com.dbn.common.util.TimeUtil.isOlderThan;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
-import static com.intellij.openapi.util.text.StringUtil.isEmpty;
+import static com.dbn.common.util.Strings.isEmpty;
 import static java.util.concurrent.TimeUnit.MINUTES;
 
 @Slf4j
@@ -398,7 +399,7 @@ public class ConnectionHandlerImpl extends StatefulDisposableBase implements Con
     @Nullable
     private SchemaId getDatabaseSchema() {
         String databaseName = getSettings().getDatabaseSettings().getDatabaseInfo().getDatabase();
-        return isEmpty(databaseName) ? null : SchemaId.get(databaseName);
+        return Strings.isEmptyOrSpaces(databaseName) ? null : SchemaId.get(databaseName);
     }
 
     @Nullable

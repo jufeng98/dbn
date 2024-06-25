@@ -51,8 +51,8 @@ import java.util.Map;
 import static com.dbn.common.options.setting.Settings.newElement;
 import static com.dbn.common.ui.util.Splitters.makeRegular;
 import static com.dbn.common.util.Commons.nvl;
+import static com.dbn.common.util.Strings.isNotEmpty;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
-import static com.intellij.openapi.util.text.StringUtil.isNotEmpty;
 
 @Slf4j
 public class ConnectionBundleSettingsForm extends ConfigurationEditorForm<ConnectionBundleSettings> implements ListSelectionListener {
