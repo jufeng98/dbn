@@ -6,6 +6,8 @@ import com.dbn.common.load.ProgressMonitor;
 import com.dbn.common.notification.NotificationGroup;
 import com.dbn.common.notification.NotificationSupport;
 import com.dbn.common.thread.Progress;
+import com.dbn.common.thread.ThreadMonitor;
+import com.dbn.common.thread.ThreadProperty;
 import com.dbn.common.util.Messages;
 import com.dbn.common.util.Strings;
 import com.dbn.connection.ConnectionHandler;
@@ -443,7 +445,7 @@ public abstract class DBJdbcDebugProcess<T extends ExecutionInput> extends XDebu
             session.stop();
         } else {
             VirtualFile virtualFile = getRuntimeInfoFile(runtimeInfo);
-            DBDebugUtil.openEditor(virtualFile);
+            ThreadMonitor.surround(getProject(), ThreadProperty.DEBUGGER_NAVIGATION, () -> DBDebugUtil.openEditor(virtualFile));
             try {
                 backtraceInfo = debuggerInterface.getExecutionBacktraceInfo(debuggerConnection);
                 List<DebuggerRuntimeInfo> frames = backtraceInfo.getFrames();
