@@ -399,10 +399,8 @@ public class ConnectionBundleSettingsForm extends ConfigurationEditorForm<Connec
     @Nullable
     @Override
     public Object getData(@NotNull String dataId) {
-        if (DataKeys.CONNECTION_BUNDLE_SETTINGS.is(dataId)) {
-            return ConnectionBundleSettingsForm.this;
-        }
-        return super.getData(dataId);
+        if (DataKeys.CONNECTION_BUNDLE_SETTINGS.is(dataId)) return this;
+        return null;
     }
 
     public int getSelectionSize() {

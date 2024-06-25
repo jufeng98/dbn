@@ -1,5 +1,6 @@
 package com.dbn.editor.session.ui;
 
+import com.dbn.common.action.DataKeys;
 import com.dbn.common.action.DataProviders;
 import com.dbn.common.color.Colors;
 import com.dbn.common.dispose.Disposer;
@@ -192,11 +193,8 @@ public class SessionBrowserForm extends DBNFormBase implements SearchableDataCom
     @Nullable
     @Override
     public Object getData(@NotNull String dataId) {
-        Object data = super.getData(dataId);
-        if (data == null) {
-            data = getSessionBrowser().getData(dataId);
-        }
-        return data;
+        if (DataKeys.SESSION_BROWSER.is(dataId)) return getSessionBrowser();
+        return null;
     }
 
     @Override

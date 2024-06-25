@@ -64,17 +64,4 @@ public class Lookups {
         DataContext dataContext = Context.getDataContext(component);
         return PlatformDataKeys.PROJECT.getData(dataContext);
     }
-
-    @Nullable
-    public static Object getData(String dataId, DataProvider... dataProviders) {
-        for (DataProvider dataProvider : dataProviders) {
-            if (dataProvider != null) {
-                Object data = dataProvider.getData(dataId);
-                if (data != null) {
-                    return data;
-                }
-            }
-        }
-        return null;
-    }
 }

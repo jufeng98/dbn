@@ -1,5 +1,6 @@
 package com.dbn.execution.method.result.ui;
 
+import com.dbn.common.action.DataKeys;
 import com.dbn.common.dispose.Disposer;
 import com.dbn.common.icon.Icons;
 import com.dbn.common.thread.Dispatch;
@@ -26,6 +27,7 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.tabs.TabInfo;
 import com.intellij.util.ui.tree.TreeUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -204,4 +206,12 @@ public class MethodExecutionResultForm extends ExecutionResultFormBase<MethodExe
         return mainPanel;
     }
 
+    /********************************************************
+     *                    Data Provider                     *
+     ********************************************************/
+    @Override
+    public @Nullable Object getData(@NotNull String dataId) {
+        if (DataKeys.METHOD_EXECUTION_RESULT.is(dataId)) return getExecutionResult();
+        return null;
+    }
 }

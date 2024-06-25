@@ -244,10 +244,8 @@ public class CalendarPopupProviderForm extends TextFieldPopupProviderForm implem
     @Nullable
     @Override
     public Object getData(@NotNull String dataId) {
-        if (DataKeys.CALENDAR_POPUP_PROVIDER_FORM.is(dataId)) {
-            return this;
-        }
-        return super.getData(dataId);
+        if (DataKeys.CALENDAR_POPUP_PROVIDER_FORM.is(dataId)) return this;
+        return null;
     }
 
     public void setTimeText(String timeString) {

@@ -38,11 +38,8 @@ public abstract class DBNFormBase
     @NotNull
     @Override
     public final JComponent getComponent() {
-        JComponent component = getMainComponent();
-        if (!initialized) {
-            initialize();
-        }
-        return component;
+        if (!initialized) initialize();
+        return getMainComponent();
     }
 
     private void initialize() {
@@ -65,12 +62,6 @@ public abstract class DBNFormBase
     @Nullable
     @Override
     public Object getData(@NotNull String dataId) {
-        return null;
-    }
-
-    @Override
-    @Nullable
-    public JComponent getPreferredFocusedComponent() {
         return null;
     }
 

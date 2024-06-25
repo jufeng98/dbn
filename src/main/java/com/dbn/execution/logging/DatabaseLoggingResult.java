@@ -117,9 +117,7 @@ public class DatabaseLoggingResult extends ExecutionResultBase<DatabaseLoggingRe
     @Nullable
     @Override
     public Object getData(@NotNull String dataId) {
-        if (DataKeys.DATABASE_LOG_OUTPUT.is(dataId)) {
-            return DatabaseLoggingResult.this;
-        }
+        if (DataKeys.DATABASE_LOG_OUTPUT.is(dataId)) return this;
         return null;
     }
 

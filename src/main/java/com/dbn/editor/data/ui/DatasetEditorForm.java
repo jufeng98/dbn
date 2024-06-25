@@ -1,6 +1,7 @@
 package com.dbn.editor.data.ui;
 
 import com.dbn.common.action.BasicAction;
+import com.dbn.common.action.DataKeys;
 import com.dbn.common.action.DataProviders;
 import com.dbn.common.dispose.Disposer;
 import com.dbn.common.dispose.Failsafe;
@@ -265,10 +266,7 @@ public class DatasetEditorForm extends DBNFormBase implements SearchableDataComp
     @Nullable
     @Override
     public Object getData(@NotNull String dataId) {
-        Object data = super.getData(dataId);
-        if (data == null) {
-            data = getDatasetEditor().getData(dataId);
-        }
-        return data;
+        if (DataKeys.DATASET_EDITOR.is(dataId)) return getDatasetEditor();
+        return null;
     }
 }

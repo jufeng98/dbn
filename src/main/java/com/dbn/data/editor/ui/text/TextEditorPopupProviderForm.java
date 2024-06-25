@@ -100,10 +100,8 @@ public class TextEditorPopupProviderForm extends TextFieldPopupProviderForm {
     @Nullable
     @Override
     public Object getData(@NotNull String dataId) {
-        if (DataKeys.TEXT_EDITOR_POPUP_PROVIDER_FORM.is(dataId)) {
-            return this;
-        }
-        return super.getData(dataId);
+        if (DataKeys.TEXT_EDITOR_POPUP_PROVIDER_FORM.is(dataId)) return this;
+        return null;
     }
 
     @Override

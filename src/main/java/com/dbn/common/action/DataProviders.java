@@ -12,6 +12,8 @@ import javax.swing.*;
 public class DataProviders {
 
     public static void register(@NotNull JComponent component, @NotNull DataProvider provider) {
+        if (component instanceof DataProvider) return;
+
         DataProviderDelegate delegate = new DataProviderDelegate(provider);
         DataManager.registerDataProvider(component, delegate);
     }

@@ -132,9 +132,7 @@ public class ExplainPlanResult extends ExecutionResultBase<ExplainPlanResultForm
     @Nullable
     @Override
     public Object getData(@NotNull String dataId) {
-        if (DataKeys.EXPLAIN_PLAN_RESULT.is(dataId)) {
-            return ExplainPlanResult.this;
-        }
+        if (DataKeys.EXPLAIN_PLAN_RESULT.is(dataId)) return this;
         return null;
     }
 

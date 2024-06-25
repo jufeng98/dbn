@@ -626,9 +626,7 @@ public class DatasetEditor extends DisposableUserDataHolderBase implements
     @Nullable
     @Override
     public Object getData(@NotNull String dataId) {
-        if (DataKeys.DATASET_EDITOR.is(dataId)) {
-            return DatasetEditor.this;
-        }
+        if (DataKeys.DATASET_EDITOR.is(dataId)) return this;
         return null;
     }
 
