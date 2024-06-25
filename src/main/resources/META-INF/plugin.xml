@@ -486,19 +486,19 @@
             <action id="DBNavigator.Actions.SourceEditor.Save" class="com.dbn.editor.code.action.SourceCodeSaveAction" text="Source Editor - Save">
                 <keyboard-shortcut keymap="$default" first-keystroke="ctrl S"/>
             </action>
-            <action id="DBNavigator.Actions.CodeEditor.Rollback" class="com.dbn.editor.code.action.SourceCodeRevertAction" text="Code Editor - Revert Changes"/>
-            <action id="DBNavigator.Actions.CodeEditor.Reload" class="com.dbn.editor.code.action.SourceCodeReloadAction" text="Code Editor - Reload"/>
-            <action id="DBNavigator.Actions.CodeEditor.Compile" class="com.dbn.editor.code.action.ProgramCompileAction" text="Code Editor - Compile"/>
+            <action id="DBNavigator.Actions.CodeEditor.Rollback" class="com.dbn.editor.code.action.SourceCodeRevertAction" text="Code Editor - Revert Changes" icon="com.dbn.common.icon.Icons.CODE_EDITOR_RESET"/>
+            <action id="DBNavigator.Actions.CodeEditor.Reload" class="com.dbn.editor.code.action.SourceCodeReloadAction" text="Code Editor - Reload" icon="com.dbn.common.icon.Icons.CODE_EDITOR_RELOAD"/>
+            <action id="DBNavigator.Actions.CodeEditor.Compile" class="com.dbn.editor.code.action.ProgramCompileAction" text="Code Editor - Compile" icon="com.dbn.common.icon.Icons.OBJECT_COMPILE"/>
             <separator/>
-            <action id="DBNavigator.Actions.CodeEditor.CompareWithOriginal" class="com.dbn.editor.code.action.CompareWithOriginalAction" text="Code Editor - Compare with Original"/>
-            <action id="DBNavigator.Actions.CodeEditor.CompareWithDatabase" class="com.dbn.editor.code.action.CompareWithDatabaseAction" text="Code Editor - Compare with Database"/>
+            <action id="DBNavigator.Actions.CodeEditor.CompareWithOriginal" class="com.dbn.editor.code.action.CompareWithOriginalAction" text="Code Editor - Compare with Original" icon="com.dbn.common.icon.Icons.CODE_EDITOR_DIFF"/>
+            <action id="DBNavigator.Actions.CodeEditor.CompareWithDatabase" class="com.dbn.editor.code.action.CompareWithDatabaseAction" text="Code Editor - Compare with Database" icon="com.dbn.common.icon.Icons.CODE_EDITOR_DIFF_DB"/>
             <separator/>
             <action id="DBNavigator.Actions.CodeEditor.RunMethod" class="com.dbn.editor.code.action.MethodRunAction" text="Code Editor - Run Method" icon="AllIcons.Actions.Execute"/>
             <action id="DBNavigator.Actions.CodeEditor.DebugMethod" class="com.dbn.editor.code.action.MethodDebugAction" text="Code Editor - Debug Method" icon="AllIcons.Actions.StartDebugger"/>
             <action id="DBNavigator.Actions.CodeEditor.RunProgramMethod" class="com.dbn.editor.code.action.ProgramMethodRunAction" text="Code Editor - Run Method" icon="AllIcons.Actions.Execute"/>
             <action id="DBNavigator.Actions.CodeEditor.DebugProgramMethod" class="com.dbn.editor.code.action.ProgramMethodDebugAction" text="Code Editor - Run Method" icon="AllIcons.Actions.StartDebugger"/>
             <separator/>
-            <action id="DBNavigator.Actions.CodeEditor.LinkDdlFile" class="com.dbn.editor.code.action.CodeEditorDDLFileAction" text="Code Editor - DDL Files"/>
+            <action id="DBNavigator.Actions.CodeEditor.LinkDdlFile" class="com.dbn.editor.code.action.CodeEditorDDLFileAction" text="Code Editor - DDL Files" icon="com.dbn.common.icon.Icons.CODE_EDITOR_DDL_FILE"/>
             <separator/>
             <action id="DBNavigator.Actions.CodeEditor.OpenSettings" class="com.dbn.editor.code.action.CodeEditorSettingsAction" text="Code Editor - Settings"/>
         </group>
@@ -507,16 +507,16 @@
                 <keyboard-shortcut keymap="$default" first-keystroke="ctrl F"/>
             </action>
             <separator/>
-            <action id="DBNavigator.Actions.SessionBrowser.Reload" class="com.dbn.editor.session.action.ReloadSessionsAction" text="Session Browser - Reload"/>
+            <action id="DBNavigator.Actions.SessionBrowser.Reload" class="com.dbn.editor.session.action.ReloadSessionsAction" text="Session Browser - Reload" icon="com.dbn.common.icon.Icons.DATA_EDITOR_RELOAD_DATA"/>
             <action id="DBNavigator.Actions.SessionBrowser.TimedReload" class="com.dbn.editor.session.action.TimedReloadComboBoxAction" text="Session Browser - Automatic Reload"/>
             <separator/>
             <action id="DBNavigator.Actions.SessionBrowser.FilterUsers" class="com.dbn.editor.session.action.FilterUsersComboBoxAction" text="Session Browser - Filter Users"/>
             <action id="DBNavigator.Actions.SessionBrowser.FilterHosts" class="com.dbn.editor.session.action.FilterHostsComboBoxAction" text="Session Browser - Filter Hosts"/>
             <action id="DBNavigator.Actions.SessionBrowser.FilterStatuses" class="com.dbn.editor.session.action.FilterStatusesComboBoxAction" text="Session Browser - Filter Statuses"/>
-            <action id="DBNavigator.Actions.SessionBrowser.ClearFilters" class="com.dbn.editor.session.action.ClearFiltersAction" text="Session Browser - Clear Filters"/>
+            <action id="DBNavigator.Actions.SessionBrowser.ClearFilters" class="com.dbn.editor.session.action.ClearFiltersAction" text="Session Browser - Clear Filters" icon="com.dbn.common.icon.Icons.DATASET_FILTER_CLEAR"/>
             <separator/>
-            <action id="DBNavigator.Actions.SessionBrowser.DisconnectSessions" class="com.dbn.editor.session.action.DisconnectSessionsAction" text="Session Browser - Disconnect Sessions"/>
-            <action id="DBNavigator.Actions.SessionBrowser.KillSessions" class="com.dbn.editor.session.action.KillSessionsAction" text="Session Browser - Kill Sessions"/>
+            <action id="DBNavigator.Actions.SessionBrowser.DisconnectSessions" class="com.dbn.editor.session.action.DisconnectSessionsAction" text="Session Browser - Disconnect Sessions" icon="com.dbn.common.icon.Icons.ACTION_DISCONNECT_SESSION"/>
+            <action id="DBNavigator.Actions.SessionBrowser.KillSessions" class="com.dbn.editor.session.action.KillSessionsAction" text="Session Browser - Kill Sessions" icon="com.dbn.common.icon.Icons.ACTION_KILL_SESSION"/>
             <separator/>
             <action id="DBNavigator.Actions.SessionBrowser.OpenSettings" class="com.dbn.editor.session.action.SessionBrowserSettingsAction" text="Session Browser - Settings"/>
         </group>
@@ -526,27 +526,27 @@
             <action id="DBNavigator.Actions.DataEditor.FindData" class="com.dbn.editor.data.action.DataFindAction" text="Data Editor - Find..." icon="AllIcons.Actions.Find">
                 <keyboard-shortcut keymap="$default" first-keystroke="ctrl F"/>
             </action>
-            <action id="DBNavigator.Actions.DataEditor.EditRecord" class="com.dbn.editor.data.action.RecordEditAction" text="Data Editor - Edit Record"/>
-            <action id="DBNavigator.Actions.DataEditor.FetchNextRecords" class="com.dbn.editor.data.action.RecordsFetchNextAction" text="Data Editor - Fetch Next Records"/>
-            <action id="DBNavigator.Actions.DataEditor.Reload" class="com.dbn.editor.data.action.DataReloadAction" text="Data Editor - Reload"/>
+            <action id="DBNavigator.Actions.DataEditor.EditRecord" class="com.dbn.editor.data.action.RecordEditAction" text="Data Editor - Edit Record" icon="com.dbn.common.icon.Icons.DATA_EDITOR_EDIT_RECORD"/>
+            <action id="DBNavigator.Actions.DataEditor.FetchNextRecords" class="com.dbn.editor.data.action.RecordsFetchNextAction" text="Data Editor - Fetch Next Records" icon="com.dbn.common.icon.Icons.DATA_EDITOR_FETCH_NEXT_RECORDS"/>
+            <action id="DBNavigator.Actions.DataEditor.Reload" class="com.dbn.editor.data.action.DataReloadAction" text="Data Editor - Reload" icon="com.dbn.common.icon.Icons.DATA_EDITOR_RELOAD_DATA"/>
             <action id="DBNavigator.Actions.DataEditor.SelectDatasetFilter" class="com.dbn.editor.data.action.DatasetFiltersSelectAction" text="Data Editor - Select Filter"/>
-            <action id="DBNavigator.Actions.DataEditor.CreateEditFilter" class="com.dbn.editor.data.action.DatasetFilterCreateEditAction" text="Data Editor - Create / Edit Filter"/>
+            <action id="DBNavigator.Actions.DataEditor.CreateEditFilter" class="com.dbn.editor.data.action.DatasetFilterCreateEditAction" text="Data Editor - Create / Edit Filter" icon="com.dbn.common.icon.Icons.DATASET_FILTER_EDIT"/>
             <separator/>
-            <action id="DBNavigator.Actions.DataEditor.DuplicateRecord" class="com.dbn.editor.data.action.RecordDuplicateAction" text="Data Editor - Duplicate Record">
+            <action id="DBNavigator.Actions.DataEditor.DuplicateRecord" class="com.dbn.editor.data.action.RecordDuplicateAction" text="Data Editor - Duplicate Record" icon="com.dbn.common.icon.Icons.DATA_EDITOR_DUPLICATE_RECORD">
                 <keyboard-shortcut keymap="$default" first-keystroke="ctrl D"/>
             </action>
-            <action id="DBNavigator.Actions.DataEditor.InsertRecord" class="com.dbn.editor.data.action.RecordInsertAction" text="Data Editor - Insert Record">
+            <action id="DBNavigator.Actions.DataEditor.InsertRecord" class="com.dbn.editor.data.action.RecordInsertAction" text="Data Editor - Insert Record" icon="com.dbn.common.icon.Icons.DATA_EDITOR_INSERT_RECORD">
                 <keyboard-shortcut keymap="$default" first-keystroke="shift INSERT"/>
             </action>
-            <action id="DBNavigator.Actions.DataEditor.DeleteRecord" class="com.dbn.editor.data.action.RecordDeleteAction" text="Data Editor - Delete Record">
+            <action id="DBNavigator.Actions.DataEditor.DeleteRecord" class="com.dbn.editor.data.action.RecordDeleteAction" text="Data Editor - Delete Record" icon="com.dbn.common.icon.Icons.DATA_EDITOR_DELETE_RECORD">
                 <keyboard-shortcut keymap="$default" first-keystroke="shift DELETE"/>
             </action>
             <separator/>
             <reference id="DBNavigator.Actions.Commit"/>
             <reference id="DBNavigator.Actions.Rollback"/>
             <separator/>
-            <action id="DBNavigator.Actions.DataEditor.Export" class="com.dbn.editor.data.action.DataExportAction" text="Data Editor - Export"/>
-            <action id="DBNavigator.Actions.DataEditor.Import" class="com.dbn.editor.data.action.DataImportAction" text="Data Editor - Import"/>
+            <action id="DBNavigator.Actions.DataEditor.Export" class="com.dbn.editor.data.action.DataExportAction" text="Data Editor - Export" icon="com.dbn.common.icon.Icons.DATA_EXPORT"/>
+            <action id="DBNavigator.Actions.DataEditor.Import" class="com.dbn.editor.data.action.DataImportAction" text="Data Editor - Import" icon="com.dbn.common.icon.Icons.DATA_IMPORT"/>
             <separator/>
             <group id="DBNavigator.Actions.DataEditor.Options" class="com.dbn.editor.data.action.DatasetEditorOptionsAction" text="Data Editor - Options"/>
         </group>
@@ -555,9 +555,9 @@
             <action id="DBNavigator.Actions.ExecutionResult.ViewStatement" class="com.dbn.execution.statement.result.action.ExecutionResultViewStatementAction" text="Execution Result - View Statement" icon="AllIcons.Actions.Preview"/>
             <action id="DBNavigator.Actions.ExecutionResult.ViewRecord" class="com.dbn.execution.statement.result.action.ExecutionResultViewRecordAction" text="Execution Result - View Record" icon="com.dbn.common.icon.Icons.EXEC_RESULT_VIEW_RECORD"/>
             <separator/>
-            <action id="DBNavigator.Actions.ExecutionResult.OpenVariablesDialog" class="com.dbn.execution.statement.result.action.ExecutionResultVariablesDialogAction" text="Execution Result - Open Variables Dialog"/>
-            <action id="DBNavigator.Actions.ExecutionResult.FetchNextRecords" class="com.dbn.execution.statement.result.action.ExecutionResultResumeAction" text="Execution Result - Fetch Next Records"/>
-            <action id="DBNavigator.Actions.ExecutionResult.RerunStatement" class="com.dbn.execution.statement.result.action.ExecutionResultRerunAction" text="Execution Result - Rerun Statement"/>
+            <action id="DBNavigator.Actions.ExecutionResult.OpenVariablesDialog" class="com.dbn.execution.statement.result.action.ExecutionResultVariablesDialogAction" text="Execution Result - Open Variables Dialog" icon="com.dbn.common.icon.Icons.EXEC_RESULT_OPEN_EXEC_DIALOG"/>
+            <action id="DBNavigator.Actions.ExecutionResult.FetchNextRecords" class="com.dbn.execution.statement.result.action.ExecutionResultResumeAction" text="Execution Result - Fetch Next Records" icon="com.dbn.common.icon.Icons.EXEC_RESULT_RESUME"/>
+            <action id="DBNavigator.Actions.ExecutionResult.RerunStatement" class="com.dbn.execution.statement.result.action.ExecutionResultRerunAction" text="Execution Result - Rerun Statement" icon="com.dbn.common.icon.Icons.EXEC_RESULT_RERUN"/>
             <separator/>
             <action id="DBNavigator.Actions.ExecutionResult.FindData" class="com.dbn.execution.statement.result.action.ExecutionResultFindDataAction" text="Execution Result - Find Data" icon="AllIcons.Actions.Find">
                 <keyboard-shortcut keymap="$default" first-keystroke="ctrl F"/>
