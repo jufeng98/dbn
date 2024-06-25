@@ -115,10 +115,6 @@ public class DBObjectFilterExpressionFile extends DBVirtualFileBase implements D
         return content.length();
     }
 
-    @Override
-    public void refresh(boolean asynchronous, boolean recursive, Runnable postRunnable) {
-    }
-
     @NotNull
     @Override
     public InputStream getInputStream() throws IOException {

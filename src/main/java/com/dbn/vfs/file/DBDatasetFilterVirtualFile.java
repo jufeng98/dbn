@@ -97,16 +97,6 @@ public class DBDatasetFilterVirtualFile extends DBVirtualFileBase implements DBP
     }
 
     @Override
-    public boolean isDirectory() {
-        return false;
-    }
-
-    @Override
-    public VirtualFile getParent() {
-        return null;
-    }
-
-    @Override
     @NotNull
     public OutputStream getOutputStream(Object requestor, long modificationStamp, long timeStamp) throws IOException {
         return new ByteArrayOutputStream() {
@@ -130,10 +120,6 @@ public class DBDatasetFilterVirtualFile extends DBVirtualFileBase implements DBP
     @Override
     public long getLength() {
         return content.length();
-    }
-
-    @Override
-    public void refresh(boolean asynchronous, boolean recursive, Runnable postRunnable) {
     }
 
     @NotNull

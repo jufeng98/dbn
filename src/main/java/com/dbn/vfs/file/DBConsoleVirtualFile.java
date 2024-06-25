@@ -186,10 +186,6 @@ public class DBConsoleVirtualFile extends DBObjectVirtualFile<DBConsole> impleme
         return content.length();
     }
 
-    @Override
-    public void refresh(boolean asynchronous, boolean recursive, Runnable postRunnable) {
-    }
-
     @NotNull
     @Override
     public InputStream getInputStream() throws IOException {
@@ -204,11 +200,6 @@ public class DBConsoleVirtualFile extends DBObjectVirtualFile<DBConsole> impleme
     @Override
     public int compareTo(@NotNull DBConsoleVirtualFile o) {
         return getName().compareTo(o.getName());
-    }
-
-    @Override
-    public void beforeDocumentChange(@NotNull DocumentEvent event) {
-
     }
 
     @Override

@@ -88,12 +88,6 @@ public class DBLooseContentVirtualFile extends DBVirtualFileBase implements DBPa
         return getConnection().getSessionBundle().getMainSession();
     }
 
-    @NotNull
-    @Override
-    public FileType getFileType() {
-        return fileType;
-    }
-
     @Override
     @NotNull
     public OutputStream getOutputStream(Object requestor, final long modificationStamp, long timeStamp) throws IOException {
@@ -118,10 +112,6 @@ public class DBLooseContentVirtualFile extends DBVirtualFileBase implements DBPa
     @Override
     public long getLength() {
         return content.length();
-    }
-
-    @Override
-    public void refresh(boolean asynchronous, boolean recursive, Runnable postRunnable) {
     }
 
     @NotNull

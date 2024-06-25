@@ -276,11 +276,6 @@ public class DBSourceCodeVirtualFile extends DBContentVirtualFile implements DBP
     }
 
     @Override
-    public void beforeDocumentChange(@NotNull DocumentEvent event) {
-
-    }
-
-    @Override
     public void documentChanged(@NotNull DocumentEvent event) {
         CharSequence oldContent = originalContent.getText();
         CharSequence newContent = event.getDocument().getCharsSequence();
