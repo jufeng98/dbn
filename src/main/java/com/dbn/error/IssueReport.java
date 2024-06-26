@@ -76,8 +76,8 @@ public class IssueReport {
     public String getSystemLocale() {
         Locale locale = Locale.getDefault();
         return locale.toLanguageTag() + " (" +
-                locale.getDisplayLanguage() + " - " +
-                locale.getDisplayCountry() + ")";
+                locale.getDisplayLanguage(Locale.ENGLISH) + " - " +
+                locale.getDisplayCountry(Locale.ENGLISH) + ")";
     }
 
     public String getSystemCharset() {
