@@ -49,11 +49,11 @@ public class Reflection {
     }
 
     @Nullable
-    public static Method findMethod(Class<?> objectClass, String methodName, Class[] parameterTypes) {
+    public static Method findMethod(Class<?> objectClass, String methodName, Class... parameterTypes) {
         try {
             return objectClass.getMethod(methodName, parameterTypes);
         } catch (NoSuchMethodException e) {
-            // baldly assuming all parameters are primitives
+            // WARNING: baldly assuming all parameters are primitives
             boolean adjusted = replaceWithPrimitives(parameterTypes);
             if (adjusted) return findMethod(objectClass, methodName, parameterTypes);
 
