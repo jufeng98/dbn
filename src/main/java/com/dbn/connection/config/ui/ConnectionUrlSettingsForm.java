@@ -177,7 +177,7 @@ public class ConnectionUrlSettingsForm extends DBNFormBase {
     private String getTnsAdmin() {
         String tnsPath = tnsFolderTextField.getText();
         if (Strings.isEmptyOrSpaces(tnsPath)) tnsPath = TnsAdmin.location();
-        return tnsPath;
+        return nvl(tnsPath, "");
     }
 
     private List<String> getTnsEntries(File tnsnamesOraFile) {
