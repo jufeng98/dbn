@@ -4,7 +4,6 @@ import com.dbn.common.dispose.Failsafe;
 import com.dbn.common.util.Context;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditor;
@@ -30,7 +29,8 @@ public class Lookups {
     }
 
     @Nullable
-    public static VirtualFile getVirtualFile(@NotNull AnActionEvent e) {
+    public static VirtualFile getVirtualFile(@Nullable AnActionEvent e) {
+        if (e == null) return null;
         return e.getData(PlatformDataKeys.VIRTUAL_FILE);
     }
 
