@@ -22,6 +22,7 @@ public abstract class ProjectActionGroup extends DefaultActionGroup implements B
     @Override
     @NotNull
     public final AnAction[] getChildren(AnActionEvent e) {
+        if (e == null) return AnAction.EMPTY_ARRAY;
         return guarded(AnAction.EMPTY_ARRAY, this, a -> a.loadChildren(e));
     }
 
