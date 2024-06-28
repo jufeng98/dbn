@@ -155,7 +155,7 @@ public class ConnectionDatabaseSettings extends BasicConfiguration<ConnectionSet
                     port,
                     databaseInfo.getDatabase(),
                     databaseInfo.getMainFilePath(),
-                    databaseInfo.getTnsFolder(),
+                    databaseInfo.ensureTnsFolder(),
                     databaseInfo.getTnsProfile());
         }
     }

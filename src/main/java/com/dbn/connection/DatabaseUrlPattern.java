@@ -107,7 +107,7 @@ public enum DatabaseUrlPattern {
                 databaseInfo.getPort(),
                 databaseInfo.getDatabase(),
                 databaseInfo.getMainFilePath(),
-                databaseInfo.getTnsFolder(),
+                databaseInfo.ensureTnsFolder(),
                 databaseInfo.getTnsProfile());
     }
 

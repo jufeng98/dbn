@@ -1,9 +1,7 @@
 package com.dbn.connection.config.ui;
 
-import com.dbn.common.color.Colors;
 import com.dbn.common.constant.Constants;
 import com.dbn.common.database.DatabaseInfo;
-import com.dbn.common.thread.Dispatch;
 import com.dbn.common.ui.Presentable;
 import com.dbn.common.ui.form.DBNFormBase;
 import com.dbn.common.ui.misc.DBNComboBox;
@@ -22,8 +20,8 @@ import com.dbn.connection.config.tns.TnsNamesParser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
+import com.intellij.ui.components.JBTextField;
 import com.intellij.ui.components.fields.ExpandableTextField;
-import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -69,20 +67,30 @@ public class ConnectionUrlSettingsForm extends DBNFormBase {
         databaseFilesPanel.add(databaseFileSettingsForm.getComponent(), BorderLayout.CENTER);
         urlTypeComboBox.addActionListener(e -> updateFieldVisibility());
 
+        updateTnsAdminField();
+
+        FileChooserDescriptor tnsFolderChooserDesc = new FileChooserDescriptor(false, true, false, false, false, false);
         tnsFolderTextField.addBrowseFolderListener(
                 "Select Wallet Directory",
                 "Folder must contain tnsnames.ora",
-                null, new FileChooserDescriptor(false, true, true, true, false, false));
-        onTextChange(tnsFolderTextField, e -> handleTnsFolderChanged(tnsFolderTextField.getText()));
+                null, tnsFolderChooserDesc);
 
         onTextChange(hostTextField, e -> updateUrlField());
         onTextChange(portTextField, e -> updateUrlField());
         onTextChange(databaseTextField, e -> updateUrlField());
+        onTextChange(tnsFolderTextField, e -> updateTnsProfilesField());
         onTextChange(tnsFolderTextField, e -> updateUrlField());
-        onTextChange(tnsFolderTextField, e -> updateTnsFolderField());
         tnsProfileComboBox.addActionListener(e -> updateUrlField());
 
-        updateTnsFolderField();
+        updateTnsProfilesField();
+    }
+
+    private void updateTnsAdminField() {
+        String location = TnsAdmin.location();
+        if (Strings.isEmptyOrSpaces(location)) return;
+
+        JBTextField textField = (JBTextField) tnsFolderTextField.getTextField();
+        textField.getEmptyText().setText(location);
     }
 
     @Override
@@ -131,21 +139,6 @@ public class ConnectionUrlSettingsForm extends DBNFormBase {
         return getSelection(urlTypeComboBox);
     }
 
-    private void updateTnsFolderField() {
-        String tnsFolder = tnsFolderTextField.getText();
-        if (Strings.isEmptyOrSpaces(tnsFolder)) {
-            tnsFolder = TnsAdmin.location();
-            Dispatch.run(tnsFolderTextField, () -> tnsFolderTextField.setText(TnsAdmin.location()));
-        }
-        boolean isTnsAdmin = Strings.equalsIgnoreCase(tnsFolder, TnsAdmin.location());
-
-        JTextField textField = tnsFolderTextField.getTextField();
-        textField.setForeground(isTnsAdmin ?
-                Colors.getTextFieldInactiveForeground():
-                Colors.getTextFieldForeground());
-
-    }
-
     private void updateUrlField() {
         DatabaseUrlType urlType = getUrlType();
         if (urlType == DatabaseUrlType.CUSTOM) return;
@@ -158,7 +151,7 @@ public class ConnectionUrlSettingsForm extends DBNFormBase {
                 getPort(),
                 getDatabase(),
                 getMainFilePath() ,
-                getTnsFolder(),
+                getTnsAdmin(),
                 getTnsProfile());
         urlTextField.setText(url);
     }
@@ -167,9 +160,11 @@ public class ConnectionUrlSettingsForm extends DBNFormBase {
         return databaseFileSettingsForm.getFileBundle().getMainFilePath();
     }
 
-    private void handleTnsFolderChanged(@NotNull String text) {
+    private void updateTnsProfilesField() {
+        String tnsAdmin = getTnsAdmin();
+
         tnsProfileComboBox.setValues(Collections.emptyList());
-        File tnsFolder = new File(text);
+        File tnsFolder = new File(tnsAdmin);
         if (!tnsFolder.isDirectory()) return;
 
         File tnsFile = new File(tnsFolder, "tnsnames.ora");
@@ -177,6 +172,12 @@ public class ConnectionUrlSettingsForm extends DBNFormBase {
 
         List<String> tnsEntries = getTnsEntries(tnsFile);
         tnsProfileComboBox.setValues(Presentable.basic(tnsEntries));
+    }
+
+    private String getTnsAdmin() {
+        String tnsPath = tnsFolderTextField.getText();
+        if (Strings.isEmptyOrSpaces(tnsPath)) tnsPath = TnsAdmin.location();
+        return tnsPath;
     }
 
     private List<String> getTnsEntries(File tnsnamesOraFile) {

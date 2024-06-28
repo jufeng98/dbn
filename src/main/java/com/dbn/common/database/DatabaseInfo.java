@@ -67,7 +67,7 @@ public class DatabaseInfo implements Cloneable<DatabaseInfo> {
                 Strings.isEmpty(getFirstFilePath());
     }
 
-    public String getTnsFolder() {
+    public String ensureTnsFolder() {
         return Strings.isEmptyOrSpaces(tnsFolder) ? TnsAdmin.location() : tnsFolder;
     }
 
