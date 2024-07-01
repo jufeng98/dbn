@@ -18,6 +18,7 @@ import static com.dbn.common.dispose.Failsafe.nd;
 import static com.dbn.common.ui.progress.ProgressDialogHandler.closeProgressDialogs;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 
+// TODO NLS
 @UtilityClass
 public class Messages {
 

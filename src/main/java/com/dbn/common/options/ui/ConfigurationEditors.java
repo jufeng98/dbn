@@ -2,21 +2,25 @@ package com.dbn.common.options.ui;
 
 import com.dbn.common.util.Strings;
 import com.intellij.openapi.options.ConfigurationException;
+import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
+import static com.dbn.nls.NlsResources.nls;
 
-public class ConfigurationEditorUtil {
+// TODO NLS (usages of this)
+@UtilityClass
+public class ConfigurationEditors {
     public static int validateIntegerValue(@NotNull JTextField inputField, @NotNull String name, boolean required, int min, int max, @Nullable String hint) throws ConfigurationException {
         try {
 
             String value = inputField.getText();
             if (required && Strings.isEmpty(value)) {
-                String message = "Input value for \"" + name + "\" must be specified";
-                throw new ConfigurationException(message, "Invalid config value");
+                String message = nls("cfg.shared.error.MissingInputValue", name);
+                throw new ConfigurationException(message, nls("cfg.shared.title.InvalidConfigValue"));
             }
 
             if (Strings.isNotEmpty(value)) {
@@ -29,19 +33,19 @@ public class ConfigurationEditorUtil {
             conditionallyLog(e);
             inputField.grabFocus();
             inputField.selectAll();
-            String message = "Input value for \"" + name + "\" must be an integer between " + min + " and " + max + ".";
+            String message = nls("cfg.shared.error.InputValueNotInRange", name, min, max);
             if (hint != null) {
                 message = message + " " + hint;
             }
-            throw new ConfigurationException(message, "Invalid config value");
+            throw new ConfigurationException(message, nls("cfg.shared.title.InvalidConfigValue"));
         }
     }
 
     public static String validateStringValue(@NotNull JTextField inputField, @NotNull String name, boolean required) throws ConfigurationException {
         String value = inputField.getText().trim();
-        if (required && value.length() == 0) {
-            String message = "Input value for \"" + name + "\" must be specified";
-            throw new ConfigurationException(message, "Invalid config value");
+        if (required && value.isEmpty()) {
+            String message = nls("cfg.shared.error.MissingInputValue", name);
+            throw new ConfigurationException(message, nls("cfg.shared.title.InvalidConfigValue"));
         }
         return value;
     }

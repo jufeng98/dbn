@@ -11,6 +11,7 @@ import com.dbn.connection.config.tns.TnsAdmin;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,6 +20,7 @@ import java.util.List;
 
 import static com.dbn.connection.DatabaseUrlType.*;
 
+@NonNls
 @Getter
 @Setter
 @EqualsAndHashCode

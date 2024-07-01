@@ -71,8 +71,8 @@ public class ConnectionUrlSettingsForm extends DBNFormBase {
 
         FileChooserDescriptor tnsFolderChooserDesc = new FileChooserDescriptor(false, true, false, false, false, false);
         tnsFolderTextField.addBrowseFolderListener(
-                "Select Wallet Directory",
-                "Folder must contain tnsnames.ora",
+                nls("cfg.connection.title.SelectWalletDirectory"),
+                nls("cfg.connection.text.ValidTnsNamesFolder"),
                 null, tnsFolderChooserDesc);
 
         onTextChange(hostTextField, e -> updateUrlField());

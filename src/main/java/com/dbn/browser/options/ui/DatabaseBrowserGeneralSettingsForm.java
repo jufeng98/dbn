@@ -7,7 +7,7 @@ import com.dbn.browser.options.listener.ObjectDetailSettingsListener;
 import com.dbn.common.event.ProjectEvents;
 import com.dbn.common.options.SettingsChangeNotifier;
 import com.dbn.common.options.ui.ConfigurationEditorForm;
-import com.dbn.common.options.ui.ConfigurationEditorUtil;
+import com.dbn.common.options.ui.ConfigurationEditors;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
@@ -45,7 +45,7 @@ public class DatabaseBrowserGeneralSettingsForm extends ConfigurationEditorForm<
     @Override
     public void applyFormChanges() throws ConfigurationException {
         DatabaseBrowserGeneralSettings configuration = getConfiguration();
-        ConfigurationEditorUtil.validateIntegerValue(navigationHistorySizeTextField, "Navigation history size", true, 0, 1000, "");
+        ConfigurationEditors.validateIntegerValue(navigationHistorySizeTextField, "Navigation history size", true, 0, 1000, "");
 
         boolean repaintTree = configuration.isModified();
         

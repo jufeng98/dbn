@@ -4,11 +4,11 @@ import com.dbn.common.dispose.Disposer;
 import com.dbn.common.dispose.Failsafe;
 import com.dbn.common.options.ui.ConfigurationEditorForm;
 import com.dbn.common.ref.WeakRef;
-import com.dbn.nls.NlsContexts;
 import com.dbn.options.TopLevelConfig;
 import com.intellij.openapi.options.ConfigurationException;
 import org.jdom.Element;
 import org.jetbrains.annotations.Nls;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,7 +39,6 @@ public abstract class BasicConfiguration<P extends Configuration, E extends Conf
 
     @Nls
     @Override
-    @NlsContexts.DbnConfig
     public String getDisplayName() {
         return null;
     }
@@ -138,6 +137,7 @@ public abstract class BasicConfiguration<P extends Configuration, E extends Conf
         editorForm = Disposer.replace(editorForm, null);
     }
 
+    @NonNls
     public String getConfigElementName() {
         //throw new UnsupportedOperationException("Element name not defined for this configuration type.");
         return null;

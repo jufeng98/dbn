@@ -31,7 +31,7 @@ public class StatementExecutionSettings extends BasicProjectConfiguration<Execut
 
     @Override
     public String getDisplayName() {
-        return nls("cfg.executionEngine.title.StatementExecution");
+        return nls("cfg.execution.title.StatementExecution");
     }
 
     @Override

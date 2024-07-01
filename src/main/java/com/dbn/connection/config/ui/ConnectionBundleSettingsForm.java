@@ -254,7 +254,7 @@ public class ConnectionBundleSettingsForm extends ConfigurationEditorForm<Connec
         List<ConnectionSettings> configurations = connectionsList.getSelectedValuesList();
         Project project = getProject();
         try {
-            Element rootElement = new Element("connection-configurations");
+            Element rootElement = newElement("connection-configurations");
             for (ConnectionSettings configuration : configurations) {
                 Element configElement = newElement(rootElement, "config");
                 configuration.writeConfiguration(configElement);

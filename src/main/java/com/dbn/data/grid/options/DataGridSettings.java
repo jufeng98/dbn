@@ -38,7 +38,7 @@ public class DataGridSettings extends CompositeProjectConfiguration<ProjectSetti
 
     @Override
     public String getDisplayName() {
-        return nls("cfg.dataGrids.title.DataGrids");
+        return nls("cfg.data.title.DataGrids");
     }
 
     @Override
