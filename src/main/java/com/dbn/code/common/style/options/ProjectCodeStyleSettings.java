@@ -28,7 +28,7 @@ public class ProjectCodeStyleSettings extends CompositeProjectConfiguration<Proj
 
     @Override
     public String getDisplayName() {
-        return "Code Style";
+        return nls("cfg.codeStyle.title.CodeStyle");
     }
 
     @Override

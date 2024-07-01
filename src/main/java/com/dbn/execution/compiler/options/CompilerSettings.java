@@ -26,7 +26,7 @@ public class CompilerSettings extends BasicConfiguration<OperationSettings, Comp
 
     @Override
     public String getDisplayName() {
-        return "Data editor general settings";
+        return nls("cfg.compiler.title.CompilerSettings");
     }
 
     @Override

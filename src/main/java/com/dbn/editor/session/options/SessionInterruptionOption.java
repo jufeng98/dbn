@@ -6,15 +6,17 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-public enum SessionInterruptionOption implements InteractiveOption{
-    ASK("Ask", null),
-    NORMAL("Normal", null),
-    IMMEDIATE("Immediate", null),
-    POST_TRANSACTION("Post Transaction", null),
-    CANCEL("Cancel", null);
+import static com.dbn.nls.NlsResources.nls;
 
-    private String name;
-    private Icon icon;
+public enum SessionInterruptionOption implements InteractiveOption{
+    ASK(nls("app.sessionBrowser.const.SessionInterruptionOption_ASK"), null),
+    NORMAL(nls("app.sessionBrowser.const.SessionInterruptionOption_NORMAL"), null),
+    IMMEDIATE(nls("app.sessionBrowser.const.SessionInterruptionOption_IMMEDIATE"), null),
+    POST_TRANSACTION(nls("app.sessionBrowser.const.SessionInterruptionOption_POST_TRANSACTION"), null),
+    CANCEL(nls("app.sessionBrowser.const.SessionInterruptionOption_CANCEL"), null);
+
+    private final String name;
+    private final Icon icon;
 
     SessionInterruptionOption(String name, Icon icon) {
         this.name = name;

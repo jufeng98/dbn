@@ -105,7 +105,7 @@ public class ConnectionFilterSettings extends CompositeProjectConfiguration<Conn
 
     @Override
     public String getDisplayName() {
-        return "Connection Filter Settings";
+        return nls("cfg.connection.title.FilterSettings");
     }
 
     @Override

@@ -106,7 +106,7 @@ public class ConnectionDatabaseSettings extends BasicConfiguration<ConnectionSet
 
     @Override
     public String getDisplayName() {
-        return name;
+        return nls("cfg.connection.title.DatabaseSettings");
     }
 
     public void setDatabaseType(DatabaseType databaseType) {

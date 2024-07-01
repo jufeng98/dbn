@@ -8,14 +8,15 @@ import com.dbn.common.routine.Consumer;
 import com.dbn.common.thread.Dispatch;
 import com.dbn.common.util.Commons;
 import com.dbn.common.util.Titles;
+import com.dbn.nls.NlsContexts.DbnConfig;
 import com.intellij.openapi.ui.Messages;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.jdom.Element;
+import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
-import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,14 +25,19 @@ import java.util.List;
 @EqualsAndHashCode
 public class InteractiveOptionBroker<T extends InteractiveOption> implements DoNotAskOption, PersistentConfiguration{
     private final String configName;
-    private final String title;
-    private final String message;
+    private final @Nls @DbnConfig String title;
+    private final @Nls @DbnConfig String message;
     private final T defaultOption;
     private T selectedOption;
     private T lastUsedOption;
     private final List<T> options;
 
-    public InteractiveOptionBroker(String configName, String title, String message, @NotNull T defaultOption, T... options) {
+    public InteractiveOptionBroker(
+            String configName,
+            @Nls @DbnConfig String title,
+            @Nls @DbnConfig String message,
+            @NotNull T defaultOption,
+            T... options) {
         this.configName = configName;
         this.title = title;
         this.message = message;
@@ -92,8 +98,8 @@ public class InteractiveOptionBroker<T extends InteractiveOption> implements DoN
                 }
 
                 int optionIndex = Messages.showDialog(
-                        MessageFormat.format(message, messageArgs),
-                        Titles.signed(title),
+                        nls(message, messageArgs),
+                        Titles.signed(nls(title)),
                         toStringOptions(options), lastUsedOptionIndex, Icons.DIALOG_QUESTION, this);
 
                 option = getOption(optionIndex);

@@ -57,7 +57,7 @@ public class ConnectionBundleSettings extends BasicProjectConfiguration<ProjectS
 
     @Override
     public String getDisplayName() {
-        return "Connections";
+        return nls("cfg.connectionBundle.title.Connections");
     }
 
     @Override

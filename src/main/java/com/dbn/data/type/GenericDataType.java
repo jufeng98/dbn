@@ -4,25 +4,27 @@ import com.dbn.common.constant.Constant;
 import com.dbn.common.ui.Presentable;
 import org.jetbrains.annotations.NotNull;
 
+import static com.dbn.nls.NlsResources.nls;
+
 public enum GenericDataType implements Presentable, Constant<GenericDataType> {
-    LITERAL("Literal"),
-    NUMERIC("Numeric"),
-    DATE_TIME("Date/Time"),
-    CLOB("Character Large Object"),
-    NCLOB("National Character Large Object"),
-    BLOB("Byte Large Object"),
-    ROWID("Row ID"),
-    REF("Ref"),
-    FILE("File"),
-    BOOLEAN("Boolean"),
-    OBJECT("Object"),
-    CURSOR("Cursor"),
-    TABLE("Table"),
-    ARRAY("Array"),
-    COLLECTION("Collection"),
-    XMLTYPE("XML Type"),
-    PROPRIETARY("Proprietary"),
-    COMPLEX("Complex"),
+    LITERAL(nls("app.shared.const.GenericDataType_LITERAL")),
+    NUMERIC(nls("app.shared.const.GenericDataType_NUMERIC")),
+    DATE_TIME(nls("app.shared.const.GenericDataType_DATE_TIME")),
+    CLOB(nls("app.shared.const.GenericDataType_CLOB")),
+    NCLOB(nls("app.shared.const.GenericDataType_NCLOB")),
+    BLOB(nls("app.shared.const.GenericDataType_BLOB")),
+    ROWID(nls("app.shared.const.GenericDataType_ROWID")),
+    REF(nls("app.shared.const.GenericDataType_REF")),
+    FILE(nls("app.shared.const.GenericDataType_FILE")),
+    BOOLEAN(nls("app.shared.const.GenericDataType_BOOLEAN")),
+    OBJECT(nls("app.shared.const.GenericDataType_OBJECT")),
+    CURSOR(nls("app.shared.const.GenericDataType_CURSOR")),
+    TABLE(nls("app.shared.const.GenericDataType_TABLE")),
+    ARRAY(nls("app.shared.const.GenericDataType_ARRAY")),
+    COLLECTION(nls("app.shared.const.GenericDataType_COLLECTION")),
+    XMLTYPE(nls("app.shared.const.GenericDataType_XMLTYPE")),
+    PROPRIETARY(nls("app.shared.const.GenericDataType_PROPRIETARY")),
+    COMPLEX(nls("app.shared.const.GenericDataType_COMPLEX")),
     ;
 
     private final String name;

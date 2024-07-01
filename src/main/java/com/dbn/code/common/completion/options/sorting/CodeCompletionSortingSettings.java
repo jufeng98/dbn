@@ -76,7 +76,7 @@ public class CodeCompletionSortingSettings extends BasicConfiguration<CodeComple
 
     @Override
     public String getDisplayName() {
-        return "Code completion sorting";
+        return nls("cfg.codeCompletion.title.Sorting");
     }
 
     /*********************************************************

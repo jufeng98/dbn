@@ -37,7 +37,7 @@ public class OperationSettings extends CompositeProjectConfiguration<ProjectSett
 
     @Override
     public String getDisplayName() {
-        return "Operations";
+        return nls("cfg.operations.title.Operations");
     }
 
     @Override

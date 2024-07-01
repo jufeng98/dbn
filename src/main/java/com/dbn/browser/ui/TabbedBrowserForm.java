@@ -96,7 +96,7 @@ public class TabbedBrowserForm extends DatabaseBrowserForm{
 
             JComponent component = browserForm.getComponent();
             TabInfo tabInfo = new TabInfo(component);
-            tabInfo.setText(Commons.nvl(connection.getName(), "[unnamed connection]"));
+            tabInfo.setText(Commons.nvl(connection.getName(), nls("app.shared.placeholder.UnnamedConnection")));
             tabInfo.setObject(browserForm);
             //tabInfo.setIcon(connection.getIcon());
             this.connectionTabs.addTab(tabInfo);

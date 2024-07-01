@@ -24,7 +24,7 @@ public class DataEditorPopupSettings extends BasicConfiguration<DataEditorSettin
 
     @Override
     public String getDisplayName() {
-        return null;
+        return nls("cfg.dataEditor.title.EditorPopups");
     }
 
     /****************************************************

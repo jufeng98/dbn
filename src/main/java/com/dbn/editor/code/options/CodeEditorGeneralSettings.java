@@ -31,7 +31,7 @@ public class CodeEditorGeneralSettings
 
     @Override
     public String getDisplayName() {
-        return "Code editor general settings";
+        return nls("cfg.codeEditor.title.GeneralSettings");
     }
 
     @Override

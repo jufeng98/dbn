@@ -36,7 +36,7 @@ public class DataEditorSettings extends CompositeProjectConfiguration<ProjectSet
 
     @Override
     public String getDisplayName() {
-        return "Data Editor";
+        return nls("cfg.dataEditor.title.DataEditor");
     }
 
     @Override

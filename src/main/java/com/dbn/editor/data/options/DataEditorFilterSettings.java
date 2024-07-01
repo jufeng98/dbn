@@ -23,7 +23,7 @@ public class DataEditorFilterSettings extends BasicConfiguration<DataEditorSetti
 
     @Override
     public String getDisplayName() {
-        return "Data editor filters settings";
+        return nls("cfg.dataEditor.title.FilterSettings");
     }
 
     @Override

@@ -44,7 +44,7 @@ public class CodeEditorConfirmationSettings extends BasicConfiguration<CodeEdito
 
     @Override
     public String getDisplayName() {
-        return "Code Editor Confirmation Settings";
+        return nls("cfg.codeEditor.title.ConfirmationSettings");
     }
 
     @Override

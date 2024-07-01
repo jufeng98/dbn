@@ -74,7 +74,7 @@ public class DatabaseBrowserSortingSettings
 
     @Override
     public String getDisplayName() {
-        return "Database Browser";
+        return nls("cfg.databaseBrowser.title.SortingSettings");
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.dbn.common.dispose.Disposer;
 import com.dbn.common.dispose.Failsafe;
 import com.dbn.common.options.ui.ConfigurationEditorForm;
 import com.dbn.common.ref.WeakRef;
+import com.dbn.nls.NlsContexts;
 import com.dbn.options.TopLevelConfig;
 import com.intellij.openapi.options.ConfigurationException;
 import org.jdom.Element;
@@ -36,8 +37,9 @@ public abstract class BasicConfiguration<P extends Configuration, E extends Conf
         return null;
     }
 
-    @Override
     @Nls
+    @Override
+    @NlsContexts.DbnConfig
     public String getDisplayName() {
         return null;
     }
