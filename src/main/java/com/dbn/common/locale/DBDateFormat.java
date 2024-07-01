@@ -1,32 +1,22 @@
 package com.dbn.common.locale;
 
 import com.dbn.common.ui.Presentable;
-import org.jetbrains.annotations.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.text.DateFormat;
 
+import static com.dbn.nls.NlsResources.nls;
+
+@Getter
+@AllArgsConstructor
 public enum DBDateFormat implements Presentable {
-    FULL("Full", DateFormat.FULL),
-    SHORT("Short", DateFormat.SHORT),
-    MEDIUM("Medium", DateFormat.MEDIUM),
-    LONG("Long", DateFormat.LONG),
-    CUSTOM("Custom", 0);
+    FULL(nls("cfg.shared.const.DateFormat_FULL"), DateFormat.FULL),
+    SHORT(nls("cfg.shared.const.DateFormat_SHORT"), DateFormat.SHORT),
+    MEDIUM(nls("cfg.shared.const.DateFormat_MEDIUM"), DateFormat.MEDIUM),
+    LONG(nls("cfg.shared.const.DateFormat_LONG"), DateFormat.LONG),
+    CUSTOM(nls("cfg.shared.const.DateFormat_CUSTOM"), 0);
 
-    private int dateFormat;
-    private String name;
-
-    DBDateFormat(String name, int dateFormat) {
-        this.name = name;
-        this.dateFormat = dateFormat;
-    }
-
-    public int getDateFormat() {
-        return dateFormat;
-    }
-
-    @NotNull
-    @Override
-    public String getName() {
-        return name;
-    }
+    private final String name;
+    private final int format;
 }

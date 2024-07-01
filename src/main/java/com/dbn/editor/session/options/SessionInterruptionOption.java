@@ -1,45 +1,24 @@
 package com.dbn.editor.session.options;
 
 import com.dbn.common.option.InteractiveOption;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import javax.swing.*;
 
 import static com.dbn.nls.NlsResources.nls;
 
+@Getter
+@AllArgsConstructor
 public enum SessionInterruptionOption implements InteractiveOption{
-    ASK(nls("app.sessionBrowser.const.SessionInterruptionOption_ASK"), null),
-    NORMAL(nls("app.sessionBrowser.const.SessionInterruptionOption_NORMAL"), null),
-    IMMEDIATE(nls("app.sessionBrowser.const.SessionInterruptionOption_IMMEDIATE"), null),
-    POST_TRANSACTION(nls("app.sessionBrowser.const.SessionInterruptionOption_POST_TRANSACTION"), null),
-    CANCEL(nls("app.sessionBrowser.const.SessionInterruptionOption_CANCEL"), null);
+    ASK(nls("app.sessions.const.SessionInterruptionOption_ASK"), null),
+    NORMAL(nls("app.sessions.const.SessionInterruptionOption_NORMAL"), null),
+    IMMEDIATE(nls("app.sessions.const.SessionInterruptionOption_IMMEDIATE"), null),
+    POST_TRANSACTION(nls("app.sessions.const.SessionInterruptionOption_POST_TRANSACTION"), null),
+    CANCEL(nls("app.sessions.const.SessionInterruptionOption_CANCEL"), null);
 
     private final String name;
     private final Icon icon;
-
-    SessionInterruptionOption(String name, Icon icon) {
-        this.name = name;
-        this.icon = icon;
-    }
-
-    @NotNull
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Nullable
-    @Override
-    public String getDescription() {
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public Icon getIcon() {
-        return icon;
-    }
 
     @Override
     public boolean isCancel() {

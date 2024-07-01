@@ -106,7 +106,7 @@ public class ConnectionDatabaseSettings extends BasicConfiguration<ConnectionSet
 
     @Override
     public String getDisplayName() {
-        return nls("cfg.connection.title.DatabaseSettings");
+        return name;
     }
 
     public void setDatabaseType(DatabaseType databaseType) {
@@ -215,6 +215,7 @@ public class ConnectionDatabaseSettings extends BasicConfiguration<ConnectionSet
             for (String error : errors) {
                 message.append("\n - ").append(error);
             }
+            // TODO NLS
             throw new ConfigurationException(message.toString());
         }
     }

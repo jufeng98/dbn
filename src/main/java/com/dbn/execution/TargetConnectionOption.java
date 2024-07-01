@@ -1,42 +1,21 @@
 package com.dbn.execution;
 
 import com.dbn.common.option.InteractiveOption;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-import javax.swing.*;
+import static com.dbn.nls.NlsResources.nls;
 
+@Getter
 @Deprecated
+@AllArgsConstructor
 public enum TargetConnectionOption implements InteractiveOption{
-    ASK("Ask"),
-    MAIN("Main connection"),
-    POOL("Pool connection (async)"),
-    CANCEL("Cancel");
+    ASK(nls("cfg.execution.const.TargetConnectionOption_ASK")),
+    MAIN(nls("cfg.execution.const.TargetConnectionOption_MAIN")),
+    POOL(nls("cfg.execution.const.TargetConnectionOption_POOL")),
+    CANCEL(nls("cfg.execution.const.TargetConnectionOption_CANCEL"));
 
-    private String name;
-
-    TargetConnectionOption(String name) {
-        this.name = name;
-    }
-
-    @NotNull
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Nullable
-    @Override
-    public String getDescription() {
-        return null;
-    }
-
-
-    @Nullable
-    @Override
-    public Icon getIcon() {
-        return null;
-    }
+    private final String name;
 
     @Override
     public boolean isCancel() {

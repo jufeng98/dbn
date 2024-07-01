@@ -8,7 +8,6 @@ import com.dbn.common.routine.Consumer;
 import com.dbn.common.thread.Dispatch;
 import com.dbn.common.util.Commons;
 import com.dbn.common.util.Titles;
-import com.dbn.nls.NlsContexts.DbnConfig;
 import com.intellij.openapi.ui.Messages;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -25,17 +24,18 @@ import java.util.List;
 @EqualsAndHashCode
 public class InteractiveOptionBroker<T extends InteractiveOption> implements DoNotAskOption, PersistentConfiguration{
     private final String configName;
-    private final @Nls @DbnConfig String title;
-    private final @Nls @DbnConfig String message;
+    private final @Nls String title;
+    private final @Nls String message;
     private final T defaultOption;
     private T selectedOption;
     private T lastUsedOption;
     private final List<T> options;
 
+    @SafeVarargs
     public InteractiveOptionBroker(
             String configName,
-            @Nls @DbnConfig String title,
-            @Nls @DbnConfig String message,
+            @Nls String title,
+            @Nls String message,
             @NotNull T defaultOption,
             T... options) {
         this.configName = configName;

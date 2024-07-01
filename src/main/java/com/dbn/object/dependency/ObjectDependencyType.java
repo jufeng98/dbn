@@ -10,8 +10,8 @@ import static com.dbn.nls.NlsResources.nls;
 
 @Getter
 public enum ObjectDependencyType implements Presentable{
-    INCOMING(nls("app.objectBrowser.const.ObjectDependencyType_INCOMING"), Icons.DBO_INCOMING_REF, Icons.DBO_INCOMING_REF_SOFT),
-    OUTGOING(nls("app.objectBrowser.const.ObjectDependencyType_OUTGOING"), Icons.DBO_OUTGOING_REF, Icons.DBO_OUTGOING_REF_SOFT);
+    INCOMING(nls("app.objects.const.ObjectDependencyType_INCOMING"), Icons.DBO_INCOMING_REF, Icons.DBO_INCOMING_REF_SOFT),
+    OUTGOING(nls("app.objects.const.ObjectDependencyType_OUTGOING"), Icons.DBO_OUTGOING_REF, Icons.DBO_OUTGOING_REF_SOFT);
 
     private final String name;
     private final Icon icon;

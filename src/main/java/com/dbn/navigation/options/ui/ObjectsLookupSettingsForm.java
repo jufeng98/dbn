@@ -9,6 +9,7 @@ import com.dbn.nls.NlsResources;
 import com.intellij.openapi.actionSystem.Shortcut;
 import com.intellij.openapi.keymap.KeymapUtil;
 import com.intellij.openapi.options.ConfigurationException;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
@@ -72,30 +73,22 @@ public class ObjectsLookupSettingsForm extends ConfigurationEditorForm<ObjectsLo
     }
 
     @Getter
+    @AllArgsConstructor
     private enum ConnectionOption implements Presentable {
         PROMPT(NlsResources.nls("app.objectLookup.const.ConnectionOption_PROMPT"), true),
         RECENT(NlsResources.nls("app.objectLookup.const.ConnectionOption_RECENT"), false);
 
         private final String name;
         private final Boolean value;
-
-        ConnectionOption(String name, boolean value) {
-            this.name = name;
-            this.value = value;
-        }
     }
 
     @Getter
+    @AllArgsConstructor
     private enum BehaviorOption implements Presentable {
         LOOKUP(NlsResources.nls("app.objectLookup.const.BehaviorOption_LOOKUP"), false),
         LOAD(NlsResources.nls("app.objectLookup.const.BehaviorOption_LOAD"), true);
 
         private final String name;
         private final Boolean value;
-
-        BehaviorOption(String name, boolean value) {
-            this.name = name;
-            this.value = value;
-        }
     }
 }

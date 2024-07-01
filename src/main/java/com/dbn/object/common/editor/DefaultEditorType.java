@@ -2,23 +2,23 @@ package com.dbn.object.common.editor;
 
 import com.dbn.common.ui.Presentable;
 import com.dbn.object.type.DBObjectType;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import static com.dbn.nls.NlsResources.nls;
 
 @Getter
+@AllArgsConstructor
 public enum DefaultEditorType implements Presentable{
-    CODE(nls("app.objectEditor.const.DefaultEditorType_CODE")),
-    DATA(nls("app.objectEditor.const.DefaultEditorType_DATA")),
-    SPEC(nls("app.objectEditor.const.DefaultEditorType_SPEC")),
-    BODY(nls("app.objectEditor.const.DefaultEditorType_BODY")),
-    SELECTION(nls("app.objectEditor.const.DefaultEditorType_SELECTION"));
+    CODE(nls("app.editor.const.DefaultEditorType_CODE")),
+    DATA(nls("app.editor.const.DefaultEditorType_DATA")),
+    SPEC(nls("app.editor.const.DefaultEditorType_SPEC")),
+    BODY(nls("app.editor.const.DefaultEditorType_BODY")),
+    SELECTION(nls("app.editor.const.DefaultEditorType_SELECTION"));
+
+    public static final DefaultEditorType[] EMPTY_ARRAY = new DefaultEditorType[0];
 
     private final String name;
-
-    DefaultEditorType(String name) {
-        this.name = name;
-    }
 
     public static DefaultEditorType[] getEditorTypes(DBObjectType objectType) {
         switch (objectType){
@@ -26,7 +26,7 @@ public enum DefaultEditorType implements Presentable{
             case PACKAGE: return new DefaultEditorType[]{SPEC, BODY, SELECTION};
             case TYPE: return new DefaultEditorType[]{SPEC, BODY, SELECTION};
         }
-        return new DefaultEditorType[0];
+        return EMPTY_ARRAY;
     }
 
     @Override

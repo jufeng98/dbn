@@ -1,29 +1,21 @@
 package com.dbn.editor.code.options;
 
 import com.dbn.common.option.InteractiveOption;
-import org.jetbrains.annotations.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-import java.util.Objects;
+import static com.dbn.nls.NlsResources.nls;
 
+@Getter
+@AllArgsConstructor
 public enum CodeEditorChangesOption implements InteractiveOption {
-    ASK("Ask"),
-    SAVE("Save"),
-    DISCARD("Discard"),
-    SHOW("Show Changes"),
-    CANCEL("Cancel");
+    ASK(nls("cfg.codeEditor.const.ChangesOption_ASK")),
+    SAVE(nls("cfg.codeEditor.const.ChangesOption_SAVE")),
+    DISCARD(nls("cfg.codeEditor.const.ChangesOption_DISCARD")),
+    SHOW(nls("cfg.codeEditor.const.ChangesOption_SHOW")),
+    CANCEL(nls("cfg.codeEditor.const.ChangesOption_CANCEL"));
 
-    private String name;
-
-    CodeEditorChangesOption(String name) {
-        this.name = name;
-    }
-
-    @Override
-    @NotNull
-    public String getName() {
-        return name;
-    }
-
+    private final String name;
 
     @Override
     public boolean isCancel() {
@@ -34,13 +26,4 @@ public enum CodeEditorChangesOption implements InteractiveOption {
     public boolean isAsk() {
         return this == ASK;
     }
-
-
-    public static CodeEditorChangesOption get(String name) {
-        for (CodeEditorChangesOption option : CodeEditorChangesOption.values()) {
-            if (Objects.equals(option.name, name) || Objects.equals(option.name(), name)) {
-                return option;
-            }
-        }
-        return null;
-    }}
+}

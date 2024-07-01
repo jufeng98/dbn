@@ -1,23 +1,20 @@
 package com.dbn.debugger;
 
 import com.dbn.common.ui.Presentable;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.Objects;
-
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
+import static com.dbn.nls.NlsResources.nls;
 
 @Getter
+@AllArgsConstructor
 public enum DBDebuggerType implements Presentable {
-    JDBC("Classic (over JDBC)"),
-    JDWP("JDWP (over TCP)"),
-    NONE("None");
+    JDBC(nls("app.debugger.const.DBDebuggerType_JDBC")),
+    JDWP(nls("app.debugger.const.DBDebuggerType_JDWP")),
+    NONE(nls("app.debugger.const.DBDebuggerType_NONE"));
 
     private final String name;
-
-    DBDebuggerType(String name) {
-        this.name = name;
-    }
 
     public boolean isDebug() {
         return this != NONE;
@@ -39,14 +36,5 @@ public enum DBDebuggerType implements Presentable {
             case NONE: return true;
         }
         return false;
-    }
-
-    public static DBDebuggerType get(String name) {
-        for (DBDebuggerType debuggerType : DBDebuggerType.values()) {
-            if (Objects.equals(debuggerType.name, name) || Objects.equals(debuggerType.name(), name)) {
-                return debuggerType;
-            }
-        }
-        return null;
     }
 }

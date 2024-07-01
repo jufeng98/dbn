@@ -3,16 +3,15 @@ package com.dbn.debugger.options;
 import com.dbn.common.option.InteractiveOption;
 import com.dbn.debugger.DBDebuggerType;
 import lombok.Getter;
-import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
+import static com.dbn.nls.NlsResources.nls;
 
 @Getter
 public enum DebuggerTypeOption implements InteractiveOption {
-    JDBC("Classic (over JDBC)", DBDebuggerType.JDBC),
-    JDWP("JDWP (over TCP)", DBDebuggerType.JDWP),
-    ASK("Ask"),
-    CANCEL("Cancel");
+    JDBC(nls("cfg.debugger.const.DebuggerTypeOption_JDBC"), DBDebuggerType.JDBC),
+    JDWP(nls("cfg.debugger.const.DebuggerTypeOption_JDWP"), DBDebuggerType.JDWP),
+    ASK(nls("cfg.debugger.const.DebuggerTypeOption_ASK")),
+    CANCEL(nls("cfg.debugger.const.DebuggerTypeOption_CANCEL"));
 
     private final String name;
     private final DBDebuggerType debuggerType;
@@ -35,17 +34,5 @@ public enum DebuggerTypeOption implements InteractiveOption {
     @Override
     public boolean isAsk() {
         return this == ASK;
-    }
-
-    @Nullable
-    @Override
-    public String getDescription() {
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public Icon getIcon() {
-        return null;
     }
 }
