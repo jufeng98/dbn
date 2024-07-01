@@ -7,6 +7,7 @@ import com.dbn.connection.Resources;
 import com.dbn.connection.jdbc.DBNConnection;
 import com.intellij.notification.NotificationType;
 import lombok.Getter;
+import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
@@ -15,69 +16,71 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.dbn.nls.NlsResources.nls;
+
 @Getter
 public enum TransactionAction implements Serializable, Constant<TransactionAction> {
     COMMIT(
-            "Commit",
+            nls("app.transactions.action.Commit"),
             NotificationGroup.TRANSACTION,
-            NotificationType.INFORMATION, "Connection \"{0}\" committed",
-            NotificationType.ERROR, "Error committing connection \"{0}\". Details: {1}",
+            NotificationType.INFORMATION, "msg.transactions.confirmation.Commit",
+            NotificationType.ERROR, "msg.transactions.error.Commit",
             false,
             (connection, target) -> Resources.commit(target)),
 
     ROLLBACK(
-            "Rollback",
+            nls("app.transactions.action.Rollback"),
             NotificationGroup.TRANSACTION,
-            NotificationType.INFORMATION, "Connection \"{0}\" rolled back.",
-            NotificationType.ERROR, "Error rolling back connection \"{0}\". Details: {1}",
+            NotificationType.INFORMATION, "msg.transactions.confirmation.Rollback",
+            NotificationType.ERROR, "msg.transactions.error.Rollback",
             false,
             (connection, target) -> Resources.rollback(target)),
 
     ROLLBACK_IDLE(
-            "Idle Rollback",
+            nls("app.transactions.action.IdleRollback"),
             NotificationGroup.TRANSACTION,
-            NotificationType.INFORMATION, "Connection \"{0}\" rolled back.",
-            NotificationType.ERROR, "Error rolling back connection \"{0}\". Details: {1}",
+            NotificationType.INFORMATION, "msg.transactions.confirmation.Rollback",
+            NotificationType.ERROR, "msg.transactions.error.Rollback",
             false,
             (connection, target) -> Resources.rollback(target)),
 
     DISCONNECT(
-            "Disconnect",
+            nls("app.transactions.action.Disconnect"),
             NotificationGroup.SESSION,
-            NotificationType.INFORMATION, "Disconnected from \"{0}\"",
-            NotificationType.WARNING, "Error disconnecting from \"{0}\". Details: {1}",
+            NotificationType.INFORMATION, "msg.transactions.confirmation.Disconnect",
+            NotificationType.WARNING, "msg.transactions.error.Disconnect",
             true,
             (connection, target) -> connection.closeConnection(target)),
 
     DISCONNECT_IDLE(
-            "Idle disconnect",
+            nls("app.transactions.action.IdleDisconnect"),
             NotificationGroup.SESSION,
-            NotificationType.INFORMATION, "Disconnected from \"{0}\" - exceeded the configured idle time",
-            NotificationType.WARNING, "Error disconnecting from \"{0}\". Details: {1}",
+            NotificationType.INFORMATION, "msg.transactions.confirmation.IdleDisconnect",
+            NotificationType.WARNING, "msg.transactions.error.Disconnect",
             true,
             (connection, target) -> connection.closeConnection(target)),
 
     KEEP_ALIVE(
-            "Keep Alive",
+            nls("app.transactions.action.KeepAlive"),
             NotificationGroup.CONNECTION,
             null, "",
-            NotificationType.ERROR, "Error checking connectivity for \"{0}\". Details: {1}",
+            NotificationType.ERROR, "msg.transactions.error.KeepAlive",
             false,
             (connection, target) -> target.updateLastAccess()),
 
     TURN_AUTO_COMMIT_ON(
-            "Enable Auto-Commit",
+            nls("app.transactions.action.EnableAutoCommit"),
             NotificationGroup.TRANSACTION,
-            NotificationType.WARNING, "Auto-Commit switched ON for connection \"{0}\".",
-            NotificationType.ERROR, "Error switching Auto-Commit ON for connection \"{0}\". Details: {1}",
+            NotificationType.WARNING, "msg.transactions.confirmation.EnableAutoCommit",
+            NotificationType.ERROR, "msg.transactions.error.EnableAutoCommit",
             true,
             (connection, target) -> target.setAutoCommit(true)),
 
     TURN_AUTO_COMMIT_OFF(
-            "Disable Auto-Commit",
+            nls("app.transactions.action.DisableAutoCommit"),
             NotificationGroup.TRANSACTION,
-            NotificationType.INFORMATION, "Auto-Commit switched OFF for connection \"{0}\".",
-            NotificationType.ERROR, "Error switching Auto-Commit OFF for connection\"{0}\". Details: {1}",
+            NotificationType.INFORMATION, "msg.transactions.confirmation.DisableAutoCommit",
+            NotificationType.ERROR, "msg.transactions.error.DisableAutoCommit",
             true,
             (connection, target) -> target.setAutoCommit(false));
 
@@ -91,7 +94,15 @@ public enum TransactionAction implements Serializable, Constant<TransactionActio
     private final Executor executor;
     private final boolean statusChange;
 
-    TransactionAction(String name, NotificationGroup group, NotificationType notificationType, String successNotificationMessage, NotificationType failureNotificationType, String failureNotificationMessage, boolean statusChange, Executor executor) {
+    TransactionAction(
+            String name,
+            NotificationGroup group,
+            NotificationType notificationType,
+            @Nls String successNotificationMessage,
+            NotificationType failureNotificationType,
+            @Nls String failureNotificationMessage,
+            boolean statusChange,
+            Executor executor) {
         this.group = group;
         this.name = name;
         this.failureNotificationMessage = failureNotificationMessage;

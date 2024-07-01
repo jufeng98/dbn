@@ -109,7 +109,7 @@ public class SelectorBrowserForm extends DatabaseBrowserForm {
         ConnectionHandler connection = getConnection();
 
         if (connection == null) {
-            connectionLabel.setText(nls("app.shared.label.NoConnections"));
+            connectionLabel.setText(nls("app.connection.label.NoConnections"));
             //connectionLabel.setIcon(null);
             setBackgroundRecursive(headerPanel, EnvironmentType.DEFAULT.getColor());
             CardLayouts.showBlankCard(browserFormsPanel);

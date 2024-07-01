@@ -266,12 +266,14 @@ public class ConnectionBundleSettingsForm extends ConfigurationEditorForm<Connec
 
             CopyPasteManager copyPasteManager = CopyPasteManager.getInstance();
             copyPasteManager.setContents(new StringSelection(xmlString));
-            Messages.showInfoDialog(project, "Config Export", "Configuration for selected connections exported to clipboard.");
+            Messages.showInfoDialog(project,
+                    nls("msg.connection.title.ConfigExported"),
+                    nls("msg.connection.text.ConfigExported"));
         } catch (Exception e) {
             conditionallyLog(e);
             Messages.showErrorDialog(project,
-                    "Connection Export Failed",
-                    "Failed to export connection setup to clipboard.", e);
+                    nls("msg.connection.title.ExportFailed"),
+                    "msg.connection.text.ExportFailed", e);
         }
     }
 
@@ -311,16 +313,17 @@ public class ConnectionBundleSettingsForm extends ConfigurationEditorForm<Connec
                 }
 
                 if (!configurationsFound) {
-                    Messages.showWarningDialog(getProject(),
-                            "Connection Import Failed",
-                            "The clipboard content is empty or malformed (not valid connection setup)");
+                    Messages.showWarningDialog(
+                            getProject(),
+                            nls("msg.connection.title.ImportFailed"),
+                            nls("msg.connection.text.ImportFailedEmpty"));
                 }
 
             } catch (Exception e) {
                 conditionallyLog(e);
                 Messages.showErrorDialog(getProject(),
-                        "Connection Import Failed",
-                        "The clipboard content was not recognized as valid connection setup.", e);
+                        nls("msg.connection.title.ImportFailed"),
+                        nls("msg.connection.text.ImportFailedUnparseable"), e);
             }
         }
     }
