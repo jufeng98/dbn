@@ -1,26 +1,26 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="utf-8"?>
 <project name="dbnavigator" default="all">
     <echo level="info" message="java.home = ${java.home}"/>
     <property file="build.properties"/>
     <property name="skip.tests" value="true"/>
 
     <!-- Compiler options -->
-    <patternset id="compiler.ignored.files">
-        <exclude name="**/CVS/**"/>
-        <exclude name="**/SCCS/**"/>
-        <exclude name="**/RCS/**"/>
-        <exclude name="**/rcs/**"/>
-        <exclude name="**/.DS_Store/**"/>
-        <exclude name="**/.svn/**"/>
-        <exclude name="**/*.awf/**"/>
-        <exclude name="**/*.iml/**"/>
-        <exclude name="**/vssver.scc/**"/>
-        <exclude name="**/vssver2.scc/**"/>
-        <exclude name="**/.sbas/**"/>
-        <exclude name="**/.IJI.*/**"/>
-        <exclude name="**/.cvsignore/**"/>
-        <exclude name="**/.*/**"/>
-    </patternset>
+<!--    <patternset id="compiler.ignored.files">-->
+<!--        <exclude name="**/CVS/**"/>-->
+<!--        <exclude name="**/SCCS/**"/>-->
+<!--        <exclude name="**/RCS/**"/>-->
+<!--        <exclude name="**/rcs/**"/>-->
+<!--        <exclude name="**/.DS_Store/**"/>-->
+<!--        <exclude name="**/.svn/**"/>-->
+<!--        <exclude name="**/*.awf/**"/>-->
+<!--        <exclude name="**/*.iml/**"/>-->
+<!--        <exclude name="**/vssver.scc/**"/>-->
+<!--        <exclude name="**/vssver2.scc/**"/>-->
+<!--        <exclude name="**/.sbas/**"/>-->
+<!--        <exclude name="**/.IJI.*/**"/>-->
+<!--        <exclude name="**/.cvsignore/**"/>-->
+<!--        <exclude name="**/.*/**"/>-->
+<!--    </patternset>-->
     <patternset id="compiler.resources">
         <include name="**/?*.properties"/>
         <include name="**/?*.xml"/>
@@ -42,7 +42,8 @@
     <dirname property="root.dir" file="${ant.file}/.."/>
     <property name="source.dir" value="${root.dir}/src"/>
     <property name="help.dir" value="${source.dir}/main/resources/help"/>
-    <property name="compiler.output.dir" value="${root.dir}/classes"/>
+    <property name="compiler.output.build" value="${root.dir}/build"/>
+    <property name="compiler.output.dir" value="${root.dir}/build/instrumented"/>
     <property name="distribution.dir" value="${root.dir}/dist"/>
     <property name="help.jar" value="${distribution.dir}/Help.jar"/>
 <!--
@@ -55,38 +56,42 @@
         </dirset>
     </path>
 
-    <path id="classpath.ide">
-        <fileset dir="${idea.home}">
-            <include name="lib/*.jar"/>
-            <include name="redist/*.jar"/>
-        </fileset>
-    </path>
-    <path id="classpath.project">
-        <fileset dir="${root.dir}">
-            <include name="lib/*.jar"/>
-        </fileset>
-    </path>
+<!--    <path id="classpath.ide">-->
+<!--        <fileset dir="${idea.home}">-->
+<!--            <include name="lib/*.jar"/>-->
+<!--            <include name="redist/*.jar"/>-->
+<!--            <include name="plugins/java/lib/*.jar"/>-->
+<!--            <include name="plugins/copyright/lib/*.jar"/>-->
+<!--        </fileset>-->
+<!--    </path>-->
+<!--    <path id="classpath.project">-->
+<!--        <fileset dir="${root.dir}">-->
+<!--            <include name="lib/*.jar"/>-->
+<!--        </fileset>-->
+<!--    </path>-->
 
 
-    <taskdef name="javac2" classname="com.intellij.ant.Javac2">
-        <classpath refid="classpath.ide"/>
-    </taskdef>
-
+<!--    <taskdef name="javac2" classname="com.intellij.ant.Javac2">-->
+<!--        <classpath refid="classpath.ide"/>-->
+<!--    </taskdef>-->
 
     <target name="compile" description="Compile">
-        <mkdir dir="${compiler.output.dir}"/>
-        <javac2 srcdir="${source.dir}/main/java"
-                destdir="${compiler.output.dir}"
-                source="11"
-                target="11"
-                debug="true"
-                fork="true"
-                >
-            <patternset refid="compiler.ignored.files"/>
-            <classpath refid="classpath.ide"/>
-            <classpath refid="classpath.project"/>
-            <!--<exclude name="com/**/*" />-->
-        </javac2>
+<!--        <mkdir dir="${compiler.output.dir}"/>-->
+<!--        <javac srcdir="${source.dir}/main/java"-->
+<!--                destdir="${compiler.output.dir}"-->
+<!--                executable="D:/Program Files/Java/jdk-11.0.15/bin/javac"-->
+<!--                source="11"-->
+<!--                target="11"-->
+<!--                encoding="${encoding}"-->
+<!--                debug="true"-->
+<!--                fork="true"-->
+<!--                >-->
+<!--            <compilerarg line="-Xlint:unchecked -Xlint:deprecation"/>-->
+<!--            <patternset refid="compiler.ignored.files"/>-->
+<!--            <classpath refid="classpath.project"/>-->
+<!--            <classpath refid="classpath.ide"/>-->
+<!--            &lt;!&ndash;<exclude name="com/**/*" />&ndash;&gt;-->
+<!--        </javac>-->
 
         <copy todir="${compiler.output.dir}">
             <fileset dir="${source.dir}/main/java">
@@ -98,6 +103,7 @@
                 <type type="file"/>
             </fileset>
         </copy>
+        <mkdir dir="${compiler.output.dir}/img/expui"/>
         <copy todir="${compiler.output.dir}/img/expui">
             <fileset dir="${source.dir}/main/resources/img">
                 <patternset refid="svg.resources"/>
@@ -130,22 +136,22 @@
 
     <target name="build.dist" description="Build distribution archives">
         <mkdir dir="${distribution.dir}" />
-        <antcall target="build.jar"/>
+<!--        <antcall target="build.jar"/>-->
         <antcall target="build.help"/>
         <antcall target="build.zip"/>
-        <antcall target="build.src"/>
+<!--        <antcall target="build.src"/>-->
     </target>
 
-    <target name="build.jar" description="Build plugin jar">
-        <jar destfile="${distribution.dir}/dbn.jar" duplicate="preserve">
-            <zipfileset dir="${compiler.output.dir}" prefix=""/>
-            <zipfileset file="${source.dir}/main/resources/META-INF/plugin.xml" prefix="META-INF"/>
-            <manifest>
-                <attribute name="Created-By" value="IntelliJ IDEA"/>
-                <attribute name="Manifest-Version" value="1.0"/>
-            </manifest>
-        </jar>
-    </target>
+<!--    <target name="build.jar" description="Build plugin jar">-->
+<!--        <jar destfile="${distribution.dir}/dbn.jar" duplicate="preserve">-->
+<!--            <zipfileset dir="${compiler.output.dir}" prefix=""/>-->
+<!--            <zipfileset file="${source.dir}/main/resources/META-INF/plugin.xml" prefix="META-INF"/>-->
+<!--            <manifest>-->
+<!--                <attribute name="Created-By" value="IntelliJ IDEA"/>-->
+<!--                <attribute name="Manifest-Version" value="1.0"/>-->
+<!--            </manifest>-->
+<!--        </jar>-->
+<!--    </target>-->
     <target name="build.help" description="Build help jar">
         <jar destfile="${help.jar}" duplicate="preserve">
             <zipfileset dir="${help.dir}" prefix=""/>
@@ -153,8 +159,8 @@
     </target>
     <target name="build.zip" description="Build distribution zip file">
         <zip file="${distribution.dir}/${package.name}">
-            <zipfileset dir="${distribution.dir}" prefix="DBNavigator/lib">
-                <include name="dbn.jar"/>
+            <zipfileset dir="${compiler.output.build}/libs" prefix="DBNavigator/lib">
+                <include name="instrumented-DBN-MASTER-3.4.4179.0.jar"/>
             </zipfileset>
             <zipfileset dir="${root.dir}/lib" prefix="DBNavigator/lib">
                 <include name="**/*.jar"/>
@@ -165,20 +171,20 @@
             </zipfileset>
         </zip>
     </target>
-    <target name="build.src" description="Build distribution src file">
-        <zip file="${distribution.dir}/src.zip">
-            <zipfileset dir=".." prefix="DBNavigator">
-                <include name="src/**/*"/>
-                <include name="help/**/*"/>
-                <include name="build/**/*"/>
-                <include name="lib/**/*"/>
+<!--    <target name="build.src" description="Build distribution src file">-->
+<!--        <zip file="${distribution.dir}/src.zip">-->
+<!--            <zipfileset dir=".." prefix="DBNavigator">-->
+<!--                <include name="src/**/*"/>-->
+<!--                <include name="help/**/*"/>-->
+<!--                <include name="build/**/*"/>-->
+<!--                <include name="lib/**/*"/>-->
 
-                <include name="*.iml"/>
-                <include name="*.ipr"/>
-                <include name="*.iws"/>
-            </zipfileset>
-        </zip>
-    </target>
+<!--                <include name="*.iml"/>-->
+<!--                <include name="*.ipr"/>-->
+<!--                <include name="*.iws"/>-->
+<!--            </zipfileset>-->
+<!--        </zip>-->
+<!--    </target>-->
 
     <target name="init" description="Build initialization">
         <!-- Perform any build initialization in this target -->

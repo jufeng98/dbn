@@ -1,3 +1,5 @@
+import java.net.URI
+
 // import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -10,6 +12,7 @@ group = "com.dbn"
 version = "3.4.4179.0"
 
 repositories {
+  maven { url = URI("https://maven.aliyun.com/nexus/content/groups/public/") }
   mavenCentral()
 }
 dependencies {
@@ -26,7 +29,7 @@ dependencies {
   implementation("org.apache.poi:poi-ooxml-schemas:4.1.2")
 
   // poi library dependencies
-  implementation("org.apache.commons:commons-io:2.15.1")
+  implementation("org.apache.commons:commons-io:1.3.2")
   implementation("org.apache.commons:commons-math3:3.6.1")
   implementation("org.apache.commons:commons-compress:1.26.0")
   implementation("org.apache.commons:commons-collections4:4.4")
@@ -39,6 +42,7 @@ sourceSets{
     resources {
       srcDir("src/main/java")
       include("**/*.xml")
+      include("**/*.txt")
     }
     resources {
       include(
@@ -48,6 +52,7 @@ sourceSets{
               "**/*.svg",
               "**/*.css",
               "**/*.html",
+              "**/*.properties",
               "**/*.template")
     }
   }
@@ -56,11 +61,11 @@ sourceSets{
 // Configure Gradle IntelliJ Plugin
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 intellij {
-  version.set("LATEST-EAP-SNAPSHOT")
+  version.set("2022.1.2")
   type.set("IC") // Target IDE Platform
 
   plugins.set(listOf("java", "copyright"))
-
+  intellij.updateSinceUntilBuild.set(false)
 }
 
 tasks.register<Zip>("packageDistribution") {
