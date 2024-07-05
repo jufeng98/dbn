@@ -54,12 +54,12 @@ public class BrowserToolWindowForm extends DBNFormBase {
         objectPropertiesPanel.add(objectPropertiesForm.getComponent());
 
 
-        ProjectEvents.subscribe(project, this, DisplayModeSettingsListener.TOPIC, mode -> changeDisplayMode(mode));
+        ProjectEvents.subscribe(project, this, DisplayModeSettingsListener.TOPIC, this::changeDisplayMode);
         ProjectEvents.subscribe(project, this,
                 ConnectionConfigListener.TOPIC,
                 ConnectionConfigListener
-                        .whenSetupChanged(() -> rebuild())
-                        .whenNameChanged(id -> refreshTabs(id)));
+                        .whenSetupChanged(this::rebuild)
+                        .whenNameChanged(this::refreshTabs));
     }
 
     public void rebuild() {

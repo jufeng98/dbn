@@ -66,7 +66,7 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
     private final BooleanSetting autoscrollToEditor   = new BooleanSetting("autoscroll-to-editor", false);
     private final BooleanSetting showObjectProperties = new BooleanSetting("show-object-properties", true);
 
-    private final transient Latent<BrowserToolWindowForm> toolWindowForm = Latent.basic(() -> createToolWindowForm());
+    private final transient Latent<BrowserToolWindowForm> toolWindowForm = Latent.basic(this::createToolWindowForm);
 
     private BrowserToolWindowForm createToolWindowForm() {
         return Dispatch.call(true, () -> new BrowserToolWindowForm(this, getProject()));

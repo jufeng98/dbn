@@ -20,6 +20,6 @@ public class TnsNamesImportAction extends ProjectAction {
             @NotNull Project project) {
         ProjectSettingsManager settingsManager = ProjectSettingsManager.getInstance(project);
         TnsImportService importService = TnsImportService.getInstance();
-        importService.importTnsNames(project, d -> settingsManager.createConnections(d));
+        importService.importTnsNames(project, settingsManager::createConnections);
     }
 }
