@@ -41,19 +41,37 @@ sourceSets{
   main {
     resources {
       srcDir("src/main/java")
+      include("**/*.properties")
       include("**/*.xml")
+      include("**/*.gif")
+      include("**/*.png")
+      include("**/*.svg")
+      include("**/*.jpeg")
+      include("**/*.jpg")
+      include("**/*.html")
+      include("**/*.dtd")
+      include("**/*.tld")
       include("**/*.txt")
+      include("**/*.jar")
+      include("**/*.css")
+      include("**/*.template")
     }
     resources {
       include(
-              "**/*.png",
-              "**/*.jpg",
-              "**/*.xml",
-              "**/*.svg",
-              "**/*.css",
-              "**/*.html",
-              "**/*.properties",
-              "**/*.template")
+        "**/*.properties",
+        "**/*.xml",
+        "**/*.gif",
+        "**/*.png",
+        "**/*.svg",
+        "**/*.jpeg",
+        "**/*.jpg",
+        "**/*.html",
+        "**/*.dtd",
+        "**/*.tld",
+        "**/*.txt",
+        "**/*.jar",
+        "**/*.css",
+        "**/*.template")
     }
   }
 }
