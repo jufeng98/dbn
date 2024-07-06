@@ -16,6 +16,7 @@ public class ConnectionAuthenticationDialog extends DBNDialog<ConnectionAuthenti
     private final WeakRef<AuthenticationInfo> authenticationInfo; // TODO dialog result - Disposable.nullify(...)
     private final ConnectionRef connection;
 
+    @SuppressWarnings("removal")
     public ConnectionAuthenticationDialog(Project project, @Nullable ConnectionHandler connection, @NotNull AuthenticationInfo authenticationInfo) {
         super(project, "Enter password", true);
         this.authenticationInfo = WeakRef.of(authenticationInfo);

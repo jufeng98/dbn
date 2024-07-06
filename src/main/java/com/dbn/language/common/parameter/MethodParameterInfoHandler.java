@@ -34,12 +34,14 @@ public class MethodParameterInfoHandler implements ParameterInfoHandler<BasePsiE
     public static final ObjectReferenceLookupAdapter METHOD_LOOKUP_ADAPTER = new ObjectReferenceLookupAdapter(null, DBObjectType.METHOD, null);
     public static final ObjectReferenceLookupAdapter ARGUMENT_LOOKUP_ADAPTER = new ObjectReferenceLookupAdapter(null, DBObjectType.ARGUMENT, null);
 
+    @SuppressWarnings("removal")
     @Override
     @Compatibility
     public boolean couldShowInLookup() {
         return true;
     }
 
+    @SuppressWarnings("removal")
     @Nullable
     @Override
     @Compatibility

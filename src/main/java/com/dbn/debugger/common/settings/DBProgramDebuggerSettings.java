@@ -16,6 +16,7 @@ public class DBProgramDebuggerSettings extends XDebuggerSettings<DBProgramDebugg
         super("db-program");
     }
 
+    @SuppressWarnings("removal")
     @NotNull
     @Override
     @Compatibility

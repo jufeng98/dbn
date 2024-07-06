@@ -23,6 +23,7 @@ public abstract class OverridingShortcutInterceptor extends ShortcutInterceptor 
     }
 
     //@Override
+    @SuppressWarnings("removal")
     @Compatibility
     public void beforeActionPerformed(@NotNull AnAction action, @NotNull DataContext dataContext, @NotNull AnActionEvent event) {
         attemptDelegation(action, event);

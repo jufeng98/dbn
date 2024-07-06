@@ -26,6 +26,7 @@ public abstract class ComplementaryShortcutInterceptor extends ShortcutIntercept
     }
 */
 
+    @SuppressWarnings("removal")
     @Override
     @Compatibility
     public void afterActionPerformed(@NotNull AnAction action, @NotNull DataContext dataContext, @NotNull AnActionEvent event) {

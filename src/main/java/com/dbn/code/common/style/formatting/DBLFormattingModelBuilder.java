@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class DBLFormattingModelBuilder implements FormattingModelBuilder {
 
+    @SuppressWarnings("removal")
     @Override
     @NotNull
     @Compatibility

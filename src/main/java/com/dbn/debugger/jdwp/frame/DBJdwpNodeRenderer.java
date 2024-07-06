@@ -152,6 +152,7 @@ public class DBJdwpNodeRenderer extends NodeRendererImpl {
         return toLowerCase(super.getName());
     }
 
+    @SuppressWarnings("removal")
     @Nullable
     //@Override
     @Compatibility

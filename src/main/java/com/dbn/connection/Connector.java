@@ -77,8 +77,7 @@ class Connector {
         ConnectionDatabaseSettings databaseSettings = connectionSettings.getDatabaseSettings();
         boolean driversLoaded = databaseSettings.driversLoaded();
         int connectTimeoutExtension = driversLoaded ? 0 : 20; // allow 20 seconds for drivers to load
-        int connectTimeout = connectTimeoutExtension + connectionSettings.getDetailSettings().getConnectivityTimeoutSeconds();
-        return connectTimeout;
+        return connectTimeoutExtension + connectionSettings.getDetailSettings().getConnectivityTimeoutSeconds();
     }
 
 
@@ -87,7 +86,7 @@ class Connector {
     public DBNConnection connect() {
         int connectTimeout = getConnectTimeout();
         String identifier = "Connecting to \"" + connectionSettings.getDatabaseSettings().getName() + "\"";
-        return Timeout.call(identifier, connectTimeout, null, true, () -> doConnect());
+        return Timeout.call(identifier, connectTimeout, null, true, this::doConnect);
     }
 
     private DBNConnection doConnect() {

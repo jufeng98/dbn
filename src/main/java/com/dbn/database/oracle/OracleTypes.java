@@ -17,7 +17,7 @@ public class OracleTypes {
     public static final int DATE = 91;
     public static final int TIME = 92;
     public static final int TIMESTAMP = 93;
-    /** @deprecated */
+    @Deprecated
     public static final int TIMESTAMPNS = -100;
     public static final int TIMESTAMPTZ = -101;
     public static final int TIMESTAMPLTZ = -102;

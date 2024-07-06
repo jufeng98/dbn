@@ -52,8 +52,9 @@ public final class DatabaseInterfaceInvoker {
     }
 
     /**
-     * @deprecated use {@link #execute(Priority, String, String, Project, ConnectionId, ConnectionRunnable)}
+     * use {@link #execute(Priority, String, String, Project, ConnectionId, ConnectionRunnable)}
      */
+    @Deprecated
     public static void execute(Priority priority, String title, String text, Project project, ConnectionId connectionId, @Deprecated SchemaId schemaId, ConnectionRunnable runnable) throws SQLException {
         InterfaceTaskRequest request = InterfaceTaskRequest.create(priority, title, text, project, connectionId, schemaId);
         ConnectionHandler connection = request.getConnection();

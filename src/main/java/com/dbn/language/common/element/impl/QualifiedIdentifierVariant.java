@@ -9,7 +9,7 @@ import static com.dbn.common.util.Unsafe.cast;
 
 public class QualifiedIdentifierVariant implements Comparable{
     private LeafElementType[] leafs;
-    /**@deprecated*/
+    @Deprecated
     private boolean incomplete;
     private int matchedTokens;
 
