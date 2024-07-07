@@ -24,6 +24,7 @@ import com.dbn.database.DatabaseFeature;
 import com.dbn.database.DatabaseMessage;
 import com.dbn.editor.DBContentType;
 import com.dbn.editor.EditorProviderId;
+import com.dbn.editor.data.filter.DatasetFilterUtil;
 import com.dbn.execution.ExecutionManager;
 import com.dbn.execution.ExecutionOption;
 import com.dbn.execution.compiler.*;
@@ -38,6 +39,7 @@ import com.dbn.language.common.PsiElementRef;
 import com.dbn.language.common.PsiFileRef;
 import com.dbn.language.common.element.util.ElementTypeAttribute;
 import com.dbn.language.common.psi.*;
+import com.dbn.language.sql.SqlElementFactory;
 import com.dbn.object.DBSchema;
 import com.dbn.object.common.DBObject;
 import com.dbn.object.common.DBSchemaObject;
@@ -367,6 +369,15 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
     private String initStatementText() {
         ConnectionHandler connection = getTargetConnection();
         String statementText = executionInput.getExecutableStatementText();
+
+        PsiElement sqlElement = SqlElementFactory.createSqlElement(project.ensure(), statementText);
+        String text = sqlElement.getText().toLowerCase();
+        boolean noLimit = !text.endsWith("limit");
+        if (noLimit) {
+            String limit = DatasetFilterUtil.createLimit(executionInput, 0, 100);
+            statementText += limit;
+        }
+
         StatementExecutionVariablesBundle executionVariables = executionInput.getExecutionVariables();
         if (executionVariables == null) return statementText;
 

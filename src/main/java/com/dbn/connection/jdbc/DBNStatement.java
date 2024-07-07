@@ -297,7 +297,8 @@ public class DBNStatement<T extends Statement> extends DBNResource<T> implements
     @Override
     public void setFetchSize(int rows) {
         // do not allow more than 50 record blocks to avoid network packet-size limits (socket closed exceptions)
-        Unsafe.silent(this, s -> s.inner.setFetchSize(min(rows, 50)));
+        // 不能依赖这个参数控制分页,有些驱动会忽略这个参数设置,所以注释此参数
+        // Unsafe.silent(this, s -> s.inner.setFetchSize(min(rows, 50)));
     }
 
     @Override

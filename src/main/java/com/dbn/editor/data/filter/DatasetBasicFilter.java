@@ -96,7 +96,7 @@ public class DatasetBasicFilter extends DatasetFilterImpl {
     }
 
     @Override
-    public String createSelectStatement(DBDataset dataset, SortingState sortingState) {
+    public String createSelectStatement(DBDataset dataset, SortingState sortingState, Integer pageNum, Integer pageSize) {
         setError(null);
         StringBuilder buffer = new StringBuilder();
         DatasetFilterUtil.createSimpleSelectStatement(dataset, buffer);

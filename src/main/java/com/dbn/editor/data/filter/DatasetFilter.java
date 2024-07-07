@@ -27,5 +27,5 @@ public interface DatasetFilter extends UnnamedConfigurable, PersistentConfigurat
 
     DatasetFilterGroup getFilterGroup() ;
 
-    String createSelectStatement(DBDataset dataset, SortingState sortingState);
+    String createSelectStatement(DBDataset dataset, SortingState sortingState, Integer pageNum, Integer pageSize);
 }

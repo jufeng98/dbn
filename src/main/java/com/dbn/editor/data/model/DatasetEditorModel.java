@@ -62,6 +62,7 @@ public class DatasetEditorModel
     private final WeakRef<DatasetEditor> datasetEditor;
     private final DBObjectRef<DBDataset> dataset;
     private final DataEditorSettings settings;
+    private Integer pageNum;
 
     private CancellableDatabaseCall<Object> loaderCall;
     private ResultSetAdapter resultSetAdapter;
@@ -76,6 +77,7 @@ public class DatasetEditorModel
         DBDataset dataset = datasetEditor.getDataset();
         this.dataset = DBObjectRef.of(dataset);
         this.settings =  DataEditorSettings.getInstance(project);
+        pageNum = 0;
         setHeader(new DatasetEditorModelHeader(datasetEditor, null));
         this.isResultSetUpdatable = DatabaseFeature.UPDATABLE_RESULT_SETS.isSupported(getConnection());
 
@@ -178,7 +180,8 @@ public class DatasetEditorModel
             if (filter == null) filter = DatasetFilterManager.EMPTY_FILTER;
         }
 
-        String selectStatement = filter.createSelectStatement(dataset, getState().getSortingState());
+        Integer pageSize = getSettings().getGeneralSettings().getFetchBlockSize().value();
+        String selectStatement = filter.createSelectStatement(dataset, getState().getSortingState(), pageNum, pageSize);
         DBNStatement statement = null;
         if (isReadonly()) {
             statement = conn.createStatement();
@@ -219,7 +222,7 @@ public class DatasetEditorModel
             statement.setQueryTimeout(timeout);
         }
 
-        statement.setFetchSize(getSettings().getGeneralSettings().getFetchBlockSize().value());
+        statement.setFetchSize(pageSize);
         return statement.executeQuery(selectStatement);
     }
 

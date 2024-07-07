@@ -7,6 +7,7 @@ import com.dbn.data.sorting.SortingState;
 import com.dbn.database.DatabaseCompatibility;
 import com.dbn.database.JdbcProperty;
 import com.dbn.database.interfaces.DatabaseCompatibilityInterface;
+import com.dbn.execution.statement.StatementExecutionInput;
 import com.dbn.object.DBColumn;
 import com.dbn.object.DBDataset;
 
@@ -75,5 +76,17 @@ public class DatasetFilterUtil {
             buffer.append(".");
             buffer.append(datasetName);
         }
+    }
+
+    public static String createLimit(DBDataset dataset, Integer pageNum, Integer pageSize) {
+        // TODO yudong 先只处理MySQL的分页参数
+        int start = pageNum * pageSize;
+        return " limit " + start + "," + pageSize;
+    }
+
+    public static String createLimit(StatementExecutionInput executionInput, int pageNum, int pageSize) {
+        // TODO yudong 先只处理MySQL的分页参数
+        int start = pageNum * pageSize;
+        return " limit " + start + "," + pageSize;
     }
 }
