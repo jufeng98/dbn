@@ -31,6 +31,7 @@ import static com.dbn.object.type.DBObjectType.*;
 
 class DBTableImpl extends DBDatasetImpl<DBTableMetadata> implements DBTable {
     private static final List<DBColumn> EMPTY_COLUMN_LIST = Collections.unmodifiableList(new ArrayList<>());
+    private String tableComment;
 
     DBTableImpl(DBSchema schema, DBTableMetadata metadata) throws SQLException {
         super(schema, metadata);
@@ -40,6 +41,9 @@ class DBTableImpl extends DBDatasetImpl<DBTableMetadata> implements DBTable {
     protected String initObject(ConnectionHandler connection, DBObject parentObject, DBTableMetadata metadata) throws SQLException {
         String name = metadata.getTableName();
         set(TEMPORARY, metadata.isTemporary());
+
+        tableComment = metadata.getTableComment();
+
         return name;
     }
 
@@ -71,6 +75,11 @@ class DBTableImpl extends DBDatasetImpl<DBTableMetadata> implements DBTable {
     @Override
     public boolean isTemporary() {
         return is(TEMPORARY);
+    }
+
+    @Override
+    public String getTableComment() {
+        return tableComment;
     }
 
     @Override
@@ -182,6 +191,9 @@ class DBTableImpl extends DBDatasetImpl<DBTableMetadata> implements DBTable {
     @Override
     public List<PresentableProperty> getPresentableProperties() {
         List<PresentableProperty> properties = super.getPresentableProperties();
+
+        properties.add(0, new SimplePresentableProperty("Comment", getTableComment()));
+
         if (isTemporary()) {
             properties.add(0, new SimplePresentableProperty("Attributes", "temporary"));
         }

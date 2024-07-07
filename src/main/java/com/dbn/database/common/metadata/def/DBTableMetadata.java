@@ -8,5 +8,7 @@ public interface DBTableMetadata extends DBObjectMetadata {
 
     String getTableName() throws SQLException;
 
+    String getTableComment() throws SQLException;
+
     boolean isTemporary() throws SQLException;
 }

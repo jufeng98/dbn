@@ -63,6 +63,7 @@
         <statement>
             select
                 TABLE_NAME,
+                TABLE_COMMENT,
                 'N' as IS_TEMPORARY
             from  information_schema.TABLES
             where
@@ -76,6 +77,7 @@
         <statement>
             select
                 TABLE_NAME as VIEW_NAME,
+                TABLE_COMMENT as VIEW_COMMENT,
                 null as VIEW_TYPE_OWNER,
                 null as VIEW_TYPE,
                 if (TABLE_TYPE = 'VIEW', 'N', 'Y') as IS_SYSTEM_VIEW

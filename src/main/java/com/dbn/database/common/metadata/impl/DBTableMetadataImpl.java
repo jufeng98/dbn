@@ -16,6 +16,10 @@ public class DBTableMetadataImpl extends DBObjectMetadataBase implements DBTable
         return getString("TABLE_NAME");
     }
 
+    public String getTableComment() throws SQLException {
+        return getString("TABLE_COMMENT");
+    }
+
     public boolean isTemporary() throws SQLException {
         return isYesFlag("IS_TEMPORARY");
     }
