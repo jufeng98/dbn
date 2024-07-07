@@ -128,6 +128,7 @@
         <statement>
             select
                 col.COLUMN_NAME,
+                col.COLUMN_COMMENT,
                 col.ORDINAL_POSITION as `POSITION`,
                 col.DATA_TYPE as DATA_TYPE_NAME,
                 null as DECL_TYPE_OWNER,
@@ -204,6 +205,7 @@
         <statement>
             select
                 col.COLUMN_NAME,
+                col.COLUMN_COMMENT,
                 col.TABLE_NAME as DATASET_NAME,
                 col.ORDINAL_POSITION as `POSITION`,
                 col.DATA_TYPE as DATA_TYPE_NAME,

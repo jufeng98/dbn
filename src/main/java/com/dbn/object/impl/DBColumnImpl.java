@@ -35,6 +35,7 @@ import static com.dbn.object.type.DBObjectType.*;
 
 class DBColumnImpl extends DBObjectImpl<DBColumnMetadata> implements DBColumn {
     private DBDataType dataType;
+    private String columnComment;
     private short position;
 
     DBColumnImpl(@NotNull DBDataset dataset, DBColumnMetadata metadata) throws SQLException {
@@ -53,6 +54,7 @@ class DBColumnImpl extends DBObjectImpl<DBColumnMetadata> implements DBColumn {
         position = metadata.getPosition();
 
         dataType = DBDataType.get(connection, metadata.getDataType());
+        columnComment = metadata.getColumnComment();
         return name;
     }
 
@@ -86,6 +88,11 @@ class DBColumnImpl extends DBObjectImpl<DBColumnMetadata> implements DBColumn {
     @Override
     public DBDataType getDataType() {
         return dataType;
+    }
+
+    @Override
+    public String getColumnComment() {
+        return columnComment;
     }
 
     @Override
@@ -306,6 +313,8 @@ class DBColumnImpl extends DBObjectImpl<DBColumnMetadata> implements DBColumn {
     @Override
     public List<PresentableProperty> getPresentableProperties() {
         List<PresentableProperty> properties = super.getPresentableProperties();
+
+        properties.add(0, new SimplePresentableProperty("Comment", getColumnComment()));
 
         if (isForeignKey()) {
             DBColumn foreignKeyColumn = getForeignKeyColumn();

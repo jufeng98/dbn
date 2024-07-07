@@ -277,9 +277,11 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
 
     public void showObjectProperties(boolean visible) {
         BrowserToolWindowForm toolWindowForm = getToolWindowForm();
-        if (visible)
-            toolWindowForm.showObjectProperties(); else
+        if (visible) {
+            toolWindowForm.showObjectProperties();
+        } else {
             toolWindowForm.hideObjectProperties();
+        }
         showObjectProperties.setValue(visible);
     }
 

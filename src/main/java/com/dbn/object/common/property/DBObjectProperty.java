@@ -33,6 +33,7 @@ public enum DBObjectProperty implements Property.LongBase {
     NULLABLE,
     HIDDEN,
     UNIQUE,
+    COLUMN_COMMENT,
 
     // argument
     INPUT,

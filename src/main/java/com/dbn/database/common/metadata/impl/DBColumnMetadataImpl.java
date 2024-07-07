@@ -21,6 +21,11 @@ public class DBColumnMetadataImpl extends DBObjectMetadataBase implements DBColu
         return getString("COLUMN_NAME");
     }
 
+    @Override
+    public String getColumnComment() throws SQLException {
+        return getString("COLUMN_COMMENT");
+    }
+
     public String getDatasetName() throws SQLException {
         return getString("DATASET_NAME");
     }
