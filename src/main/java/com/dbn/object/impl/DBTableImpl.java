@@ -196,4 +196,10 @@ class DBTableImpl extends DBDatasetImpl<DBTableMetadata> implements DBTable {
         }
         return properties;
     }
+
+    @Override
+    public String getPresentableText() {
+        return super.getPresentableText() + "(" + getComment() + ")";
+    }
+
 }

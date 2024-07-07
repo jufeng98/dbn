@@ -364,4 +364,10 @@ class DBColumnImpl extends DBObjectImpl<DBColumnMetadata> implements DBColumn {
         }
         return super.compareTo(o);
     }
+
+    @Override
+    public String getPresentableText() {
+        return super.getPresentableText() + "(" + getColumnComment() + ")";
+    }
+
 }
