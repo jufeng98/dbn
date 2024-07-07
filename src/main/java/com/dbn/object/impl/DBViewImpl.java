@@ -17,6 +17,8 @@ import com.dbn.object.common.DBObjectBundle;
 import com.dbn.object.common.list.DBObjectNavigationList;
 import com.dbn.object.common.property.DBObjectProperty;
 import com.dbn.object.lookup.DBObjectRef;
+import com.dbn.object.properties.PresentableProperty;
+import com.dbn.object.properties.SimplePresentableProperty;
 import com.dbn.object.type.DBObjectType;
 import com.dbn.object.filter.type.ObjectTypeFilterSettings;
 import org.jetbrains.annotations.NotNull;
@@ -30,6 +32,7 @@ import static com.dbn.common.Priority.HIGHEST;
 
 class DBViewImpl extends DBDatasetImpl<DBViewMetadata> implements DBView {
     private DBObjectRef<DBType> type;
+    private String viewComment;
     DBViewImpl(DBSchema schema, DBViewMetadata metadata) throws SQLException {
         super(schema, metadata);
     }
@@ -38,6 +41,7 @@ class DBViewImpl extends DBDatasetImpl<DBViewMetadata> implements DBView {
     protected String initObject(ConnectionHandler connection, DBObject parentObject, DBViewMetadata metadata) throws SQLException {
         String name = metadata.getViewName();
         set(DBObjectProperty.SYSTEM_OBJECT, metadata.isSystemView());
+        viewComment = metadata.getViewComment();
         String typeOwner = metadata.getViewTypeOwner();
         String typeName = metadata.getViewType();
         if (typeOwner != null && typeName != null) {
@@ -52,6 +56,11 @@ class DBViewImpl extends DBDatasetImpl<DBViewMetadata> implements DBView {
     @Override
     public DBObjectType getObjectType() {
         return DBObjectType.VIEW;
+    }
+
+    @Override
+    public @NotNull String getViewComment() {
+        return viewComment;
     }
 
     @Override
@@ -130,4 +139,15 @@ class DBViewImpl extends DBDatasetImpl<DBViewMetadata> implements DBView {
     public DBLanguage getCodeLanguage(DBContentType contentType) {
         return SQLLanguage.INSTANCE;
     }
+
+
+    @Override
+    public List<PresentableProperty> getPresentableProperties() {
+        List<PresentableProperty> properties = super.getPresentableProperties();
+
+        properties.add(0, new SimplePresentableProperty("Comment", getViewComment()));
+
+        return properties;
+    }
+
 }

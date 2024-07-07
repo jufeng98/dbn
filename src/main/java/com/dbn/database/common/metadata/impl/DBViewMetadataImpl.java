@@ -16,6 +16,11 @@ public class DBViewMetadataImpl extends DBObjectMetadataBase implements DBViewMe
         return getString("VIEW_NAME");
     }
 
+    @Override
+    public String getViewComment() throws SQLException {
+        return getString("VIEW_COMMENT");
+    }
+
     public String getViewType() throws SQLException {
         return getString("VIEW_TYPE");
     }

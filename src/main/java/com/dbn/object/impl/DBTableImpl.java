@@ -7,7 +7,6 @@ import com.dbn.connection.ConnectionHandler;
 import com.dbn.database.common.metadata.def.DBTableMetadata;
 import com.dbn.editor.DBContentType;
 import com.dbn.object.*;
-import com.dbn.object.*;
 import com.dbn.object.common.DBObject;
 import com.dbn.object.common.list.DBObjectListContainer;
 import com.dbn.object.common.list.DBObjectNavigationList;
@@ -41,9 +40,7 @@ class DBTableImpl extends DBDatasetImpl<DBTableMetadata> implements DBTable {
     protected String initObject(ConnectionHandler connection, DBObject parentObject, DBTableMetadata metadata) throws SQLException {
         String name = metadata.getTableName();
         set(TEMPORARY, metadata.isTemporary());
-
         tableComment = metadata.getTableComment();
-
         return name;
     }
 
