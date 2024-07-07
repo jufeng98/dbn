@@ -367,7 +367,7 @@ class DBColumnImpl extends DBObjectImpl<DBColumnMetadata> implements DBColumn {
 
     @Override
     public String getPresentableText() {
-        return super.getPresentableText() + "(" + getColumnComment() + ")";
+        return super.getPresentableText() + "(" + getColumnComment() + ")" + " " + dataType.getQualifiedName();
     }
 
 }
