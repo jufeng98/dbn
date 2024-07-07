@@ -6,7 +6,6 @@ import java.util.List;
 
 public interface DBTable extends DBDataset {
     boolean isTemporary();
-    String getTableComment();
     @Override
     @Nullable
     List<DBIndex> getIndexes();

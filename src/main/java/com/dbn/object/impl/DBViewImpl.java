@@ -59,7 +59,7 @@ class DBViewImpl extends DBDatasetImpl<DBViewMetadata> implements DBView {
     }
 
     @Override
-    public @NotNull String getViewComment() {
+    public @NotNull String getComment() {
         return viewComment;
     }
 
@@ -145,7 +145,7 @@ class DBViewImpl extends DBDatasetImpl<DBViewMetadata> implements DBView {
     public List<PresentableProperty> getPresentableProperties() {
         List<PresentableProperty> properties = super.getPresentableProperties();
 
-        properties.add(0, new SimplePresentableProperty("Comment", getViewComment()));
+        properties.add(0, new SimplePresentableProperty("Comment", getComment()));
 
         return properties;
     }

@@ -75,7 +75,7 @@ class DBTableImpl extends DBDatasetImpl<DBTableMetadata> implements DBTable {
     }
 
     @Override
-    public String getTableComment() {
+    public @NotNull String getComment() {
         return tableComment;
     }
 
@@ -189,7 +189,7 @@ class DBTableImpl extends DBDatasetImpl<DBTableMetadata> implements DBTable {
     public List<PresentableProperty> getPresentableProperties() {
         List<PresentableProperty> properties = super.getPresentableProperties();
 
-        properties.add(0, new SimplePresentableProperty("Comment", getTableComment()));
+        properties.add(0, new SimplePresentableProperty("Comment", getComment()));
 
         if (isTemporary()) {
             properties.add(0, new SimplePresentableProperty("Attributes", "temporary"));

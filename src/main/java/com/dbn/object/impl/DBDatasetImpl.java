@@ -96,7 +96,7 @@ abstract class DBDatasetImpl<M extends DBObjectMetadata> extends DBSchemaObjectI
 
     @Override
     public void buildToolTip(HtmlToolTipBuilder ttb) {
-        ttb.append(true, getObjectType().getName(), true);
+        ttb.append(true, getObjectType().getName() + "(" + getComment() + ")", true);
         ttb.createEmptyRow();
         super.buildToolTip(ttb);
     }

@@ -111,7 +111,7 @@ class DBColumnImpl extends DBObjectImpl<DBColumnMetadata> implements DBColumn {
 
     @Override
     public void buildToolTip(HtmlToolTipBuilder ttb) {
-        ttb.append(true, getObjectType().getName(), true);
+        ttb.append(true, getObjectType().getName() + "(" + getColumnComment() + ")", true);
         ttb.append(false, " - ", true);
         ttb.append(false, dataType.getQualifiedName(), true);
 
