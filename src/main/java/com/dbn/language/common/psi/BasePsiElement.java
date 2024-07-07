@@ -239,9 +239,9 @@ public abstract class BasePsiElement<T extends ElementType> extends ASTWrapperPs
         //return elementType.is(ElementTypeAttribute.SCOPE_DEMARCATION);
         return hasErrors() ?
                 "[INVALID] " + elementType.getName() :
-                elementType.getName() +
+                getClass().getSimpleName() + "(" + elementType.getName() + ":" + getNode().getElementType() + ")" +
                         (elementType.isScopeDemarcation() ? " SCOPE_DEMARCATION" : "") +
-                        (elementType.isScopeIsolation() ? " SCOPE_ISOLATION" : "");
+                        (elementType.isScopeIsolation() ? " SCOPE_ISOLATION" : "") + ":" + getText();
     }
 
     @Override
