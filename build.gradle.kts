@@ -87,29 +87,36 @@ intellij {
     intellij.updateSinceUntilBuild.set(false)
 }
 
-tasks.register<Zip>("packageHelpJar") {
+tasks.register<Jar>("packageHelpJar") {
     archiveFileName.set("Help.jar")
-    destinationDirectory.set(layout.buildDirectory.dir("dist"))
+    destinationDirectory.set(layout.buildDirectory.dir("distributions"))
 
     from("src/main/resources/help") {
         include("**/*.*")
     }
 
-    from(tasks.buildPlugin)
+    manifest {
+        attributes(
+            "Manifest-Version" to "1.0",
+            "Gradle-Version" to "7.6"
+        )
+    }
+
+    dependsOn(tasks.buildPlugin)
 }
 
 tasks.register<Zip>("packageDistribution") {
     archiveFileName.set("DBN-DISTRIBUTION.zip")
-    destinationDirectory.set(layout.buildDirectory.dir("dist"))
+    destinationDirectory.set(layout.buildDirectory.dir("distributions"))
 
-    from("lib/ext/") {
+    from("lib") {
         include("**/*.jar")
-        into("DBNavigator/lib/ext")
+        into("DBNavigator/lib")
     }
 
-    from(layout.buildDirectory.dir("libs")) {
+    from(layout.buildDirectory.dir("distributions")) {
         include("Help.jar")
-        into("DBNavigator")
+        into("DBNavigator/help")
     }
 
     from(layout.buildDirectory.dir("libs")) {
@@ -117,8 +124,7 @@ tasks.register<Zip>("packageDistribution") {
         into("DBNavigator/lib")
     }
 
-    from(tasks.buildPlugin)
-
+    dependsOn(tasks["packageHelpJar"])
 }
 
 tasks {
