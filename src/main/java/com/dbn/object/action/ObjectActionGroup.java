@@ -9,6 +9,7 @@ import com.dbn.execution.method.action.MethodRunAction;
 import com.dbn.execution.method.action.ProgramMethodDebugAction;
 import com.dbn.execution.method.action.ProgramMethodRunAction;
 import com.dbn.generator.action.GenerateStatementActionGroup;
+import com.dbn.generator.action.OtherActionGroup;
 import com.dbn.object.*;
 import com.dbn.object.common.DBObject;
 import com.dbn.object.common.DBSchemaObject;
@@ -56,7 +57,8 @@ public class ObjectActionGroup extends DefaultActionGroup implements DumbAware {
 
             if (object.is(SCHEMA_OBJECT)) {
                 if (object.getObjectType() != DBObjectType.CONSTRAINT || DatabaseFeature.CONSTRAINT_MANIPULATION.isSupported(object)) {
-                    add(new ObjectDropAction((DBSchemaObject) object));
+                    OtherActionGroup otherActionGroup = new OtherActionGroup((DBSchemaObject) object);
+                    add(otherActionGroup);
                 }
 
                 //add(new TestAction(object));
