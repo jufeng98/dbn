@@ -117,6 +117,8 @@ public interface DatabaseMetadataInterface extends DatabaseInterface{
      */
     ResultSet loadTables(String ownerName, DBNConnection connection) throws SQLException;
 
+    ResultSet showCreateTable(String ownerName, DBNConnection connection) throws SQLException;
+
     /**
      * Loads the views of the given owner<br>
      * Column names of the returned ResultSet

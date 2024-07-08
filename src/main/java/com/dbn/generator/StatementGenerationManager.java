@@ -31,4 +31,9 @@ public class StatementGenerationManager extends ProjectComponentBase {
         InsertStatementGenerator generator = new InsertStatementGenerator(table);
         return generator.generateStatement(getProject());
     }
+
+    public StatementGeneratorResult generateCreateTable(DBTable table) {
+        CreateTableStatementGenerator generator = new CreateTableStatementGenerator(table);
+        return generator.generateStatement(getProject());
+    }
 }

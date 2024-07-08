@@ -24,6 +24,7 @@ public class GenerateStatementActionGroup extends DefaultActionGroup {
         if (object instanceof DBTable) {
             DBTable table = (DBTable) object;
             add(new GenerateInsertStatementAction(table));
+            add(new GenerateCreateTableStatementAction(table));
         }
 
         if (object instanceof DBSchemaObject &&

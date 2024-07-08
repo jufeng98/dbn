@@ -701,6 +701,10 @@
         </statement>
     </statement-execution-processor>
 
-
+    <statement-execution-processor id="show-create-table" is-query="true" is-prepared-statement="false">
+        <statement>
+            show create table {0}
+        </statement>
+    </statement-execution-processor>
 
 </data-dictionary>
