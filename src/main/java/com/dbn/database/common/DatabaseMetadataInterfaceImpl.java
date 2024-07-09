@@ -93,11 +93,6 @@ public abstract class DatabaseMetadataInterfaceImpl extends DatabaseInterfaceBas
     }
 
     @Override
-    public ResultSet showCreateTable(String ownerName, DBNConnection connection) throws SQLException {
-        return executeQuery(connection, "show-create-table", ownerName);
-    }
-
-    @Override
     public ResultSet loadViews(String ownerName, DBNConnection connection) throws SQLException {
         return executeQuery(connection, "views", ownerName);
     }

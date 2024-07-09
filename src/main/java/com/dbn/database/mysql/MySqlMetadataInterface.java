@@ -51,6 +51,11 @@ public class MySqlMetadataInterface extends DatabaseMetadataInterfaceImpl {
     }
 
     @Override
+    public ResultSet showCreateTable(String schemeName, String tableName, DBNConnection connection) throws SQLException {
+        return executeQuery(connection, "show-create-table", schemeName, tableName);
+    }
+
+    @Override
     public void terminateSession(Object sessionId, Object serialNumber, boolean immediate, DBNConnection connection) throws SQLException {
         executeStatement(connection, "kill-session", sessionId);
     }

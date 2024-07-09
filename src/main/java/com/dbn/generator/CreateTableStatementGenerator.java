@@ -38,11 +38,14 @@ public class CreateTableStatementGenerator extends StatementGenerator {
         ConnectionContext connectionContext = connectionHandler.createConnectionContext();
         ConnectionContext.surround(connectionContext, () ->
                 PooledConnection.run(connectionHandler.createConnectionContext(), conn -> {
-                    ResultSet resultSet = metadataInterface.showCreateTable(table.getName(), conn);
-                    resultSet.next();
-                    String s = resultSet.getString("Create Table");
-                    result.setStatement(s);
-                    resultSet.close();
+                    ResultSet resultSet = metadataInterface.showCreateTable(table.getSchema().getName(), table.getName(), conn);
+                    try {
+                        resultSet.next();
+                        String sql = resultSet.getString("Create Table");
+                        result.setStatement(sql);
+                    }finally {
+                        resultSet.close();
+                    }
                 }));
 
         return result;

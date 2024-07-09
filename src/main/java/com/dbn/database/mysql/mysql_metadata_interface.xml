@@ -703,7 +703,7 @@
 
     <statement-execution-processor id="show-create-table" is-query="true" is-prepared-statement="false">
         <statement>
-            show create table {0}
+            show create table {0}.{1}
         </statement>
     </statement-execution-processor>
 

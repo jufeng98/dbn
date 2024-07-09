@@ -117,7 +117,9 @@ public interface DatabaseMetadataInterface extends DatabaseInterface{
      */
     ResultSet loadTables(String ownerName, DBNConnection connection) throws SQLException;
 
-    ResultSet showCreateTable(String ownerName, DBNConnection connection) throws SQLException;
+    default ResultSet showCreateTable(String schemeName, String tableName, DBNConnection connection) throws SQLException {
+        throw new UnsupportedOperationException("not implemented");
+    }
 
     /**
      * Loads the views of the given owner<br>
