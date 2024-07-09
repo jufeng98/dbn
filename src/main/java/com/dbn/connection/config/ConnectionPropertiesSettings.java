@@ -21,7 +21,7 @@ import static com.dbn.common.options.setting.Settings.*;
 @EqualsAndHashCode(callSuper = false)
 public class ConnectionPropertiesSettings extends BasicProjectConfiguration<ConnectionSettings, ConnectionPropertiesSettingsForm> {
     private Map<String, String> properties = new HashMap<>();
-    private boolean enableAutoCommit = false;
+    private boolean enableAutoCommit = true;
 
     ConnectionPropertiesSettings(ConnectionSettings parent) {
         super(parent);

@@ -51,7 +51,7 @@ public class ObjectsLookupSettings extends BasicProjectConfiguration<NavigationS
         new ObjectTypeEntry(DBObjectType.DBLINK, true)
     );
 
-    private final BooleanSetting forceDatabaseLoad = new BooleanSetting("force-database-load", false);
+    private final BooleanSetting forceDatabaseLoad = new BooleanSetting("force-database-load", true);
     private final BooleanSetting promptConnectionSelection = new BooleanSetting("prompt-connection-selection", true);
     private final BooleanSetting promptSchemaSelection = new BooleanSetting("prompt-schema-selection", true);
 
