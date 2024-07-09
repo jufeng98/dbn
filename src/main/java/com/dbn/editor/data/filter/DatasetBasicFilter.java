@@ -117,6 +117,10 @@ public class DatasetBasicFilter extends DatasetFilterImpl {
         }
 
         DatasetFilterUtil.addOrderByClause(dataset, buffer, sortingState);
+
+        String limit = DatasetFilterUtil.createLimit(dataset, pageNum, pageSize);
+        buffer.append(limit);
+
         return buffer.toString();
     }
 

@@ -372,10 +372,12 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
 
         PsiElement sqlElement = SqlElementFactory.createSqlElement(project.ensure(), statementText);
         String text = sqlElement.getText().toLowerCase();
-        boolean noLimit = !text.endsWith("limit");
-        if (noLimit) {
-            String limit = DatasetFilterUtil.createLimit(executionInput, 0, 100);
-            statementText += limit;
+        if (text.startsWith("select")) {
+            boolean noLimit = !text.endsWith("limit");
+            if (noLimit) {
+                String limit = DatasetFilterUtil.createLimit(executionInput, 0, 100);
+                statementText += limit;
+            }
         }
 
         StatementExecutionVariablesBundle executionVariables = executionInput.getExecutionVariables();

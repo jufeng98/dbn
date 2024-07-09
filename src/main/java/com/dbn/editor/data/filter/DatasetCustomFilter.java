@@ -62,6 +62,10 @@ public class DatasetCustomFilter extends DatasetFilterImpl {
         buffer.append(" where ");
         buffer.append(condition);
         DatasetFilterUtil.addOrderByClause(dataset, buffer, sortingState);
+
+        String limit = DatasetFilterUtil.createLimit(dataset, pageNum, pageSize);
+        buffer.append(limit);
+
         return buffer.toString();
     }
 
