@@ -17,6 +17,7 @@ public interface DBColumn extends DBOrderedObject {
     boolean isAudit();
     DBDataset getDataset();
     String getColumnComment();
+    String getColumnDefault();
     @Nullable
     DBColumn getForeignKeyColumn();
     List<DBColumn> getReferencingColumns();  // foreign key columns referencing to this

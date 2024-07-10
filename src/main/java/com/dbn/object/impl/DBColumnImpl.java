@@ -36,6 +36,7 @@ import static com.dbn.object.type.DBObjectType.*;
 class DBColumnImpl extends DBObjectImpl<DBColumnMetadata> implements DBColumn {
     private DBDataType dataType;
     private String columnComment;
+    private String columnDefault;
     private short position;
 
     DBColumnImpl(@NotNull DBDataset dataset, DBColumnMetadata metadata) throws SQLException {
@@ -55,6 +56,7 @@ class DBColumnImpl extends DBObjectImpl<DBColumnMetadata> implements DBColumn {
 
         dataType = DBDataType.get(connection, metadata.getDataType());
         columnComment = metadata.getColumnComment();
+        columnDefault = metadata.getColumnDefault();
         return name;
     }
 
@@ -96,6 +98,11 @@ class DBColumnImpl extends DBObjectImpl<DBColumnMetadata> implements DBColumn {
     }
 
     @Override
+    public String getColumnDefault() {
+        return columnDefault;
+    }
+
+    @Override
     public short getPosition() {
         return position;
     }
@@ -113,7 +120,7 @@ class DBColumnImpl extends DBObjectImpl<DBColumnMetadata> implements DBColumn {
     public void buildToolTip(HtmlToolTipBuilder ttb) {
         ttb.append(true, getObjectType().getName() + "(" + getColumnComment() + ")", true);
         ttb.append(false, " - ", true);
-        ttb.append(false, dataType.getQualifiedName(), true);
+        ttb.append(false, getColumnDefault() + " " + dataType.getQualifiedName(), true);
 
         if (isPrimaryKey()) ttb.append(false,  "&nbsp;&nbsp;PK", true);
         if (isForeignKey()) ttb.append(false, isPrimaryKey() ? ",&nbsp;FK" : "&nbsp;&nbsp;FK", true);
@@ -314,6 +321,7 @@ class DBColumnImpl extends DBObjectImpl<DBColumnMetadata> implements DBColumn {
     public List<PresentableProperty> getPresentableProperties() {
         List<PresentableProperty> properties = super.getPresentableProperties();
 
+        properties.add(0, new SimplePresentableProperty("Default", getColumnDefault()));
         properties.add(0, new SimplePresentableProperty("Comment", getColumnComment()));
 
         if (isForeignKey()) {
@@ -367,7 +375,7 @@ class DBColumnImpl extends DBObjectImpl<DBColumnMetadata> implements DBColumn {
 
     @Override
     public String getPresentableText() {
-        return super.getPresentableText() + "(" + getColumnComment() + ")" + " " + dataType.getQualifiedName();
+        return super.getPresentableText() + "(" + getColumnComment() + ") " + getColumnDefault() + " " + dataType.getQualifiedName();
     }
 
 }

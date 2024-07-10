@@ -10,6 +10,8 @@ public interface DBColumnMetadata extends DBObjectMetadata {
 
     String getColumnComment() throws SQLException;
 
+    String getColumnDefault() throws SQLException;
+
     String getDatasetName() throws SQLException;
 
     boolean isPrimaryKey() throws SQLException;
