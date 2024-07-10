@@ -18,6 +18,7 @@ import com.dbn.object.properties.DBObjectPresentableProperty;
 import com.dbn.object.properties.PresentableProperty;
 import com.dbn.object.properties.SimplePresentableProperty;
 import com.dbn.object.type.DBObjectType;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,8 +56,8 @@ class DBColumnImpl extends DBObjectImpl<DBColumnMetadata> implements DBColumn {
         position = metadata.getPosition();
 
         dataType = DBDataType.get(connection, metadata.getDataType());
-        columnComment = metadata.getColumnComment();
-        columnDefault = metadata.getColumnDefault();
+        columnComment = StringUtils.defaultString(metadata.getColumnComment());
+        columnDefault = StringUtils.defaultString(metadata.getColumnDefault());
         return name;
     }
 
