@@ -1,14 +1,19 @@
 package com.dbn.object.common.list.action;
 
-import com.dbn.common.icon.Icons;
+import com.dbn.browser.model.BrowserTreeNode;
+import com.dbn.cache.MetadataCacheService;
 import com.dbn.common.action.ProjectAction;
+import com.dbn.common.icon.Icons;
 import com.dbn.common.thread.Progress;
 import com.dbn.connection.ConnectionAction;
+import com.dbn.connection.ConnectionHandler;
 import com.dbn.object.common.list.DBObjectList;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
+
+import java.sql.SQLException;
 
 public class ReloadObjectsAction extends ProjectAction {
 
@@ -35,7 +40,21 @@ public class ReloadObjectsAction extends ProjectAction {
                         "Loading objects",
                         "Reloading " + objectList.getContentDescription(),
                         progress -> {
-                            objectList.getConnection().getMetaDataCache().reset();
+                            ConnectionHandler connectionHandler = objectList.getConnection();
+
+                            MetadataCacheService cacheService = MetadataCacheService.getService(project);
+                            try {
+                                String schemaName = null;
+                                BrowserTreeNode parent = objectList.getParent();
+                                if (parent != null) {
+                                    schemaName = parent.getSchemaName();
+                                }
+                                cacheService.clearCache(schemaName, project, connectionHandler.getMainConnection());
+                            } catch (SQLException ex) {
+                                throw new RuntimeException(ex);
+                            }
+
+                            connectionHandler.getMetaDataCache().reset();
                             objectList.reload();
                         }));
     }

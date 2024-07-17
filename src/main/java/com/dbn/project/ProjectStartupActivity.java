@@ -3,6 +3,7 @@ package com.dbn.project;
 import com.dbn.common.compatibility.Compatibility;
 import com.dbn.connection.config.ConnectionBundleSettings;
 import com.dbn.debugger.ExecutionConfigManager;
+import com.dbn.object.impl.DBObjectLoaders;
 import com.dbn.plugin.PluginConflictManager;
 import com.dbn.plugin.PluginStatusManager;
 import com.dbn.vfs.DatabaseFileManager;
@@ -21,6 +22,7 @@ public class ProjectStartupActivity implements StartupActivity/*, ProjectActivit
         assesPluginConflict(project);
         removeRunConfigurations(project);
         reopenDatabaseEditors(project);
+        initMetadata();
     }
 
     private static void evaluatePluginStatus(Project project) {
@@ -41,6 +43,10 @@ public class ProjectStartupActivity implements StartupActivity/*, ProjectActivit
     private static void reopenDatabaseEditors(Project project) {
         DatabaseFileManager fileManager = DatabaseFileManager.getInstance(project);
         fileManager.reopenDatabaseEditors();
+    }
+
+    private void initMetadata() {
+        DBObjectLoaders.initLoaders();
     }
 
 /*

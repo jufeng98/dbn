@@ -1,10 +1,13 @@
 package com.dbn.object.action;
 
+import com.dbn.cache.MetadataCacheService;
 import com.dbn.common.action.BasicAction;
 import com.dbn.common.thread.Background;
 import com.dbn.connection.ConnectionAction;
+import com.dbn.connection.ConnectionHandler;
 import com.dbn.object.common.list.DBObjectList;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
 public class ObjectsReloadAction extends BasicAction {
@@ -26,8 +29,14 @@ public class ObjectsReloadAction extends BasicAction {
     }
 
     private void reloadObjectList() {
-        Background.run(objectList.getProject(), () -> {
-            objectList.getConnection().getMetaDataCache().reset();
+        Project project = objectList.getProject();
+        Background.run(project, () -> {
+            ConnectionHandler connectionHandler = objectList.getConnection();
+
+            MetadataCacheService cacheService = MetadataCacheService.getService(project);
+            cacheService.clearCache(objectList.getParentSchemaName(), project, connectionHandler.getMainConnection());
+
+            connectionHandler.getMetaDataCache().reset();
             objectList.reload();
         });
     }
