@@ -1,5 +1,7 @@
 package com.dbn.common.content.loader;
 
+import com.dbn.cache.CacheResultSet;
+import com.dbn.cache.MetadataCacheService;
 import com.dbn.common.Priority;
 import com.dbn.common.exception.ElementSkippedException;
 import com.dbn.common.exception.Exceptions;
@@ -28,6 +30,7 @@ import com.dbn.diagnostics.DiagnosticsManager;
 import com.dbn.diagnostics.data.DiagnosticBundle;
 import com.dbn.object.common.DBObject;
 import com.intellij.openapi.progress.ProcessCanceledException;
+import com.intellij.openapi.project.Project;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -75,7 +78,20 @@ public abstract class DynamicContentResultSetLoader<E extends DynamicContentElem
         return new DynamicContentResultSetLoader<E, M>(identifier, parentContentType, contentType, register, master) {
             @Override
             public ResultSet createResultSet(DynamicContent dynamicContent, DBNConnection connection) throws SQLException {
-                return resultSetFactory.create(dynamicContent, connection, dynamicContent.getMetadataInterface());
+                String schemaName = dynamicContent.getParentSchemaName();
+                Project project = dynamicContent.getProject();
+                MetadataCacheService cacheService = MetadataCacheService.getService(project);
+
+                CacheResultSet cacheResultSet = cacheService.loadCacheResultSet(schemaName, project, null, connection, identifier);
+                if (cacheResultSet != null) {
+                    return cacheResultSet;
+                }
+
+                ResultSet resultSet = resultSetFactory.create(dynamicContent, connection, dynamicContent.getMetadataInterface());
+
+                cacheService.saveResultSetToLocal(schemaName, project, resultSet, connection, identifier);
+
+                return resultSet;
             }
 
             @Override
