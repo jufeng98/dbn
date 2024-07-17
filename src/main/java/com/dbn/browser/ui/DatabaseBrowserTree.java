@@ -48,6 +48,7 @@ import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
+import java.awt.*;
 import java.awt.event.*;
 
 import static com.dbn.browser.options.BrowserDisplayMode.SIMPLE;
@@ -169,7 +170,12 @@ public final class DatabaseBrowserTree extends DBNTree implements Borderless {
                 Object target = treePath.getLastPathComponent();
                 if (target instanceof DBObject) {
                     DBObject object = (DBObject) target;
-                    IdeTooltip tooltip = new IdeTooltip(tree, tree.getMousePosition(), new JLabel("Cannot navigate to " + object.getQualifiedNameWithType() + ". "));
+                    Point mousePosition = tree.getMousePosition();
+                    if (mousePosition == null) {
+                        return;
+                    }
+
+                    IdeTooltip tooltip = new IdeTooltip(tree, mousePosition, new JLabel("Cannot navigate to " + object.getQualifiedNameWithType() + ". "));
                     tooltip.setTextBackground(Colors.getWarningHintColor());
                     IdeTooltipManager.getInstance().show(tooltip, true);
                 }
