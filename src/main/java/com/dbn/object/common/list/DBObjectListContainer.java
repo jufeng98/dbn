@@ -294,7 +294,9 @@ public final class DBObjectListContainer implements StatefulDisposable, Unlisted
 
     public void loadObjects(DBObjectType objectType) {
         DBObjectList<?> objectList = getObjectList(objectType);
-        if (objectList != null) objectList.getElements();
+        if (objectList != null) {
+            objectList.getElements();
+        }
     }
 
     /*****************************************************************

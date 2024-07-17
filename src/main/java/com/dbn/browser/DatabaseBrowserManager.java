@@ -332,41 +332,47 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
         List<ConnectionHandler> connections = connectionManager.getConnections();
         for (ConnectionHandler connection : connections) {
             ConnectionDetailSettings settings = connection.getSettings().getDetailSettings();
-            if (settings.isRestoreWorkspaceDeep()) {
-                Element connectionElement = new Element("connection");
+            if (!settings.isRestoreWorkspaceDeep()) {
+                continue;
+            }
 
-                boolean addConnectionElement = false;
-                DBObjectBundle objectBundle = connection.getObjectBundle();
-                DBObjectList<?> schemas = objectBundle.getObjectList(DBObjectType.SCHEMA);
-                if (schemas != null && schemas.isLoaded()) {
-                    for (DBSchema schema : objectBundle.getSchemas()) {
-                        List<DBObjectType> objectTypes = new ArrayList<>();
-                        schema.visitChildObjects(o -> {
-                            if (o.isLoaded() || o.isLoading()) {
-                                objectTypes.add(o.getObjectType());
-                            }
-                        }, true);
+            Element connectionElement = new Element("connection");
 
-                        if (!objectTypes.isEmpty()) {
-                            Element schemaElement = newElement(connectionElement, "schema");
-                            schemaElement.setAttribute("name", schema.getName());
-                            schemaElement.setAttribute("object-types", DBObjectType.toCsv(objectTypes));
-                            addConnectionElement = true;
-                        }
+            boolean addConnectionElement = false;
+            DBObjectBundle objectBundle = connection.getObjectBundle();
+            DBObjectList<?> schemas = objectBundle.getObjectList(DBObjectType.SCHEMA);
+            if (schemas == null || !schemas.isLoaded()) {
+                continue;
+            }
+
+            for (DBSchema schema : objectBundle.getSchemas()) {
+                List<DBObjectType> objectTypes = new ArrayList<>();
+                schema.visitChildObjects(o -> {
+                    if (o.isLoaded() || o.isLoading()) {
+                        objectTypes.add(o.getObjectType());
                     }
+                }, true);
 
-                    if (addConnectionElement) {
-                        connectionElement.setAttribute("connection-id", connection.getConnectionId().id());
-                        nodesElement.addContent(connectionElement);
-                    }
+                if (!objectTypes.isEmpty()) {
+                    Element schemaElement = newElement(connectionElement, "schema");
+                    schemaElement.setAttribute("name", schema.getName());
+                    schemaElement.setAttribute("object-types", DBObjectType.toCsv(objectTypes));
+                    addConnectionElement = true;
                 }
+            }
+
+            if (addConnectionElement) {
+                connectionElement.setAttribute("connection-id", connection.getConnectionId().id());
+                nodesElement.addContent(connectionElement);
             }
         }
     }
 
     private void initTouchedNodes(Element element) {
         Element nodesElement = element.getChild("loaded-nodes");
-        if (nodesElement == null) return;
+        if (nodesElement == null) {
+            return;
+        }
 
         Project project = getProject();
         List<Element> connectionElements = nodesElement.getChildren();
@@ -374,11 +380,14 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
         for (Element connectionElement : connectionElements) {
             ConnectionId connectionId = connectionIdAttribute(connectionElement, "connection-id");
             ConnectionHandler connection = ConnectionHandler.get(connectionId);
-            if (connection == null) continue;
+            if (connection == null) {
+                continue;
+            }
 
             ConnectionDetailSettings settings = connection.getSettings().getDetailSettings();
-            if (!settings.isRestoreWorkspaceDeep())
+            if (!settings.isRestoreWorkspaceDeep()) {
                 continue;
+            }
 
             DBObjectBundle objectBundle = connection.getObjectBundle();
             List<Element> schemaElements = connectionElement.getChildren();
@@ -386,7 +395,9 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
             for (Element schemaElement : schemaElements) {
                 String schemaName = stringAttribute(schemaElement, "name");
                 DBSchema schema = objectBundle.getSchema(schemaName);
-                if (schema == null) continue;
+                if (schema == null) {
+                    continue;
+                }
 
                 Background.run(project, () -> {
                     String objectTypesAttr = stringAttribute(schemaElement, "object-types");
@@ -394,7 +405,9 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
 
                     for (DBObjectType objectType : objectTypes) {
                         DBObjectListContainer childObjects = schema.getChildObjects();
-                        if (childObjects == null) continue;
+                        if (childObjects == null) {
+                            continue;
+                        }
 
                         childObjects.loadObjects(objectType);
                     }

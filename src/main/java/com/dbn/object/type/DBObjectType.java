@@ -454,12 +454,12 @@ public enum DBObjectType implements DynamicContentType<DBObjectType>, Presentabl
         try {
             return valueOf(name);
         } catch (IllegalArgumentException e) {
-            conditionallyLog(e);
             for (DBObjectType objectType: values()) {
                 if (objectType.matches(name)) {
                     return objectType;
                 }
             }
+            // conditionallyLog(e);
             System.out.println("ERROR - [UNKNOWN] undefined object type: " + name);
             return UNKNOWN;
         }
