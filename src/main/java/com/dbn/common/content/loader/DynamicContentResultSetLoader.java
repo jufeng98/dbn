@@ -80,6 +80,7 @@ public abstract class DynamicContentResultSetLoader<E extends DynamicContentElem
             public ResultSet createResultSet(DynamicContent dynamicContent, DBNConnection connection) throws SQLException {
                 String schemaName = dynamicContent.getParentSchemaName();
                 Project project = dynamicContent.getProject();
+                String connectionId = connection.getId().id();
                 MetadataCacheService cacheService = MetadataCacheService.getService(project);
 
                 CacheResultSet cacheResultSet = cacheService.loadCacheResultSet(schemaName, project, null, connection, identifier);
@@ -89,7 +90,7 @@ public abstract class DynamicContentResultSetLoader<E extends DynamicContentElem
 
                 ResultSet resultSet = resultSetFactory.create(dynamicContent, connection, dynamicContent.getMetadataInterface());
 
-                cacheService.saveResultSetToLocal(schemaName, project, resultSet, connection, identifier);
+                cacheService.saveResultSetToLocal(schemaName, project, resultSet, connectionId, identifier);
 
                 return resultSet;
             }
