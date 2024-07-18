@@ -132,6 +132,7 @@ tasks {
     withType<JavaCompile> {
         sourceCompatibility = "11"
         targetCompatibility = "11"
+        exclude("*.kt")
     }
 
 
@@ -155,6 +156,11 @@ tasks {
             include("**/*.jar")
             into(layout.buildDirectory.dir("idea-sandbox/plugins/${project.name}/lib/ext"))
         }
+    }
+
+    jar {
+        // kt文件不知道被哪个配置影响导致被编译了两次,所以这里暂时配置下
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
 
     patchPluginXml {
