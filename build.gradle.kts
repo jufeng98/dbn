@@ -87,12 +87,12 @@ intellij {
     intellij.updateSinceUntilBuild.set(false)
 }
 
-tasks.register<Jar>("packageHelpJar") {
-    archiveFileName.set("Help.jar")
-    destinationDirectory.set(layout.buildDirectory.dir("distributions"))
+tasks.register<Jar>("packageSource") {
+    archiveFileName.set("instrumented-${project.name}-${project.version}-sources.jar")
+    destinationDirectory.set(layout.buildDirectory.dir("libs"))
 
-    from("src/main/resources/help") {
-        include("**/*.*")
+    from("src/main/java") {
+        include("**/*.java")
     }
 
     manifest {
@@ -101,30 +101,22 @@ tasks.register<Jar>("packageHelpJar") {
             "Gradle-Version" to "7.6"
         )
     }
-
-    dependsOn(tasks.buildPlugin)
 }
 
-tasks.register<Zip>("packageDistribution") {
-    archiveFileName.set("DBN-DISTRIBUTION.zip")
-    destinationDirectory.set(layout.buildDirectory.dir("distributions"))
-
-    from("lib") {
-        include("**/*.jar")
-        into("DBNavigator/lib")
+tasks.register<DefaultTask>("unzipDBN") {
+    copy {
+        val zipFile = File("$buildDir/distributions/DBN-MASTER-${project.version}.zip")
+        if (zipFile.exists()) {
+            from(zipTree("$buildDir/distributions/DBN-MASTER-${project.version}.zip"))
+            into("$buildDir/distributions")
+        }
     }
 
-    from(layout.buildDirectory.dir("distributions")) {
-        include("Help.jar")
-        into("DBNavigator/help")
+    copy {
+        from("$buildDir/libs")
+        include("instrumented-DBN-MASTER-${project.version}-sources.jar")
+        into("$buildDir/distributions/DBN-MASTER/lib")
     }
-
-    from(layout.buildDirectory.dir("libs")) {
-        include("instrumented-${project.name}-${project.version}.jar")
-        into("DBNavigator/lib")
-    }
-
-    dependsOn(tasks["packageHelpJar"])
 }
 
 tasks {
@@ -132,7 +124,6 @@ tasks {
     withType<JavaCompile> {
         sourceCompatibility = "11"
         targetCompatibility = "11"
-        exclude("*.kt")
     }
 
 
@@ -148,19 +139,13 @@ tasks {
         }
     }
 
-// 单独运行 compileJava 任务能复制驱动到/lib/ext下,但是运行 runIde 任务就不行,不知为何?
-// 所以新增了上面的 prepareSandbox 任务
-    withType<JavaCompile> {
-        copy {
-            from("lib/ext")
-            include("**/*.jar")
-            into(layout.buildDirectory.dir("idea-sandbox/plugins/${project.name}/lib/ext"))
-        }
-    }
-
     jar {
         // kt文件不知道被哪个配置影响导致被编译了两次,所以这里暂时配置下
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
+
+    buildPlugin {
+        dependsOn("packageSource", "unzipDBN")
     }
 
     patchPluginXml {
