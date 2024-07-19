@@ -894,6 +894,5 @@
         <fileDocumentManagerListener implementation="com.dbn.connection.console.DatabaseConsoleFileInitializer"/>
 
     </extensions>
-    <helpset file="help.jar" path="/Help.hs"/>
 
 </idea-plugin>
