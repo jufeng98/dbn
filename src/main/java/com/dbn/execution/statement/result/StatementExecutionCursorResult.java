@@ -12,6 +12,7 @@ import com.dbn.connection.jdbc.DBNResultSet;
 import com.dbn.connection.jdbc.DBNStatement;
 import com.dbn.data.grid.ui.table.resultSet.ResultSetTable;
 import com.dbn.data.model.resultSet.ResultSetDataModel;
+import com.dbn.editor.data.filter.DatasetFilterUtil;
 import com.dbn.execution.ExecutionStatus;
 import com.dbn.execution.common.options.ExecutionEngineSettings;
 import com.dbn.execution.statement.options.StatementExecutionSettings;
@@ -25,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.sql.SQLException;
+import java.util.Objects;
 
 import static com.dbn.common.dispose.Failsafe.nd;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
@@ -77,6 +79,11 @@ public class StatementExecutionCursorResult extends StatementExecutionBasicResul
                             try {
                                 resultForm.highlightLoading(true);
                                 StatementExecutionInput executionInput = getExecutionInput();
+
+                                String statementText = executionInput.getExecutableStatementText();
+                                statementText = DatasetFilterUtil.appendLimitIfLack(statementText, 0, 100, getProject(),
+                                        Objects.requireNonNull(executionInput.getConnection()).getDatabaseType());
+
                                 try {
                                     ConnectionHandler connection = getConnection();
                                     SchemaId currentSchema = getDatabaseSchema();
@@ -84,7 +91,7 @@ public class StatementExecutionCursorResult extends StatementExecutionBasicResul
                                     DBNStatement<?> statement = conn.createStatement();
                                     statement.setQueryTimeout(executionInput.getExecutionTimeout());
                                     statement.setFetchSize(executionInput.getResultSetFetchBlockSize());
-                                    statement.execute(executionInput.getExecutableStatementText());
+                                    statement.execute(statementText);
                                     DBNResultSet resultSet = statement.getResultSet();
                                     if (resultSet != null) {
                                         loadResultSet(resultSet);

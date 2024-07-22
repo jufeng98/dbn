@@ -62,13 +62,11 @@ public class DatasetEditorModel
     private final WeakRef<DatasetEditor> datasetEditor;
     private final DBObjectRef<DBDataset> dataset;
     private final DataEditorSettings settings;
-    private Integer pageNum;
-
     private CancellableDatabaseCall<Object> loaderCall;
     private ResultSetAdapter resultSetAdapter;
 
     private final List<DatasetEditorModelRow> changedRows = new ArrayList<>();
-    private final Latent<List<DBColumn>> uniqueKeyColumns = Latent.basic(() -> loadUniqueKeyColumns());
+    private final Latent<List<DBColumn>> uniqueKeyColumns = Latent.basic(this::loadUniqueKeyColumns);
 
     public DatasetEditorModel(DatasetEditor datasetEditor) throws SQLException {
         super(datasetEditor.getConnection());
@@ -77,7 +75,6 @@ public class DatasetEditorModel
         DBDataset dataset = datasetEditor.getDataset();
         this.dataset = DBObjectRef.of(dataset);
         this.settings =  DataEditorSettings.getInstance(project);
-        pageNum = 0;
         setHeader(new DatasetEditorModelHeader(datasetEditor, null));
         this.isResultSetUpdatable = DatabaseFeature.UPDATABLE_RESULT_SETS.isSupported(getConnection());
 
@@ -95,7 +92,7 @@ public class DatasetEditorModel
         ConnectionHandler connection = getConnection();
         DBNConnection conn = connection.getMainConnection();
 
-        loaderCall = new CancellableDatabaseCall<Object>(connection, conn, timeout, TimeUnit.SECONDS) {
+        loaderCall = new CancellableDatabaseCall<>(connection, conn, timeout, TimeUnit.SECONDS) {
             @Override
             public Object execute() throws Exception {
                 DBNResultSet newResultSet = loadResultSet(useCurrentFilter, statementRef);

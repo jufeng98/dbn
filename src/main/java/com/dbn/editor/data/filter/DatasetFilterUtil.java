@@ -1,5 +1,6 @@
 package com.dbn.editor.data.filter;
 
+import com.dbn.connection.DatabaseType;
 import com.dbn.data.grid.options.DataGridSettings;
 import com.dbn.data.sorting.SortDirection;
 import com.dbn.data.sorting.SortingInstruction;
@@ -7,9 +8,12 @@ import com.dbn.data.sorting.SortingState;
 import com.dbn.database.DatabaseCompatibility;
 import com.dbn.database.JdbcProperty;
 import com.dbn.database.interfaces.DatabaseCompatibilityInterface;
-import com.dbn.execution.statement.StatementExecutionInput;
+import com.dbn.language.sql.SqlElementFactory;
 import com.dbn.object.DBColumn;
 import com.dbn.object.DBDataset;
+import com.intellij.openapi.application.ReadAction;
+import com.intellij.openapi.project.Project;
+import com.intellij.psi.PsiElement;
 
 import java.util.List;
 
@@ -78,14 +82,35 @@ public class DatasetFilterUtil {
         }
     }
 
-    public static String createLimit(DBDataset dataset, Integer pageNum, Integer pageSize) {
-        // TODO yudong 先只处理MySQL的分页参数
-        int start = pageNum * pageSize;
-        return " limit " + start + "," + pageSize;
+    public static String appendLimitIfLack(String sql, int pageNum, int pageSize, Project project, DatabaseType databaseType) {
+        String tmpSql = ReadAction.compute(() -> {
+            PsiElement sqlElement = SqlElementFactory.createSqlElement(project, sql);
+            return sqlElement.getText().toLowerCase();
+        });
+
+        if (databaseType == DatabaseType.MYSQL) {
+            if (tmpSql.startsWith("select")) {
+                boolean noLimit = !tmpSql.endsWith("limit");
+                if (noLimit) {
+                    String limit = DatasetFilterUtil.createMySqlLimit(pageNum, pageSize);
+                    return sql + limit;
+                }
+            }
+        }
+
+        return sql;
     }
 
-    public static String createLimit(StatementExecutionInput executionInput, int pageNum, int pageSize) {
-        // TODO yudong 先只处理MySQL的分页参数
+    public static String createLimit(DBDataset dataset, Integer pageNum, Integer pageSize) {
+        if (dataset.getConnection().getDatabaseType() == DatabaseType.MYSQL) {
+            return createMySqlLimit(pageNum, pageSize);
+        }
+
+        return null;
+    }
+
+    // TODO yudong 先只处理MySQL的分页参数
+    private static String createMySqlLimit(int pageNum, int pageSize) {
         int start = pageNum * pageSize;
         return " limit " + start + "," + pageSize;
     }

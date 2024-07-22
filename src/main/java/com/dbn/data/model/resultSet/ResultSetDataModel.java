@@ -38,6 +38,7 @@ public class ResultSetDataModel<
     private boolean resultSetExhausted = false;
     private long executeDuration = -1; // execute duration, -1 unknown
     private long fetchDuration = -1;   // fetch duration, -1 unknown
+    protected int pageNum = 0;
 
     public ResultSetDataModel(@NotNull ConnectionHandler connection) {
         super(connection.getProject());

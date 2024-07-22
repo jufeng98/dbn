@@ -58,6 +58,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static com.dbn.common.dispose.Checks.isNotValid;
@@ -290,6 +291,9 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
             SQLException executionException = null;
 
             if (statementText != null) {
+                statementText = DatasetFilterUtil.appendLimitIfLack(statementText, 0, 100, project.ensure(),
+                        Objects.requireNonNull(executionInput.getConnection()).getDatabaseType());
+
                 try {
                     assertNotCancelled();
                     initConnection(context, connection);
@@ -369,16 +373,6 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
     private String initStatementText() {
         ConnectionHandler connection = getTargetConnection();
         String statementText = executionInput.getExecutableStatementText();
-
-        PsiElement sqlElement = SqlElementFactory.createSqlElement(project.ensure(), statementText);
-        String text = sqlElement.getText().toLowerCase();
-        if (text.startsWith("select")) {
-            boolean noLimit = !text.endsWith("limit");
-            if (noLimit) {
-                String limit = DatasetFilterUtil.createLimit(executionInput, 0, 100);
-                statementText += limit;
-            }
-        }
 
         StatementExecutionVariablesBundle executionVariables = executionInput.getExecutionVariables();
         if (executionVariables == null) return statementText;
