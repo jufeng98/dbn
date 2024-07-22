@@ -77,7 +77,7 @@ public final class MetadataCacheService {
         }
 
         schemaMap.put(schemaName, tableMap);
-        log.warn("初始化schemaMap成功,schemaName:{},表数量:{},列数量:{}", schemaName, schemaMap.size(), columnSize);
+        log.warn("初始化schemaMap成功,schemaName:{},表数量:{},列数量:{}", schemaName, tableMap.size(), columnSize);
     }
 
     private CacheDbTable createCacheDbTable(ObjectNode objectNode) {
