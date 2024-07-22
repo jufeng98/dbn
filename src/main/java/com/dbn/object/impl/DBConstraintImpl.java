@@ -31,6 +31,7 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.dbn.object.common.property.DBObjectProperty.DISABLEABLE;
 import static com.dbn.object.common.property.DBObjectProperty.SCHEMA_OBJECT;
@@ -137,12 +138,18 @@ class DBConstraintImpl extends DBSchemaObjectImpl<DBConstraintMetadata> implemen
 
     @Override
     public DBDataset getDataset() {
-        return (DBDataset) getParentObject();
+        return getParentObject();
     }
 
     @Override
     public List<DBColumn> getColumns() {
         return getChildObjects(COLUMN);
+    }
+
+    private String getColumnsDesc() {
+        return getColumns().stream()
+                .map(DBObject::getName)
+                .collect(Collectors.joining(", "));
     }
 
     @Override
@@ -204,6 +211,7 @@ class DBConstraintImpl extends DBSchemaObjectImpl<DBConstraintMetadata> implemen
         }
 
         ttb.createEmptyRow();
+        ttb.append(true, "columns: " + getColumnsDesc(), false);
         super.buildToolTip(ttb);
     }
 
@@ -226,6 +234,7 @@ class DBConstraintImpl extends DBSchemaObjectImpl<DBConstraintMetadata> implemen
             case UNIQUE_KEY: properties.add(0, new SimplePresentableProperty("Constraint type", "Unique")); break;
         }
 
+        properties.add(0, new SimplePresentableProperty("Columns", getColumnsDesc()));
         return properties;
     }
 
@@ -255,6 +264,11 @@ class DBConstraintImpl extends DBSchemaObjectImpl<DBConstraintMetadata> implemen
             case UNIQUE_KEY: return "Unique";
         }
         return null;
+    }
+
+    @Override
+    public String getPresentableText() {
+        return super.getPresentableText() + "(" + getColumnsDesc() + ") ";
     }
 
     /*********************************************************

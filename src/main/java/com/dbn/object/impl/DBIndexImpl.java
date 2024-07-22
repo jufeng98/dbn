@@ -12,6 +12,8 @@ import com.dbn.object.common.list.DBObjectListContainer;
 import com.dbn.object.common.list.DBObjectNavigationList;
 import com.dbn.object.common.property.DBObjectProperty;
 import com.dbn.object.common.status.DBObjectStatus;
+import com.dbn.object.properties.PresentableProperty;
+import com.dbn.object.properties.SimplePresentableProperty;
 import com.dbn.object.type.DBObjectRelationType;
 import com.dbn.object.type.DBObjectType;
 import org.jetbrains.annotations.NotNull;
@@ -20,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 class DBIndexImpl extends DBSchemaObjectImpl<DBIndexMetadata> implements DBIndex {
     DBIndexImpl(DBDataset dataset, DBIndexMetadata metadata) throws SQLException {
@@ -77,6 +80,12 @@ class DBIndexImpl extends DBSchemaObjectImpl<DBIndexMetadata> implements DBIndex
         return getChildObjects(DBObjectType.COLUMN);
     }
 
+    private String getColumnsDesc() {
+        return getColumns().stream()
+                .map(DBObject::getName)
+                .collect(Collectors.joining(", "));
+    }
+
     @Override
     public boolean isUnique() {
         return is(DBObjectProperty.UNIQUE);
@@ -87,7 +96,7 @@ class DBIndexImpl extends DBSchemaObjectImpl<DBIndexMetadata> implements DBIndex
         List<DBObjectNavigationList> navigationLists = new LinkedList<>();
 
         List<DBColumn> columns = getColumns();
-        if (columns.size() > 0) {
+        if (!columns.isEmpty()) {
             navigationLists.add(DBObjectNavigationList.create("Columns", columns));
         }
         navigationLists.add(DBObjectNavigationList.create("Dataset", getDataset()));
@@ -96,9 +105,22 @@ class DBIndexImpl extends DBSchemaObjectImpl<DBIndexMetadata> implements DBIndex
     }
 
     @Override
+    public String getPresentableText() {
+        return super.getPresentableText() + "(" + getColumnsDesc() + ") ";
+    }
+
+    @Override
+    public List<PresentableProperty> getPresentableProperties() {
+        List<PresentableProperty> properties = super.getPresentableProperties();
+        properties.add(0, new SimplePresentableProperty("Columns", getColumnsDesc()));
+        return properties;
+    }
+
+    @Override
     public void buildToolTip(HtmlToolTipBuilder ttb) {
         ttb.append(true, getObjectType().getName(), true);
         ttb.createEmptyRow();
+        ttb.append(true, "columns: " + getColumnsDesc(), false);
         super.buildToolTip(ttb);
     }
 
