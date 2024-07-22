@@ -3,6 +3,7 @@ package com.dbn.connection.config;
 import com.dbn.common.options.BasicProjectConfiguration;
 import com.dbn.common.util.Commons;
 import com.dbn.connection.ConnectionId;
+import com.dbn.connection.DatabaseType;
 import com.dbn.connection.config.ui.ConnectionPropertiesSettingsForm;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -57,6 +58,15 @@ public class ConnectionPropertiesSettings extends BasicProjectConfiguration<Conn
                         stringAttribute(propertyElement, "value"));
             }
         }
+
+        ConnectionSettings parent = getParent();
+        if (parent != null && parent.getDatabaseSettings().getDatabaseType() == DatabaseType.MYSQL) {
+            properties.putIfAbsent("useCursorFetch", "true");
+            properties.putIfAbsent("useInformationSchema", "true");
+            properties.putIfAbsent("useUnicode", "true");
+            properties.putIfAbsent("characterEncoding", "UTF-8");
+        }
+
         getParent().getDatabaseSettings().updateSignature();
     }
 
