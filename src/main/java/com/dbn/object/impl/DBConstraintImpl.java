@@ -23,6 +23,7 @@ import com.dbn.object.properties.SimplePresentableProperty;
 import com.dbn.object.type.DBConstraintType;
 import com.dbn.object.type.DBObjectType;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -211,7 +212,10 @@ class DBConstraintImpl extends DBSchemaObjectImpl<DBConstraintMetadata> implemen
         }
 
         ttb.createEmptyRow();
-        ttb.append(true, "columns: " + getColumnsDesc(), false);
+        String columnsDesc = getColumnsDesc();
+        if (StringUtils.isNotBlank(columnsDesc)) {
+            ttb.append(true, "columns: " + columnsDesc, false);
+        }
         super.buildToolTip(ttb);
     }
 
@@ -234,7 +238,10 @@ class DBConstraintImpl extends DBSchemaObjectImpl<DBConstraintMetadata> implemen
             case UNIQUE_KEY: properties.add(0, new SimplePresentableProperty("Constraint type", "Unique")); break;
         }
 
-        properties.add(0, new SimplePresentableProperty("Columns", getColumnsDesc()));
+        String columnsDesc = getColumnsDesc();
+        if (StringUtils.isNotBlank(columnsDesc)) {
+            properties.add(0, new SimplePresentableProperty("Columns", columnsDesc));
+        }
         return properties;
     }
 
@@ -268,7 +275,12 @@ class DBConstraintImpl extends DBSchemaObjectImpl<DBConstraintMetadata> implemen
 
     @Override
     public String getPresentableText() {
-        return super.getPresentableText() + "(" + getColumnsDesc() + ") ";
+        String presentableText = super.getPresentableText();
+        String columnsDesc = getColumnsDesc();
+        if (StringUtils.isNotBlank(columnsDesc)) {
+            return presentableText + "(" + columnsDesc + ") ";
+        }
+        return presentableText;
     }
 
     /*********************************************************

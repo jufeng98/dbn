@@ -16,6 +16,7 @@ import com.dbn.object.properties.PresentableProperty;
 import com.dbn.object.properties.SimplePresentableProperty;
 import com.dbn.object.type.DBObjectRelationType;
 import com.dbn.object.type.DBObjectType;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -106,13 +107,21 @@ class DBIndexImpl extends DBSchemaObjectImpl<DBIndexMetadata> implements DBIndex
 
     @Override
     public String getPresentableText() {
-        return super.getPresentableText() + "(" + getColumnsDesc() + ") ";
+        String presentableText = super.getPresentableText();
+        String columnsDesc = getColumnsDesc();
+        if (StringUtils.isNotBlank(columnsDesc)) {
+            return presentableText + "(" + columnsDesc + ") ";
+        }
+        return presentableText;
     }
 
     @Override
     public List<PresentableProperty> getPresentableProperties() {
         List<PresentableProperty> properties = super.getPresentableProperties();
-        properties.add(0, new SimplePresentableProperty("Columns", getColumnsDesc()));
+        String columnsDesc = getColumnsDesc();
+        if (StringUtils.isNotBlank(columnsDesc)) {
+            properties.add(0, new SimplePresentableProperty("Columns", columnsDesc));
+        }
         return properties;
     }
 
@@ -120,7 +129,10 @@ class DBIndexImpl extends DBSchemaObjectImpl<DBIndexMetadata> implements DBIndex
     public void buildToolTip(HtmlToolTipBuilder ttb) {
         ttb.append(true, getObjectType().getName(), true);
         ttb.createEmptyRow();
-        ttb.append(true, "columns: " + getColumnsDesc(), false);
+        String columnsDesc = getColumnsDesc();
+        if (StringUtils.isNotBlank(columnsDesc)) {
+            ttb.append(true, "columns: " + columnsDesc, false);
+        }
         super.buildToolTip(ttb);
     }
 
