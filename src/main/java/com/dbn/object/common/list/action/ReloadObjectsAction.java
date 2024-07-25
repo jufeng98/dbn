@@ -49,7 +49,8 @@ public class ReloadObjectsAction extends ProjectAction {
                                 if (parent != null) {
                                     schemaName = parent.getSchemaName();
                                 }
-                                cacheService.clearCache(schemaName, project, connectionHandler.getMainConnection());
+                                cacheService.clearCache(schemaName, project, connectionHandler.getMainConnection(),
+                                        objectList.getObjectType());
                             } catch (SQLException ex) {
                                 throw new RuntimeException(ex);
                             }

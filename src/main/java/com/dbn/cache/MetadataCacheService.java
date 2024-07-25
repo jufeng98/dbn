@@ -1,6 +1,7 @@
 package com.dbn.cache;
 
 import com.dbn.connection.jdbc.DBNConnection;
+import com.dbn.object.type.DBObjectType;
 import com.dbn.utils.JsonUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -18,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.math.BigInteger;
 import java.sql.ResultSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -181,32 +183,39 @@ public final class MetadataCacheService {
         }
     }
 
-    public void clearCache(String schemaName, Project project, DBNConnection connection) {
+    public void clearCache(String schemaName, Project project, DBNConnection connection, DBObjectType objectType) {
         String fileFullName = getCacheFileFullName(schemaName, project, connection.getId().id());
         File file = new File(fileFullName);
         if (!file.exists()) {
             return;
         }
 
-        if (schemaName != null) {
-            boolean delete = file.delete();
-            log.warn("删除缓存文件:{},结果:{}", file, delete);
+        if (schemaName == null) {
             return;
         }
 
-        File parentFile = file.getParentFile();
-        File[] files = parentFile.listFiles();
-        if (files == null) {
+        ObjectNode rootObjectNode = JsonUtils.readTree(fileFullName);
+        if (rootObjectNode == null) {
             return;
         }
 
-        for (File pathFile : files) {
-            if (!pathFile.getName().startsWith(connection.getId().id())) {
+        String name = objectType.name();
+        Iterator<String> fieldNames = rootObjectNode.fieldNames();
+        List<String> delNames = Lists.newArrayList();
+        while (fieldNames.hasNext()) {
+            String fieldName = fieldNames.next();
+            if (!fieldName.contains(name)) {
                 continue;
             }
-            boolean delete = pathFile.delete();
-            log.warn("循环删除缓存文件:{},结果:{}", pathFile, delete);
+            delNames.add(fieldName);
         }
+
+        for (String delName : delNames) {
+            JsonNode jsonNode = rootObjectNode.remove(delName);
+            log.warn("清除元数据:{},共{}个子元素,路径:{}", delName, jsonNode.size(), fileFullName);
+        }
+
+        JsonUtils.saveTree(rootObjectNode, fileFullName);
     }
 
     private boolean isYesFlag(String columnValue) {

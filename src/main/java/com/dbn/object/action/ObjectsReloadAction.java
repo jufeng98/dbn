@@ -34,7 +34,8 @@ public class ObjectsReloadAction extends BasicAction {
             ConnectionHandler connectionHandler = objectList.getConnection();
 
             MetadataCacheService cacheService = MetadataCacheService.getService(project);
-            cacheService.clearCache(objectList.getParentSchemaName(), project, connectionHandler.getMainConnection());
+            cacheService.clearCache(objectList.getParentSchemaName(), project, connectionHandler.getMainConnection(),
+                    objectList.getObjectType());
 
             connectionHandler.getMetaDataCache().reset();
             objectList.reload();
