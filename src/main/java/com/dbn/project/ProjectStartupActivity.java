@@ -51,7 +51,7 @@ public class ProjectStartupActivity implements StartupActivity/*, ProjectActivit
 
         MetadataCacheService cacheService = MetadataCacheService.getService(project);
         // 从本地缓存中初始化数据库元数据信息
-        cacheService.initCacheDbTable(project);
+        cacheService.initFirstConnectionCacheDbTable(project);
     }
 
 /*

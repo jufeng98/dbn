@@ -19,6 +19,7 @@ import lombok.val;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.math.BigInteger;
@@ -49,7 +50,13 @@ public final class MetadataCacheService {
         return project.getService(MetadataCacheService.class);
     }
 
-    public void initCacheDbTable(@NotNull Project project) {
+    public @Nullable Map<String, CacheDbTable> getFirstConnectionDBCacheTables(Project project) {
+        DatabaseBrowserManager browserManager = DatabaseBrowserManager.getInstance(project);
+        String dbName = browserManager.getFirstConnectionConfigDbName(project);
+        return schemaMap.get(dbName);
+    }
+
+    public void initFirstConnectionCacheDbTable(@NotNull Project project) {
         DatabaseBrowserManager browserManager = DatabaseBrowserManager.getInstance(project);
         ConnectionId connectionId = browserManager.getFirstConnectionId(project);
         if (connectionId == null) {
