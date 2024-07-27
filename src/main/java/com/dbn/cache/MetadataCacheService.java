@@ -1,14 +1,9 @@
 package com.dbn.cache;
 
 import com.dbn.browser.DatabaseBrowserManager;
-import com.dbn.connection.ConnectionHandler;
-import com.dbn.connection.config.ConnectionBundleSettings;
-import com.dbn.connection.config.ConnectionDatabaseSettings;
-import com.dbn.connection.config.ConnectionSettings;
+import com.dbn.connection.ConnectionId;
 import com.dbn.connection.jdbc.DBNConnection;
-import com.dbn.editor.data.options.DataEditorSettings;
 import com.dbn.object.type.DBObjectType;
-import com.dbn.options.ProjectSettings;
 import com.dbn.utils.JsonUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -17,20 +12,16 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Key;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.collections.map.MultiValueMap;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.math.BigInteger;
-import java.net.URI;
 import java.sql.ResultSet;
 import java.util.Collection;
 import java.util.Iterator;
@@ -52,7 +43,6 @@ public final class MetadataCacheService {
     private static final String IDENTIFIER_ALL_INDEXES = "ALL_INDEXES";
     private static final String IDENTIFIER_ALL_INDEX_COLUMNS = "ALL_INDEX_COLUMNS";
 
-    private final Key<String> dbNameKey = Key.create("dbn.connection.url.dbName");
     private final Map<String, Map<String, CacheDbTable>> schemaMap = Maps.newHashMap();
 
     public static MetadataCacheService getService(Project project) {
@@ -61,19 +51,19 @@ public final class MetadataCacheService {
 
     public void initCacheDbTable(@NotNull Project project) {
         DatabaseBrowserManager browserManager = DatabaseBrowserManager.getInstance(project);
-        ConnectionHandler connection = browserManager.getSelectedConnection();
-        if (!ConnectionHandler.isLiveConnection(connection)) {
+        ConnectionId connectionId = browserManager.getFirstConnectionId(project);
+        if (connectionId == null) {
             return;
         }
 
-        String dbName = getFirstConnectionConfigDbName(project);
+        String dbName = browserManager.getFirstConnectionConfigDbName(project);
         if (dbName == null) {
             return;
         }
 
         MetadataCacheService cacheService = MetadataCacheService.getService(project);
         // 从本地缓存中初始化数据库元数据信息
-        cacheService.initCacheDbTable(dbName, project, connection.getConnectionId().id());
+        cacheService.initCacheDbTable(dbName, project, connectionId.id());
     }
 
     public void initCacheDbTable(String schemaName, Project project, String connectionId) {
@@ -335,51 +325,4 @@ public final class MetadataCacheService {
         }
     }
 
-    private @Nullable ConnectionDatabaseSettings getFirstConnectionConfig(Project project) {
-        ProjectSettings projectSettings = DataEditorSettings.getInstance(project).getParent();
-        if (projectSettings == null) {
-            return null;
-        }
-        ConnectionBundleSettings connectionSettingsList = projectSettings.getConnectionSettings();
-        List<ConnectionSettings> connections = connectionSettingsList.getConnections();
-        if (CollectionUtils.isEmpty(connections)) {
-            return null;
-        }
-
-        ConnectionSettings connectionSettings = connections.get(0);
-        if (connectionSettings == null) {
-            return null;
-        }
-
-        return connectionSettings.getDatabaseSettings();
-    }
-
-
-    public @Nullable String getFirstConnectionConfigDbName(Project project) {
-        ConnectionDatabaseSettings config = getFirstConnectionConfig(project);
-        if (config == null) {
-            return null;
-        }
-
-        val url = config.getConnectionUrl();
-        var dbName = project.getUserData(dbNameKey);
-        if (dbName != null) {
-            return dbName;
-        }
-
-        dbName = resolveUrlDbName(url);
-
-        project.putUserData(dbNameKey, dbName);
-
-        return dbName;
-    }
-
-    private @Nullable String resolveUrlDbName(String url) {
-        try {
-            val uri = URI.create(url.substring(5));
-            return uri.getPath().substring(1);
-        } catch (Exception e) {
-            return null;
-        }
-    }
 }

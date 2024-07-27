@@ -20,13 +20,18 @@ import com.dbn.common.options.setting.BooleanSetting;
 import com.dbn.common.thread.Background;
 import com.dbn.common.thread.Dispatch;
 import com.dbn.connection.*;
+import com.dbn.connection.config.ConnectionBundleSettings;
+import com.dbn.connection.config.ConnectionDatabaseSettings;
 import com.dbn.connection.config.ConnectionDetailSettings;
+import com.dbn.connection.config.ConnectionSettings;
+import com.dbn.editor.data.options.DataEditorSettings;
 import com.dbn.object.DBSchema;
 import com.dbn.object.common.DBObject;
 import com.dbn.object.common.DBObjectBundle;
 import com.dbn.object.common.list.DBObjectList;
 import com.dbn.object.common.list.DBObjectListContainer;
 import com.dbn.object.type.DBObjectType;
+import com.dbn.options.ProjectSettings;
 import com.dbn.vfs.DBVirtualFile;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
@@ -35,18 +40,23 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.FileEditorManagerEvent;
 import com.intellij.openapi.fileEditor.FileEditorManagerListener;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
 import lombok.Getter;
+import lombok.val;
+import org.apache.commons.collections4.CollectionUtils;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.tree.TreePath;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.dbn.browser.DatabaseBrowserUtils.isSkipBrowserAutoscroll;
 import static com.dbn.common.component.Components.projectService;
@@ -67,6 +77,7 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
     private final BooleanSetting showObjectProperties = new BooleanSetting("show-object-properties", true);
 
     private final transient Latent<BrowserToolWindowForm> toolWindowForm = Latent.basic(this::createToolWindowForm);
+    private final Key<String> dbNameKey = Key.create("dbn.connection.url.dbName");
 
     private BrowserToolWindowForm createToolWindowForm() {
         return Dispatch.call(true, () -> new BrowserToolWindowForm(this, getProject()));
@@ -218,6 +229,91 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
     public Filter<BrowserTreeNode> getObjectTypeFilter() {
         DatabaseBrowserSettings browserSettings = DatabaseBrowserSettings.getInstance(getProject());
         return browserSettings.getFilterSettings().getObjectTypeFilterSettings().getElementFilter();
+    }
+
+    public @Nullable DBSchema switchToFirstConnectionAndGetDbScheme(Project project) {
+        DatabaseBrowserManager browserManager = DatabaseBrowserManager.getInstance(getProject());
+
+        ConnectionId connectionId = getFirstConnectionId(project);
+
+        browserManager.selectConnection(connectionId);
+        ConnectionHandler connection = browserManager.getSelectedConnection();
+        if (!ConnectionHandler.isLiveConnection(connection)) {
+            return null;
+        }
+
+        String dbName = getFirstConnectionConfigDbName(project);
+        if (dbName == null) {
+            return null;
+        }
+
+        DBObjectBundle objectBundle = connection.getObjectBundle();
+        List<DBSchema> list = objectBundle.getSchemas().stream()
+                .filter(it -> dbName.equals(it.getName()))
+                .collect(Collectors.toList());
+
+        if (list.isEmpty()) {
+            return null;
+        }
+
+        return list.get(0);
+    }
+
+    public @Nullable ConnectionDatabaseSettings getFirstConnectionConfig(Project project) {
+        ProjectSettings projectSettings = DataEditorSettings.getInstance(project).getParent();
+        if (projectSettings == null) {
+            return null;
+        }
+
+        ConnectionBundleSettings connectionSettingsList = projectSettings.getConnectionSettings();
+        List<ConnectionSettings> connections = connectionSettingsList.getConnections();
+        if (CollectionUtils.isEmpty(connections)) {
+            return null;
+        }
+
+        ConnectionSettings connectionSettings = connections.get(0);
+        if (connectionSettings == null) {
+            return null;
+        }
+
+        return connectionSettings.getDatabaseSettings();
+    }
+
+    public @Nullable ConnectionId getFirstConnectionId(Project project) {
+        ConnectionDatabaseSettings config = getFirstConnectionConfig(project);
+        if (config == null) {
+            return null;
+        }
+
+        return config.getConnectionId();
+    }
+
+    public @Nullable String getFirstConnectionConfigDbName(Project project) {
+        ConnectionDatabaseSettings config = getFirstConnectionConfig(project);
+        if (config == null) {
+            return null;
+        }
+
+        val url = config.getConnectionUrl();
+        var dbName = project.getUserData(dbNameKey);
+        if (dbName != null) {
+            return dbName;
+        }
+
+        dbName = resolveUrlDbName(url);
+
+        project.putUserData(dbNameKey, dbName);
+
+        return dbName;
+    }
+
+    private @Nullable String resolveUrlDbName(String url) {
+        try {
+            val uri = URI.create(url.substring(5));
+            return uri.getPath().substring(1);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @NotNull
