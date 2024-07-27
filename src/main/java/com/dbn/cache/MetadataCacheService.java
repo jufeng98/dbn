@@ -35,6 +35,7 @@ import static com.dbn.utils.JsonUtils.OBJECT_MAPPER;
 public final class MetadataCacheService {
     private static final String IDENTIFIER_TABLES = "TABLES";
     private static final String IDENTIFIER_ALL_COLUMNS = "ALL_COLUMNS";
+    private static final String IDENTIFIER_ALL_INDEXES = "ALL_INDEXES";
 
     private final Map<String, Map<String, CacheDbTable>> schemaMap = Maps.newHashMap();
 
@@ -45,7 +46,12 @@ public final class MetadataCacheService {
     public void initCacheDbTable(String schemaName, Project project, String connectionId) {
         String fileFullName = getCacheFileFullName(schemaName, project, connectionId);
 
-        ArrayNode identifierTableArrayNode = loadArrayNode(fileFullName, IDENTIFIER_TABLES);
+        ObjectNode rootObjectNode = JsonUtils.readTree(fileFullName);
+        if (rootObjectNode == null) {
+            return;
+        }
+
+        ArrayNode identifierTableArrayNode = (ArrayNode) rootObjectNode.get(IDENTIFIER_TABLES);
         if (identifierTableArrayNode == null) {
             return;
         }
@@ -60,7 +66,7 @@ public final class MetadataCacheService {
         }
 
         int columnSize = 0;
-        ArrayNode identifierColumnArrayNode = loadArrayNode(fileFullName, IDENTIFIER_ALL_COLUMNS);
+        ArrayNode identifierColumnArrayNode = (ArrayNode) rootObjectNode.get(IDENTIFIER_ALL_COLUMNS);
         if (identifierColumnArrayNode != null) {
             for (JsonNode jsonNode : identifierColumnArrayNode) {
                 ObjectNode objectNode = (ObjectNode) jsonNode;
@@ -78,8 +84,27 @@ public final class MetadataCacheService {
             }
         }
 
+        int indexSize = 0;
+        ArrayNode identifierIndexArrayNode = (ArrayNode) rootObjectNode.get(IDENTIFIER_ALL_INDEXES);
+        if (identifierIndexArrayNode != null) {
+            for (JsonNode jsonNode : identifierIndexArrayNode) {
+                ObjectNode objectNode = (ObjectNode) jsonNode;
+                String tableName = objectNode.get("TABLE_NAME").asText("");
+                CacheDbTable cacheDbTable = tableMap.get(tableName);
+                if (cacheDbTable == null) {
+                    continue;
+                }
+
+                CacheDbIndex cacheDbIndex = createCacheDbIndex(objectNode);
+
+                cacheDbTable.addCacheDbIndex(cacheDbIndex);
+
+                indexSize++;
+            }
+        }
+
         schemaMap.put(schemaName, tableMap);
-        log.warn("初始化schemaMap成功,schemaName:{},表数量:{},列数量:{}", schemaName, tableMap.size(), columnSize);
+        log.warn("初始化schemaMap成功,schemaName:{},表数量:{},列数量:{},索引数量:{}", schemaName, tableMap.size(), columnSize, indexSize);
     }
 
     private CacheDbTable createCacheDbTable(ObjectNode objectNode) {
@@ -113,6 +138,13 @@ public final class MetadataCacheService {
         cacheDbColumn.cacheDbDataType = new CacheDbDataType(dataTypeName, dataLength, dataPrecision, dataScale, isSet);
 
         return cacheDbColumn;
+    }
+
+    private CacheDbIndex createCacheDbIndex(ObjectNode objectNode) {
+        String indexName = objectNode.get("INDEX_NAME").asText();
+        boolean isUnique = isYesFlag(objectNode.get("IS_UNIQUE").asText());
+        boolean isValid = isYesFlag(objectNode.get("IS_VALID").asText());
+        return new CacheDbIndex(indexName, isUnique, isValid);
     }
 
     public CacheResultSet loadCacheResultSet(String schemaName, Project project, ResultSet resultSet,

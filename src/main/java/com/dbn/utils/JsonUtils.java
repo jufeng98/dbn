@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.SneakyThrows;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -27,7 +28,7 @@ public class JsonUtils {
     }
 
     @SneakyThrows
-    public static synchronized ObjectNode readTree(String filePath) {
+    public static synchronized @Nullable ObjectNode readTree(String filePath) {
         File file = new File(filePath);
         if (!file.exists()) {
             return null;
