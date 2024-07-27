@@ -1,5 +1,6 @@
 package com.dbn.project;
 
+import com.dbn.cache.MetadataCacheService;
 import com.dbn.common.compatibility.Compatibility;
 import com.dbn.connection.config.ConnectionBundleSettings;
 import com.dbn.debugger.ExecutionConfigManager;
@@ -22,7 +23,7 @@ public class ProjectStartupActivity implements StartupActivity/*, ProjectActivit
         assesPluginConflict(project);
         removeRunConfigurations(project);
         reopenDatabaseEditors(project);
-        initMetadata();
+        initMetadata(project);
     }
 
     private static void evaluatePluginStatus(Project project) {
@@ -45,8 +46,12 @@ public class ProjectStartupActivity implements StartupActivity/*, ProjectActivit
         fileManager.reopenDatabaseEditors();
     }
 
-    private void initMetadata() {
+    private void initMetadata(@NotNull Project project) {
         DBObjectLoaders.initLoaders();
+
+        MetadataCacheService cacheService = MetadataCacheService.getService(project);
+        // 从本地缓存中初始化数据库元数据信息
+        cacheService.initCacheDbTable(project);
     }
 
 /*

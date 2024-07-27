@@ -1,7 +1,14 @@
 package com.dbn.cache;
 
+import com.dbn.browser.DatabaseBrowserManager;
+import com.dbn.connection.ConnectionHandler;
+import com.dbn.connection.config.ConnectionBundleSettings;
+import com.dbn.connection.config.ConnectionDatabaseSettings;
+import com.dbn.connection.config.ConnectionSettings;
 import com.dbn.connection.jdbc.DBNConnection;
+import com.dbn.editor.data.options.DataEditorSettings;
 import com.dbn.object.type.DBObjectType;
+import com.dbn.options.ProjectSettings;
 import com.dbn.utils.JsonUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -10,15 +17,22 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Key;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.apache.commons.collections.map.MultiValueMap;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.math.BigInteger;
+import java.net.URI;
 import java.sql.ResultSet;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -36,11 +50,30 @@ public final class MetadataCacheService {
     private static final String IDENTIFIER_TABLES = "TABLES";
     private static final String IDENTIFIER_ALL_COLUMNS = "ALL_COLUMNS";
     private static final String IDENTIFIER_ALL_INDEXES = "ALL_INDEXES";
+    private static final String IDENTIFIER_ALL_INDEX_COLUMNS = "ALL_INDEX_COLUMNS";
 
+    private final Key<String> dbNameKey = Key.create("dbn.connection.url.dbName");
     private final Map<String, Map<String, CacheDbTable>> schemaMap = Maps.newHashMap();
 
     public static MetadataCacheService getService(Project project) {
         return project.getService(MetadataCacheService.class);
+    }
+
+    public void initCacheDbTable(@NotNull Project project) {
+        DatabaseBrowserManager browserManager = DatabaseBrowserManager.getInstance(project);
+        ConnectionHandler connection = browserManager.getSelectedConnection();
+        if (!ConnectionHandler.isLiveConnection(connection)) {
+            return;
+        }
+
+        String dbName = getFirstConnectionConfigDbName(project);
+        if (dbName == null) {
+            return;
+        }
+
+        MetadataCacheService cacheService = MetadataCacheService.getService(project);
+        // 从本地缓存中初始化数据库元数据信息
+        cacheService.initCacheDbTable(dbName, project, connection.getConnectionId().id());
     }
 
     public void initCacheDbTable(String schemaName, Project project, String connectionId) {
@@ -86,7 +119,11 @@ public final class MetadataCacheService {
 
         int indexSize = 0;
         ArrayNode identifierIndexArrayNode = (ArrayNode) rootObjectNode.get(IDENTIFIER_ALL_INDEXES);
-        if (identifierIndexArrayNode != null) {
+        ArrayNode identifierIndexColumnArrayNode = (ArrayNode) rootObjectNode.get(IDENTIFIER_ALL_INDEX_COLUMNS);
+        if (identifierIndexArrayNode != null && identifierIndexColumnArrayNode != null) {
+
+            MultiValueMap multiValueMap = convertIndexColumnToMap(identifierIndexColumnArrayNode);
+
             for (JsonNode jsonNode : identifierIndexArrayNode) {
                 ObjectNode objectNode = (ObjectNode) jsonNode;
                 String tableName = objectNode.get("TABLE_NAME").asText("");
@@ -95,7 +132,14 @@ public final class MetadataCacheService {
                     continue;
                 }
 
-                CacheDbIndex cacheDbIndex = createCacheDbIndex(objectNode);
+                String indexName = objectNode.get("INDEX_NAME").asText();
+                @SuppressWarnings("unchecked")
+                Collection<String> columnNames = (Collection<String>) multiValueMap.get(tableName + "-" + indexName);
+                if (columnNames == null) {
+                    continue;
+                }
+
+                CacheDbIndex cacheDbIndex = createCacheDbIndex(objectNode, indexName, columnNames);
 
                 cacheDbTable.addCacheDbIndex(cacheDbIndex);
 
@@ -105,6 +149,17 @@ public final class MetadataCacheService {
 
         schemaMap.put(schemaName, tableMap);
         log.warn("初始化schemaMap成功,schemaName:{},表数量:{},列数量:{},索引数量:{}", schemaName, tableMap.size(), columnSize, indexSize);
+    }
+
+    private MultiValueMap convertIndexColumnToMap(ArrayNode identifierIndexColumnArrayNode) {
+        MultiValueMap map = new MultiValueMap();
+        for (JsonNode indexColumNode : identifierIndexColumnArrayNode) {
+            String indexName = indexColumNode.get("INDEX_NAME").asText();
+            String tableName = indexColumNode.get("TABLE_NAME").asText();
+            String columnName = indexColumNode.get("COLUMN_NAME").asText();
+            map.put(tableName + "-" + indexName, columnName);
+        }
+        return map;
     }
 
     private CacheDbTable createCacheDbTable(ObjectNode objectNode) {
@@ -140,11 +195,10 @@ public final class MetadataCacheService {
         return cacheDbColumn;
     }
 
-    private CacheDbIndex createCacheDbIndex(ObjectNode objectNode) {
-        String indexName = objectNode.get("INDEX_NAME").asText();
+    private CacheDbIndex createCacheDbIndex(ObjectNode objectNode, String name, Collection<String> columnNames) {
         boolean isUnique = isYesFlag(objectNode.get("IS_UNIQUE").asText());
         boolean isValid = isYesFlag(objectNode.get("IS_VALID").asText());
-        return new CacheDbIndex(indexName, isUnique, isValid);
+        return new CacheDbIndex(name, isUnique, isValid, columnNames);
     }
 
     public CacheResultSet loadCacheResultSet(String schemaName, Project project, ResultSet resultSet,
@@ -278,6 +332,54 @@ public final class MetadataCacheService {
             objectNode.put(columnLabel, (BigInteger) columnValue);
         } else {
             log.warn("类型:{},value:{}", columnValue.getClass(), columnValue);
+        }
+    }
+
+    private @Nullable ConnectionDatabaseSettings getFirstConnectionConfig(Project project) {
+        ProjectSettings projectSettings = DataEditorSettings.getInstance(project).getParent();
+        if (projectSettings == null) {
+            return null;
+        }
+        ConnectionBundleSettings connectionSettingsList = projectSettings.getConnectionSettings();
+        List<ConnectionSettings> connections = connectionSettingsList.getConnections();
+        if (CollectionUtils.isEmpty(connections)) {
+            return null;
+        }
+
+        ConnectionSettings connectionSettings = connections.get(0);
+        if (connectionSettings == null) {
+            return null;
+        }
+
+        return connectionSettings.getDatabaseSettings();
+    }
+
+
+    public @Nullable String getFirstConnectionConfigDbName(Project project) {
+        ConnectionDatabaseSettings config = getFirstConnectionConfig(project);
+        if (config == null) {
+            return null;
+        }
+
+        val url = config.getConnectionUrl();
+        var dbName = project.getUserData(dbNameKey);
+        if (dbName != null) {
+            return dbName;
+        }
+
+        dbName = resolveUrlDbName(url);
+
+        project.putUserData(dbNameKey, dbName);
+
+        return dbName;
+    }
+
+    private @Nullable String resolveUrlDbName(String url) {
+        try {
+            val uri = URI.create(url.substring(5));
+            return uri.getPath().substring(1);
+        } catch (Exception e) {
+            return null;
         }
     }
 }

@@ -15,6 +15,6 @@ data class CacheDbTable(val name: String, val comment: String, val isTemporary: 
         cacheDbColumnMap[cacheDbColumn.name] = cacheDbColumn
     }
     fun addCacheDbIndex(cacheDbIndex: CacheDbIndex) {
-        cacheDbIndexMap[cacheDbIndex.indexName] = cacheDbIndex
+        cacheDbIndexMap[cacheDbIndex.name] = cacheDbIndex
     }
 }

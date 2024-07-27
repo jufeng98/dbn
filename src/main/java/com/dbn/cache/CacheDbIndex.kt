@@ -1,7 +1,8 @@
 package com.dbn.cache
 
 data class CacheDbIndex(
-    val indexName: String,
+    val name: String,
     val isUnique: Boolean,
     val isValid: Boolean,
+    var columnNames: Collection<String>,
 )
