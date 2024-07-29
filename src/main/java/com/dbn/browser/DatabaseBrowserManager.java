@@ -231,8 +231,9 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
         return browserSettings.getFilterSettings().getObjectTypeFilterSettings().getElementFilter();
     }
 
+    @SuppressWarnings("unused")
     public @Nullable DBSchema switchToFirstConnectionAndGetDbScheme(Project project) {
-        DatabaseBrowserManager browserManager = DatabaseBrowserManager.getInstance(getProject());
+        DatabaseBrowserManager browserManager = DatabaseBrowserManager.getInstance(project);
 
         ConnectionId connectionId = getFirstConnectionId(project);
 

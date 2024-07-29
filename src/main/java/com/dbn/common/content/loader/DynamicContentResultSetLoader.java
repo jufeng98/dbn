@@ -29,6 +29,7 @@ import com.dbn.diagnostics.Diagnostics;
 import com.dbn.diagnostics.DiagnosticsManager;
 import com.dbn.diagnostics.data.DiagnosticBundle;
 import com.dbn.object.common.DBObject;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.project.Project;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +43,6 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 import static com.dbn.common.content.DynamicContentProperty.INTERNAL;
-import static com.dbn.common.exception.Exceptions.toSqlException;
 import static com.dbn.connection.Resources.markClosed;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 import static com.dbn.diagnostics.Diagnostics.isDatabaseAccessDebug;
@@ -88,11 +88,11 @@ public abstract class DynamicContentResultSetLoader<E extends DynamicContentElem
                     return cacheResultSet;
                 }
 
-                ResultSet resultSet = resultSetFactory.create(dynamicContent, connection, dynamicContent.getMetadataInterface());
+                DBNResultSet resultSet = (DBNResultSet) resultSetFactory.create(dynamicContent, connection, dynamicContent.getMetadataInterface());
 
-                cacheService.saveResultSetToLocal(schemaName, project, resultSet, connectionId, identifier);
+                ArrayNode arrayNode = cacheService.saveResultSetToLocal(schemaName, project, resultSet, connectionId, identifier);
 
-                return resultSet;
+                return new CacheResultSet(resultSet.getInner(), connection, arrayNode, identifier);
             }
 
             @Override

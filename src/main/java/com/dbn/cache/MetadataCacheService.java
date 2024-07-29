@@ -50,6 +50,7 @@ public final class MetadataCacheService {
         return project.getService(MetadataCacheService.class);
     }
 
+    @SuppressWarnings("unused")
     public @Nullable Map<String, CacheDbTable> getFirstConnectionDBCacheTables(Project project) {
         DatabaseBrowserManager browserManager = DatabaseBrowserManager.getInstance(project);
         String dbName = browserManager.getFirstConnectionConfigDbName(project);
@@ -230,8 +231,8 @@ public final class MetadataCacheService {
     }
 
     @SneakyThrows
-    public void saveResultSetToLocal(String schemaName, Project project, ResultSet resultSet, String connectionId,
-                                     String identifier) {
+    public synchronized ArrayNode saveResultSetToLocal(String schemaName, Project project, ResultSet resultSet, String connectionId,
+                                          String identifier) {
         String fileFullName = getCacheFileFullName(schemaName, project, connectionId);
 
         ObjectNode rootObjectNode = JsonUtils.readTree(fileFullName);
@@ -256,7 +257,7 @@ public final class MetadataCacheService {
                 put(objectNode, columnLabel, columnValue);
             }
         }
-        resultSet.beforeFirst();
+        resultSet.close();
 
         JsonUtils.saveTree(rootObjectNode, fileFullName);
         log.warn("完成缓存元数据:{},共{}个子元素,路径:{}", identifier, metaData.getColumnCount(), fileFullName);
@@ -264,6 +265,8 @@ public final class MetadataCacheService {
         if (StringUtils.isNotBlank(schemaName)) {
             initCacheDbTable(schemaName, project, connectionId);
         }
+
+        return identifierArrayNode;
     }
 
     public void clearCache(String schemaName, Project project, DBNConnection connection, DBObjectType objectType) {

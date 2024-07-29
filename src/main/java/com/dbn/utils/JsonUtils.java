@@ -28,7 +28,7 @@ public class JsonUtils {
     }
 
     @SneakyThrows
-    public static synchronized @Nullable ObjectNode readTree(String filePath) {
+    public static @Nullable ObjectNode readTree(String filePath) {
         File file = new File(filePath);
         if (!file.exists()) {
             return null;
