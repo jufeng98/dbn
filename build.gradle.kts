@@ -103,20 +103,19 @@ tasks.register<Jar>("packageSource") {
     }
 }
 
-tasks.register<DefaultTask>("unzipDBN") {
-    copy {
-        val zipFile = File("$buildDir/distributions/DBN-MASTER-${project.version}.zip")
-        if (zipFile.exists()) {
-            from(zipTree("$buildDir/distributions/DBN-MASTER-${project.version}.zip"))
-            into("$buildDir/distributions")
-        }
-    }
+tasks.register<Copy>("unZip") {
+    from(zipTree("$buildDir/distributions/DBN-MASTER-${project.version}.zip"))
+    into("$buildDir/distributions")
 
-    copy {
-        from("$buildDir/libs")
-        include("instrumented-DBN-MASTER-${project.version}-sources.jar")
-        into("$buildDir/distributions/DBN-MASTER/lib")
-    }
+    dependsOn(tasks.buildPlugin)
+}
+
+tasks.register<Copy>("buildPluginAndUnzip") {
+    from("$buildDir/libs")
+    include("instrumented-DBN-MASTER-${project.version}-sources.jar")
+    into("$buildDir/distributions/DBN-MASTER/lib")
+
+    dependsOn(tasks["unZip"])
 }
 
 tasks {
@@ -145,7 +144,7 @@ tasks {
     }
 
     buildPlugin {
-        dependsOn("packageSource", "unzipDBN")
+        dependsOn("packageSource")
     }
 
     patchPluginXml {
