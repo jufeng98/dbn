@@ -69,6 +69,8 @@ import static com.dbn.browser.DatabaseBrowserUtils.isSkipBrowserAutoscroll;
 import static com.dbn.common.component.Components.projectService;
 import static com.dbn.common.dispose.Failsafe.nn;
 import static com.dbn.common.options.setting.Settings.*;
+import static com.dbn.object.type.DBObjectType.COLUMN;
+import static com.dbn.object.type.DBObjectType.TABLE;
 
 @Getter
 @State(
@@ -238,6 +240,14 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
         return browserSettings.getFilterSettings().getObjectTypeFilterSettings().getElementFilter();
     }
 
+    private boolean isMetadataLoading(DBObject dbObject, DBObjectType dbObjectType) {
+        DBObjectList<DBObject> dbObjectList = dbObject.getChildObjectList(dbObjectType);
+        if (dbObjectList == null) {
+            return false;
+        }
+        return dbObjectList.isLoadingInBackground();
+    }
+
     @SuppressWarnings("unused")
     public void navigateToElement(Project project, Set<String> tableNames, String columnName) {
         ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
@@ -258,13 +268,19 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
 
             DBSchema dbSchema = objectBundle.getSchema(dbName);
             if (dbSchema == null) {
-                TooltipUtils.INSTANCE.showTooltip("尝试加载数据库元数据信息,请稍后再试!", project);
+                TooltipUtils.INSTANCE.showTooltip("正在加载数据库元数据信息,请稍后再试!", project);
                 return;
             }
 
             List<DBTable> dbTables = dbSchema.getTables();
             if (dbTables == null || dbTables.isEmpty()) {
-                TooltipUtils.INSTANCE.showTooltip("尝试加载表元数据信息,请稍后再试...", project);
+                TooltipUtils.INSTANCE.showTooltip("正在加载表元数据信息,请稍后再试...", project);
+                return;
+            }
+
+            boolean loading = isMetadataLoading(dbSchema, TABLE);
+            if (loading) {
+                TooltipUtils.INSTANCE.showTooltip("表元数据信息尚未加载完成,请稍后再试...", project);
                 return;
             }
 
@@ -286,7 +302,13 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
                     .flatMap(Collection::stream)
                     .collect(Collectors.toList());
             if (dbColumns.isEmpty()) {
-                TooltipUtils.INSTANCE.showTooltip("尝试加载列元数据信息,请稍后再试!", project);
+                TooltipUtils.INSTANCE.showTooltip("正在加载列元数据信息,请稍后再试!", project);
+                return;
+            }
+
+            loading = dbTables.stream().anyMatch(it -> isMetadataLoading(it, COLUMN));
+            if (loading) {
+                TooltipUtils.INSTANCE.showTooltip("列元数据信息尚未加载完成,请稍后再试!", project);
                 return;
             }
 
@@ -303,7 +325,7 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
                 return;
             }
 
-            TooltipUtils.INSTANCE.showTooltip("无法跳转,在" + tableNames + "中解析到多个列" + columnName + "!", project);
+            TooltipUtils.INSTANCE.showTooltip("无法跳转,在" + tableNames + "中解析到同样名称的列" + columnName + "!", project);
         });
 
     }
