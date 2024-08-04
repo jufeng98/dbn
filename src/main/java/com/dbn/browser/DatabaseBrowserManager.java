@@ -28,10 +28,12 @@ import com.dbn.editor.data.options.DataEditorSettings;
 import com.dbn.object.DBSchema;
 import com.dbn.object.common.DBObject;
 import com.dbn.object.common.DBObjectBundle;
+import com.dbn.object.common.DBObjectBundleImpl;
 import com.dbn.object.common.list.DBObjectList;
 import com.dbn.object.common.list.DBObjectListContainer;
 import com.dbn.object.type.DBObjectType;
 import com.dbn.options.ProjectSettings;
+import com.dbn.utils.TooltipUtils;
 import com.dbn.vfs.DBVirtualFile;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
@@ -231,8 +233,54 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
         return browserSettings.getFilterSettings().getObjectTypeFilterSettings().getElementFilter();
     }
 
-    @SuppressWarnings("unused")
-    public @Nullable DBSchema switchToFirstConnectionAndGetDbScheme(Project project) {
+    public void navigateToElement(Project project, String tableName, String columnName) {
+        ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
+        ToolWindow toolWindow = toolWindowManager.getToolWindow("DB Browser");
+        //noinspection DataFlowIssue
+        toolWindow.show(() -> {
+            String dbName = getFirstConnectionConfigDbName(project);
+            if (dbName == null) {
+                TooltipUtils.INSTANCE.showTooltip("无法跳转,数据库url链接无效!", project);
+                return;
+            }
+
+            DBObjectBundleImpl objectBundle = (DBObjectBundleImpl) switchToFirstConnectionAndGetObjectBundle(project);
+            if (objectBundle == null) {
+                TooltipUtils.INSTANCE.showTooltip("无法跳转,请先连接数据库!", project);
+                return;
+            }
+
+            DBSchema dbSchema = objectBundle.getSchema(dbName);
+            if (dbSchema == null) {
+                TooltipUtils.INSTANCE.showTooltip("尝试加载数据库元数据信息,请稍后再试!", project);
+                return;
+            }
+
+            DBObject referencedObject = dbSchema.getChildObject(DBObjectType.DATASET, tableName,
+                    (short) 0, false);
+            if (referencedObject == null) {
+                TooltipUtils.INSTANCE.showTooltip("尝试加载表元数据信息,请稍后再试!", project);
+                return;
+            }
+
+            if (columnName == null) {
+                referencedObject.navigate(true);
+                return;
+            }
+
+            DBObject columnObject = referencedObject.getChildObject(DBObjectType.COLUMN, columnName,
+                    (short) 0, false);
+            if (columnObject == null) {
+                TooltipUtils.INSTANCE.showTooltip("尝试加载列元数据信息,请稍后再试!", project);
+                return;
+            }
+
+            columnObject.navigate(true);
+        });
+
+    }
+
+    private DBObjectBundle switchToFirstConnectionAndGetObjectBundle(Project project) {
         DatabaseBrowserManager browserManager = DatabaseBrowserManager.getInstance(project);
 
         ConnectionId connectionId = getFirstConnectionId(project);
@@ -243,21 +291,7 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
             return null;
         }
 
-        String dbName = getFirstConnectionConfigDbName(project);
-        if (dbName == null) {
-            return null;
-        }
-
-        DBObjectBundle objectBundle = connection.getObjectBundle();
-        List<DBSchema> list = objectBundle.getSchemas().stream()
-                .filter(it -> dbName.equals(it.getName()))
-                .collect(Collectors.toList());
-
-        if (list.isEmpty()) {
-            return null;
-        }
-
-        return list.get(0);
+        return connection.getObjectBundle();
     }
 
     public @Nullable ConnectionDatabaseSettings getFirstConnectionConfig(Project project) {
