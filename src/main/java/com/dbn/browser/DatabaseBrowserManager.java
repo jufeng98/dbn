@@ -260,7 +260,7 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
                 return;
             }
 
-            DBObjectBundleImpl objectBundle = (DBObjectBundleImpl) switchToFirstConnectionAndGetObjectBundle(project);
+            DBObjectBundle objectBundle = switchToFirstConnectionAndGetObjectBundle(project);
             if (objectBundle == null) {
                 TooltipUtils.INSTANCE.showTooltip("无法跳转,请先连接数据库!", project);
                 return;
@@ -269,12 +269,6 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
             DBSchema dbSchema = objectBundle.getSchema(dbName);
             if (dbSchema == null) {
                 TooltipUtils.INSTANCE.showTooltip("正在加载数据库元数据信息,请稍后再试!", project);
-                return;
-            }
-
-            DBObjectList<DBSchema> dbObjectList = objectBundle.getDBObjectList();
-            if (dbObjectList.isLoadingInBackground()) {
-                TooltipUtils.INSTANCE.showTooltip("数据库元数据信息尚未加载完成,请稍后再试!", project);
                 return;
             }
 

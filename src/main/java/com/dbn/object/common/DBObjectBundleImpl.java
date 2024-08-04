@@ -250,10 +250,6 @@ public class DBObjectBundleImpl extends StatefulDisposableBase implements DBObje
         return nn(schemas).getObject(name);
     }
 
-    public DBObjectList<DBSchema> getDBObjectList() {
-        return schemas;
-    }
-
     @Override
     @Nullable
     public DBSchema getPublicSchema() {
