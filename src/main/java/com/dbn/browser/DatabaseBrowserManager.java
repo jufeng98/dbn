@@ -129,6 +129,7 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
     }
 
     @NotNull
+    @SuppressWarnings("DataFlowIssue")
     public ToolWindow getBrowserToolWindow() {
         ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(getProject());
         return toolWindowManager.getToolWindow(TOOL_WINDOW_ID);
@@ -250,9 +251,8 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
 
     @SuppressWarnings("unused")
     public void navigateToElement(Project project, Set<String> tableNames, String columnName) {
-        ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
-        ToolWindow toolWindow = toolWindowManager.getToolWindow("DB Browser");
-        //noinspection DataFlowIssue
+        ToolWindow toolWindow = getBrowserToolWindow();
+
         toolWindow.show(() -> {
             String dbName = getFirstConnectionConfigDbName(project);
             if (dbName == null) {
@@ -260,7 +260,7 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
                 return;
             }
 
-            DBObjectBundle objectBundle = switchToFirstConnectionAndGetObjectBundle(project);
+            DBObjectBundleImpl objectBundle = (DBObjectBundleImpl) switchToFirstConnectionAndGetObjectBundle(project);
             if (objectBundle == null) {
                 TooltipUtils.INSTANCE.showTooltip("无法跳转,请先连接数据库!", project);
                 return;
@@ -272,15 +272,21 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
                 return;
             }
 
+            DBObjectList<DBSchema> dbObjectList = objectBundle.getDBObjectList();
+            if (dbObjectList.isLoadingInBackground()) {
+                TooltipUtils.INSTANCE.showTooltip("数据库元数据信息尚未加载完成,请稍后再试!", project);
+                return;
+            }
+
             List<DBTable> dbTables = dbSchema.getTables();
             if (dbTables == null || dbTables.isEmpty()) {
-                TooltipUtils.INSTANCE.showTooltip("正在加载表元数据信息,请稍后再试...", project);
+                TooltipUtils.INSTANCE.showTooltip("正在加载表元数据信息,请稍后再试!", project);
                 return;
             }
 
             boolean loading = isMetadataLoading(dbSchema, TABLE);
             if (loading) {
-                TooltipUtils.INSTANCE.showTooltip("表元数据信息尚未加载完成,请稍后再试...", project);
+                TooltipUtils.INSTANCE.showTooltip("表元数据信息尚未加载完成,请稍后再试!", project);
                 return;
             }
 
