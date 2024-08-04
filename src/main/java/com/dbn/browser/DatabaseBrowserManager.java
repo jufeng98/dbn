@@ -25,7 +25,10 @@ import com.dbn.connection.config.ConnectionDatabaseSettings;
 import com.dbn.connection.config.ConnectionDetailSettings;
 import com.dbn.connection.config.ConnectionSettings;
 import com.dbn.editor.data.options.DataEditorSettings;
+import com.dbn.object.DBColumn;
+import com.dbn.object.DBDataset;
 import com.dbn.object.DBSchema;
+import com.dbn.object.DBTable;
 import com.dbn.object.common.DBObject;
 import com.dbn.object.common.DBObjectBundle;
 import com.dbn.object.common.DBObjectBundleImpl;
@@ -56,8 +59,10 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.tree.TreePath;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.dbn.browser.DatabaseBrowserUtils.isSkipBrowserAutoscroll;
@@ -233,7 +238,8 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
         return browserSettings.getFilterSettings().getObjectTypeFilterSettings().getElementFilter();
     }
 
-    public void navigateToElement(Project project, String tableName, String columnName) {
+    @SuppressWarnings("unused")
+    public void navigateToElement(Project project, Set<String> tableNames, String columnName) {
         ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
         ToolWindow toolWindow = toolWindowManager.getToolWindow("DB Browser");
         //noinspection DataFlowIssue
@@ -244,7 +250,7 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
                 return;
             }
 
-            DBObjectBundleImpl objectBundle = (DBObjectBundleImpl) switchToFirstConnectionAndGetObjectBundle(project);
+            DBObjectBundle objectBundle = switchToFirstConnectionAndGetObjectBundle(project);
             if (objectBundle == null) {
                 TooltipUtils.INSTANCE.showTooltip("无法跳转,请先连接数据库!", project);
                 return;
@@ -256,26 +262,48 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
                 return;
             }
 
-            DBObject referencedObject = dbSchema.getChildObject(DBObjectType.DATASET, tableName,
-                    (short) 0, false);
-            if (referencedObject == null) {
-                TooltipUtils.INSTANCE.showTooltip("尝试加载表元数据信息,请稍后再试!", project);
+            List<DBTable> dbTables = dbSchema.getTables();
+            if (dbTables == null || dbTables.isEmpty()) {
+                TooltipUtils.INSTANCE.showTooltip("尝试加载表元数据信息,请稍后再试...", project);
+                return;
+            }
+
+            dbTables = dbTables.stream()
+                    .filter(it -> tableNames.contains(it.getName()))
+                    .collect(Collectors.toList());
+            if (dbTables.isEmpty()) {
+                TooltipUtils.INSTANCE.showTooltip("无法跳转,在" + dbSchema.getName() + "数据库中未找到表:" + tableNames, project);
                 return;
             }
 
             if (columnName == null) {
-                referencedObject.navigate(true);
+                dbTables.get(0).navigate(true);
                 return;
             }
 
-            DBObject columnObject = referencedObject.getChildObject(DBObjectType.COLUMN, columnName,
-                    (short) 0, false);
-            if (columnObject == null) {
+            List<DBColumn> dbColumns = dbTables.stream()
+                    .map(DBDataset::getColumns)
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toList());
+            if (dbColumns.isEmpty()) {
                 TooltipUtils.INSTANCE.showTooltip("尝试加载列元数据信息,请稍后再试!", project);
                 return;
             }
 
-            columnObject.navigate(true);
+            dbColumns = dbColumns.stream()
+                    .filter(it -> columnName.equals(it.getName()))
+                    .collect(Collectors.toList());
+            if (dbColumns.isEmpty()) {
+                TooltipUtils.INSTANCE.showTooltip("无法跳转,在" + tableNames + "中未能解析列" + columnName + "!", project);
+                return;
+            }
+
+            if (dbColumns.size() == 1) {
+                dbColumns.get(0).navigate(true);
+                return;
+            }
+
+            TooltipUtils.INSTANCE.showTooltip("无法跳转,在" + tableNames + "中解析到多个列" + columnName + "!", project);
         });
 
     }
