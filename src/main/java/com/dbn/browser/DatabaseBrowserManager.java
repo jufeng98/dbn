@@ -19,7 +19,11 @@ import com.dbn.common.listener.DBNFileEditorManagerListener;
 import com.dbn.common.options.setting.BooleanSetting;
 import com.dbn.common.thread.Background;
 import com.dbn.common.thread.Dispatch;
-import com.dbn.connection.*;
+import com.dbn.connection.ConnectionBundle;
+import com.dbn.connection.ConnectionHandler;
+import com.dbn.connection.ConnectionId;
+import com.dbn.connection.ConnectionManager;
+import com.dbn.connection.SchemaId;
 import com.dbn.connection.config.ConnectionBundleSettings;
 import com.dbn.connection.config.ConnectionDatabaseSettings;
 import com.dbn.connection.config.ConnectionDetailSettings;
@@ -29,9 +33,9 @@ import com.dbn.object.DBColumn;
 import com.dbn.object.DBDataset;
 import com.dbn.object.DBSchema;
 import com.dbn.object.DBTable;
+import com.dbn.object.DBView;
 import com.dbn.object.common.DBObject;
 import com.dbn.object.common.DBObjectBundle;
-import com.dbn.object.common.DBObjectBundleImpl;
 import com.dbn.object.common.list.DBObjectList;
 import com.dbn.object.common.list.DBObjectListContainer;
 import com.dbn.object.type.DBObjectType;
@@ -68,21 +72,24 @@ import java.util.stream.Collectors;
 import static com.dbn.browser.DatabaseBrowserUtils.isSkipBrowserAutoscroll;
 import static com.dbn.common.component.Components.projectService;
 import static com.dbn.common.dispose.Failsafe.nn;
-import static com.dbn.common.options.setting.Settings.*;
+import static com.dbn.common.options.setting.Settings.connectionIdAttribute;
+import static com.dbn.common.options.setting.Settings.newElement;
+import static com.dbn.common.options.setting.Settings.stringAttribute;
 import static com.dbn.object.type.DBObjectType.COLUMN;
 import static com.dbn.object.type.DBObjectType.TABLE;
+import static com.dbn.object.type.DBObjectType.VIEW;
 
 @Getter
 @State(
-    name = DatabaseBrowserManager.COMPONENT_NAME,
-    storages = @Storage(DatabaseNavigator.STORAGE_FILE)
+        name = DatabaseBrowserManager.COMPONENT_NAME,
+        storages = @Storage(DatabaseNavigator.STORAGE_FILE)
 )
 public class DatabaseBrowserManager extends ProjectComponentBase implements PersistentState {
     public static final String COMPONENT_NAME = "DBNavigator.Project.DatabaseBrowserManager";
     public static final String TOOL_WINDOW_ID = "DB Browser";
 
     private final BooleanSetting autoscrollFromEditor = new BooleanSetting("autoscroll-from-editor", true);
-    private final BooleanSetting autoscrollToEditor   = new BooleanSetting("autoscroll-to-editor", false);
+    private final BooleanSetting autoscrollToEditor = new BooleanSetting("autoscroll-to-editor", false);
     private final BooleanSetting showObjectProperties = new BooleanSetting("show-object-properties", true);
 
     private final transient Latent<BrowserToolWindowForm> toolWindowForm = Latent.basic(this::createToolWindowForm);
@@ -273,12 +280,13 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
             }
 
             List<DBTable> dbTables = dbSchema.getTables();
-            if (dbTables == null || dbTables.isEmpty()) {
+            List<DBView> dbViews = dbSchema.getViews();
+            if (CollectionUtils.isEmpty(dbTables)) {
                 TooltipUtils.INSTANCE.showTooltip("正在加载表元数据信息,请稍后再试!", project);
                 return;
             }
 
-            boolean loading = isMetadataLoading(dbSchema, TABLE);
+            boolean loading = isMetadataLoading(dbSchema, TABLE) || isMetadataLoading(dbSchema, VIEW);
             if (loading) {
                 TooltipUtils.INSTANCE.showTooltip("表元数据信息尚未加载完成,请稍后再试!", project);
                 return;
@@ -287,13 +295,22 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
             dbTables = dbTables.stream()
                     .filter(it -> tableNames.contains(it.getName()))
                     .collect(Collectors.toList());
-            if (dbTables.isEmpty()) {
+
+            dbViews = dbViews.stream()
+                    .filter(it -> tableNames.contains(it.getName()))
+                    .collect(Collectors.toList());
+
+            if (dbTables.isEmpty() && dbViews.isEmpty()) {
                 TooltipUtils.INSTANCE.showTooltip("无法跳转,在" + dbSchema.getName() + "数据库中未找到表:" + tableNames, project);
                 return;
             }
 
             if (columnName == null) {
-                dbTables.get(0).navigate(true);
+                if (!dbTables.isEmpty()) {
+                    dbTables.get(0).navigate(true);
+                } else {
+                    dbViews.get(0).navigate(true);
+                }
                 return;
             }
 
@@ -301,12 +318,19 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
                     .map(DBDataset::getColumns)
                     .flatMap(Collection::stream)
                     .collect(Collectors.toList());
-            if (dbColumns.isEmpty()) {
+
+            List<DBColumn> viewDbColumns = dbViews.stream()
+                    .map(DBDataset::getColumns)
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toList());
+
+            if (dbColumns.isEmpty() && viewDbColumns.isEmpty()) {
                 TooltipUtils.INSTANCE.showTooltip("正在加载列元数据信息,请稍后再试!", project);
                 return;
             }
 
-            loading = dbTables.stream().anyMatch(it -> isMetadataLoading(it, COLUMN));
+            loading = dbTables.stream().anyMatch(it -> isMetadataLoading(it, COLUMN))
+                    || dbViews.stream().anyMatch(it -> isMetadataLoading(it, COLUMN));
             if (loading) {
                 TooltipUtils.INSTANCE.showTooltip("列元数据信息尚未加载完成,请稍后再试!", project);
                 return;
@@ -315,13 +339,23 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
             dbColumns = dbColumns.stream()
                     .filter(it -> columnName.equals(it.getName()))
                     .collect(Collectors.toList());
-            if (dbColumns.isEmpty()) {
+
+            viewDbColumns = viewDbColumns.stream()
+                    .filter(it -> columnName.equals(it.getName()))
+                    .collect(Collectors.toList());
+
+            if (dbColumns.isEmpty() && viewDbColumns.isEmpty()) {
                 TooltipUtils.INSTANCE.showTooltip("无法跳转,在" + tableNames + "中未能解析列" + columnName + "!", project);
                 return;
             }
 
             if (dbColumns.size() == 1) {
                 dbColumns.get(0).navigate(true);
+                return;
+            }
+
+            if (viewDbColumns.size() == 1) {
+                viewDbColumns.get(0).navigate(true);
                 return;
             }
 

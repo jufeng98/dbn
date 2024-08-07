@@ -119,7 +119,9 @@ class DBColumnImpl extends DBObjectImpl<DBColumnMetadata> implements DBColumn {
 
     @Override
     public void buildToolTip(HtmlToolTipBuilder ttb) {
-        ttb.append(true, getObjectType().getName() + "(" + getColumnComment() + ")", true);
+        String comment = getColumnComment();
+        String s = StringUtils.isNotBlank(comment) ? "(" + comment + ")" : "";
+        ttb.append(true, getObjectType().getName() + s, true);
         ttb.append(false, " - ", true);
         ttb.append(false, getColumnDefault() + " " + dataType.getQualifiedName(), true);
 
@@ -376,7 +378,9 @@ class DBColumnImpl extends DBObjectImpl<DBColumnMetadata> implements DBColumn {
 
     @Override
     public String getPresentableText() {
-        return super.getPresentableText() + "(" + getColumnComment() + ") " + getColumnDefault() + " " + dataType.getQualifiedName();
+        String comment = getColumnComment();
+        String s = StringUtils.isNotBlank(comment) ? "(" + comment + ")" : " ";
+        return super.getPresentableText() + s + getColumnDefault() + " " + dataType.getQualifiedName();
     }
 
 }

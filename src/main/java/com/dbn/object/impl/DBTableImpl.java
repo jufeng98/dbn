@@ -14,6 +14,7 @@ import com.dbn.object.filter.type.ObjectTypeFilterSettings;
 import com.dbn.object.properties.PresentableProperty;
 import com.dbn.object.properties.SimplePresentableProperty;
 import com.dbn.object.type.DBObjectType;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -199,7 +200,9 @@ class DBTableImpl extends DBDatasetImpl<DBTableMetadata> implements DBTable {
 
     @Override
     public String getPresentableText() {
-        return super.getPresentableText() + "(" + getComment() + ")";
+        String comment = getComment();
+        String s = StringUtils.isNotBlank(comment) ? "(" + comment + ")" : "";
+        return super.getPresentableText() + s;
     }
 
 }

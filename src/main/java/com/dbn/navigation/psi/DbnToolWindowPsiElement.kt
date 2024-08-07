@@ -7,8 +7,12 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.openapi.project.Project
 
-
-class DbnToolWindowPsiElement(val tableNames: Set<String>, val columnName: String?, node: ASTNode) :
+@Suppress("unused")
+class DbnToolWindowPsiElement(
+    @Suppress("MemberVisibilityCanBePrivate") val tableNames: Set<String>,
+    val columnName: String?,
+    node: ASTNode,
+) :
     ASTWrapperPsiElement(node) {
 
     override fun navigate(requestFocus: Boolean) {
@@ -17,6 +21,7 @@ class DbnToolWindowPsiElement(val tableNames: Set<String>, val columnName: Strin
     }
 
     companion object {
+        @Suppress("unused")
         fun getFirstConnCacheDbTables(project: Project): Map<String, CacheDbTable>? {
             val cacheService = MetadataCacheService.getService(project)
             return cacheService.getFirstConnectionDBCacheTables(project)

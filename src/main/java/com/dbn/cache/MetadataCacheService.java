@@ -25,7 +25,6 @@ import java.io.File;
 import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -40,6 +39,7 @@ import static com.dbn.utils.JsonUtils.OBJECT_MAPPER;
 @Service(Service.Level.PROJECT)
 public final class MetadataCacheService {
     private static final String IDENTIFIER_TABLES = "TABLES";
+    private static final String IDENTIFIER_VIEWS = "VIEWS";
     private static final String IDENTIFIER_ALL_COLUMNS = "ALL_COLUMNS";
     private static final String IDENTIFIER_ALL_INDEXES = "ALL_INDEXES";
     private static final String IDENTIFIER_ALL_INDEX_COLUMNS = "ALL_INDEX_COLUMNS";
@@ -82,18 +82,30 @@ public final class MetadataCacheService {
             return;
         }
 
+        Map<String, CacheDbTable> tableMap = Maps.newLinkedHashMap();
+
         ArrayNode identifierTableArrayNode = (ArrayNode) rootObjectNode.get(IDENTIFIER_TABLES);
-        if (identifierTableArrayNode == null) {
-            return;
+        if (identifierTableArrayNode != null) {
+            for (JsonNode jsonNode : identifierTableArrayNode) {
+                ObjectNode objectNode = (ObjectNode) jsonNode;
+
+                CacheDbTable cacheDbTable = createCacheDbTable(objectNode);
+
+                tableMap.put(cacheDbTable.getName(), cacheDbTable);
+            }
+            log.warn("初始化{}个表", identifierTableArrayNode.size());
         }
 
-        Map<String, CacheDbTable> tableMap = Maps.newLinkedHashMap();
-        for (JsonNode jsonNode : identifierTableArrayNode) {
-            ObjectNode objectNode = (ObjectNode) jsonNode;
+        ArrayNode identifierViewArrayNode = (ArrayNode) rootObjectNode.get(IDENTIFIER_VIEWS);
+        if (identifierViewArrayNode != null) {
+            for (JsonNode jsonNode : identifierViewArrayNode) {
+                ObjectNode objectNode = (ObjectNode) jsonNode;
 
-            CacheDbTable cacheDbTable = createCacheDbTable(objectNode);
+                CacheDbTable cacheDbTable = createCacheDbTableView(objectNode);
 
-            tableMap.put(cacheDbTable.getName(), cacheDbTable);
+                tableMap.put(cacheDbTable.getName(), cacheDbTable);
+            }
+            log.warn("初始化{}个视图", identifierViewArrayNode.size());
         }
 
         int columnSize = 0;
@@ -167,6 +179,12 @@ public final class MetadataCacheService {
         return new CacheDbTable(tableName, tableComment, isTemporary);
     }
 
+    private CacheDbTable createCacheDbTableView(ObjectNode objectNode) {
+        String viewName = objectNode.get("VIEW_NAME").asText("");
+        String viewComment = objectNode.get("VIEW_COMMENT").asText("");
+        return new CacheDbTable(viewName, viewComment, false);
+    }
+
     private CacheDbColumn createCacheDbColumn(ObjectNode objectNode) {
         String columnName = objectNode.get("COLUMN_NAME").asText("");
         String columnComment = objectNode.get("COLUMN_COMMENT").asText("");
@@ -232,7 +250,7 @@ public final class MetadataCacheService {
 
     @SneakyThrows
     public synchronized ArrayNode saveResultSetToLocal(String schemaName, Project project, ResultSet resultSet, String connectionId,
-                                          String identifier) {
+                                                       String identifier) {
         String fileFullName = getCacheFileFullName(schemaName, project, connectionId);
 
         ObjectNode rootObjectNode = JsonUtils.readTree(fileFullName);
@@ -260,7 +278,7 @@ public final class MetadataCacheService {
         resultSet.close();
 
         JsonUtils.saveTree(rootObjectNode, fileFullName);
-        log.warn("完成缓存元数据:{},共{}个子元素,路径:{}", identifier, metaData.getColumnCount(), fileFullName);
+        log.warn("完成缓存元数据:{},共{}个子元素,路径:{}", identifier, identifierArrayNode.size(), fileFullName);
 
         if (StringUtils.isNotBlank(schemaName)) {
             initCacheDbTable(schemaName, project, connectionId);
@@ -269,7 +287,7 @@ public final class MetadataCacheService {
         return identifierArrayNode;
     }
 
-    public void clearCache(String schemaName, Project project, DBNConnection connection, DBObjectType objectType) {
+    public synchronized void clearCache(String schemaName, Project project, DBNConnection connection, DBObjectType objectType) {
         String fileFullName = getCacheFileFullName(schemaName, project, connection.getId().id());
         File file = new File(fileFullName);
         if (!file.exists()) {
@@ -285,16 +303,7 @@ public final class MetadataCacheService {
             return;
         }
 
-        String name = objectType.name();
-        Iterator<String> fieldNames = rootObjectNode.fieldNames();
-        List<String> delNames = Lists.newArrayList();
-        while (fieldNames.hasNext()) {
-            String fieldName = fieldNames.next();
-            if (!fieldName.contains(name)) {
-                continue;
-            }
-            delNames.add(fieldName);
-        }
+        List<String> delNames = getDelStrings(objectType);
 
         for (String delName : delNames) {
             JsonNode jsonNode = rootObjectNode.remove(delName);
@@ -302,6 +311,23 @@ public final class MetadataCacheService {
         }
 
         JsonUtils.saveTree(rootObjectNode, fileFullName);
+    }
+
+    private List<String> getDelStrings(DBObjectType objectType) {
+        List<String> delNames = Lists.newArrayList();
+        if (objectType == DBObjectType.INDEX) {
+            delNames.add("DATASET_INDEXES");
+            delNames.add("ALL_INDEXES");
+        } else if (objectType == DBObjectType.CONSTRAINT) {
+            delNames.add("DATASET_CONSTRAINTS");
+            delNames.add("ALL_CONSTRAINTS");
+        } else if (objectType == DBObjectType.COLUMN) {
+            delNames.add("DATASET_COLUMNS");
+            delNames.add("ALL_COLUMNS");
+        } else if (objectType == DBObjectType.TABLE) {
+            delNames.add("TABLES");
+        }
+        return delNames;
     }
 
     private boolean isYesFlag(String columnValue) {

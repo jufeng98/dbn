@@ -8,6 +8,7 @@ import com.dbn.object.*;
 import com.dbn.object.*;
 import com.dbn.object.common.DBSchemaObjectImpl;
 import com.dbn.object.common.list.DBObjectListContainer;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -96,7 +97,9 @@ abstract class DBDatasetImpl<M extends DBObjectMetadata> extends DBSchemaObjectI
 
     @Override
     public void buildToolTip(HtmlToolTipBuilder ttb) {
-        ttb.append(true, getObjectType().getName() + "(" + getComment() + ")", true);
+        String comment = getComment();
+        String s = StringUtils.isNotBlank(comment) ? "(" + comment + ")" : "";
+        ttb.append(true, getObjectType().getName() + s, true);
         ttb.createEmptyRow();
         super.buildToolTip(ttb);
     }
