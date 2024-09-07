@@ -85,7 +85,7 @@ public class DatasetFilterUtil {
     public static String appendLimitIfLack(String sql, int pageNum, int pageSize, Project project, DatabaseType databaseType) {
         sql = sql.trim();
         if (sql.endsWith(";")) {
-            sql = sql.substring(sql.length() - 2);
+            sql = sql.substring(0, sql.length() - 2);
         }
         String finalSql = sql;
         String tmpSql = ReadAction.compute(() -> {
