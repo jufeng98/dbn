@@ -426,6 +426,17 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
         return dbName;
     }
 
+    public @Nullable DBSchema getFirstConnectionConfigDbScheme(Project project) {
+        String dbName = getFirstConnectionConfigDbName(project);
+
+        DBObjectBundle objectBundle = switchToFirstConnectionAndGetObjectBundle(project);
+        if (objectBundle == null) {
+            return null;
+        }
+
+        return objectBundle.getSchema(dbName);
+    }
+
     private @Nullable String resolveUrlDbName(String url) {
         try {
             val uri = URI.create(url.substring(5));
