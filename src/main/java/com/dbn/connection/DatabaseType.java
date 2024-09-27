@@ -29,7 +29,7 @@ public enum DatabaseType implements Constant<DatabaseType>, Presentable{
             "MySQL",
             Icons.DB_MYSQL,
             Icons.DB_MYSQL_LARGE,
-            "com.mysql.cj.jdbc.Driver",
+            "com.mysql.jdbc.Driver",
             AuthenticationType.values(),
             array(DatabaseUrlPattern.MYSQL_DB, DatabaseUrlPattern.GENERIC),
             array("MARIADB", "PERCONA", "OURDELTA", "DRIZZLE", "MAXDB")),
