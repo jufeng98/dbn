@@ -719,7 +719,7 @@
 
         <projectConfigurable provider="com.dbn.options.ProjectSettingsProvider" groupId="tools" dynamic="true" id="DBNavigator.Settings" displayName="Database Navigator"/>
 
-        <toolWindow id="DB Browser" icon="com.dbn.common.icon.Icons.WINDOW_DATABASE_BROWSER" anchor="left" factoryClass="com.dbn.browser.DatabaseBrowserToolWindowFactory"/>
+        <toolWindow id="DB Browser" icon="com.dbn.common.icon.Icons.WINDOW_DATABASE_BROWSER" anchor="right" factoryClass="com.dbn.browser.DatabaseBrowserToolWindowFactory"/>
         <toolWindow id="DB Diagnostics" icon="com.dbn.common.icon.Icons.WINDOW_DATABASE_DIAGNOSTICS" anchor="bottom" factoryClass="com.dbn.diagnostics.DiagnosticsToolWindowFactory" canCloseContents="true"/>
         <toolWindow id="DB Execution Console" icon="com.dbn.common.icon.Icons.WINDOW_EXECUTION_CONSOLE" anchor="bottom" factoryClass="com.dbn.execution.ExecutionConsoleToolWindowFactory" />
 
