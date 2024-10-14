@@ -1209,6 +1209,7 @@
                    implementationClass="com.dbn.sql.annotator.SqlAnnotator"/>
         <codeInsight.lineMarkerProvider language="sql"
                                         implementationClass="com.dbn.sql.gutter.SqlExecutorLineMarker"/>
+        <highlightErrorFilter implementation="com.dbn.suppress.MyHighlightErrorFilter"/>
     </extensions>
 
 </idea-plugin>
