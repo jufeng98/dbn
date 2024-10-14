@@ -938,6 +938,8 @@
                   class="com.dbn.editor.code.action.SourceCodeSaveAction$ShortcutInterceptor"/>
         <listener topic="com.intellij.openapi.actionSystem.ex.AnActionListener"
                   class="com.dbn.execution.statement.action.ExecuteStatementEditorAction$ShortcutInterceptor"/>
+        <listener topic="com.intellij.openapi.fileEditor.FileEditorManagerListener"
+                  class="com.dbn.sql.listener.SqlEditorListener"/>
     </projectListeners>
     <extensions defaultExtensionNs="com.intellij">
         <notificationGroup id="DBNavigator.NotificationGroup" displayType="BALLOON" isLogByDefault="true"/>
