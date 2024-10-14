@@ -1,0 +1,454 @@
+{
+    parserClass="com.dbn.sql.parser.SqlParser"
+    parserUtilClass="com.dbn.sql.parser.SqlParserUtil"
+    extends="com.dbn.sql.SqlPsiElement"
+    psiClassPrefix="Sql"
+    psiImplClassSuffix="Impl"
+    psiPackage="com.dbn.sql.psi"
+    psiImplPackage="com.dbn.sql.psi.impl"
+
+    elementTypeHolderClass="com.dbn.sql.psi.SqlTypes"
+    elementTypeClass="com.dbn.sql.psi.SqlElementType"
+    tokenTypeClass="com.dbn.sql.psi.SqlTokenType"
+    psiImplUtilClass="com.dbn.sql.psi.impl.SqlPsiImplUtil"
+
+    tokens=[
+        // 关键字
+        SELECT='regexp:[Ss][Ee][Ll][Ee][Cc][Tt]'
+        DELETE='regexp:[Dd][Ee][Ll][Ee][Tt][Ee]'
+        UPDATE='regexp:[Uu][Pp][Dd][Aa][Tt][Ee]'
+        INSERT='regexp:[Ii][Nn][Ss][Ee][Rr][Tt]'
+        DISTINCT='regexp:[Dd][Ii][Ss][Tt][Ii][Nn][Cc][Tt]'
+        FROM='regexp:[Ff][Rr][Oo][Mm]'
+        EXPLAIN='regexp:[Ee][Xx][Pp][Ll][Aa][Ii][Nn]'
+        QUERY='regexp:[Qq][Uu][Ee][Rr][Yy]'
+        PLAN='regexp:[Pp][Ll][Aa][Nn]'
+        RENAME='regexp:[Rr][Ee][Nn][Aa][Mm][Ee]'
+        WHERE='regexp:[Ww][Hh][Ee][Rr][Ee]'
+        TO='regexp:[Tt][Oo]'
+        ON='regexp:[Oo][Nn]'
+        IN='regexp:[Ii][Nn]'
+        ADD='regexp:[Aa][Dd][Dd]'
+        SET='regexp:[Ss][Ee][Tt]'
+        CASE='regexp:[Cc][Aa][Ss][Ee]'
+        THEN='regexp:[Tt][Hh][Ee][Nn]'
+        ELSE='regexp:[Ee][Ll][Ss][Ee]'
+        CAST='regexp:[Cc][Aa][Ss][Tt]'
+        LIKE='regexp:[Ll][Ii][Kk][Ee]'
+        GLOB='regexp:[Gg][Ll][Oo][Bb]'
+        REGEXP='regexp:[Rr][Ee][Gg][Ee][Xx][Pp]'
+        VACUUM='regexp:[Vv][Aa][Cc][Uu][Uu][Mm]'
+        MATCH='regexp:[Mm][Aa][Tt][Cc][Hh]'
+        ESCAPE='regexp:[Ee][Ss][Cc][Aa][Pp][Ee]'
+        EXCEPT='regexp:[Ee][Xx][Cc][Ee][Pp][Tt]'
+        INTERSECT='regexp:[Ii][Nn][Tt][Ee][Rr][Ss][Ee][Cc][Tt]'
+        BETWEEN='regexp:[Bb][Ee][Tt][Ww][Ee][Ee][Nn]'
+        NATURAL='regexp:[Nn][Aa][Tt][Uu][Rr][Aa][Ll]'
+        END='regexp:[Ee][Nn][Dd]'
+        FOR='regexp:[Ff][Oo][Rr]'
+        OR='regexp:[Oo][Rr]'
+        ABORT='regexp:[Aa][Bb][Oo][Rr][Tt]'
+        RAISE='regexp:[Rr][Aa][Ii][Ss][Ee]'
+        FAIL='regexp:[Ff][Aa][Ii][Ll]'
+        COLUMN='regexp:[Cc][Oo][Ll][Uu][Mm][Nn]'
+        IGNORE='regexp:[Ii][Gg][Nn][Oo][Rr][Ee]'
+        ALTER='regexp:[Aa][Ll][Tt][Ee][Rr]'
+        TABLE='regexp:[Tt][Aa][Bb][Ll][Ee]'
+        TEMP='regexp:[Tt][Ee][Mm][Pp]'
+        TEMPORARY='regexp:[Tt][Ee][Mm][Pp][Oo][Rr][Aa][Rr][Yy]'
+        ANALYZE='regexp:[Aa][Nn][Aa][Ll][Yy][Zz][Ee]'
+        ATTACH='regexp:[Aa][Tt][Tt][Aa][Cc][Hh]'
+        DATABASE='regexp:[Dd][Aa][Tt][Aa][Bb][Aa][Ss][Ee]'
+        AS='regexp:[Aa][Ss]'
+        BEGIN='regexp:[Bb][Ee][Gg][Ii][Nn]'
+        VIEW='regexp:[Vv][Ii][Ee][Ww]'
+        DEFERRED='regexp:[Dd][Ee][Ff][Ee][Rr][Rr][Ee][Dd]'
+        IMMEDIATE='regexp:[Ii][Mm][Mm][Ee][Dd][Ii][Aa][Tt][Ee]'
+        EXCLUSIVE='regexp:[Ee][Xx][Cc][Ll][Uu][Ss][Ii][Vv][Ee]'
+        TRANSACTION='regexp:[Tt][Rr][Aa][Nn][Ss][Aa][Cc][Tt][Ii][Oo][Nn]'
+        COMMIT='regexp:[Cc][Oo][Mm][Mm][Ii][Tt]'
+        ROLLBACK='regexp:[Rr][Oo][Ll][Ll][Bb][Aa][Cc][Kk]'
+        SAVEPOINT='regexp:[Ss][Aa][Vv][Ee][Pp][Oo][Ii][Nn][Tt]'
+        RELEASE='regexp:[Rr][Ee][Ll][Ee][Aa][Ss][Ee]'
+        CREATE='regexp:[Cc][Rr][Ee][Aa][Tt][Ee]'
+        UNIQUE='regexp:[Uu][Nn][Ii][Qq][Uu][Ee]'
+        INDEX='regexp:[Ii][Nn][Dd][Ee][Xx]'
+        IF='regexp:[Ii][Ff]'
+        IS='regexp:[Ii][Ss]'
+        OF='regexp:[Oo][Ff]'
+        NOT='regexp:[Nn][Oo][Tt]'
+        EXISTS='regexp:[Ee][Xx][Ii][Ss][Tt][Ss]'
+        RESTRICT='regexp:[Rr][Ee][Ss][Tt][Rr][Ii][Cc][Tt]'
+        DATABASE='regexp:[Dd][Aa][Tt][Aa][Bb][Aa][Ss][Ee]'
+        CASCADE='regexp:[Cc][Aa][Ss][Cc][Aa][Dd][Ee]'
+        COLLATE='regexp:[Cc][Oo][Ll][Ll][Aa][Tt][Ee]'
+        WITH='regexp:[Ww][Ii][Tt][Hh]'
+        LEFT='regexp:[Ll][Ee][Ff][Tt]'
+        OUTER='regexp:[Oo][Uu][Tt][Ee][Rr]'
+        INNER='regexp:[Ii][Nn][Nn][Ee][Rr]'
+        CROSS='regexp:[Cc][Rr][Oo][Ss][Ss]'
+        JOIN='regexp:[Jj][Oo][Ii][Nn]'
+        USING='regexp:[Uu][Ss][Ii][Nn][Gg]'
+        UNION='regexp:[Uu][Nn][Ii][Oo][Nn]'
+        ALL='regexp:[Aa][Ll][Ll]'
+        AND='regexp:[Aa][Nn][Dd]'
+        TRUE='regexp:[Tt][Rr][Uu][Ee]'
+        INTO='regexp:[Ii][Nn][Tt][Oo]'
+        FALSE='regexp:[Ff][Aa][Ll][Ss][Ee]'
+        DROP='regexp:[Dd][Rr][Oo][Pp]'
+        VALUES='regexp:[Vv][Aa][Ll][Uu][Ee][Ss]'
+        ORDER='regexp:[Oo][Rr][Dd][Ee][Rr]'
+        INDEXED='regexp:[Ii][Nn][Dd][Ee][Xx][Ee][Dd]'
+        GROUP='regexp:[Gg][Rr][Oo][Uu][Pp]'
+        BY='regexp:[Bb][Yy]'
+        LIMIT='regexp:[Ll][Ii][Mm][Ii][Tt]'
+        OFFSET='regexp:[Oo][Ff][Ff][Ss][Ee][Tt]'
+        ASC='regexp:[Aa][Ss][Cc]'
+        DESC='regexp:[Dd][Ee][Ss][Cc]'
+        WHEN='regexp:[Ww][Hh][Ee][Nn]'
+        NULL='regexp:[Nn][Uu][Ll][Ll]'
+        WITHOUT='regexp:[Ww][Ii][Tt][Hh][Oo][Uu][Tt]'
+        CONSTRAINT='regexp:[Cc][On][Nn][Ss][Tt][Rr][Aa][Ii][Nn][Tt]'
+        PRIMARY='regexp:[Pp][Rr][Ii][Mm][Aa][Rr][Yy]'
+        KEY='regexp:[Kk][Ee][Yy]'
+        CHECK='regexp:[Cc][Hh][Ee][Cc][Kk]'
+        DEFAULT='regexp:[Dd][Ee][Ff][Aa][Uu][Ll][Tt]'
+        RECURSIVE='regexp:[Rr][Ee][Cc][Uu][Rr][Ss][Ii][Vv][Ee]'
+        COLLATE='regexp:[Cc][Oo][Ll][Ll][Aa][Tt][Ee]'
+        FOREIGN='regexp:[Ff][Oo][Rr][Ee][Ii][Gg][Nn]'
+        REFERENCES_WORD='regexp:[Rr][Ee][Ff][Ee][Rr][Ee][Nn][Cc][Ee][Ss]'
+        AUTOINCREMENT='regexp:[Aa][Uu][Tt][Oo][Ii][Nn][Cc][Rr][Ee][Mm][Ee][Nn][Tt]'
+        PRAGMA='regexp:[Pp][Rr][Aa][Gg][Mm][Aa]'
+        REINDEX='regexp:[Rr][Ee][Ii][Nn][Dd][Ee][Xx]'
+        CURRENT_TIME='regexp:[Cc][Uu][Rr][Rr][Ee][Nn][Tt]_[Tt][Ii][Mm][Ee]'
+        CURRENT_DATE='regexp:[Cc][Uu][Rr][Rr][Ee][Nn][Tt]_[Dd][Aa][Tt][Ee]'
+        CURRENT_TIMESTAMP='regexp:[Cc][Uu][Rr][Rr][Ee][Nn][Tt]_[Tt][Ii][Mm][Ee][Ss][Tt][Aa][Mm][Pp]'
+        AUTO_INCREMENT='regexp:[Aa][Uu][Tt][Oo]_[Ii][Nn][Cc][Rr][Ee][Mm][Ee][Nn][Tt]'
+        UNSIGNED='regexp:[Uu][Nn][Ss][Ii][Gg][Nn][Ee][Dd]'
+        UNSIGNED='regexp:[Uu][Nn][Ss][Ii][Gg][Nn][Ee][Dd]'
+        COMMENT_WORD='regexp:[Cc][Oo][Mm][Mm][Ee][Nn][Tt]'
+        SEPARATOR='regexp:[Ss][Ee][Pp][Aa][Rr][Aa][Tt][Oo][Rr]'
+        INTERVAL='regexp:[Ii][Nn][Tt][Ee][Rr][Vv][Aa][Ll]'
+        MONTH='regexp:[Mm][Oo][Nn][Tt][Hh]'
+        DAY='regexp:[Dd][Aa][Yy]'
+        HOUR='regexp:[Hh][Oo][Uu][Rr]'
+        MINUTE='regexp:[Mm][Ii][Nn][Uu][Tt][Ee]'
+        CHARACTER='regexp:[Cc][Hh][Aa][Rr][Aa][Cc][Tt][Ee][Rr]'
+
+        // 各类符号
+        SEMI=';'
+        EQ='='
+        LP='('
+        RP=')'
+        DOT='.'
+        COMMA=','
+        PLUS='+'
+        MINUS='-'
+        BITWISE_NOT='~'
+        SHIFT_RIGHT='>>'
+        SHIFT_LEFT='<<'
+        LT='<'
+        GT='>'
+        LTE='<='
+        GTE='>='
+        EQ2='=='
+        NEQ='!='
+        NEQ2='<>'
+        MULTIPLY='*'
+        DIVIDE='/'
+        MOD='%'
+        BITWISE_AND='&'
+        BITWISE_OR='|'
+        CONCAT='||'
+        SHARP='#'
+        DOLLAR='$'
+
+        // 标识符
+        space='regexp:\s+'
+        comment='regexp:--.*'
+        block_comment='regexp:/\*([^*]|\*+[^*/])*(\*+/)?'
+        javadoc='regexp:/\*\*(.|\n)*\*/'
+        digit='regexp:\d+(\.\d*)?'
+        // noinspection RegExpRedundantEscape
+        id='regexp:[a-zA-Z0-9_\`\[\]]+'
+        string="regexp:('([^'])*'?|\"([^\"])*\"?)"
+
+        // 没有找到办法用代码处理 mybatis mapper.xml 文件里的 ognl 占位符表达式,只好从语言层面将其作为一个合法元素去识别
+        MYBATIS_OGNL="regexp:[$#]\{[a-zA-Z0-9_@()'.,=\s]+}"
+    ]
+  extends(".*expr")=expr
+}
+
+sqlFile ::= root*
+root ::= statement SEMI? {
+    pin=1
+}
+
+statement ::= [ EXPLAIN ] (
+    alter_table_stmt | analyze_stmt | attach_stmt | begin_stmt | commit_stmt | create_index_stmt | create_table_stmt |
+    create_trigger_stmt | create_view_stmt | create_virtual_table_stmt | delete_stmt_limited | detach_stmt | drop_index_stmt |
+    drop_table_stmt | drop_trigger_stmt | drop_view_stmt | insert_stmt | pragma_stmt | reindex_stmt | release_stmt |
+    rollback_stmt | savepoint_stmt | compound_select_stmt | update_stmt_limited | vacuum_stmt
+) {
+    recoverWhile=sql_stmt_recovery
+    pin = 2
+    methods = [
+        getReferences
+    ]
+}
+private sql_stmt_recovery ::= !( ';' | ALTER | ANALYZE | ATTACH | BEGIN | COMMIT | END | ROLLBACK | SAVEPOINT | RELEASE |
+    CREATE | DROP | INSERT | WITH | UPDATE | DELETE | SELECT | PRAGMA | REINDEX)
+alter_table_stmt ::= ALTER TABLE [ database_name '.' ] table_name ( RENAME TO new_table_name | ADD [ COLUMN ] column_def ) {
+    pin = 1
+}
+analyze_stmt ::= ANALYZE [ database_name | table_or_index_name | database_name '.' table_or_index_name ] {
+    pin = 1
+}
+attach_stmt ::= ATTACH [ DATABASE ] expr AS database_name {
+    pin = 1
+}
+begin_stmt ::= BEGIN [ DEFERRED | IMMEDIATE | EXCLUSIVE ] [ TRANSACTION ] {
+    pin = 1;
+}
+commit_stmt ::= ( COMMIT | END ) [ TRANSACTION ] {
+    pin = 1
+}
+rollback_stmt ::= ROLLBACK [ TRANSACTION ] [ TO [ SAVEPOINT ] savepoint_name ] {
+    pin = 1
+}
+savepoint_stmt ::= SAVEPOINT savepoint_name {
+    pin = 1
+}
+release_stmt ::= RELEASE [ SAVEPOINT ] savepoint_name {
+    pin = 1
+}
+create_index_stmt ::= CREATE [ UNIQUE ] INDEX [ IF NOT EXISTS ] [ database_name '.' ] index_name
+    ON table_name '(' indexed_column ( ',' indexed_column ) * ')' [ WHERE expr ] {
+    pin = 6
+}
+indexed_column ::= column_name [ COLLATE collation_name ] [ ASC | DESC ]
+create_table_stmt ::= CREATE [ TEMP | TEMPORARY ] TABLE [ IF NOT EXISTS ] [ database_name '.' ] table_name
+    ( '(' column_def ( ',' column_def ) * ( ',' table_constraint ) * ')' table_attr * [ WITHOUT ROWID ] | AS compound_select_stmt ) {
+    pin = 6
+}
+table_attr ::= attr_name [ '=' attr_value ]
+column_def ::= column_name type_name ( column_constraint ) *
+type_name ::= identifier [ '(' signed_number ')' | '(' signed_number ',' signed_number ')' ]
+column_constraint ::= [ CONSTRAINT identifier ] ( PRIMARY KEY [ ASC | DESC ] conflict_clause [ AUTOINCREMENT ] |
+    UNSIGNED | NOT NULL [conflict_clause] | UNIQUE conflict_clause | CHECK '(' expr ')' | AUTO_INCREMENT | CHARACTER SET identifier |
+    DEFAULT ( signed_number | literal_value | '(' expr ')' ) | COLLATE collation_name | foreign_key_clause | COMMENT_WORD string )
+signed_number ::= [ '+' | '-' ] numeric_literal
+table_constraint ::= [ CONSTRAINT identifier ] (
+    ( PRIMARY KEY | UNIQUE | KEY ) [ index_name ] '(' indexed_column ( ',' indexed_column ) * ')' conflict_clause | CHECK '(' expr ')'
+    | FOREIGN KEY '(' column_name ( ',' column_name ) * ')' foreign_key_clause )
+foreign_key_clause ::= REFERENCES_WORD foreign_table [ '(' column_name ( ',' column_name ) * ')' ]
+    [ ( ON ( DELETE | UPDATE ) ( SET NULL | SET DEFAULT | CASCADE | RESTRICT | NO ACTION ) | MATCH identifier )* ]
+    [ [ NOT ] DEFERRABLE [ INITIALLY DEFERRED | INITIALLY IMMEDIATE ] ]
+conflict_clause ::= [ ON CONFLICT ( ROLLBACK | ABORT | FAIL | IGNORE | REPLACE ) | USING identifier ]
+create_trigger_stmt ::= CREATE [ TEMP | TEMPORARY ] TRIGGER [ IF NOT EXISTS ] [ database_name '.' ] trigger_name
+    [ BEFORE | AFTER | INSTEAD OF ] ( DELETE | INSERT | UPDATE [ OF column_name ( ',' column_name ) * ] )
+    ON table_name [ FOR EACH ROW] [ WHEN expr ] BEGIN ( (update_stmt | insert_stmt | delete_stmt | compound_select_stmt ) ';' ) + END {
+    pin = 6
+}
+create_view_stmt ::= CREATE [ TEMP | TEMPORARY ] VIEW [ IF NOT EXISTS ] [ database_name '.' ] view_name
+    [ '(' column_alias ( ',' column_alias ) * ')' ] AS compound_select_stmt {
+    pin = 6
+}
+create_virtual_table_stmt ::= CREATE VIRTUAL TABLE [ IF NOT EXISTS ] [ database_name '.' ] table_name
+    USING module_name [ '(' <<custom_module_argument column_def>> ( ',' <<custom_module_argument column_def>> ) * ')' ] {
+    pin = 6
+}
+//noinspection BnfUnusedRule
+module_argument ::= [ column_def ]
+with_clause ::= WITH [ RECURSIVE ] cte_table_name AS '(' compound_select_stmt ')' ( ',' cte_table_name AS '(' compound_select_stmt ')' ) * {
+    pin = 1
+}
+cte_table_name ::= table_name [ '(' column_alias ( ',' column_alias ) * ')' ]
+delete_stmt ::= [ with_clause ] DELETE FROM qualified_table_name [ WHERE expr ] {
+    pin = 4
+}
+delete_stmt_limited ::= [ with_clause ] DELETE FROM qualified_table_name [ WHERE expr ]
+    [ [ ORDER BY ordering_term ( ',' ordering_term ) * ] LIMIT expr [ ( OFFSET | ',' ) expr ] ] {
+    pin = 4
+}
+detach_stmt ::= DETACH [ DATABASE ] database_name {
+    pin = 1
+}
+drop_index_stmt ::= DROP INDEX [ IF EXISTS ] [ database_name '.' ] index_name {
+    pin = 2
+}
+drop_table_stmt ::= DROP TABLE [ IF EXISTS ] [ database_name '.' ] table_name {
+    pin = 2
+}
+drop_trigger_stmt ::= DROP TRIGGER [ IF EXISTS ] [ database_name '.' ] trigger_name {
+    pin = 2
+}
+drop_view_stmt ::= DROP VIEW [ IF EXISTS ] [ database_name '.' ] view_name {
+    pin = 2
+}
+expr ::= ( raise_expr
+         | case_expr
+         | exists_expr
+         | paren_expr
+         | binary_or_expr
+         | binary_and_expr
+         | between_expr
+         | binary_like_expr
+         | is_expr
+         | null_expr
+         | collate_expr
+         | cast_expr
+         | function_expr
+         | in_expr
+         | binary_equality_expr
+         | binary_boolean_expr
+         | binary_bitwise_expr
+         | binary_add_expr
+         | binary_mult_expr
+         | binary_pipe_expr
+         | unary_expr
+         | literal_expr
+         | column_expr
+         | mybatis_expr
+         | keyword_expr
+         | bind_expr)
+
+keyword_expr ::= MONTH | DAY | HOUR | MINUTE | SEPARATOR | INTERVAL
+literal_expr ::= literal_value
+bind_expr ::= bind_parameter
+mybatis_expr ::= MYBATIS_OGNL
+column_expr ::= [ database_name '.' table_name '.' | table_name '.' ] column_name
+unary_expr ::= ('+' | '-' | '~' ) expr
+binary_pipe_expr ::= expr '||' expr
+binary_mult_expr ::= expr ( '*' | '/' | '%' ) expr
+binary_add_expr ::= expr ( '+' | '-' ) expr
+binary_bitwise_expr ::= expr ( '<<' |  '>>' | '&' | '|' ) expr
+binary_boolean_expr ::= expr (  '<' | '<=' | '>' | '>=' ) expr
+binary_equality_expr ::= expr ( '=' | '==' | '!=' | '<>' ) expr
+binary_and_expr ::= expr AND expr
+binary_or_expr ::= expr OR expr
+function_expr ::= function_name '(' [ [ DISTINCT ] expr ( [ ',' ] expr ) * | '*' ] ')'
+paren_expr ::= '(' expr ')' {
+    pin = 1
+}
+cast_expr ::= CAST '(' expr AS type_name ')'
+collate_expr ::= expr COLLATE collation_name
+binary_like_operator ::= ( LIKE | GLOB | REGEXP | MATCH )
+binary_like_expr ::= expr [ NOT ] ( binary_like_operator ) expr [ ESCAPE expr ] {
+}
+null_expr ::= expr ( IS NULL | IS NOT NULL )
+is_expr ::= expr IS [ NOT ] expr
+between_expr ::= expr [ NOT ] BETWEEN expr AND expr
+in_expr ::= expr [ NOT ] IN ( '(' [ compound_select_stmt | expr ( ',' expr ) * ] ')' |
+    [ database_name '.' ] table_name | bind_expr | mybatis_expr ) {
+    pin = 3
+}
+exists_expr ::= [ [ NOT ] EXISTS ] '(' compound_select_stmt ')'
+case_expr ::= CASE [ expr ] WHEN expr THEN expr ( WHEN expr THEN expr )* [ ELSE expr ] END {
+    pin = 1
+}
+raise_expr ::= raise_function
+raise_function ::= RAISE '(' ( IGNORE | ( ROLLBACK | ABORT | FAIL ) ',' error_message ) ')'
+literal_value ::= ( numeric_literal
+                  | string_literal
+                  | blob_literal
+                  | NULL
+                  | CURRENT_TIME
+                  | CURRENT_DATE
+                  | CURRENT_TIMESTAMP)
+numeric_literal ::= ( ( digit [ '.' ( digit ) * ] | '.' digit ) | TRUE | FALSE ) [ E [ '+' | '-' ] digit ]
+
+insert_stmt ::= [ with_clause ] ( INSERT OR REPLACE | REPLACE | INSERT OR ROLLBACK | INSERT OR ABORT | INSERT OR FAIL |
+    INSERT OR IGNORE | INSERT ) INTO [ database_name '.' ] table_name [ '(' column_name ( ',' column_name ) * ')' ]
+    ( VALUES values_expression ( ',' values_expression ) * | compound_select_stmt | DEFAULT VALUES ) {
+    pin = 5
+}
+pragma_stmt ::= PRAGMA [ database_name '.' ] pragma_name [ '=' pragma_value | '(' pragma_value ')' ] {
+    pin = 1
+}
+pragma_value ::= ( signed_number | identifier | string_literal )
+reindex_stmt ::= REINDEX [ collation_name | [ database_name '.' ] ( table_name | index_name ) ] {
+    pin = 1
+}
+compound_select_stmt ::= [ with_clause ] select_stmt  ( compound_operator select_stmt ) *
+    [ ORDER BY ordering_term ( ',' ordering_term ) * ] [ LIMIT limiting_term [ ( OFFSET | ',' ) limiting_term ] ]
+limiting_term ::= expr
+compound_result_column ::= result_column ( ',' result_column )*
+// 由于 mybatis mapper.xml 文件有特殊的 where 标签,为了不使 sql 非法,这里的 where 关键字改为可选
+select_stmt ::= SELECT [ DISTINCT | ALL ] compound_result_column [ FROM join_clause ] [ [ WHERE ] expr ] [ GROUP BY grouping_term ]
+    [ ORDER BY ordering_term ( ',' ordering_term ) * ] | VALUES values_expression ( ',' values_expression ) * {
+    pin = 1
+}
+values_expression ::= '(' expr ( ',' expr ) * ')'
+join_clause ::= table_or_subquery ( join_operator table_or_subquery join_constraint )*
+table_or_subquery ::= ( [ database_name '.' ] table_name [ [ AS ] table_alias ] [ INDEXED BY index_name | NOT INDEXED ]
+                      | '(' ( table_or_subquery ( ',' table_or_subquery ) * | join_clause ) ')'
+                      | '(' compound_select_stmt ')' [ [ AS ] table_alias ] )
+result_column ::= ( '*' | table_name '.' '*' | expr [ [ AS ] column_alias ] )
+join_operator ::= ( ',' | [ NATURAL ] [ LEFT [ OUTER ] | INNER | CROSS ] JOIN )
+join_constraint ::= [ ON expr | USING '(' column_name ( ',' column_name ) * ')' ]
+ordering_term ::= expr [ COLLATE collation_name ] [ ASC | DESC ]
+grouping_term ::= expr ( ',' expr ) * [ HAVING expr ]
+compound_operator ::= ( UNION ALL | UNION | INTERSECT | EXCEPT )
+update_stmt ::= [ with_clause ] UPDATE [ OR ROLLBACK | OR ABORT | OR REPLACE | OR FAIL | OR IGNORE ] qualified_table_name
+    SET column_name '=' setter_expression update_stmt_subsequent_setter * [ WHERE expr ] {
+    pin = 4
+}
+update_stmt_limited ::= [ with_clause ] UPDATE [ OR ROLLBACK | OR ABORT | OR REPLACE | OR FAIL | OR IGNORE ] qualified_table_name
+    SET column_name '=' setter_expression update_stmt_subsequent_setter * [ WHERE expr ]
+    [ [ ORDER BY ordering_term ( ',' ordering_term ) * ] LIMIT expr [ ( OFFSET | ',' ) expr ] ] {
+    pin = 4
+}
+update_stmt_subsequent_setter ::= ',' column_name '=' setter_expression {
+    pin = 1
+}
+setter_expression ::= expr
+qualified_table_name ::= [ database_name '.' ] table_name [ INDEXED BY index_name | NOT INDEXED ]
+vacuum_stmt ::= VACUUM
+table_name ::= id {
+    methods = [
+        getName
+    ]
+}
+database_name ::= id
+index_name ::= id
+column_name ::= id | string {
+    methods = [
+        getName
+    ]
+}
+column_alias ::= id {
+    mixin="com.dbn.sql.psi.impl.SqlNamedElementImpl"
+    implements="com.dbn.sql.psi.SqlNamedElement"
+    methods = [
+        setName
+        getName
+        getNameIdentifier
+    ]
+}
+table_alias ::= id {
+    mixin="com.dbn.sql.psi.impl.SqlNamedElementImpl"
+    implements="com.dbn.sql.psi.SqlNamedElement"
+    methods = [
+        setName
+        getName
+        getNameIdentifier
+    ]
+}
+foreign_table ::= id
+identifier ::= id
+attr_name ::= id | AUTO_INCREMENT | DEFAULT | COMMENT_WORD | COLLATE
+attr_value ::= id | string | digit
+pragma_name ::= id
+function_name ::= id | IF
+string_literal ::= string
+table_or_index_name ::= id
+new_table_name ::= id
+savepoint_name ::= id
+trigger_name ::= id
+blob_literal ::= '0x' digit
+collation_name ::= id
+error_message ::= string
+view_name ::= id
+module_name ::= id
+bind_parameter ::= ( '?' [digit] | ':' identifier )

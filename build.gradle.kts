@@ -1,7 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URI
 
-
 plugins {
     id("java")
     id("org.jetbrains.kotlin.jvm") version "1.9.20"
@@ -15,6 +14,9 @@ repositories {
     maven { url = URI("https://maven.aliyun.com/nexus/content/groups/public/") }
     mavenCentral()
 }
+
+sourceSets["main"].java.srcDirs("src/main/gen")
+
 dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.30")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
