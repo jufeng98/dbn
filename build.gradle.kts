@@ -106,7 +106,7 @@ tasks.register<Jar>("packageSource") {
 }
 
 tasks.register<Copy>("unZip") {
-    from(zipTree("$buildDir/distributions/DBN-MASTER-${project.version}.zip"))
+    from(zipTree("$buildDir/distributions/DataBaseManager-${project.version}.zip"))
     into("$buildDir/distributions")
 
     dependsOn(tasks.buildPlugin)
@@ -114,8 +114,8 @@ tasks.register<Copy>("unZip") {
 
 tasks.register<Copy>("buildPluginAndUnzip") {
     from("$buildDir/libs")
-    include("instrumented-DBN-MASTER-${project.version}-sources.jar")
-    into("$buildDir/distributions/DBN-MASTER/lib")
+    include("instrumented-DataBaseManager-${project.version}-sources.jar")
+    into("$buildDir/distributions/DataBaseManager/lib")
 
     dependsOn(tasks["unZip"])
 }
