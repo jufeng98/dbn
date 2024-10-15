@@ -16,19 +16,40 @@
             This software solution enhances the capabilities of the IntelliJ IDEA development environment and its associated products by providing comprehensive features for database development and maintenance.
             It includes a robust SQL and PL/SQL editor that adheres to the IDE standards, along with advanced functionality for managing database connections, executing scripts, browsing database objects, editing data and code, supporting database compiler operations, executing and debugging methods, and facilitating the creation of database objects.
             Additionally, it offers diverse navigation capabilities that seamlessly integrate across all its components, providing a powerful toolset for efficient and effective database development and management.<br>
-            <!--See features overview on the <a href="https://plugins.jetbrains.com/plugin/1800-database-navigator" target="new">support page</a>.<br>--><br>
-
             <b>Supported Databases:</b>
             <ul>
-                <li>Oracle
-                <li>MySQL
-                <li>SQLite
-                <li>PostgreSQL
-                <li>Any JDBC compliant database (EXPERIMENTAL)
-            </ul><br>
-            <br><br>
+                <li>Oracle</li>
+                <li>MySQL</li>
+                <li>SQLite</li>
+                <li>PostgreSQL</li>
+                <li>Any JDBC compliant database (EXPERIMENTAL)</li>
+            </ul>
+            <br><br><br>
+            Fork code from <a herf="https://plugins.jetbrains.com/plugin/1800-database-navigator">Database Navigator</a><br>
             This tool is free for personal and commercial use.<br>
-            <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3QAPZFCCARA4J">Donations</a> are very welcome though.<br>
+            <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3QAPZFCCARA4J">Donations</a>
+            are very welcome though.<br>
+            用于管理数据库<br>
+            通过为数据库开发和维护提供全面的功能，增强了IntelliJ IDEA开发环境及其相关产品的能力。它包括一个符合IDE标准的强大的SQL和PL/SQL编辑器，
+            以及用于管理数据库连接、执行脚本、浏览数据库对象、编辑数据和代码、支持数据库编译器操作、执行和调试方法以及促进数据库对象创建的高级功能。
+            此外，它还提供了多种导航功能，可无缝集成其所有组件，为高效和有效的数据库开发和管理提供了强大的工具集。<br>
+            <b>支持数据库:</b>
+            <ul>
+                <li>Oracle</li>
+                <li>MySQL</li>
+                <li>SQLite</li>
+                <li>PostgreSQL</li>
+                <li>任何兼容jdbc的数据库 (实验性质)</li>
+            </ul>
+            <b>主要功能如下:</b>
+            <ul>
+                <li>支持 MyBatis mapper.xml 文件的 SQL 识别</li>
+                <li>支持悬浮展示表元数据信息</li>
+                <li>支持悬浮展示列元数据信息</li>
+                <li>支持输入表名时智能提示</li>
+                <li>支持输入列名时智能提示</li>
+                <li>SQL 结构的跳转等</li>
+            </ul>
     ]]></description>
     <change-notes><![CDATA[
         <ul>
@@ -334,17 +355,6 @@
         </ul>
         <a href="http://confluence.jetbrains.net/display/CONTEST/DBN+-+Change+Notes">See full release notes</a>
      ]]></change-notes>
-
-    <application-components>
-        <component>
-            <implementation-class>com.dbn.DatabaseNavigator</implementation-class>
-        </component>
-    </application-components>
-    <project-components>
-        <component>
-            <implementation-class>com.dbn.project.ProjectComponentsInitializer</implementation-class>
-        </component>
-    </project-components>
 
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceImplementation="com.dbn.plugin.PluginStatusManager"/>
@@ -797,7 +807,7 @@
                     icon="AllIcons.Actions.Execute"/>
             <action id="DBNavigator.Actions.ParserDiagnostics.Save"
                     class="com.dbn.diagnostics.action.ParserDiagnosticsSaveAction" text="Parser Diagnostics - Save"
-                    icon="AllIcons.Actions.Menu_saveall"/>
+                    icon="AllIcons.Actions.MenuSaveall"/>
             <action id="DBNavigator.Actions.ParserDiagnostics.Delete"
                     class="com.dbn.diagnostics.action.ParserDiagnosticsDeleteAction" text="Parser Diagnostics - Delete"
                     icon="AllIcons.Actions.GC"/>
@@ -943,9 +953,7 @@
     </projectListeners>
     <extensions defaultExtensionNs="com.intellij">
         <notificationGroup id="DBNavigator.NotificationGroup" displayType="BALLOON" isLogByDefault="true"/>
-        <startupActivity implementation="com.dbn.project.ProjectStartupActivity"/>
-        <!--<postStartupActivity implementation="com.dbn.project.ProjectComponentsInitializer" order="last"/>-->
-        <!--<applicationInitializedListener implementation="com.dbn.init.DatabaseNavigatorInitializer"/>-->
+        <postStartupActivity implementation="com.dbn.project.ProjectStartupActivity"/>
         <virtualFileSystem implementationClass="com.dbn.vfs.DatabaseFileSystem" key="db" physical="false"/>
 
         <spellchecker.support language="DBN-SQL" implementationClass="com.dbn.language.sql.SQLSpellcheckingStrategy"/>
@@ -1057,8 +1065,8 @@
         <editorTabColorProvider order="first" implementation="com.dbn.editor.DBEditorTabColorProvider"/>
 
         <errorHandler implementation="com.dbn.error.jira.JiraIssueReportSubmitter"/>
-        <liveTemplateContext implementation="com.dbn.language.sql.template.SQLTemplateContextType" contextId="SQL"/>
-        <liveTemplateContext implementation="com.dbn.language.psql.template.PSQLTemplateContextType" contextId="PSQL"/>
+        <liveTemplateContext implementation="com.dbn.language.sql.template.SQLTemplateContextType"/>
+        <liveTemplateContext implementation="com.dbn.language.psql.template.PSQLTemplateContextType"/>
         <defaultLiveTemplates file="com/dbn/language/sql/template/default.xml"/>
         <defaultLiveTemplates file="com/dbn/language/psql/template/default.xml"/>
 
@@ -1183,7 +1191,7 @@
                 language="sql"
                 implementationClass="com.dbn.sql.commenter.SqlCommenter"/>
         <defaultLiveTemplates file="/liveTemplates/gfp-sql.xml"/>
-        <liveTemplateContext implementation="com.dbn.sql.livetempate.SqlTemplateContextType" contextId="gfp-sql"/>
+        <liveTemplateContext implementation="com.dbn.sql.livetempate.SqlTemplateContextType"/>
         <lang.formatter
                 language="sql"
                 implementationClass="com.dbn.sql.formatter.SqlFormattingModelBuilder"/>

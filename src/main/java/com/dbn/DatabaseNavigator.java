@@ -1,17 +1,12 @@
 package com.dbn;
 
 import com.dbn.common.component.ApplicationComponentBase;
-import com.dbn.common.component.EagerService;
 import com.dbn.common.component.PersistentState;
-import com.dbn.common.file.FileTypeService;
 import com.dbn.common.options.setting.Settings;
 import com.dbn.common.util.UUIDs;
 import com.dbn.diagnostics.Diagnostics;
-import com.dbn.plugin.DBNPluginStateListener;
-import com.dbn.plugin.PluginConflictManager;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManagerCore;
-import com.intellij.ide.plugins.PluginStateManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.extensions.PluginId;
@@ -28,10 +23,10 @@ import static com.dbn.common.component.Components.applicationService;
 @Slf4j
 @Getter
 @State(
-    name = DatabaseNavigator.COMPONENT_NAME,
-    storages = @Storage(DatabaseNavigator.STORAGE_FILE)
+        name = DatabaseNavigator.COMPONENT_NAME,
+        storages = @Storage(DatabaseNavigator.STORAGE_FILE)
 )
-public class DatabaseNavigator extends ApplicationComponentBase implements PersistentState, EagerService {
+public class DatabaseNavigator extends ApplicationComponentBase implements PersistentState {
     public static final String COMPONENT_NAME = "DBNavigator.Application.Settings";
     public static final String STORAGE_FILE = "dbnavigator.xml";
 
@@ -42,17 +37,9 @@ public class DatabaseNavigator extends ApplicationComponentBase implements Persi
 
     public DatabaseNavigator() {
         super(COMPONENT_NAME);
-        PluginStateManager.addStateListener(new DBNPluginStateListener());
-        //new NotificationGroup("Database Navigator", NotificationDisplayType.TOOL_WINDOW, true, ExecutionManager.TOOL_WINDOW_ID);
-
-        PluginConflictManager.getInstance();
-        FileTypeService.getInstance();
-
-        registerExecutorExtension();
-
     }
 
-    private static void registerExecutorExtension() {
+    public static void registerExecutorExtension() {
 /*
         // TODO review and cleanup (internal api usage) - initial motivation for this change unknown
         try {

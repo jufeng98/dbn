@@ -1,6 +1,5 @@
 package com.dbn.project;
 
-import com.dbn.common.component.EagerService;
 import com.dbn.common.component.ProjectComponentBase;
 import com.dbn.common.event.ProjectEvents;
 import com.dbn.connection.config.ConnectionBundleSettings;
@@ -16,6 +15,7 @@ import com.dbn.language.common.DBLanguageFileType;
 import com.dbn.object.common.loader.DatabaseLoaderManager;
 import com.dbn.options.ProjectSettingsProvider;
 import com.dbn.vfs.DBVirtualFile;
+import com.intellij.openapi.components.Service;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.FileEditorManagerListener;
 import com.intellij.openapi.project.DumbAware;
@@ -26,18 +26,17 @@ import org.jetbrains.annotations.NotNull;
 
 import static com.dbn.common.component.Components.projectService;
 
-/**
- * TODO SERVICES
- * TODO find another way to define "silent" dependencies
- */
+
 @Getter
-public class ProjectComponentsInitializer extends ProjectComponentBase implements /*StartupActivity, */DumbAware, EagerService {
+@Service(Service.Level.PROJECT)
+public final class ProjectComponentsInitializer extends ProjectComponentBase implements DumbAware {
     public static final String COMPONENT_NAME = "DBNavigator.Project.WorkspaceInitializer";
     private boolean initialized;
 
 
     public ProjectComponentsInitializer(Project project) {
         super(project, COMPONENT_NAME);
+
         ProjectSettingsProvider.init(project);
         ConnectionBundleSettings.init(project);
         ProjectEvents.subscribe(FileEditorManagerListener.Before.FILE_EDITOR_MANAGER, componentInitializer());
@@ -63,8 +62,7 @@ public class ProjectComponentsInitializer extends ProjectComponentBase implement
     private boolean shouldInitialize(VirtualFile file) {
         if (initialized) return false;
         if (file instanceof DBVirtualFile) return true;
-        if (file.getFileType() instanceof DBLanguageFileType) return true;
-        return false;
+        return file.getFileType() instanceof DBLanguageFileType;
     }
 
     public void initializeComponents() {
@@ -80,4 +78,5 @@ public class ProjectComponentsInitializer extends ProjectComponentBase implement
         DatabaseFileEditorManager.getInstance(project);
         initialized = true;
     }
+
 }

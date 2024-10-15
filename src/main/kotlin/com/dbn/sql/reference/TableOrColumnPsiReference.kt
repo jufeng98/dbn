@@ -107,7 +107,7 @@ class TableOrColumnPsiReference(
             val builderList: Array<Any> = sqlColumnAliases
                 .map {
                     val typeText = PsiTreeUtil.getPrevSiblingOfType(it, SqlColumnExpr::class.java)?.text + " 列别名"
-                    LookupElementBuilder.create(it.name!!)
+                    LookupElementBuilder.create(it.name)
                         .withTypeText(typeText, true)
                         .bold()
                 }

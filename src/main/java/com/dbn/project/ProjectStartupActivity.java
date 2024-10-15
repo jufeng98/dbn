@@ -2,20 +2,35 @@ package com.dbn.project;
 
 import com.dbn.cache.MetadataCacheService;
 import com.dbn.common.compatibility.Compatibility;
+import com.dbn.common.file.FileTypeService;
 import com.dbn.connection.config.ConnectionBundleSettings;
 import com.dbn.debugger.ExecutionConfigManager;
 import com.dbn.object.impl.DBObjectLoaders;
+import com.dbn.plugin.DBNPluginStateListener;
 import com.dbn.plugin.PluginConflictManager;
 import com.dbn.plugin.PluginStatusManager;
 import com.dbn.vfs.DatabaseFileManager;
+import com.intellij.ide.plugins.PluginStateManager;
+import com.intellij.ide.util.RunOnceUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity;
 import org.jetbrains.annotations.NotNull;
 
+import static com.dbn.DatabaseNavigator.registerExecutorExtension;
+
 @Compatibility
-public class ProjectStartupActivity implements StartupActivity/*, ProjectActivity*/ {
-    //@Override
+public class ProjectStartupActivity implements StartupActivity {
+
     public void runActivity(@NotNull Project project) {
+        RunOnceUtil.runOnceForApp("app.start.dbn.init", () -> {
+            PluginStateManager.addStateListener(new DBNPluginStateListener());
+
+            PluginConflictManager.getInstance();
+            FileTypeService.getInstance();
+
+            registerExecutorExtension();
+        });
+
         // make sure dbn connections are loaded
         ConnectionBundleSettings.getInstance(project);
 
@@ -24,6 +39,8 @@ public class ProjectStartupActivity implements StartupActivity/*, ProjectActivit
         removeRunConfigurations(project);
         reopenDatabaseEditors(project);
         initMetadata(project);
+
+        ProjectComponentsInitializer.getInstance(project);
     }
 
     private static void evaluatePluginStatus(Project project) {
@@ -54,10 +71,4 @@ public class ProjectStartupActivity implements StartupActivity/*, ProjectActivit
         cacheService.initFirstConnectionCacheDbTable(project);
     }
 
-/*
-    @Override
-    public @Nullable Object execute(@NotNull Project project, @NotNull Continuation<? super Unit> continuation) {
-        return null;
-    }
-*/
 }

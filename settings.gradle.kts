@@ -1,2 +1,2 @@
-rootProject.name = "DBN-MASTER"
+rootProject.name = "DataBaseManager"
 

@@ -23,6 +23,8 @@ import java.util.function.Consumer
  * @author yudong
  */
 class SqlCompletionContributor : CompletionContributor() {
+    private val sqlTypes = arrayOf("select", "update", "delete from", "insert into")
+
     override fun fillCompletionVariants(parameters: CompletionParameters, result: CompletionResultSet) {
         val position = parameters.position
         val parent = position.parent
@@ -82,7 +84,7 @@ class SqlCompletionContributor : CompletionContributor() {
         sqlTableAliases.forEach(Consumer { sqlTableAlias: SqlTableAlias ->
             val typeName = getAliasDesc(sqlTableAlias, tableMap)
             val builder = LookupElementBuilder.create(sqlTableAlias.text)
-                .withInsertHandler { context: InsertionContext, item: LookupElement? ->
+                .withInsertHandler { context: InsertionContext, _: LookupElement? ->
                     val editor = context.editor
                     val document = editor.document
                     context.commitDocument()
@@ -112,9 +114,9 @@ class SqlCompletionContributor : CompletionContributor() {
     }
 
     private fun fillSqlTypes(result: CompletionResultSet) {
-        for (suggestion in SQL_TYPE) {
+        for (suggestion in sqlTypes) {
             val builder = LookupElementBuilder.create(suggestion)
-                .withInsertHandler { context: InsertionContext, item: LookupElement? ->
+                .withInsertHandler { context: InsertionContext, _: LookupElement? ->
                     val editor = context.editor
                     val document = editor.document
                     context.commitDocument()
@@ -124,9 +126,5 @@ class SqlCompletionContributor : CompletionContributor() {
                 .bold()
             result.addElement(builder)
         }
-    }
-
-    companion object {
-        private val SQL_TYPE = arrayOf("select", "update", "delete from", "insert into")
     }
 }

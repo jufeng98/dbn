@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templateSet group="SQL">
+    <template name="sel" description="select * from table" value="select * from $table$$END$;" toReformat="true">
+        <variable name="table" expression="complete()" defaultValue="" alwaysStopAt="true"/>
+        <context>
+            <option name="gfp-sql" value="true"/>
+        </context>
+    </template>
+
+    <template name="sela" description="select * from table where" value="select * from $table$ where $END$;"
+              toReformat="true">
+        <variable name="table" expression="complete()" defaultValue="" alwaysStopAt="true"/>
+        <context>
+            <option name="gfp-sql" value="true"/>
+        </context>
+    </template>
+
+    <template name="selc" description="select count(*) from table alias where"
+              value="select count(*) from $table$ $alias$ where $alias$.$END$;" toReformat="true">
+        <variable name="table" expression="complete()" defaultValue="" alwaysStopAt="true"/>
+        <variable name="alias" expression="complete()" defaultValue="" alwaysStopAt="true"/>
+        <context>
+            <option name="gfp-sql" value="true"/>
+        </context>
+    </template>
+
+    <template name="selw" description="select * from table alias"
+              value="select * from $table$ $alias$ where $alias$.$END$;" toReformat="true">
+        <variable name="table" expression="complete()" defaultValue="" alwaysStopAt="true"/>
+        <variable name="alias" expression="complete()" defaultValue="" alwaysStopAt="true"/>
+        <context>
+            <option name="gfp-sql" value="true"/>
+        </context>
+    </template>
+</templateSet>
