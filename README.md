@@ -55,7 +55,7 @@ Additionally, it offers diverse navigation capabilities that seamlessly integrat
 - 
 ## 捐赠
 如果项目帮到了您，请作者喝杯咖啡吧！
-![donate](https://github.com/jufeng98/dbn/blob/master/images/donate.png)
+![donate](https://github.com/jufeng98/dbn/blob/master/images/donate.jpg)
 
 ## 技术支持
 微信记得备注 ```DataBaseManager```，共同进步。
