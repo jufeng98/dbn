@@ -86,7 +86,6 @@ intellij {
     type.set("IC") // Target IDE Platform
 
     plugins.set(listOf("java", "copyright"))
-    intellij.updateSinceUntilBuild.set(false)
 }
 
 tasks.register<Jar>("packageSource") {
