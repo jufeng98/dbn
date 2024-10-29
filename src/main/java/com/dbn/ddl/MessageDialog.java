@@ -18,12 +18,14 @@ import java.awt.event.ActionListener;
 import java.nio.charset.StandardCharsets;
 
 public class MessageDialog extends DialogWrapper {
+    private final Runnable okRunnable;
     private JPanel mainPanel;
     private JPanel textPanel;
     private final TextEditor textEditor;
 
-    public MessageDialog(@Nullable Project project, String message) {
+    public MessageDialog(@Nullable Project project, String message,Runnable okRunnable) {
         super(project);
+        this.okRunnable = okRunnable;
 
         setTitle("Info");
         setOKButtonText("关闭");
@@ -39,6 +41,12 @@ public class MessageDialog extends DialogWrapper {
     protected void dispose() {
         super.dispose();
         Disposer.dispose(textEditor);
+    }
+
+    @Override
+    protected void doOKAction() {
+        super.doOKAction();
+        okRunnable.run();
     }
 
     @Override

@@ -12,6 +12,7 @@ import com.dbn.ddl.MessageDialog;
 import com.dbn.generator.StatementGeneratorResult;
 import com.dbn.language.common.psi.PsiUtil;
 import com.dbn.language.sql.SQLFileType;
+import com.dbn.utils.NotifyUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.editor.Editor;
@@ -46,9 +47,10 @@ public abstract class GenerateStatementAction extends ProjectAction implements D
             if (editor != null) {
                 pasteToEditor(editor, result);
             } else {
-                pasteToClipboard(result, project);
                 WriteAction.run(() -> {
-                    MessageDialog messageDialog = new MessageDialog(project, result.getStatement());
+                    MessageDialog messageDialog = new MessageDialog(project, result.getStatement(),
+                            () -> pasteToClipboard(result, project)
+                    );
                     messageDialog.show();
                 });
             }
@@ -60,6 +62,7 @@ public abstract class GenerateStatementAction extends ProjectAction implements D
 
         CopyPasteManager copyPasteManager = CopyPasteManager.getInstance();
         copyPasteManager.setContents(content);
+        NotifyUtil.INSTANCE.notifySuccess(project,"DDL 已复制到剪切板!");
         // Messages.showInfoDialog(project, "Statement extracted", "SQL statement exported to clipboard.");
     }
 
