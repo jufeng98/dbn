@@ -7,6 +7,7 @@ import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.ConnectionRef;
 import com.dbn.object.DBConsole;
 import com.dbn.object.impl.DBConsoleImpl;
+import com.dbn.object.impl.MySqlDBConsoleImpl;
 import com.dbn.vfs.DBConsoleType;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
@@ -91,7 +92,12 @@ public class DatabaseConsoleBundle extends StatefulDisposableBase {
 
     DBConsole createConsole(String name, DBConsoleType type) {
         ConnectionHandler connection = getConnection();
-        DBConsole console = new DBConsoleImpl(connection, name, type);
+        DBConsole console;
+        if (type == DBConsoleType.MYSQL) {
+            console = new MySqlDBConsoleImpl(connection, name, type);
+        } else {
+            console = new DBConsoleImpl(connection, name, type);
+        }
         consoles.add(console);
         Collections.sort(consoles);
         return console;

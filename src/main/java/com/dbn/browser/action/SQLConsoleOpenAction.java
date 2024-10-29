@@ -53,6 +53,7 @@ public class SQLConsoleOpenAction extends ProjectPopupAction {
                 actions.add(new SelectConsoleAction(console));
             }
             actions.add(Separator.getInstance());
+            actions.add(new SelectConsoleAction(connection, DBConsoleType.MYSQL));
             actions.add(new SelectConsoleAction(connection, DBConsoleType.STANDARD));
             if (DatabaseFeature.DEBUGGING.isSupported(connection)) {
                 actions.add(new SelectConsoleAction(connection, DBConsoleType.DEBUG));
