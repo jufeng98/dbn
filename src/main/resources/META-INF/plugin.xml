@@ -357,6 +357,13 @@
      ]]></change-notes>
 
     <extensions defaultExtensionNs="com.intellij">
+        <notificationGroup id="DataBaseManager.STICKY_BALLOON"
+                           isLogByDefault="true"
+                           displayType="STICKY_BALLOON"/>
+        <notificationGroup id="DataBaseManager.NONE"
+                           isLogByDefault="true"
+                           displayType="NONE"/>
+
         <applicationService serviceImplementation="com.dbn.plugin.PluginStatusManager"/>
         <applicationService serviceImplementation="com.dbn.plugin.PluginConflictManager"/>
         <applicationService serviceImplementation="com.dbn.common.file.FileTypeService"/>
@@ -1158,6 +1165,10 @@
             <category>Database/Statement execution</category>
         </intentionAction>
         <!--<intentionAction><className>com.dbn.code.common.intention.SetupCodeCompletionIntentionAction</className><category>Database</category></intentionAction>-->
+        <intentionAction>
+            <className>com.dbn.sql.intent.GenerateXmlResultAction</className>
+            <category>Database/Xml generate</category>
+        </intentionAction>
 
         <fileDocumentManagerListener implementation="com.dbn.connection.console.DatabaseConsoleFileInitializer"/>
 
@@ -1215,6 +1226,8 @@
                 implementationClass="com.dbn.sql.doc.SqlDocumentationProvider"/>
         <annotator language="sql"
                    implementationClass="com.dbn.sql.annotator.SqlAnnotator"/>
+        <annotator language="sql"
+                   implementationClass="com.dbn.sql.annotator.SqlConsoleAnnotator"/>
         <codeInsight.lineMarkerProvider language="sql"
                                         implementationClass="com.dbn.sql.gutter.SqlExecutorLineMarker"/>
         <highlightErrorFilter implementation="com.dbn.suppress.MyHighlightErrorFilter"/>

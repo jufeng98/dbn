@@ -21,6 +21,7 @@ import com.dbn.execution.statement.processor.StatementExecutionProcessor;
 import com.dbn.execution.statement.result.ui.StatementExecutionResultForm;
 import com.dbn.execution.statement.StatementExecutionContext;
 import com.dbn.execution.statement.StatementExecutionInput;
+import com.dbn.utils.NotifyUtil;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -100,6 +101,8 @@ public class StatementExecutionCursorResult extends StatementExecutionBasicResul
                                     conditionallyLog(e);
                                     Messages.showErrorDialog(getProject(), "Could not perform reload operation.", e);
                                 }
+
+                                NotifyUtil.INSTANCE.notifyInfo(getProject(), statementText);
                             } finally {
                                 calculateExecDuration();
                                 resultForm.highlightLoading(false);

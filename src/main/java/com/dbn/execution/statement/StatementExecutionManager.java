@@ -21,6 +21,7 @@ import com.dbn.editor.console.SQLConsoleEditor;
 import com.dbn.editor.ddl.DDLFileEditor;
 import com.dbn.execution.ExecutionStatus;
 import com.dbn.execution.common.options.ExecutionEngineSettings;
+import com.dbn.execution.statement.action.MySqlStatementGutterAction;
 import com.dbn.execution.statement.options.StatementExecutionSettings;
 import com.dbn.execution.statement.processor.StatementExecutionBasicProcessor;
 import com.dbn.execution.statement.processor.StatementExecutionCursorProcessor;
@@ -34,6 +35,8 @@ import com.dbn.execution.statement.variables.ui.StatementExecutionInputsDialog;
 import com.dbn.language.common.DBLanguagePsiFile;
 import com.dbn.language.common.psi.BasePsiElement.MatchType;
 import com.dbn.language.common.psi.*;
+import com.dbn.sql.parser.SqlFile;
+import com.dbn.sql.psi.SqlRoot;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
@@ -48,6 +51,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.impl.PsiDocumentTransactionListener;
+import com.intellij.psi.util.PsiTreeUtil;
 import lombok.Getter;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
@@ -427,19 +431,47 @@ public class StatementExecutionManager extends ProjectComponentBase implements P
     @Nullable
     private StatementExecutionProcessor getExecutionProcessorAtCursor(@NotNull FileEditor fileEditor) {
         Editor editor = Editors.getEditor(fileEditor);
-        if (editor != null) {
-            DBLanguagePsiFile file = (DBLanguagePsiFile) Documents.getFile(editor);
-            String selection = editor.getSelectionModel().getSelectedText();
-            if (selection != null && file != null) {
-                return new StatementExecutionCursorProcessor(getProject(), fileEditor, file, selection, RESULT_SEQUENCE.incrementAndGet());
-            }
+        if (editor == null) {
+            return null;
+        }
 
-            ExecutablePsiElement executablePsiElement = PsiUtil.lookupExecutableAtCaret(editor, true);
-            if (executablePsiElement != null) {
-                return getExecutionProcessor(fileEditor, executablePsiElement, true);
-            }
+        PsiFile psiFile = Documents.getFile(editor);
+        if (psiFile == null) {
+            return null;
+        }
+
+        if (psiFile instanceof SqlFile) {
+            return getMySqlProcessor((SqlFile) psiFile, editor);
+        }
+
+        assert psiFile instanceof DBLanguagePsiFile;
+        DBLanguagePsiFile file = (DBLanguagePsiFile) psiFile;
+        String selection = editor.getSelectionModel().getSelectedText();
+        if (selection != null) {
+            return new StatementExecutionCursorProcessor(getProject(), fileEditor, file, selection, RESULT_SEQUENCE.incrementAndGet());
+        }
+
+        ExecutablePsiElement executablePsiElement = PsiUtil.lookupExecutableAtCaret(editor, true);
+        if (executablePsiElement != null) {
+            return getExecutionProcessor(fileEditor, executablePsiElement, true);
         }
         return null;
+    }
+
+    private StatementExecutionProcessor getMySqlProcessor(SqlFile psiFile, Editor editor){
+        String selection = editor.getSelectionModel().getSelectedText();
+        if (selection != null) {
+            return MySqlStatementGutterAction.getExecutionProcessor(true, psiFile, selection);
+        }
+
+        int position = editor.getCaretModel().getOffset();
+        PsiElement elementAt = psiFile.findElementAt(position);
+        SqlRoot sqlRoot = PsiTreeUtil.getParentOfType(elementAt, SqlRoot.class);
+        if (sqlRoot == null) {
+            return null;
+        }
+
+        return MySqlStatementGutterAction.getExecutionProcessor(true, sqlRoot);
     }
 
     private List<StatementExecutionProcessor> getExecutionProcessorsFromOffset(@NotNull FileEditor fileEditor, int offset) {

@@ -76,7 +76,7 @@ class SqlExecutorLineMarker : RelatedItemLineMarkerProvider() {
                     val elementTypeBundle = ElementTypeBundle(SQLLanguage.INSTANCE.mainLanguageDialect, null, document)
                     val namedElementType = NamedElementType(elementTypeBundle, "")
 
-                    val executablePsiElement = MockExecutablePsiElement(element.node, namedElementType, element)
+                    val executablePsiElement = MockExecutablePsiElement(element.node, namedElementType, element, null)
                     val executionManager = StatementExecutionManager.getInstance(project)
                     val executionProcessor =
                         executionManager.getExecutionProcessor(selectedEditor, executablePsiElement, true)

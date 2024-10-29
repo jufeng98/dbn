@@ -9,6 +9,7 @@ import com.dbn.debugger.DatabaseDebuggerManager;
 import com.dbn.execution.statement.StatementExecutionManager;
 import com.dbn.language.common.DBLanguagePsiFile;
 import com.dbn.language.common.psi.PsiUtil;
+import com.dbn.sql.parser.SqlFile;
 import com.dbn.vfs.file.DBSourceCodeVirtualFile;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
@@ -52,7 +53,7 @@ public class ExecuteStatementEditorAction extends ProjectAction {
         if (isNotValid(editor)) return false;
 
         PsiFile psiFile = PsiUtil.getPsiFile(project, editor.getDocument());
-        if (!(psiFile instanceof DBLanguagePsiFile)) return false;
+        if (!(psiFile instanceof DBLanguagePsiFile || psiFile instanceof SqlFile)) return false;
 
         VirtualFile virtualFile = psiFile.getVirtualFile();
         if (virtualFile instanceof DBSourceCodeVirtualFile) return false;
