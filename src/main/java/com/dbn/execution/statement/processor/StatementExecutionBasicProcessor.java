@@ -46,6 +46,7 @@ import com.dbn.object.common.DBSchemaObject;
 import com.dbn.object.common.list.DBObjectList;
 import com.dbn.object.common.list.DBObjectListContainer;
 import com.dbn.object.type.DBObjectType;
+import com.dbn.utils.NotifyUtil;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.progress.ProcessCanceledException;
@@ -327,6 +328,8 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
                 } finally {
                     disableLogging(context);
                 }
+
+                NotifyUtil.INSTANCE.notifyInfo(project.ensure(), statementText);
             }
 
             assertNotCancelled();

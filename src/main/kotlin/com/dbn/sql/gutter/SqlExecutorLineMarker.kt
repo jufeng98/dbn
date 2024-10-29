@@ -9,6 +9,7 @@ import com.dbn.language.common.element.ElementTypeBundle
 import com.dbn.language.common.element.impl.NamedElementType
 import com.dbn.language.sql.SQLLanguage
 import com.dbn.sql.psi.SqlRoot
+import com.dbn.vfs.file.MySqlDBConsoleVirtualFile
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider
 import com.intellij.icons.AllIcons
@@ -35,13 +36,17 @@ class SqlExecutorLineMarker : RelatedItemLineMarkerProvider() {
         if (element !is SqlRoot) {
             return
         }
+
+        val file = element.containingFile.virtualFile
+        if (file is MySqlDBConsoleVirtualFile) {
+            return
+        }
+
         val project = element.project
         val injectionHost = InjectedLanguageManager.getInstance(project).getInjectionHost(element)
         if (injectionHost != null) {
             return
         }
-
-        val file = element.containingFile.virtualFile
 
         val browserManager = DatabaseBrowserManager.getInstance(project)
         val connectionId = browserManager.getFirstConnectionId(project) ?: return

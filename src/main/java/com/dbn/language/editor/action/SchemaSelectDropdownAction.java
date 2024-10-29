@@ -67,12 +67,11 @@ public class SchemaSelectDropdownAction extends DBNComboBoxAction implements Dum
                 if (schema != null) {
                     text = schema.getName();
                     icon = Icons.DBO_SCHEMA;
-                    enabled = true;
                 }
 
                 if (virtualFile.isInLocalFileSystem()) {
                     DDLFileAttachmentManager fileAttachmentManager = DDLFileAttachmentManager.getInstance(project);
-                    DBObjectRef editableObject = fileAttachmentManager.getMappedObjectRef(virtualFile);
+                    DBObjectRef<?> editableObject = fileAttachmentManager.getMappedObjectRef(virtualFile);
                     if (editableObject != null) {
                         boolean isOpened = DatabaseFileSystem.isFileOpened(editableObject);
                         if (isOpened) {

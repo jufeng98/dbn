@@ -7,6 +7,7 @@ import com.dbn.language.common.DBLanguagePsiFile;
 import com.dbn.language.common.psi.PsiUtil;
 import com.dbn.object.DBSchema;
 import com.dbn.object.action.AnObjectAction;
+import com.dbn.sql.parser.SqlFile;
 import com.dbn.vfs.file.DBEditableObjectVirtualFile;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
@@ -14,6 +15,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
+import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,12 +49,18 @@ public class SchemaSelectAction extends AnObjectAction<DBSchema> {
         VirtualFile virtualFile = Lookups.getVirtualFile(e);
         if (virtualFile instanceof DBEditableObjectVirtualFile) {
             enabled = false;//objectFile.getObject().getSchema() == schema;
-        } else if (virtualFile != null){
+        } else if (virtualFile != null) {
             PsiFile currentFile = PsiUtil.getPsiFile(project, virtualFile);
-            enabled = currentFile instanceof DBLanguagePsiFile;
+            enabled = currentFile instanceof DBLanguagePsiFile || currentFile instanceof SqlFile;
         }
 
         presentation.setEnabled(enabled);
 
+    }
+
+    @Override
+    public @Nls String toString() {
+        DBSchema dbSchema = getTarget();
+        return dbSchema.getSchemaName();
     }
 }

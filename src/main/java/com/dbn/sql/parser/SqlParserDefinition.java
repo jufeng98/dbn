@@ -52,6 +52,6 @@ public class SqlParserDefinition implements ParserDefinition {
 
     @Override
     public @NotNull PsiFile createFile(@NotNull FileViewProvider viewProvider) {
-        return new com.dbn.sql.parser.SqlFile(viewProvider);
+        return new SqlFile(viewProvider);
     }
 }

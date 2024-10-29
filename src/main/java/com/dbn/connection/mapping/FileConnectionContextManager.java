@@ -21,6 +21,7 @@ import com.dbn.connection.mapping.ui.FileConnectionMappingDialog;
 import com.dbn.connection.session.DatabaseSession;
 import com.dbn.connection.session.SessionManagerListener;
 import com.dbn.object.DBSchema;
+import com.dbn.sql.SqlFileType;
 import com.dbn.vfs.file.DBConsoleVirtualFile;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
@@ -209,6 +210,11 @@ public class FileConnectionContextManager extends ProjectComponentBase implement
     public boolean isSchemaSelectable(VirtualFile file) {
         if (isNotValid(file)) return false;
         if (isLocalFileSystem(file)) return hasConnectivityContext(file);
+
+        if (file.getFileType() instanceof SqlFileType) {
+            return true;
+        }
+
         if (!isDbLanguageFile(file)) return false;
 
         if (file instanceof DBConsoleVirtualFile) return true;
