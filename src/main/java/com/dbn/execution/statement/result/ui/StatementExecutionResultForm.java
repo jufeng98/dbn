@@ -5,6 +5,7 @@ import com.dbn.common.action.DataProviders;
 import com.dbn.common.color.Colors;
 import com.dbn.common.dispose.Disposer;
 import com.dbn.common.dispose.Failsafe;
+import com.dbn.common.icon.Icons;
 import com.dbn.common.latent.Latent;
 import com.dbn.common.thread.Dispatch;
 import com.dbn.common.ui.misc.DBNTableScrollPane;
@@ -23,7 +24,12 @@ import com.dbn.editor.data.DatasetEditor;
 import com.dbn.execution.ExecutionManager;
 import com.dbn.execution.common.result.ui.ExecutionResultFormBase;
 import com.dbn.execution.statement.result.StatementExecutionCursorResult;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionPopupMenu;
 import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.JBColor;
 import org.jetbrains.annotations.NotNull;
@@ -31,6 +37,10 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import static com.dbn.editor.data.action.DataReloadAction.LOAD_INSTRUCTIONS;
 
 public class StatementExecutionResultForm extends ExecutionResultFormBase<StatementExecutionCursorResult> implements SearchableDataComponent {
     private JPanel mainPanel;
@@ -57,6 +67,26 @@ public class StatementExecutionResultForm extends ExecutionResultFormBase<Statem
         if (datasetEditor != null) {
             recordViewInfo = new RecordViewInfo(executionResult.getName(), executionResult.getIcon());
             datasetEditorComponent = datasetEditor.getComponent();
+
+            datasetEditorComponent.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                    if (e.getButton() != MouseEvent.BUTTON3) {
+                        return;
+                    }
+
+                    ActionGroup actionGroup = new DefaultActionGroup(new AnAction("Reload", "Reload data",
+                            Icons.DATA_EDITOR_RELOAD_DATA) {
+                        @Override
+                        public void actionPerformed(@NotNull AnActionEvent e) {
+                            datasetEditor.loadData(LOAD_INSTRUCTIONS);
+                        }
+                    });
+                    ActionPopupMenu actionPopupMenu = Actions.createActionPopupMenu(datasetEditorComponent, "", actionGroup);
+                    JPopupMenu popupMenu = actionPopupMenu.getComponent();
+                    popupMenu.show(datasetEditorComponent, e.getX(), e.getY());
+                }
+            });
             return;
         }
 

@@ -644,7 +644,7 @@ public class DatasetEditor extends DisposableUserDataHolderBase implements
 
     @Nullable
     public static DatasetEditor get(AnActionEvent e) {
-        DatasetEditor datasetEditor = e.getData((DataKeys.DATASET_EDITOR));
+        DatasetEditor datasetEditor = e.getData(DataKeys.DATASET_EDITOR);
         if (datasetEditor == null) {
             FileEditor fileEditor = Lookups.getFileEditor(e);
             if (fileEditor instanceof DatasetEditor) {
