@@ -17,6 +17,7 @@ import com.dbn.execution.statement.StatementExecutionMessage;
 import com.dbn.execution.statement.processor.StatementExecutionProcessor;
 import com.dbn.execution.statement.result.ui.StatementExecutionResultForm;
 import com.dbn.language.common.DBLanguagePsiFile;
+import com.dbn.language.common.psi.ExecutablePsiElement;
 import com.intellij.openapi.project.Project;
 import lombok.Getter;
 import lombok.Setter;
@@ -42,6 +43,10 @@ public class StatementExecutionBasicResult extends ExecutionResultBase<Statement
     private final ConnectionRef connection;
     private final SchemaId databaseSchema;
     private final int updateCount;
+
+    @Setter
+    @Getter
+    private ExecutablePsiElement executablePsiElement;
 
     public StatementExecutionBasicResult(StatementExecutionProcessor executionProcessor, String name, int updateCount) {
         this.name = name;

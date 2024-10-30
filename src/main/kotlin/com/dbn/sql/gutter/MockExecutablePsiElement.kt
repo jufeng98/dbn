@@ -6,11 +6,13 @@ import com.dbn.language.common.element.impl.NamedElementType
 import com.dbn.language.common.psi.BasePsiElement
 import com.dbn.language.common.psi.ExecutablePsiElement
 import com.dbn.language.sql.SQLLanguage
+import com.dbn.sql.psi.SqlTableName
 import com.intellij.lang.ASTNode
 import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.PsiTreeUtil
 
 /**
  * @author yudong
@@ -65,4 +67,21 @@ class MockExecutablePsiElement(
         return true
     }
 
+    fun getIfSingleTableQuery(): String? {
+        val sqlTableNames = PsiTreeUtil.findChildrenOfType(sqlRoot, SqlTableName::class.java)
+        if (sqlTableNames.isEmpty() || sqlTableNames.size > 1) {
+            return null
+        }
+        return sqlTableNames.iterator().next().text
+    }
+
+    fun getCondition(): String? {
+        val sql = sqlRoot.text
+        val idx = sql.lowercase().indexOf("where")
+        if (idx == -1) {
+            return null
+        }
+
+        return sql.substring(idx + 5)
+    }
 }

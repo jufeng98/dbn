@@ -107,6 +107,10 @@ public class DatasetFilterGroup extends BasicProjectConfiguration<ProjectConfigu
 
     public DatasetCustomFilter createCustomFilter(boolean interactive) {
         String name = createFilterName("Filter");
+        return createCustomFilter(interactive, name);
+    }
+
+    public DatasetCustomFilter createCustomFilter(boolean interactive,String name) {
         DatasetCustomFilter filter = new DatasetCustomFilter(this, name);
         initChange();
         addFilter(filter, interactive);

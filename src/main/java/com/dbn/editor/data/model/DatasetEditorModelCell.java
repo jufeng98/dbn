@@ -18,6 +18,7 @@ import com.dbn.editor.data.ui.table.DatasetEditorTable;
 import com.dbn.editor.data.ui.table.cell.DatasetTableCellEditor;
 import com.dbn.object.DBColumn;
 import com.dbn.object.DBDataset;
+import com.dbn.utils.NotifyUtil;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
@@ -107,6 +108,8 @@ public class DatasetEditorModelCell
 
 
             resultSetAdapter.updateRow();
+
+            NotifyUtil.INSTANCE.notifyDbToolWindowInfo(project, "更新为" + newUserValue + "成功!");
         } catch (Exception e) {
             conditionallyLog(e);
             //try { Thread.sleep(6000); } catch (InterruptedException e1) { e1.printStackTrace(); }

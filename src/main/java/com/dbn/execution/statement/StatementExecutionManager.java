@@ -520,7 +520,9 @@ public class StatementExecutionManager extends ProjectComponentBase implements P
         return create ? createExecutionProcessor(fileEditor, executionProcessors, executablePsiElement) : null;
     }
 
-    private StatementExecutionProcessor createExecutionProcessor(@NotNull FileEditor fileEditor, List<StatementExecutionProcessor> executionProcessors, @NotNull ExecutablePsiElement executablePsiElement) {
+    private StatementExecutionProcessor createExecutionProcessor(@NotNull FileEditor fileEditor,
+                                                                 List<StatementExecutionProcessor> executionProcessors,
+                                                                 @NotNull ExecutablePsiElement executablePsiElement) {
         Project project = getProject();
         int index = RESULT_SEQUENCE.incrementAndGet();
         StatementExecutionBasicProcessor executionProcessor =
@@ -528,7 +530,11 @@ public class StatementExecutionManager extends ProjectComponentBase implements P
                         new StatementExecutionCursorProcessor(project, fileEditor, executablePsiElement, index) :
                         new StatementExecutionBasicProcessor(project, fileEditor, executablePsiElement, index);
         executionProcessors.add(executionProcessor);
+
         executablePsiElement.setExecutionProcessor(executionProcessor);
+
+        executionProcessor.setExecutablePsiElement(executablePsiElement);
+
         return executionProcessor;
     }
 

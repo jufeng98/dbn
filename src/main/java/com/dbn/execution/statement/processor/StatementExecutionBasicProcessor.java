@@ -54,6 +54,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -87,6 +88,9 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
     private final Icon icon;
 
     private String stickyResultName;
+    @Setter
+    @Getter
+    private ExecutablePsiElement executablePsiElement;
 
     private final Latent<String> resultName = Latent.basic(() -> {
         if (stickyResultName != null) {
@@ -337,8 +341,7 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
             if (executionResult != null) {
                 Project project = getProject();
                 ExecutionManager executionManager = ExecutionManager.getInstance(project);
-                executionManager.addExecutionResult(executionResult,
-                        NavigationInstructions.create(FOCUS, SCROLL, SELECT));
+                executionManager.addExecutionResult(executionResult, NavigationInstructions.create(FOCUS, SCROLL, SELECT));
             }
 
             if (executionException != null && debug) {
@@ -428,7 +431,7 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
 
         ConnectionHandler connection = getTargetConnection();
         DBNConnection conn = context.getConnection();
-        DBNStatement statement = conn.createStatement();
+        DBNStatement<?> statement = conn.createStatement();
 
         statement.setFetchSize(executionInput.getResultSetFetchBlockSize());
         context.setStatement(statement);
@@ -437,7 +440,7 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
         statement.setQueryTimeout(timeout);
         assertNotCancelled();
 
-        databaseCall = new CancellableDatabaseCall<StatementExecutionResult>(connection, conn, timeout, TimeUnit.SECONDS) {
+        databaseCall = new CancellableDatabaseCall<>(connection, conn, timeout, TimeUnit.SECONDS) {
             @Override
             public StatementExecutionResult execute() throws Exception {
                 try {
@@ -457,7 +460,11 @@ public class StatementExecutionBasicProcessor extends StatefulDisposableBase imp
                 }
             }
         };
-        return databaseCall.start();
+        StatementExecutionResult result = databaseCall.start();
+        if (result != null) {
+            ((StatementExecutionBasicResult) result).setExecutablePsiElement(executablePsiElement);
+        }
+        return result;
     }
 
     @Override

@@ -37,6 +37,7 @@ import com.dbn.execution.statement.processor.StatementExecutionProcessor;
 import com.dbn.execution.statement.result.StatementExecutionCursorResult;
 import com.dbn.execution.statement.result.StatementExecutionResult;
 import com.dbn.language.common.DBLanguagePsiFile;
+import com.dbn.utils.NotifyUtil;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
@@ -468,7 +469,15 @@ public class ExecutionConsoleForm extends DBNFormBase {
     }
 
     private void addResultTab(ExecutionResult<?> executionResult) {
-        ExecutionResultForm<?> resultForm = ensureResultForm(executionResult);
+        Project project = executionResult.getProject();
+        ExecutionResultForm<?> resultForm;
+        try {
+            resultForm = ensureResultForm(executionResult);
+        } catch (IllegalStateException e) {
+            NotifyUtil.INSTANCE.notifyConsoleToolWindowInfo(project, e.getMessage());
+            return;
+        }
+
         if (isNotValid(resultForm)) return;
 
         JComponent component = resultForm.getComponent();
@@ -548,7 +557,7 @@ public class ExecutionConsoleForm extends DBNFormBase {
 
     @Nullable
     private ExecutionResultForm<?> ensureResultForm(ExecutionResult<?> executionResult) {
-        return executionResultForms.computeIfAbsent(executionResult, k -> executionResult.createForm());
+        return executionResultForms.computeIfAbsent(executionResult, ExecutionResult::createForm);
     }
 
 

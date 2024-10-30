@@ -19,6 +19,7 @@ import com.dbn.data.grid.ui.table.basic.BasicTable;
 import com.dbn.data.grid.ui.table.resultSet.ResultSetTable;
 import com.dbn.data.model.resultSet.ResultSetDataModel;
 import com.dbn.data.record.RecordViewInfo;
+import com.dbn.editor.data.DatasetEditor;
 import com.dbn.execution.ExecutionManager;
 import com.dbn.execution.common.result.ui.ExecutionResultFormBase;
 import com.dbn.execution.statement.result.StatementExecutionCursorResult;
@@ -41,6 +42,7 @@ public class StatementExecutionResultForm extends ExecutionResultFormBase<Statem
     private ResultSetTable<?> resultTable;
     private DBNTableScrollPane resultScrollPane;
     private final RecordViewInfo recordViewInfo;
+    private JComponent datasetEditorComponent;
 
     private transient final Latent<DataSearchComponent> dataSearchComponent = Latent.basic(() -> {
         DataSearchComponent dataSearchComponent = new DataSearchComponent(StatementExecutionResultForm.this);
@@ -49,8 +51,15 @@ public class StatementExecutionResultForm extends ExecutionResultFormBase<Statem
         return dataSearchComponent;
     });
 
-    public StatementExecutionResultForm(@NotNull StatementExecutionCursorResult executionResult) {
+    public StatementExecutionResultForm(@NotNull StatementExecutionCursorResult executionResult, @Nullable DatasetEditor datasetEditor) {
         super(executionResult);
+
+        if (datasetEditor != null) {
+            recordViewInfo = new RecordViewInfo(executionResult.getName(), executionResult.getIcon());
+            datasetEditorComponent = datasetEditor.getComponent();
+            return;
+        }
+
         ActionToolbar actionToolbar = Actions.createActionToolbar(actionsPanel, "DBNavigator.ActionGroup.StatementExecutionResult", "", false);
 
         actionsPanel.add(actionToolbar.getComponent());
@@ -119,7 +128,11 @@ public class StatementExecutionResultForm extends ExecutionResultFormBase<Statem
 
     @NotNull
     @Override
-    public JPanel getMainComponent() {
+    public JComponent getMainComponent() {
+        if (datasetEditorComponent != null) {
+            return datasetEditorComponent;
+        }
+
         return mainPanel;
     }
 
