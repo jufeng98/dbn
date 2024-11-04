@@ -31,7 +31,7 @@ public class DatabaseNavigator extends ApplicationComponentBase implements Persi
     public static final String STORAGE_FILE = "dbnavigator.xml";
 
     public static final PluginId SQL_PLUGIN_ID = PluginId.getId("com.intellij.database");
-    public static final PluginId DBN_PLUGIN_ID = PluginId.getId("DBN");
+    public static final PluginId DBN_PLUGIN_ID = PluginId.getId("DataBaseManager");
 
     private String clientId = UUIDs.compact();
 

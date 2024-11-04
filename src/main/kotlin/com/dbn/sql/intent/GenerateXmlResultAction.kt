@@ -39,42 +39,41 @@ class GenerateXmlResultAction : BaseIntentionAction() {
         val element = getElement(editor, psiFile)
 
         val xmlTag = PsiTreeUtil.getParentOfType(element, XmlTag::class.java) ?: return false
-        if (xmlTag.name != "resultMap") {
+        val tagName = xmlTag.name
+        if (tagName != "resultMap" && tagName != "collection" && tagName != "association") {
             return false
         }
 
-        val type = xmlTag.getAttributeValue("type")
+        val type = tryGetType(xmlTag)
 
-        return !type.isNullOrBlank()
+        return type != null
     }
 
+    private fun tryGetType(xmlTag: XmlTag): String? {
+        var type = xmlTag.getAttributeValue("type")
+        if (!type.isNullOrBlank()) {
+            return type
+        }
+
+        type = xmlTag.getAttributeValue("ofType")
+        if (!type.isNullOrBlank()) {
+            return type
+        }
+
+        type = xmlTag.getAttributeValue("javaType")
+        if (!type.isNullOrBlank()) {
+            return type
+        }
+
+        return null
+    }
 
     @Throws(IncorrectOperationException::class)
     override fun invoke(project: Project, editor: Editor, psiFile: PsiFile) {
         val element = getElement(editor, psiFile)!!
         val xmlTag = PsiTreeUtil.getParentOfType(element, XmlTag::class.java)!!
 
-        val type = when (xmlTag.name) {
-            "resultMap" -> {
-                xmlTag.getAttributeValue("type")
-            }
-
-            "collection" -> {
-                xmlTag.getAttributeValue("javaType")
-            }
-
-            "association" -> {
-                xmlTag.getAttributeValue("ofType")
-            }
-
-            else -> {
-                null
-            }
-        }
-
-        if (type == null) {
-            return
-        }
+        val type = tryGetType(xmlTag) ?: return
 
         val module = ModuleUtil.findModuleForFile(psiFile) ?: return
         val scope = GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(module)
@@ -88,7 +87,7 @@ class GenerateXmlResultAction : BaseIntentionAction() {
 
         val resultStr = psiClass.allFields.joinToString("\n") {
             val name = it.name
-            if (name.contains("id")) {
+            if (name == "id" || name.contains("Id")) {
                 "<id property=\"$name\" column=\"$name\"/>"
             } else {
                 "<result property=\"$name\" column=\"$name\"/>"

@@ -1,6 +1,6 @@
 package com.dbn.sql;
 
-import com.intellij.openapi.util.IconLoader;
+import com.dbn.common.icon.Icons;
 
 import javax.swing.*;
 
@@ -9,6 +9,6 @@ import javax.swing.*;
  */
 public class SqlIcons {
 
-    public static final Icon FILE = IconLoader.getIcon("/icons/outgoing.svg", SqlIcons.class);
+    public static final Icon FILE = Icons.FILE_SQL;
 
 }

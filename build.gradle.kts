@@ -104,6 +104,16 @@ tasks.register<Jar>("packageSource") {
     }
 }
 
+tasks.getByName("processResources") {
+    doLast {
+        copy {
+            from("lib/ext")
+            include("**/*.jar")
+            into(layout.buildDirectory.dir("idea-sandbox/plugins/${project.name}/lib/ext"))
+        }
+    }
+}
+
 tasks.register<Copy>("unZip") {
     from(zipTree("$buildDir/distributions/DataBaseManager-${project.version}.zip"))
     into("$buildDir/distributions")
@@ -150,7 +160,7 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("221")
-        untilBuild.set("243.*")
+        untilBuild.set("241.*")
     }
 
     signPlugin {
