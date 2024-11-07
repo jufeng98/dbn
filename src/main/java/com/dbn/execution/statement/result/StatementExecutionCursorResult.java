@@ -24,12 +24,12 @@ import com.dbn.editor.data.filter.DatasetFilterManager;
 import com.dbn.editor.data.filter.DatasetFilterUtil;
 import com.dbn.execution.ExecutionStatus;
 import com.dbn.execution.common.options.ExecutionEngineSettings;
+import com.dbn.execution.statement.StatementExecutionContext;
+import com.dbn.execution.statement.StatementExecutionInput;
 import com.dbn.execution.statement.options.StatementExecutionSettings;
 import com.dbn.execution.statement.processor.StatementExecutionCursorProcessor;
 import com.dbn.execution.statement.processor.StatementExecutionProcessor;
 import com.dbn.execution.statement.result.ui.StatementExecutionResultForm;
-import com.dbn.execution.statement.StatementExecutionContext;
-import com.dbn.execution.statement.StatementExecutionInput;
 import com.dbn.language.common.psi.ExecutablePsiElement;
 import com.dbn.object.DBDataset;
 import com.dbn.object.DBSchema;
@@ -213,25 +213,22 @@ public class StatementExecutionCursorResult extends StatementExecutionBasicResul
             return null;
         }
 
+        DatasetFilterManager filterManager = DatasetFilterManager.getInstance(project);
+        DatasetFilterGroup filterGroup = filterManager.getFilterGroup(connection.getConnectionId(), tableName);
+        String name = "AutoGenerate";
+        Optional<DatasetFilter> optional = filterGroup.getFilters().stream()
+                .filter(it -> it.getName().equals(name))
+                .findFirst();
+
         String conditionStr = mockExecutablePsiElement.getCondition();
-        if (conditionStr != null) {
-            DatasetFilterManager filterManager = DatasetFilterManager.getInstance(project);
-            DatasetFilterGroup filterGroup = filterManager.getFilterGroup(connection.getConnectionId(), tableName);
-            String name = "AutoGenerate";
-            Optional<DatasetFilter> optional = filterGroup.getFilters().stream()
-                    .filter(it -> it.getName().equals(name))
-                    .findFirst();
-
+        if (conditionStr == null) {
+            filterManager.setActiveFilter(dbTable, DatasetFilterManager.EMPTY_FILTER);
+        } else {
             DatasetCustomFilter customFilter;
-            if (optional.isPresent()) {
-                customFilter = (DatasetCustomFilter) optional.get();
-                customFilter.setCondition(conditionStr);
-            } else {
-                customFilter = filterGroup.createCustomFilter(false, name);
-                customFilter.setCondition(conditionStr);
-            }
-
-
+            customFilter = optional
+                    .map(it -> (DatasetCustomFilter) it)
+                    .orElseGet(() -> filterGroup.createCustomFilter(false, name));
+            customFilter.setCondition(conditionStr);
             filterManager.setActiveFilter(dbTable, customFilter);
         }
 
