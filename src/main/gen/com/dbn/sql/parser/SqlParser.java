@@ -3554,7 +3554,7 @@ public class SqlParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // [ EXPLAIN ] (
+  // [ EXPLAIN | DESC ] (
   //     alter_table_stmt | analyze_stmt | attach_stmt | begin_stmt | commit_stmt | create_index_stmt | create_table_stmt |
   //     create_trigger_stmt | create_view_stmt | create_virtual_table_stmt | delete_stmt_limited | detach_stmt | drop_index_stmt |
   //     drop_table_stmt | drop_trigger_stmt | drop_view_stmt | insert_stmt | pragma_stmt | reindex_stmt | release_stmt |
@@ -3570,11 +3570,20 @@ public class SqlParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // [ EXPLAIN ]
+  // [ EXPLAIN | DESC ]
   private static boolean statement_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "statement_0")) return false;
-    consumeToken(b, EXPLAIN);
+    statement_0_0(b, l + 1);
     return true;
+  }
+
+  // EXPLAIN | DESC
+  private static boolean statement_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "statement_0_0")) return false;
+    boolean r;
+    r = consumeToken(b, EXPLAIN);
+    if (!r) r = consumeToken(b, DESC);
+    return r;
   }
 
   // alter_table_stmt | analyze_stmt | attach_stmt | begin_stmt | commit_stmt | create_index_stmt | create_table_stmt |

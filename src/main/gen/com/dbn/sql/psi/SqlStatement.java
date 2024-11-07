@@ -84,6 +84,9 @@ public interface SqlStatement extends PsiElement {
   SqlVacuumStmt getVacuumStmt();
 
   @Nullable
+  PsiElement getDesc();
+
+  @Nullable
   PsiElement getExplain();
 
   @NotNull

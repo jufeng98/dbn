@@ -180,6 +180,12 @@ public class SqlStatementImpl extends SqlPsiElement implements SqlStatement {
 
   @Override
   @Nullable
+  public PsiElement getDesc() {
+    return findChildByType(DESC);
+  }
+
+  @Override
+  @Nullable
   public PsiElement getExplain() {
     return findChildByType(EXPLAIN);
   }
