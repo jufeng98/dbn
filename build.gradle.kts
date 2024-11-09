@@ -1,5 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URI
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.StandardCopyOption
 
 plugins {
     id("java")
@@ -142,10 +145,8 @@ tasks {
     }
 
     prepareSandbox {
-        copy {
-            from("lib/ext")
-            include("**/*.jar")
-            into(layout.buildDirectory.dir("idea-sandbox/plugins/${project.name}/lib/ext"))
+        doLast {
+            copyLib()
         }
     }
 
@@ -180,5 +181,31 @@ tasks {
             "-Xmx2048m",
             "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044",
         )
+    }
+}
+
+fun copyLib() {
+    val bundlesDir = File(project.projectDir, "/lib/ext")
+    val targetDir = File(project.projectDir, "/build/idea-sandbox/plugins/${project.name}/lib/ext")
+    copyDirectory(bundlesDir.toPath(), targetDir.toPath())
+}
+
+fun copyDirectory(sourceDir: Path, destDir: Path) {
+    // 确保目标目录存在
+    Files.createDirectories(destDir)
+
+    // 获取源目录的所有文件和子目录
+    for (path in Files.newDirectoryStream(sourceDir)) {
+        // 获取相对路径
+        val relativePath: Path = sourceDir.relativize(path)
+        // 目标路径
+        val destPath: Path = destDir.resolve(relativePath)
+        // 如果是文件，则复制文件
+        if (Files.isRegularFile(path)) {
+            Files.copy(path, destPath, StandardCopyOption.REPLACE_EXISTING)
+        } else {
+            // 如果是目录，则递归调用
+            copyDirectory(path, destPath)
+        }
     }
 }
