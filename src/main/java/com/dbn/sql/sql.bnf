@@ -174,7 +174,7 @@
         string="regexp:('([^'])*'?|\"([^\"])*\"?)"
 
         // 没有找到办法用代码处理 mybatis mapper.xml 文件里的 ognl 占位符表达式,只好从语言层面将其作为一个合法元素去识别
-        MYBATIS_OGNL="regexp:[$#]\{[a-zA-Z0-9_@()'.,=\s]+}"
+        MYBATIS_OGNL="regexp:[$#]\{[a-zA-Z0-9_@()'.,=\s]*}"
     ]
   extends(".*expr")=expr
 }
