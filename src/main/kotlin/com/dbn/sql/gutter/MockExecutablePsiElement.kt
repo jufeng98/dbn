@@ -75,13 +75,7 @@ class MockExecutablePsiElement(
         return sqlTableNames.iterator().next().text
     }
 
-    fun getCondition(): String? {
-        val sql = sqlRoot.text
-        val idx = sql.lowercase().indexOf("where")
-        if (idx == -1) {
-            return null
-        }
-
-        return sql.substring(idx + 5)
+    fun getRawSql(): String {
+        return sqlRoot.text
     }
 }

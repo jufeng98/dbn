@@ -117,6 +117,14 @@ public class DatasetFilterGroup extends BasicProjectConfiguration<ProjectConfigu
         return filter;
     }
 
+
+    public DatasetConsoleFilter createConsoleFilter(boolean interactive, String name) {
+        DatasetConsoleFilter filter = new DatasetConsoleFilter(this, name);
+        initChange();
+        addFilter(filter, interactive);
+        return filter;
+    }
+
     public DatasetFilter getFilter(String filterId) {
         for (DatasetFilter filter : filters) {
             if (Objects.equals(filter.getId(), filterId)) {

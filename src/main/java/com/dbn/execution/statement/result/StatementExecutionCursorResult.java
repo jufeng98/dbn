@@ -17,7 +17,7 @@ import com.dbn.data.model.resultSet.ResultSetDataModel;
 import com.dbn.editor.DBContentType;
 import com.dbn.editor.data.DatasetEditor;
 import com.dbn.editor.data.DatasetEditorManager;
-import com.dbn.editor.data.filter.DatasetCustomFilter;
+import com.dbn.editor.data.filter.DatasetConsoleFilter;
 import com.dbn.editor.data.filter.DatasetFilter;
 import com.dbn.editor.data.filter.DatasetFilterGroup;
 import com.dbn.editor.data.filter.DatasetFilterManager;
@@ -215,22 +215,20 @@ public class StatementExecutionCursorResult extends StatementExecutionBasicResul
 
         DatasetFilterManager filterManager = DatasetFilterManager.getInstance(project);
         DatasetFilterGroup filterGroup = filterManager.getFilterGroup(connection.getConnectionId(), tableName);
+
         String name = "AutoGenerate";
-        Optional<DatasetFilter> optional = filterGroup.getFilters().stream()
+
+        Optional<DatasetFilter> filterOptional = filterGroup.getFilters().stream()
                 .filter(it -> it.getName().equals(name))
                 .findFirst();
 
-        String conditionStr = mockExecutablePsiElement.getCondition();
-        if (conditionStr == null) {
-            filterManager.setActiveFilter(dbTable, DatasetFilterManager.EMPTY_FILTER);
-        } else {
-            DatasetCustomFilter customFilter;
-            customFilter = optional
-                    .map(it -> (DatasetCustomFilter) it)
-                    .orElseGet(() -> filterGroup.createCustomFilter(false, name));
-            customFilter.setCondition(conditionStr);
-            filterManager.setActiveFilter(dbTable, customFilter);
-        }
+        DatasetConsoleFilter consoleFilter = filterOptional
+                .map(it -> (DatasetConsoleFilter) it)
+                .orElseGet(() -> filterGroup.createConsoleFilter(false, name));
+
+        consoleFilter.setRawSql(mockExecutablePsiElement.getRawSql());
+
+        filterManager.setActiveFilter(dbTable, consoleFilter);
 
         DBDatasetVirtualFile datasetFile = nn(databaseFile.getContentFile(DBContentType.DATA));
         DBDataset dataset = datasetFile.getObject();
