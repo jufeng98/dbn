@@ -88,7 +88,7 @@ public class DatasetEditorModel
         checkDisposed();
         closeResultSet();
         int timeout = getSettings().getGeneralSettings().getFetchTimeout().value();
-        AtomicReference<DBNStatement> statementRef = new AtomicReference<>();
+        AtomicReference<DBNStatement<?>> statementRef = new AtomicReference<>();
         ConnectionHandler connection = getConnection();
         DBNConnection conn = connection.getMainConnection();
 
@@ -117,7 +117,7 @@ public class DatasetEditorModel
 
             @Override
             public void cancel() {
-                DBNStatement statement = statementRef.get();
+                DBNStatement<?> statement = statementRef.get();
                 Resources.cancel(statement);
                 loaderCall = null;
                 set(DIRTY, true);
@@ -164,7 +164,7 @@ public class DatasetEditorModel
         return Failsafe.nn(settings);
     }
 
-    private DBNResultSet loadResultSet(boolean useCurrentFilter, AtomicReference<DBNStatement> statementRef) throws SQLException {
+    private DBNResultSet loadResultSet(boolean useCurrentFilter, AtomicReference<DBNStatement<?>> statementRef) throws SQLException {
         int timeout = getSettings().getGeneralSettings().getFetchTimeout().value();
         ConnectionHandler connection = getConnection();
         DBNConnection conn = connection.getMainConnection();
@@ -179,7 +179,7 @@ public class DatasetEditorModel
 
         Integer pageSize = getSettings().getGeneralSettings().getFetchBlockSize().value();
         String selectStatement = filter.createSelectStatement(dataset, getState().getSortingState(), pageNum, pageSize);
-        DBNStatement statement = null;
+        DBNStatement<?> statement = null;
         if (isReadonly()) {
             statement = conn.createStatement();
         } else {
@@ -566,9 +566,7 @@ public class DatasetEditorModel
 
         DatasetEditorModelCell cell = row.getCellAtIndex(columnIndex);
         if (cell == null) return false;
-        if (cell.is(UPDATING)) return false;
-
-        return true;
+        return !cell.is(UPDATING);
     }
 
     public List<DBColumn> getUniqueKeyColumns() {
@@ -578,7 +576,7 @@ public class DatasetEditorModel
     private List<DBColumn> loadUniqueKeyColumns() {
         DBTable table = (DBTable) getDataset();
         List<DBColumn> uniqueColumns = new ArrayList<>(table.getPrimaryKeyColumns());
-        uniqueColumns.removeIf(c -> c.isIdentity());
+        uniqueColumns.removeIf(DBColumn::isIdentity);
         if (uniqueColumns.isEmpty()) {
             uniqueColumns = table.getUniqueKeyColumns();
         }
