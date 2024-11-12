@@ -486,6 +486,7 @@ public class FileConnectionContextManager extends ProjectComponentBase implement
             if (virtualFile == null) continue;
 
             double progress = Progress.progressOf(i, size);
+            indicator.setIndeterminate(false);
             indicator.setFraction(progress);
             indicator.setText2(virtualFile.getPath());
 
