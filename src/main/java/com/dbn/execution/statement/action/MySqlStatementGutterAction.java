@@ -75,6 +75,11 @@ public class MySqlStatementGutterAction extends BasicAction {
 
     @NotNull
     public Icon getIcon() {
+        //noinspection ConstantValue
+        if (true) {
+            return Icons.STMT_EXECUTION_RUN;
+        }
+
         StatementExecutionProcessor executionProcessor = getExecutionProcessor(false, psiElement);
         if (executionProcessor == null) return Icons.STMT_EXECUTION_RUN;
 

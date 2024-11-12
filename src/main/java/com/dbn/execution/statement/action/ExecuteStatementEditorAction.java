@@ -20,20 +20,39 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+
 import static com.dbn.common.dispose.Checks.isNotValid;
 
 public class ExecuteStatementEditorAction extends ProjectAction {
+    private static volatile boolean lock = false;
 
     @Override
     protected void actionPerformed(@NotNull AnActionEvent e, @NotNull Project project) {
-        Editor editor = Lookups.getEditor(e);
-        if (isNotValid(editor)) return;
+        try {
+            if (lock) {
+                return;
+            }
+            lock = true;
 
-        FileEditor fileEditor = Editors.getFileEditor(editor);
-        if (isNotValid(fileEditor)) return;
+            Editor editor = Lookups.getEditor(e);
+            if (isNotValid(editor)) return;
 
-        StatementExecutionManager executionManager = StatementExecutionManager.getInstance(project);
-        executionManager.executeStatementAtCursor(fileEditor);
+            FileEditor fileEditor = Editors.getFileEditor(editor);
+            if (isNotValid(fileEditor)) return;
+
+            StatementExecutionManager executionManager = StatementExecutionManager.getInstance(project);
+            executionManager.executeStatementAtCursor(fileEditor);
+        } finally {
+            CompletableFuture.runAsync(() -> {
+                try {
+                    TimeUnit.SECONDS.sleep(2);
+                } catch (InterruptedException ignored) {
+                }
+                lock = false;
+            });
+        }
     }
 
     @Override
@@ -56,9 +75,7 @@ public class ExecuteStatementEditorAction extends ProjectAction {
         if (!(psiFile instanceof DBLanguagePsiFile || psiFile instanceof SqlFile)) return false;
 
         VirtualFile virtualFile = psiFile.getVirtualFile();
-        if (virtualFile instanceof DBSourceCodeVirtualFile) return false;
-
-        return true;
+        return !(virtualFile instanceof DBSourceCodeVirtualFile);
     }
 
     public static boolean isVisible(AnActionEvent e) {

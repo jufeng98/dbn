@@ -21,7 +21,7 @@ public class ResultSetColumnInfo extends BasicColumnInfo {
         super(null, null, index);
         resultSetIndex = index + 1;
         ResultSetMetaData metaData = resultSet.getMetaData();
-        name = translateName(metaData.getColumnName(resultSetIndex).intern(), connection);
+        name = translateName(metaData.getColumnLabel(resultSetIndex).intern(), connection);
 
         String dataTypeName = metaData.getColumnTypeName(resultSetIndex);
         int precision = getPrecision(metaData);
