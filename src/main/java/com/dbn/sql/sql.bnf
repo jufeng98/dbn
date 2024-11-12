@@ -316,7 +316,9 @@ expr ::= ( raise_expr
 keyword_expr ::= MONTH | DAY | HOUR | MINUTE | SEPARATOR | INTERVAL
 literal_expr ::= literal_value
 bind_expr ::= bind_parameter
-mybatis_expr ::= MYBATIS_OGNL
+mybatis_expr ::= MYBATIS_OGNL {
+    mixin="com.dbn.sql.inject.SqlPsiLanguageInjectionHost"
+}
 column_expr ::= [ database_name '.' table_name '.' | table_name '.' ] column_name
 unary_expr ::= ('+' | '-' | '~' ) expr
 binary_pipe_expr ::= expr '||' expr

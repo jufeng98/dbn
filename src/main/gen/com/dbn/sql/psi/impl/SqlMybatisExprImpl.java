@@ -8,15 +8,15 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static com.dbn.sql.psi.SqlTypes.*;
+import com.dbn.sql.inject.SqlPsiLanguageInjectionHost;
 import com.dbn.sql.psi.*;
 
-public class SqlMybatisExprImpl extends SqlExprImpl implements SqlMybatisExpr {
+public class SqlMybatisExprImpl extends SqlPsiLanguageInjectionHost implements SqlMybatisExpr {
 
   public SqlMybatisExprImpl(@NotNull ASTNode node) {
     super(node);
   }
 
-  @Override
   public void accept(@NotNull SqlVisitor visitor) {
     visitor.visitMybatisExpr(this);
   }
