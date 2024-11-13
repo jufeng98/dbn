@@ -10,6 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static com.dbn.sql.psi.SqlTypes.*;
 import com.dbn.sql.inject.SqlPsiLanguageInjectionHost;
 import com.dbn.sql.psi.*;
+import com.intellij.psi.PsiReference;
 
 public class SqlMybatisExprImpl extends SqlPsiLanguageInjectionHost implements SqlMybatisExpr {
 
@@ -31,6 +32,12 @@ public class SqlMybatisExprImpl extends SqlPsiLanguageInjectionHost implements S
   @NotNull
   public PsiElement getMybatisOgnl() {
     return findNotNullChildByType(MYBATIS_OGNL);
+  }
+
+  @Override
+  @NotNull
+  public PsiReference[] getReferences() {
+    return SqlPsiImplUtil.getReferences(this);
   }
 
 }

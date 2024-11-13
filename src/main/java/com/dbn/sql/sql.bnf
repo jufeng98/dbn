@@ -318,6 +318,9 @@ literal_expr ::= literal_value
 bind_expr ::= bind_parameter
 mybatis_expr ::= MYBATIS_OGNL {
     mixin="com.dbn.sql.inject.SqlPsiLanguageInjectionHost"
+    methods=[
+        getReferences
+    ]
 }
 column_expr ::= [ database_name '.' table_name '.' | table_name '.' ] column_name
 unary_expr ::= ('+' | '-' | '~' ) expr

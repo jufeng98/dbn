@@ -58,9 +58,16 @@ object SqlPsiImplUtil {
     }
 
     @JvmStatic
-    fun getReferences(param: SqlStatement?): Array<PsiReference> {
+    fun getReferences(param: SqlMybatisExpr): Array<PsiReference> {
         return ReferenceProvidersRegistry.getReferencesFromProviders(
-            param!!
+            param
+        )
+    }
+
+    @JvmStatic
+    fun getReferences(param: SqlStatement): Array<PsiReference> {
+        return ReferenceProvidersRegistry.getReferencesFromProviders(
+            param
         )
     }
 }
