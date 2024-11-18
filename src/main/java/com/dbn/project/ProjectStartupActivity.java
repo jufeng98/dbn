@@ -13,13 +13,22 @@ import com.dbn.vfs.DatabaseFileManager;
 import com.intellij.ide.plugins.PluginStateManager;
 import com.intellij.ide.util.RunOnceUtil;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.startup.StartupActivity;
+import kotlin.Unit;
+import kotlin.coroutines.Continuation;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static com.dbn.DatabaseNavigator.registerExecutorExtension;
 
 @Compatibility
-public class ProjectStartupActivity implements StartupActivity {
+public class ProjectStartupActivity implements com.intellij.openapi.startup.ProjectActivity {
+
+    @Override
+    public @Nullable Object execute(@NotNull Project project, @NotNull Continuation<? super Unit> continuation) {
+        runActivity(project);
+
+        return null;
+    }
 
     public void runActivity(@NotNull Project project) {
         RunOnceUtil.runOnceForApp("app.start.dbn.init", () -> {
