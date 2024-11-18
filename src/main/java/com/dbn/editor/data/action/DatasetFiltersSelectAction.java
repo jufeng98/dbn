@@ -26,8 +26,8 @@ public class DatasetFiltersSelectAction extends DBNComboBoxAction {
 
     @NotNull
     @Override
-    public JComponent createCustomComponent(@NotNull Presentation presentation) {
-        return super.createCustomComponent(presentation);
+    public JComponent createCustomComponent(@NotNull Presentation presentation,@NotNull String place) {
+        return super.createCustomComponent(presentation, place);
     }
 
 

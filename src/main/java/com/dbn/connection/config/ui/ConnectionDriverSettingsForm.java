@@ -59,10 +59,8 @@ public class ConnectionDriverSettingsForm extends DBNFormBase {
         });
 
         // TODO NLS
-        driverLibraryTextField.addBrowseFolderListener(
-                nls("cfg.connection.title.SelectDriverLibrary"),
-                nls("cfg.connection.text.LibraryDriverClasses"),
-                null, LIBRARY_FILE_DESCRIPTOR);
+        driverLibraryTextField.addBrowseFolderListener(null, LIBRARY_FILE_DESCRIPTOR.withTitle(nls("cfg.connection.title.SelectDriverLibrary"))
+                .withDescription(nls("cfg.connection.text.LibraryDriverClasses")));
 
         reloadDriversCheckLabel.setText("");
         reloadDriversCheckLabel.setIcon(Icons.COMMON_CHECK);

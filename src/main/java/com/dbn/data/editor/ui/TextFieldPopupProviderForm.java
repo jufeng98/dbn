@@ -22,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.HashSet;
 import java.util.Set;
@@ -99,7 +100,8 @@ public abstract class TextFieldPopupProviderForm extends DBNFormBase implements 
             ActionManager actionManager = ActionManager.getInstance();
             Presentation templatePresentation = action.getTemplatePresentation();
             Presentation presentation = new Presentation(templatePresentation.getText());
-            AnActionEvent actionEvent = new AnActionEvent(null, dataContext, "", presentation, actionManager, 2);
+            AnActionEvent actionEvent = new AnActionEvent(dataContext, presentation, "", ActionUiKind.NONE,
+                    null, InputEvent.CTRL_MASK, actionManager);
             action.actionPerformed(actionEvent);
             e.consume();
             return;

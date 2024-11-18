@@ -6,8 +6,8 @@ import java.nio.file.StandardCopyOption
 
 plugins {
     id("java")
-    id("org.jetbrains.kotlin.jvm") version "1.9.20"
-    id("org.jetbrains.intellij") version "1.16.0"
+    id("org.jetbrains.kotlin.jvm") version "1.9.21"
+    id("org.jetbrains.intellij") version "1.16.1"
 }
 
 group = "com.dbn"
@@ -85,7 +85,7 @@ sourceSets {
 // Configure Gradle IntelliJ Plugin
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 intellij {
-    version.set("2022.1.2")
+    version.set("2024.3")
     type.set("IC") // Target IDE Platform
 
     plugins.set(listOf("java", "copyright"))
@@ -135,13 +135,13 @@ tasks.register<Copy>("buildPluginAndUnzip") {
 tasks {
     // Set the JVM compatibility versions
     withType<JavaCompile> {
-        sourceCompatibility = "11"
-        targetCompatibility = "11"
+        sourceCompatibility = "17"
+        targetCompatibility = "17"
     }
 
 
     withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "11"
+        kotlinOptions.jvmTarget = "17"
     }
 
     prepareSandbox {
@@ -160,8 +160,8 @@ tasks {
     }
 
     patchPluginXml {
-        sinceBuild.set("221")
-        untilBuild.set("241.*")
+        sinceBuild.set("232")
+        untilBuild.set("243.*")
     }
 
     signPlugin {

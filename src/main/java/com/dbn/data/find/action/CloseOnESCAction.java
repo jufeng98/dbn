@@ -23,7 +23,8 @@ public class CloseOnESCAction extends DataSearchHeaderAction implements DumbAwar
             ActionListener actionListener = e -> {
                 DataContext dataContext = Context.getDataContext(searchComponent);
                 ActionManager actionManager = ActionManager.getInstance();
-                AnActionEvent actionEvent = new AnActionEvent(null, dataContext, "", getTemplatePresentation(), actionManager, 2);
+                AnActionEvent actionEvent = new AnActionEvent(dataContext, getTemplatePresentation(), "",
+                        ActionUiKind.NONE, null, InputEvent.CTRL_MASK, actionManager);
                 CloseOnESCAction.this.actionPerformed(actionEvent);
             };
             component.registerKeyboardAction(

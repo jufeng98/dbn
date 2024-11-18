@@ -46,11 +46,8 @@ public class TnsNamesImportForm extends DBNFormBase {
 
         tnsNamesTable.getSelectionModel().addListSelectionListener(e -> updateSelections());
 
-        tnsNamesFileTextField.addBrowseFolderListener(
-                null,
-                null,
-                getProject(),
-                TnsNamesParser.FILE_CHOOSER_DESCRIPTOR);
+        tnsNamesFileTextField.addBrowseFolderListener(getProject(), TnsNamesParser.FILE_CHOOSER_DESCRIPTOR.withTitle(null)
+                .withDescription(null));
 
         onTextChange(tnsNamesFileTextField, e -> updateTnsNamesTable());
         onTextChange(filterTextField, e -> filterTnsNamesTable());

@@ -29,9 +29,8 @@ public class ExecutionConsolePopupActionGroup extends DefaultActionGroup {
 
     private static TabInfo getTabInfo(AnActionEvent e) {
         DataContext dataContext = e.getDataContext();
-        Object o = dataContext.getData(PlatformDataKeys.CONTEXT_COMPONENT.getName());
-        if (o instanceof TabLabel) {
-            TabLabel tabLabel = (TabLabel) o;
+        Object o = dataContext.getData(DataKey.create(PlatformDataKeys.CONTEXT_COMPONENT.getName()));
+        if (o instanceof TabLabel tabLabel) {
             return tabLabel.getInfo();
         }
         return null;

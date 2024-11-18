@@ -3,6 +3,7 @@ package com.dbn.common.util;
 import com.dbn.common.ui.form.DBNForm;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.actionSystem.DataKey;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditor;
 import org.jetbrains.annotations.Nullable;
@@ -31,13 +32,13 @@ public interface Context {
     @Nullable
     static <T> T getData(Component component, String dataId) {
         DataContext dataContext = getDataContext(component);
-        return cast(dataContext.getData(dataId));
+        return cast(dataContext.getData(DataKey.create(dataId)));
     }
 
     @Nullable
     static <T> T getData(FileEditor component, String dataId) {
         DataContext dataContext = getDataContext(component);
-        return cast(dataContext.getData(dataId));
+        return cast(dataContext.getData(DataKey.create(dataId)));
     }
 
 }

@@ -147,10 +147,9 @@ public class ExportDataForm extends DBNFormBase {
         fileLocationTextField.setText(instructions.getFileLocation());
 
         Project project = connection.getProject();
-        fileLocationTextField.addBrowseFolderListener(
-                "Select Directory",
-                "Select destination directory for the exported file", project, DIRECTORY_FILE_DESCRIPTOR);
-        
+        fileLocationTextField.addBrowseFolderListener(project, DIRECTORY_FILE_DESCRIPTOR.withTitle("Select Directory")
+                .withDescription("Select destination directory for the exported file"));
+
         enableDisableFields();
 
         String headerTitle;

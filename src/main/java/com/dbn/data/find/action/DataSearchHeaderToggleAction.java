@@ -3,9 +3,11 @@ package com.dbn.data.find.action;
 import com.dbn.common.action.ToggleAction;
 import com.dbn.data.find.DataSearchComponent;
 import com.intellij.find.FindModel;
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.project.DumbAware;
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
@@ -23,8 +25,8 @@ public abstract class DataSearchHeaderToggleAction extends ToggleAction implemen
     }
 
     @Override
-    public boolean isUpdateInBackground() {
-        return false;
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.EDT;
     }
 
     protected FindModel getFindModel() {

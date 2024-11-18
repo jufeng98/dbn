@@ -39,11 +39,13 @@ public abstract class ShortcutInterceptor implements AnActionListener {
     protected void invokeDelegateAction(@NotNull AnActionEvent event) {
         AnAction delegateAction = getDelegateAction();
         AnActionEvent delegateEvent = new AnActionEvent(
-                event.getInputEvent(),
                 event.getDataContext(),
-                event.getPlace(),
                 new Presentation(),
-                ActionManager.getInstance(), 0);
+                event.getPlace(),
+                ActionUiKind.NONE,
+                event.getInputEvent(),
+                0,
+                ActionManager.getInstance());
 
         delegateAction.actionPerformed(delegateEvent);
     }

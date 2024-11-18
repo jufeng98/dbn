@@ -42,10 +42,9 @@ public class ConnectionSshTunnelSettingsForm extends ConfigurationEditorForm<Con
         showHideFields();
         registerComponent(mainPanel);
 
-        keyFileField.addBrowseFolderListener(
-                nls("cfg.connection.title.SelectPrivateKeyFile"),
-                "",
-                null, new FileChooserDescriptor(true, false, false, false, false, false));
+        FileChooserDescriptor fileChooserDescriptor = new FileChooserDescriptor(true, false, false,
+                false, false, false);
+        keyFileField.addBrowseFolderListener(null, fileChooserDescriptor.withTitle(nls("cfg.connection.title.SelectPrivateKeyFile")).withDescription(""));
     }
 
     @NotNull

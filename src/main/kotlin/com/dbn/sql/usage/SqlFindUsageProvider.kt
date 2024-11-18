@@ -1,8 +1,6 @@
 package com.dbn.sql.usage
 
 import com.dbn.sql.psi.SqlNamedElement
-import com.intellij.json.JsonBundle
-import com.intellij.lang.HelpID
 import com.intellij.lang.findUsages.FindUsagesProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
@@ -17,8 +15,8 @@ class SqlFindUsageProvider : FindUsagesProvider {
         return psiElement is SqlNamedElement
     }
 
-    override fun getHelpId(psiElement: PsiElement): @NonNls String {
-        return HelpID.FIND_OTHER_USAGES
+    override fun getHelpId(psiElement: PsiElement): @NonNls String? {
+        return null
     }
 
     override fun getType(element: PsiElement): @Nls String {
@@ -27,10 +25,10 @@ class SqlFindUsageProvider : FindUsagesProvider {
 
     override fun getDescriptiveName(element: PsiElement): @Nls String {
         if (element !is PsiNamedElement) {
-            return JsonBundle.message("unnamed.desc")
+            return "不可用"
         }
 
-        val name = element.name ?: return JsonBundle.message("unnamed.desc")
+        val name = element.name ?: return "佚名"
 
         return name
     }

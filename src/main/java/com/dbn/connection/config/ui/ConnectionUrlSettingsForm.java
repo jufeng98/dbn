@@ -70,10 +70,8 @@ public class ConnectionUrlSettingsForm extends DBNFormBase {
         updateTnsAdminField();
 
         FileChooserDescriptor tnsFolderChooserDesc = new FileChooserDescriptor(false, true, false, false, false, false);
-        tnsFolderTextField.addBrowseFolderListener(
-                nls("cfg.connection.title.SelectWalletDirectory"),
-                nls("cfg.connection.text.ValidTnsNamesFolder"),
-                null, tnsFolderChooserDesc);
+        tnsFolderTextField.addBrowseFolderListener(null, tnsFolderChooserDesc.withTitle(nls("cfg.connection.title.SelectWalletDirectory"))
+                .withDescription(nls("cfg.connection.text.ValidTnsNamesFolder")));
 
         onTextChange(hostTextField, e -> updateUrlField());
         onTextChange(portTextField, e -> updateUrlField());

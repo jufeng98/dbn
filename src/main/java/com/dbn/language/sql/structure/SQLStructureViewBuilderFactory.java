@@ -30,7 +30,7 @@ public class SQLStructureViewBuilderFactory implements PsiStructureViewFactory {
                 try {
                     return !psiFile.isValid() ||
                             psiFile.getProject().isDisposed() ||
-                            PsiEditorUtil.Service.getInstance() == null ?
+                            PsiEditorUtil.getInstance() == null ?
                             EmptyStructureViewModel.INSTANCE :
                             new SQLStructureViewModel(editor, psiFile);
                 } catch (Throwable e) {

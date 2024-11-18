@@ -10,6 +10,7 @@ import com.dbn.vfs.file.DBEditableObjectVirtualFile;
 import com.intellij.injected.editor.VirtualFileWindow;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectRootManager;
+import com.intellij.openapi.util.io.NioFiles;
 import com.intellij.openapi.vfs.*;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
 import com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent;
@@ -26,6 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 
@@ -89,7 +91,7 @@ public final class VirtualFiles {
 
     public static void setReadOnlyAttribute(String path, boolean readonly) {
         try {
-            ReadOnlyAttributeUtil.setReadOnlyAttribute(path, readonly);
+            NioFiles. setReadOnly(Paths.get(path), readonly);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -152,11 +154,11 @@ public final class VirtualFiles {
             @NotNull VirtualFile virtualFile,
             @NotNull String oldName,
             @NotNull String newName) {
-        return new VFilePropertyChangeEvent(null, virtualFile, VirtualFile.PROP_NAME, oldName, newName, false);
+        return new VFilePropertyChangeEvent(null, virtualFile, VirtualFile.PROP_NAME, oldName, newName);
     }
 
     public static VFileEvent createFileDeleteEvent(@NotNull VirtualFile virtualFile) {
-        return new VFileDeleteEvent(null, virtualFile, false);
+        return new VFileDeleteEvent(null, virtualFile);
     }
 
     public static void notifiedFileChange(VFileEvent event, Runnable changeAction) {

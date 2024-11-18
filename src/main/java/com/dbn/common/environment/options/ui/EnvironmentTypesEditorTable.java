@@ -8,17 +8,17 @@ import com.dbn.common.environment.EnvironmentTypeBundle;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.BooleanTableCellEditor;
 import com.intellij.ui.BooleanTableCellRenderer;
-import com.intellij.ui.ColorChooser;
+import com.intellij.ui.ColorChooserService;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.ListSelectionModel;
 import javax.swing.table.TableColumn;
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Collections;
 
 public class EnvironmentTypesEditorTable extends DBNEditableTable<EnvironmentTypesTableModel> {
 
@@ -65,7 +65,8 @@ public class EnvironmentTypesEditorTable extends DBNEditableTable<EnvironmentTyp
             if (columnIndex == 4) {
                 int rowIndex = rowAtPoint(point);
                 Color color = (Color) getValueAt(rowIndex, columnIndex);
-                color = ColorChooser.chooseColor(EnvironmentTypesEditorTable.this, "Select Environment Color", color);
+                color = ColorChooserService.getInstance().showDialog(EnvironmentTypesEditorTable.this, "Select Environment Color",
+                        color, false, Collections.emptyList(), false);
                 if (color != null) {
                     setValueAt(color, rowIndex, columnIndex);
                 }

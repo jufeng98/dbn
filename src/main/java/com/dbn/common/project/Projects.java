@@ -33,6 +33,7 @@ public final class Projects {
     public static void projectOpened(Consumer<Project> consumer) {
         ApplicationEvents.subscribe(null, ProjectManager.TOPIC,
                 new ProjectManagerListener() {
+                    @SuppressWarnings("removal")
                     @Override
                     public void projectOpened(@NotNull Project project) {
                         guarded(() -> consumer.accept(project));
