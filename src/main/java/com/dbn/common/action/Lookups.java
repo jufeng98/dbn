@@ -5,6 +5,8 @@ import com.dbn.common.util.Context;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.project.Project;
@@ -31,7 +33,13 @@ public class Lookups {
     @Nullable
     public static VirtualFile getVirtualFile(@Nullable AnActionEvent e) {
         if (e == null) return null;
-        return e.getData(PlatformDataKeys.VIRTUAL_FILE);
+        try {
+            return ApplicationManager.getApplication()
+                    .executeOnPooledThread(() -> ReadAction.compute(()->e.getData(PlatformDataKeys.VIRTUAL_FILE)))
+                    .get();
+        }  catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     @Nullable
@@ -60,7 +68,7 @@ public class Lookups {
         return PlatformDataKeys.FILE_EDITOR.getData(dataContext);
     }
 
-    public static Project getProject(Component component){
+    public static Project getProject(Component component) {
         DataContext dataContext = Context.getDataContext(component);
         return PlatformDataKeys.PROJECT.getData(dataContext);
     }
