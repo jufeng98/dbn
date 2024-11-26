@@ -1,0 +1,64 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <fileType
+                name="SQL"
+                implementationClass="com.dbn.sql.SqlFileType"
+                fieldName="INSTANCE"
+                language="sql"
+                extensions="mysql"/>
+        <lang.parserDefinition
+                language="sql"
+                implementationClass="com.dbn.sql.parser.SqlParserDefinition"/>
+        <lang.ast.factory language="sql" implementationClass="com.dbn.sql.SqlASTFactory"/>
+        <lang.syntaxHighlighterFactory
+                language="sql"
+                implementationClass="com.dbn.sql.highlight.SqlSyntaxHighlighterFactory"/>
+        <colorSettingsPage
+                implementation="com.dbn.sql.highlight.SqlColorSettingsPage"/>
+        <highlightVisitor implementation="com.dbn.sql.highlight.SqlRainbowVisitor"/>
+        <lang.braceMatcher language="sql"
+                           implementationClass="com.dbn.sql.bracematcher.SqlPairedBraceMatcher"/>
+        <quoteHandler fileType="SQL" className="com.dbn.sql.quotehandler.SqlQuoteHandler"/>
+        <lang.namesValidator language="sql" implementationClass="com.dbn.sql.name.SqlNamesValidator"/>
+        <multiHostInjector
+                implementation="com.dbn.sql.inject.SqlMultiHostInjector"/>
+        <psi.referenceContributor language="sql"
+                                  implementation="com.dbn.sql.reference.SqlReferenceContributor"/>
+        <lang.findUsagesProvider language="sql"
+                                 implementationClass="com.dbn.sql.usage.SqlFindUsageProvider"/>
+        <lang.commenter
+                language="sql"
+                implementationClass="com.dbn.sql.commenter.SqlCommenter"/>
+        <defaultLiveTemplates file="/liveTemplates/gfp-sql.xml"/>
+        <liveTemplateContext implementation="com.dbn.sql.livetempate.SqlTemplateContextType" contextId="gfp-sql"/>
+        <lang.formatter
+                language="sql"
+                implementationClass="com.dbn.sql.formatter.SqlFormattingModelBuilder"/>
+        <codeStyleSettingsProvider
+                implementation="com.dbn.sql.codestyle.SqlCodeStyleSettingsProvider"/>
+        <langCodeStyleSettingsProvider
+                implementation="com.dbn.sql.codestyle.SqlLanguageCodeStyleSettingsProvider"/>
+        <preFormatProcessor implementation="com.dbn.sql.formatter.SqlFormatPreprocessor"/>
+        <lang.foldingBuilder language="sql" implementationClass="com.dbn.sql.folding.SqlFoldingBuilder"/>
+        <spellchecker.support language="sql"
+                              implementationClass="com.dbn.sql.spell.SqlSpellcheckerStrategy"/>
+        <lang.psiStructureViewFactory language="sql"
+                                      implementationClass="com.dbn.sql.structure.SqlStructureViewBuilderProvider"/>
+        <lang.elementManipulator forClass="com.dbn.sql.psi.SqlStatement"
+                                 implementationClass="com.dbn.sql.manipulator.SqlManipulator"/>
+        <completion.contributor
+                language="sql"
+                implementationClass="com.dbn.sql.completion.SqlCompletionContributor"/>
+        <lang.documentationProvider
+                language="sql"
+                implementationClass="com.dbn.sql.doc.SqlDocumentationProvider"/>
+        <annotator language="sql"
+                   implementationClass="com.dbn.sql.annotator.SqlAnnotator"/>
+        <annotator language="sql"
+                   implementationClass="com.dbn.sql.annotator.SqlConsoleAnnotator"/>
+        <codeInsight.lineMarkerProvider language="sql"
+                                        implementationClass="com.dbn.sql.gutter.SqlExecutorLineMarker"/>
+        <highlightErrorFilter implementation="com.dbn.suppress.MyHighlightErrorFilter"/>
+    </extensions>
+
+</idea-plugin>

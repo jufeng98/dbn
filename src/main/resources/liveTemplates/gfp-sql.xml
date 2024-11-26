@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templateSet group="SQL">
-    <template name="sel" description="select * from table" value="select * from $table$$END$;" toReformat="true">
+    <template name="sel" description="select * from table" value="select * from $table$$END$;" toReformat="false">
         <variable name="table" expression="complete()" defaultValue="" alwaysStopAt="true"/>
         <context>
             <option name="gfp-sql" value="true"/>
@@ -8,7 +8,7 @@
     </template>
 
     <template name="sela" description="select * from table where" value="select * from $table$ where $END$;"
-              toReformat="true">
+              toReformat="false">
         <variable name="table" expression="complete()" defaultValue="" alwaysStopAt="true"/>
         <context>
             <option name="gfp-sql" value="true"/>
@@ -16,7 +16,7 @@
     </template>
 
     <template name="selc" description="select count(*) from table alias where"
-              value="select count(*) from $table$ $alias$ where $alias$.$END$;" toReformat="true">
+              value="select count(*) from $table$ $alias$ where $alias$.$END$;" toReformat="false">
         <variable name="table" expression="complete()" defaultValue="" alwaysStopAt="true"/>
         <variable name="alias" expression="complete()" defaultValue="" alwaysStopAt="true"/>
         <context>
@@ -25,7 +25,7 @@
     </template>
 
     <template name="selw" description="select * from table alias"
-              value="select * from $table$ $alias$ where $alias$.$END$;" toReformat="true">
+              value="select * from $table$ $alias$ where $alias$.$END$;" toReformat="false">
         <variable name="table" expression="complete()" defaultValue="" alwaysStopAt="true"/>
         <variable name="alias" expression="complete()" defaultValue="" alwaysStopAt="true"/>
         <context>
