@@ -22,11 +22,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
-public class PSQLTodoIndexer extends PlainTextTodoIndexer {
-
-    @NotNull
-    @Override
-    public Map<TodoIndexEntry, Integer> map(@NotNull FileContent inputData) {
-        return super.map(inputData);
-    }
-}
+//public class PSQLTodoIndexer extends PlainTextTodoIndexer {
+//
+//    @NotNull
+//    @Override
+//    public Map<TodoIndexEntry, Integer> map(@NotNull FileContent inputData) {
+//        return super.map(inputData);
+//    }
+//}
