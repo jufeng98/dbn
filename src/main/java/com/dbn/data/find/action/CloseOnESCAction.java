@@ -1,9 +1,11 @@
 package com.dbn.data.find.action;
 
 import com.dbn.common.ui.util.Keyboard;
-import com.dbn.common.util.Context;
 import com.dbn.data.find.DataSearchComponent;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.CustomShortcutSet;
+import com.intellij.openapi.actionSystem.KeyboardShortcut;
+import com.intellij.openapi.actionSystem.Shortcut;
 import com.intellij.openapi.project.DumbAware;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,14 +21,8 @@ public class CloseOnESCAction extends DataSearchHeaderAction implements DumbAwar
 
         ArrayList<Shortcut> shortcuts = new ArrayList<>();
         if (Keyboard.isEmacsKeymap()) {
-            shortcuts.add(new KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_MASK), null));
-            ActionListener actionListener = e -> {
-                DataContext dataContext = Context.getDataContext(searchComponent);
-                ActionManager actionManager = ActionManager.getInstance();
-                AnActionEvent actionEvent = new AnActionEvent(dataContext, getTemplatePresentation(), "",
-                        ActionUiKind.NONE, null, InputEvent.CTRL_MASK, actionManager);
-                CloseOnESCAction.this.actionPerformed(actionEvent);
-            };
+            shortcuts.add(new KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_DOWN_MASK), null));
+            ActionListener actionListener = e -> getSearchComponent().close();
             component.registerKeyboardAction(
                     actionListener,
                     KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
