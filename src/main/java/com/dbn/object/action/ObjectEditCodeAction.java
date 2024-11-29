@@ -17,7 +17,6 @@ public class ObjectEditCodeAction extends ProjectAction {
 
     ObjectEditCodeAction(DBSchemaObject object) {
         this.object = DBObjectRef.of(object);
-        setDefaultIcon(true);
     }
 
     @Override
