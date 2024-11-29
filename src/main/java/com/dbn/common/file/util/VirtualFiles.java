@@ -11,7 +11,12 @@ import com.intellij.injected.editor.VirtualFileWindow;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.util.io.NioFiles;
-import com.intellij.openapi.vfs.*;
+import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.StandardFileSystems;
+import com.intellij.openapi.vfs.VfsUtilCore;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.openapi.vfs.VirtualFilePathWrapper;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
 import com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
@@ -27,6 +32,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
@@ -38,8 +44,7 @@ import static com.dbn.common.dispose.Checks.isNotValid;
 public final class VirtualFiles {
 
     public static Icon getIcon(VirtualFile virtualFile) {
-        if (virtualFile instanceof DBVirtualFileBase) {
-            DBVirtualFileBase file = (DBVirtualFileBase) virtualFile;
+        if (virtualFile instanceof DBVirtualFileBase file) {
             return file.getIcon();
         }
         return virtualFile.getFileType().getIcon();
@@ -85,15 +90,15 @@ public final class VirtualFiles {
         try {
             ReadOnlyAttributeUtil.setReadOnlyAttribute(file, readonly);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
     public static void setReadOnlyAttribute(String path, boolean readonly) {
         try {
-            NioFiles. setReadOnly(Paths.get(path), readonly);
+            NioFiles.setReadOnly(Paths.get(path), readonly);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -123,10 +128,9 @@ public final class VirtualFiles {
 
     @Nullable
     public static VirtualFile getOriginalFile(VirtualFile file) {
-        if (file instanceof LightVirtualFile) {
-            LightVirtualFile lightVirtualFile = (LightVirtualFile) file;
+        if (file instanceof LightVirtualFile lightVirtualFile) {
             VirtualFile originalFile = lightVirtualFile.getOriginalFile();
-            if (originalFile != null && originalFile != file) {
+            if (originalFile != null && !originalFile.equals(file)) {
                 return getOriginalFile(originalFile);
             }
         }
@@ -137,13 +141,11 @@ public final class VirtualFiles {
     public static VirtualFile getUnderlyingFile(VirtualFile file) {
         file = getOriginalFile(file);
 
-        if (file instanceof VirtualFileWindow) {
-            VirtualFileWindow fileWindow = (VirtualFileWindow) file;
+        if (file instanceof VirtualFileWindow fileWindow) {
             return fileWindow.getDelegate();
         }
 
         if (file instanceof LightVirtualFile) {
-            LightVirtualFile lightVirtualFile = (LightVirtualFile) file;
             // TODO is this ever the case?
         }
         return file;
@@ -154,11 +156,27 @@ public final class VirtualFiles {
             @NotNull VirtualFile virtualFile,
             @NotNull String oldName,
             @NotNull String newName) {
-        return new VFilePropertyChangeEvent(null, virtualFile, VirtualFile.PROP_NAME, oldName, newName);
+        try {
+            Constructor<VFilePropertyChangeEvent> constructor = VFilePropertyChangeEvent.class.getDeclaredConstructor(
+                    Object.class, VirtualFile.class, String.class, Object.class, Object.class
+            );
+            constructor.setAccessible(true);
+            return constructor.newInstance(null, virtualFile, VirtualFile.PROP_NAME, oldName, newName);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static VFileEvent createFileDeleteEvent(@NotNull VirtualFile virtualFile) {
-        return new VFileDeleteEvent(null, virtualFile);
+        try {
+            Constructor<VFileDeleteEvent> constructor = VFileDeleteEvent.class.getDeclaredConstructor(
+                    Object.class, VirtualFile.class
+            );
+            constructor.setAccessible(true);
+            return constructor.newInstance(null, virtualFile);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void notifiedFileChange(VFileEvent event, Runnable changeAction) {
@@ -176,7 +194,7 @@ public final class VirtualFiles {
     @Nullable
     public static DBEditableObjectVirtualFile resolveObjectFile(@NotNull Project project, @NotNull VirtualFile virtualFile) {
         if (virtualFile instanceof DBEditableObjectVirtualFile) {
-            return  (DBEditableObjectVirtualFile) virtualFile;
+            return (DBEditableObjectVirtualFile) virtualFile;
         }
 
         if (virtualFile.isInLocalFileSystem()) {

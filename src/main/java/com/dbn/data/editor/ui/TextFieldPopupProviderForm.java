@@ -10,7 +10,12 @@ import com.dbn.common.ui.listener.KeyAdapter;
 import com.dbn.common.ui.util.Borders;
 import com.dbn.common.ui.util.Keyboard;
 import com.dbn.common.util.Context;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.openapi.actionSystem.Shortcut;
 import com.intellij.openapi.fileEditor.FileEditorManagerEvent;
 import com.intellij.openapi.fileEditor.FileEditorManagerListener;
 import com.intellij.openapi.keymap.KeymapUtil;
@@ -24,13 +29,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
 @Getter
 @Setter
 public abstract class TextFieldPopupProviderForm extends DBNFormBase implements KeyAdapter, TextFieldPopupProvider {
-    private final WeakRef<TextFieldWithPopup> editorComponent;
+    private final WeakRef<TextFieldWithPopup<?>> editorComponent;
     private final boolean autoPopup;
     private final boolean buttonVisible;
 
@@ -100,11 +106,27 @@ public abstract class TextFieldPopupProviderForm extends DBNFormBase implements 
             ActionManager actionManager = ActionManager.getInstance();
             Presentation templatePresentation = action.getTemplatePresentation();
             Presentation presentation = new Presentation(templatePresentation.getText());
-            AnActionEvent actionEvent = new AnActionEvent(dataContext, presentation, "", ActionUiKind.NONE,
-                    null, InputEvent.CTRL_MASK, actionManager);
-            action.actionPerformed(actionEvent);
-            e.consume();
-            return;
+
+            @SuppressWarnings("removal")
+            AnActionEvent actionEvent = new AnActionEvent(
+                    null,
+                    dataContext,
+                    "",
+                    presentation,
+                    actionManager,
+                    InputEvent.CTRL_DOWN_MASK,
+                    false,
+                    false);
+
+            try {
+                Method method = action.getClass().getDeclaredMethod("actionPerformed", AnActionEvent.class);
+                method.setAccessible(true);
+                method.invoke(action, actionEvent);
+                e.consume();
+                return;
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 
@@ -112,7 +134,7 @@ public abstract class TextFieldPopupProviderForm extends DBNFormBase implements 
     public void showPopup() {
         if (isShowingPopup()) return;
 
-        TextFieldWithPopup editorComponent = getEditorComponent();
+        TextFieldWithPopup<?> editorComponent = getEditorComponent();
         popup = createPopup();
         if (popup == null) return;
 
@@ -148,10 +170,4 @@ public abstract class TextFieldPopupProviderForm extends DBNFormBase implements 
         return popup != null && popup.isVisible();
     }
 
-
-    @Nullable
-    @Override
-    public JComponent getPreferredFocusedComponent() {
-        return null;
-    }
 }
