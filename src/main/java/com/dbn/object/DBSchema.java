@@ -40,7 +40,7 @@ public interface DBSchema extends DBRootObject {
     DBIndex getIndex(String name);
     DBType getType(String name);
     DBPackage getPackage(String name);
-    DBProgram getProgram(String name);
+    DBProgram<?,?,?> getProgram(String name);
     DBMethod getMethod(String name, DBObjectType methodType, short overload);
     DBMethod getMethod(String name, short overload);
     DBProcedure getProcedure(String name, short overload);

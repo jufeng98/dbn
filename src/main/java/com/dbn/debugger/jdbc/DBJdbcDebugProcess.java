@@ -19,7 +19,11 @@ import com.dbn.database.common.debug.DebuggerRuntimeInfo;
 import com.dbn.database.common.debug.DebuggerSessionInfo;
 import com.dbn.database.common.debug.ExecutionBacktraceInfo;
 import com.dbn.database.interfaces.DatabaseDebuggerInterface;
-import com.dbn.debugger.*;
+import com.dbn.debugger.DBDebugConsoleLogger;
+import com.dbn.debugger.DBDebugOperation;
+import com.dbn.debugger.DBDebugTabLayouter;
+import com.dbn.debugger.DBDebugUtil;
+import com.dbn.debugger.DatabaseDebuggerManager;
 import com.dbn.debugger.common.breakpoint.DBBreakpointHandler;
 import com.dbn.debugger.common.breakpoint.DBBreakpointUtil;
 import com.dbn.debugger.common.config.DBRunConfig;
@@ -45,13 +49,14 @@ import com.intellij.xdebugger.breakpoints.XBreakpointProperties;
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint;
 import com.intellij.xdebugger.evaluation.XDebuggerEditorsProvider;
 import com.intellij.xdebugger.frame.XSuspendContext;
-import com.intellij.xdebugger.impl.XDebugSessionImpl;
+import com.intellij.xdebugger.impl.ui.XDebugSessionData;
 import com.intellij.xdebugger.ui.XDebugTabLayouter;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
@@ -59,10 +64,18 @@ import java.util.List;
 import java.util.Set;
 
 import static com.dbn.common.util.Strings.cachedUpperCase;
-import static com.dbn.debugger.common.process.DBDebugProcessStatus.*;
+import static com.dbn.debugger.common.process.DBDebugProcessStatus.BREAKPOINT_SETTING_ALLOWED;
+import static com.dbn.debugger.common.process.DBDebugProcessStatus.PROCESS_STOPPED;
+import static com.dbn.debugger.common.process.DBDebugProcessStatus.PROCESS_TERMINATED;
+import static com.dbn.debugger.common.process.DBDebugProcessStatus.PROCESS_TERMINATING;
+import static com.dbn.debugger.common.process.DBDebugProcessStatus.SESSION_INITIALIZATION_THREW_EXCEPTION;
+import static com.dbn.debugger.common.process.DBDebugProcessStatus.TARGET_EXECUTION_STARTED;
+import static com.dbn.debugger.common.process.DBDebugProcessStatus.TARGET_EXECUTION_TERMINATED;
+import static com.dbn.debugger.common.process.DBDebugProcessStatus.TARGET_EXECUTION_THREW_EXCEPTION;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 import static com.dbn.execution.ExecutionStatus.CANCELLED;
 
+@SuppressWarnings("unused")
 @Getter
 @Setter
 public abstract class DBJdbcDebugProcess<T extends ExecutionInput> extends XDebugProcess implements DBDebugProcess, NotificationSupport {
@@ -70,7 +83,7 @@ public abstract class DBJdbcDebugProcess<T extends ExecutionInput> extends XDebu
     private DBNConnection debuggerConnection;
     private final DBDebugProcessStatusHolder status = new DBDebugProcessStatusHolder();
     private final ConnectionRef connection;
-    private final DBBreakpointHandler[] breakpointHandlers;
+    private final DBBreakpointHandler<?>[] breakpointHandlers;
     private final DBDebugConsoleLogger console;
 
     private transient DebuggerRuntimeInfo runtimeInfo;
@@ -116,7 +129,8 @@ public abstract class DBJdbcDebugProcess<T extends ExecutionInput> extends XDebu
 
     @NotNull
     public T getExecutionInput() {
-        DBRunConfig<T> runProfile = (DBRunConfig) getSession().getRunProfile();
+        @SuppressWarnings("unchecked")
+        DBRunConfig<T> runProfile = (DBRunConfig<T>) getSession().getRunProfile();
         if (runProfile == null) throw AlreadyDisposedException.INSTANCE;
         return runProfile.getExecutionInput();
     }
@@ -125,10 +139,19 @@ public abstract class DBJdbcDebugProcess<T extends ExecutionInput> extends XDebu
     public void sessionInitialized() {
         Project project = getProject();
         XDebugSession session = getSession();
-        if (session instanceof XDebugSessionImpl) {
-            XDebugSessionImpl sessionImpl = (XDebugSessionImpl) session;
-            sessionImpl.getSessionData().setBreakpointsMuted(false);
+
+        if (session.getClass().getSimpleName().equals("XDebugSessionImpl")) {
+            try {
+                Class<? extends XDebugSession> sessionClass = session.getClass();
+                Method method = sessionClass.getDeclaredMethod("getSessionData");
+                method.setAccessible(true);
+                XDebugSessionData mySessionData = (XDebugSessionData) method.invoke(session);
+                mySessionData.setBreakpointsMuted(false);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
+
         Progress.background(project, getConnection(), true,
                 "Initializing debug environment",
                 "Starting debugger",
@@ -257,7 +280,7 @@ public abstract class DBJdbcDebugProcess<T extends ExecutionInput> extends XDebu
      */
     private void registerBreakpoints(Runnable callback) {
         console.system("Registering breakpoints...");
-        List<XLineBreakpoint<XBreakpointProperties>> breakpoints = DBBreakpointUtil.getDatabaseBreakpoints(getConnection());
+        List<XLineBreakpoint<XBreakpointProperties<?>>> breakpoints = DBBreakpointUtil.getDatabaseBreakpoints(getConnection());
 
         getBreakpointHandler().registerBreakpoints(breakpoints, null);
         registerDefaultBreakpoint();
@@ -265,16 +288,17 @@ public abstract class DBJdbcDebugProcess<T extends ExecutionInput> extends XDebu
         callback.run();
     }
 
-    protected void registerDefaultBreakpoint() {}
+    protected void registerDefaultBreakpoint() {
+    }
 
     /**
      * breakpoints need to be unregistered before closing the database session, otherwise they remain resident.
      */
     private void unregisterBreakpoints() {
-        Collection<XLineBreakpoint<XBreakpointProperties>> breakpoints = DBBreakpointUtil.getDatabaseBreakpoints(getConnection());
+        Collection<XLineBreakpoint<XBreakpointProperties<?>>> breakpoints = DBBreakpointUtil.getDatabaseBreakpoints(getConnection());
         Set<Integer> unregisteredBreakpointIds = new HashSet<>();
         DBBreakpointHandler<?> breakpointHandler = getBreakpointHandler();
-        for (XLineBreakpoint<XBreakpointProperties> breakpoint : breakpoints) {
+        for (XLineBreakpoint<XBreakpointProperties<?>> breakpoint : breakpoints) {
             Integer breakpointId = DBBreakpointUtil.getBreakpointId(breakpoint);
             if (breakpointId == null) continue;
 
@@ -460,7 +484,7 @@ public abstract class DBJdbcDebugProcess<T extends ExecutionInput> extends XDebu
                     }
                     if (!runtimeInfo.isSameLocation(topRuntimeInfo)) {
                         runtimeInfo = topRuntimeInfo;
-                        resume();
+                        resume(new DBJdbcDebugSuspendContext(this));
                         return;
                     }
                 }
@@ -487,9 +511,8 @@ public abstract class DBJdbcDebugProcess<T extends ExecutionInput> extends XDebu
     public VirtualFile getRuntimeInfoFile(DebuggerRuntimeInfo runtimeInfo) {
         DBSchemaObject schemaObject = getDatabaseObject(runtimeInfo);
         if (schemaObject != null) {
-            DBObjectVirtualFile virtualFile = schemaObject.getVirtualFile();
-            if (virtualFile instanceof DBEditableObjectVirtualFile) {
-                DBEditableObjectVirtualFile editableObjectFile = (DBEditableObjectVirtualFile) virtualFile;
+            DBObjectVirtualFile<?> virtualFile = schemaObject.getVirtualFile();
+            if (virtualFile instanceof DBEditableObjectVirtualFile editableObjectFile) {
                 DBContentType contentType = schemaObject.getContentType();
                 if (contentType == DBContentType.CODE_SPEC_AND_BODY) {
                     return editableObjectFile.getContentFile(DBContentType.CODE_BODY);
@@ -512,7 +535,8 @@ public abstract class DBJdbcDebugProcess<T extends ExecutionInput> extends XDebu
             DBObjectBundle objectBundle = connection.getObjectBundle();
             DBSchema schema = Failsafe.nn(objectBundle.getSchema(ownerName));
             DBSchemaObject schemaObject = schema.getProgram(programName);
-            if (schemaObject == null) schemaObject = schema.getMethod(programName, (short) 0); // overload 0 is assuming debug is only supported in oracle (no schema method overloading)
+            if (schemaObject == null)
+                schemaObject = schema.getMethod(programName, (short) 0); // overload 0 is assuming debug is only supported in oracle (no schema method overloading)
             return schemaObject;
         }
         return null;

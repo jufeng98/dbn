@@ -20,6 +20,7 @@ import com.dbn.debugger.DBDebugUtil;
 import com.dbn.debugger.DatabaseDebuggerManager;
 import com.dbn.debugger.common.breakpoint.DBBreakpointHandler;
 import com.dbn.debugger.common.breakpoint.DBBreakpointUtil;
+import com.dbn.debugger.common.config.DBRunConfig;
 import com.dbn.debugger.common.process.DBDebugProcess;
 import com.dbn.debugger.common.process.DBDebugProcessStatus;
 import com.dbn.debugger.common.process.DBDebugProcessStatusHolder;
@@ -28,7 +29,6 @@ import com.dbn.debugger.jdwp.DBJdwpSourcePath;
 import com.dbn.debugger.jdwp.ManagedThreadCommand;
 import com.dbn.debugger.jdwp.frame.DBJdwpDebugStackFrame;
 import com.dbn.debugger.jdwp.frame.DBJdwpDebugSuspendContext;
-import com.dbn.debugger.common.config.DBRunConfig;
 import com.dbn.editor.DBContentType;
 import com.dbn.execution.ExecutionContext;
 import com.dbn.execution.ExecutionInput;
@@ -37,7 +37,12 @@ import com.dbn.object.DBProgram;
 import com.dbn.object.DBSchema;
 import com.dbn.vfs.file.DBEditableObjectVirtualFile;
 import com.intellij.debugger.DebuggerManager;
-import com.intellij.debugger.engine.*;
+import com.intellij.debugger.engine.DebugProcessImpl;
+import com.intellij.debugger.engine.DebugProcessListener;
+import com.intellij.debugger.engine.JavaDebugProcess;
+import com.intellij.debugger.engine.JavaStackFrame;
+import com.intellij.debugger.engine.SuspendContext;
+import com.intellij.debugger.engine.SuspendContextImpl;
 import com.intellij.debugger.impl.DebuggerSession;
 import com.intellij.execution.process.ProcessHandler;
 import com.intellij.openapi.project.Project;
@@ -50,12 +55,13 @@ import com.intellij.xdebugger.breakpoints.XLineBreakpoint;
 import com.intellij.xdebugger.frame.XExecutionStack;
 import com.intellij.xdebugger.frame.XStackFrame;
 import com.intellij.xdebugger.frame.XSuspendContext;
-import com.intellij.xdebugger.impl.XDebugSessionImpl;
+import com.intellij.xdebugger.impl.ui.XDebugSessionData;
 import com.sun.jdi.Location;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
@@ -68,10 +74,10 @@ public abstract class DBJdwpDebugProcess<T extends ExecutionInput>
         extends JavaDebugProcess
         implements DBDebugProcess {
 
-    public static final Key<DBJdwpDebugProcess> KEY = new Key<>("DBNavigator.JdwpDebugProcess");
+    public static final Key<DBJdwpDebugProcess<?>> KEY = new Key<>("DBNavigator.JdwpDebugProcess");
     private final ConnectionRef connection;
     private final DBDebugProcessStatusHolder status = new DBDebugProcessStatusHolder();
-    private final DBBreakpointHandler<DBJdwpDebugProcess>[] breakpointHandlers;
+    private final DBBreakpointHandler<DBJdwpDebugProcess<?>>[] breakpointHandlers;
     private final DBDebugConsoleLogger console;
     private final String declaredBlockIdentifier;
     private final DBJdwpTcpConfig tcpConfig;
@@ -91,6 +97,7 @@ public abstract class DBJdwpDebugProcess<T extends ExecutionInput>
         debuggerManager.registerDebugSession(connection);
 
         DBJdwpBreakpointHandler breakpointHandler = new DBJdwpBreakpointHandler(session, this);
+        //noinspection unchecked
         this.breakpointHandlers = new DBBreakpointHandler[]{breakpointHandler};
         debuggerSession.getProcess().putUserData(KEY, this);
 
@@ -138,6 +145,7 @@ public abstract class DBJdwpDebugProcess<T extends ExecutionInput>
     }
 
     DBRunConfig<T> getRunProfile() {
+        //noinspection unchecked
         return (DBRunConfig<T>) getSession().getRunProfile();
     }
 
@@ -157,13 +165,12 @@ public abstract class DBJdwpDebugProcess<T extends ExecutionInput>
         return Failsafe.nn(targetConnection);
     }
 
-    @NotNull
     @Override
-    public DBBreakpointHandler<DBJdwpDebugProcess>[] getBreakpointHandlers() {
+    public DBBreakpointHandler<?> @NotNull [] getBreakpointHandlers() {
         return breakpointHandlers;
     }
 
-    public DBBreakpointHandler<DBJdwpDebugProcess> getBreakpointHandler() {
+    public DBBreakpointHandler<DBJdwpDebugProcess<?>> getBreakpointHandler() {
         return breakpointHandlers[0];
     }
 
@@ -180,10 +187,19 @@ public abstract class DBJdwpDebugProcess<T extends ExecutionInput>
     @Override
     public void sessionInitialized() {
         XDebugSession session = getSession();
-        if (session instanceof XDebugSessionImpl) {
-            XDebugSessionImpl sessionImpl = (XDebugSessionImpl) session;
-            sessionImpl.getSessionData().setBreakpointsMuted(false);
+
+        if (session.getClass().getSimpleName().equals("XDebugSessionImpl")) {
+            try {
+                Class<? extends XDebugSession> sessionClass = session.getClass();
+                Method method = sessionClass.getDeclaredMethod("getSessionData");
+                method.setAccessible(true);
+                XDebugSessionData mySessionData = (XDebugSessionData) method.invoke(session);
+                mySessionData.setBreakpointsMuted(false);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
+
         DBRunConfig<T> runProfile = getRunProfile();
         List<DBMethod> methods = runProfile.getMethods();
         if (!methods.isEmpty()) {
@@ -194,11 +210,10 @@ public abstract class DBJdwpDebugProcess<T extends ExecutionInput>
         final Project project = getProject();
         DebuggerManager debuggerManager = DebuggerManager.getInstance(project);
         ProcessHandler processHandler = debuggerSession.getProcess().getProcessHandler();
-        debuggerManager.addDebugProcessListener(processHandler, new DebugProcessListener(){
+        debuggerManager.addDebugProcessListener(processHandler, new DebugProcessListener() {
             @Override
             public void paused(@NotNull SuspendContext suspendContext) {
-                if (suspendContext instanceof XSuspendContext) {
-                    XSuspendContext xSuspendContext = (XSuspendContext) suspendContext;
+                if (suspendContext instanceof XSuspendContext xSuspendContext) {
 
                     XExecutionStack[] executionStacks = xSuspendContext.getExecutionStacks();
                     for (XExecutionStack executionStack : executionStacks) {
@@ -216,8 +231,12 @@ public abstract class DBJdwpDebugProcess<T extends ExecutionInput>
             public void sessionPaused() {
                 XSuspendContext suspendContext = session.getSuspendContext();
                 if (!shouldSuspend(suspendContext)) {
-                    Dispatch.run(() -> session.resume());
+                    Dispatch.run(session::resume);
                 } else {
+                    if (suspendContext == null) {
+                        return;
+                    }
+
                     XExecutionStack activeExecutionStack = suspendContext.getActiveExecutionStack();
                     if (activeExecutionStack != null) {
                         XStackFrame topFrame = activeExecutionStack.getTopFrame();
@@ -276,7 +295,7 @@ public abstract class DBJdwpDebugProcess<T extends ExecutionInput>
     private void initializeBreakpoints() {
         console.system("Registering breakpoints...");
         List<DBMethod> methods = getRunProfile().getMethods();
-        List<XLineBreakpoint<XBreakpointProperties>> breakpoints = DBBreakpointUtil.getDatabaseBreakpoints(getConnection());
+        List<XLineBreakpoint<XBreakpointProperties<?>>> breakpoints = DBBreakpointUtil.getDatabaseBreakpoints(getConnection());
         getBreakpointHandler().registerBreakpoints(breakpoints, methods);
     }
 
@@ -381,7 +400,6 @@ public abstract class DBJdwpDebugProcess<T extends ExecutionInput>
     }
 
 
-
     protected void releaseTargetConnection() {
         console.system("Releasing target connection...");
         Resources.close(targetConnection);
@@ -402,7 +420,7 @@ public abstract class DBJdwpDebugProcess<T extends ExecutionInput>
                 String programName = sourcePath.getProgramName();
                 DBSchema schema = getConnection().getObjectBundle().getSchema(schemaName);
                 if (schema != null) {
-                    DBProgram program = schema.getProgram(programName);
+                    DBProgram<?, ?, ?> program = schema.getProgram(programName);
                     if (program != null) {
                         DBEditableObjectVirtualFile editableVirtualFile = program.getEditableVirtualFile();
                         DBContentType contentType = Objects.equals(programType, "PackageBody") ? DBContentType.CODE_BODY : DBContentType.CODE_SPEC;
@@ -436,7 +454,6 @@ public abstract class DBJdwpDebugProcess<T extends ExecutionInput>
 
         return false;
     }
-
 
 
     @Nullable
