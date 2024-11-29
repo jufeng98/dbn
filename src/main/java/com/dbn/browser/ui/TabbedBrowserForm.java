@@ -28,7 +28,8 @@ import java.util.List;
 
 import static com.dbn.common.dispose.Failsafe.guarded;
 
-public class TabbedBrowserForm extends DatabaseBrowserForm{
+@SuppressWarnings("unused")
+public class TabbedBrowserForm extends DatabaseBrowserForm {
     private final TabbedPane connectionTabs;
     private JPanel mainPanel;
 
@@ -51,7 +52,7 @@ public class TabbedBrowserForm extends DatabaseBrowserForm{
             public void selectionChanged(@Nullable TabInfo oldSelection, @Nullable TabInfo newSelection) {
                 ProjectEvents.notify(ensureProject(),
                         BrowserTreeEventListener.TOPIC,
-                        (listener) -> listener.selectionChanged());
+                        BrowserTreeEventListener::selectionChanged);
             }
         };
     }
@@ -72,6 +73,10 @@ public class TabbedBrowserForm extends DatabaseBrowserForm{
 
     private static void updateTabColor(TabInfo tabInfo, EnvironmentVisibilitySettings visibilitySettings) {
         SimpleBrowserForm browserForm = (SimpleBrowserForm) tabInfo.getObject();
+        if (browserForm == null) {
+            return;
+        }
+
         ConnectionHandler connection = browserForm.getConnection();
         if (connection == null) return;
 
@@ -91,7 +96,7 @@ public class TabbedBrowserForm extends DatabaseBrowserForm{
         Project project = ensureProject();
         ConnectionManager connectionManager = ConnectionManager.getInstance(project);
         ConnectionBundle connectionBundle = connectionManager.getConnectionBundle();
-        for (ConnectionHandler connection: connectionBundle.getConnections()) {
+        for (ConnectionHandler connection : connectionBundle.getConnections()) {
             SimpleBrowserForm browserForm = new SimpleBrowserForm(this, connection);
 
             JComponent component = browserForm.getComponent();
@@ -106,7 +111,7 @@ public class TabbedBrowserForm extends DatabaseBrowserForm{
         }
         if (this.connectionTabs.getTabCount() == 0) {
             mainPanel.removeAll();
-            mainPanel.add(new JBList(new ArrayList()), BorderLayout.CENTER);
+            mainPanel.add(new JBList<>(new ArrayList<>()), BorderLayout.CENTER);
         } else {
             if (mainPanel.getComponentCount() > 0) {
                 Component component = mainPanel.getComponent(0);
@@ -124,6 +129,7 @@ public class TabbedBrowserForm extends DatabaseBrowserForm{
     private SimpleBrowserForm getBrowserForm(ConnectionId connectionId) {
         for (TabInfo tabInfo : listTabs()) {
             SimpleBrowserForm browserForm = (SimpleBrowserForm) tabInfo.getObject();
+            assert browserForm != null;
             ConnectionHandler connection = browserForm.getConnection();
             if (connection != null && connection.getConnectionId() == connectionId) {
                 return browserForm;
@@ -137,6 +143,10 @@ public class TabbedBrowserForm extends DatabaseBrowserForm{
         TabbedPane connectionTabs = getConnectionTabs();
         for (TabInfo tabInfo : connectionTabs.getTabs()) {
             SimpleBrowserForm browserForm = (SimpleBrowserForm) tabInfo.getObject();
+            if (browserForm == null) {
+                continue;
+            }
+
             ConnectionId tabConnectionId = browserForm.getConnectionId();
             if (tabConnectionId == connectionId) {
                 connectionTabs.removeTab(tabInfo, false);
@@ -161,7 +171,7 @@ public class TabbedBrowserForm extends DatabaseBrowserForm{
     @Nullable
     public DatabaseBrowserTree getBrowserTree(ConnectionId connectionId) {
         SimpleBrowserForm browserForm = getBrowserForm(connectionId);
-        return browserForm== null ? null : browserForm.getBrowserTree();
+        return browserForm == null ? null : browserForm.getBrowserTree();
     }
 
     @Nullable
@@ -170,6 +180,10 @@ public class TabbedBrowserForm extends DatabaseBrowserForm{
         if (tabInfo == null) return null;
 
         SimpleBrowserForm browserForm = (SimpleBrowserForm) tabInfo.getObject();
+        if (browserForm == null) {
+            return null;
+        }
+
         return browserForm.getBrowserTree();
     }
 
@@ -179,6 +193,10 @@ public class TabbedBrowserForm extends DatabaseBrowserForm{
         if (tabInfo == null) return null;
 
         SimpleBrowserForm browserForm = (SimpleBrowserForm) tabInfo.getObject();
+        if (browserForm == null) {
+            return null;
+        }
+
         return browserForm.getConnectionId();
     }
 
@@ -204,9 +222,15 @@ public class TabbedBrowserForm extends DatabaseBrowserForm{
     @Override
     public void rebuildTree() {
         listTabs()
-            .stream()
-            .map(ti -> (SimpleBrowserForm) ti.getObject())
-            .forEach(f -> f.rebuildTree());
+                .stream()
+                .map(ti -> (SimpleBrowserForm) ti.getObject())
+                .forEach(f -> {
+                    if (f == null) {
+                        return;
+                    }
+
+                    f.rebuildTree();
+                });
     }
 
     @NotNull
@@ -217,6 +241,10 @@ public class TabbedBrowserForm extends DatabaseBrowserForm{
     void refreshTabInfo(ConnectionId connectionId) {
         for (TabInfo tabInfo : listTabs()) {
             SimpleBrowserForm browserForm = (SimpleBrowserForm) tabInfo.getObject();
+            if (browserForm == null) {
+                continue;
+            }
+
             ConnectionHandler connection = browserForm.getConnection();
             if (connection == null) continue;
 

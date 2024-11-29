@@ -23,6 +23,7 @@ sourceSets["main"].java.srcDirs("src/main/gen")
 dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.30")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
+    testImplementation("junit:junit:4.13.1")
 
     implementation("org.projectlombok:lombok:1.18.30")
     implementation("com.github.mwiede:jsch:0.2.17")

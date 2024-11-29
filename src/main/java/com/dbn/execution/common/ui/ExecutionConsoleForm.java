@@ -65,11 +65,12 @@ import static com.dbn.common.dispose.Failsafe.guarded;
 import static com.dbn.common.navigation.NavigationInstruction.*;
 import static com.dbn.common.util.Unsafe.cast;
 
+@SuppressWarnings("unused")
 public class ExecutionConsoleForm extends DBNFormBase {
     private JPanel mainPanel;
     private TabbedPane resultTabs;
     private ExecutionMessagesForm executionMessagesForm;
-    private final Map<ExecutionResult, ExecutionResultForm> executionResultForms = ContainerUtil.createConcurrentWeakKeySoftValueMap();
+    private final Map<ExecutionResult<?>, ExecutionResultForm<?>> executionResultForms = ContainerUtil.createConcurrentWeakKeySoftValueMap();
 
     private boolean canScrollToSource;
 
@@ -126,8 +127,7 @@ public class ExecutionConsoleForm extends DBNFormBase {
         TabbedPane resultTabs = getResultTabs();
         for (TabInfo tabInfo : resultTabs.getTabs()) {
             ExecutionResult<?> executionResult = getExecutionResult(tabInfo);
-            if (executionResult instanceof StatementExecutionResult) {
-                StatementExecutionResult statementExecutionResult = (StatementExecutionResult) executionResult;
+            if (executionResult instanceof StatementExecutionResult statementExecutionResult) {
                 StatementExecutionProcessor executionProcessor = statementExecutionResult.getExecutionProcessor();
                 if (isValid(executionProcessor) && Objects.equals(file, executionProcessor.getPsiFile())) {
                     Icon icon = executionProcessor.isDirty() ?
@@ -168,9 +168,8 @@ public class ExecutionConsoleForm extends DBNFormBase {
     }
 
     private final MouseListener mouseListener = Mouse.listener().onClick(e -> {
-        if (e.isShiftDown() && (16 & e.getModifiers()) > 0 || ((8 & e.getModifiers()) > 0)) {
-            if (e.getSource() instanceof TabLabel) {
-                TabLabel tabLabel = (TabLabel) e.getSource();
+        if (e.isShiftDown() && (16 & e.getModifiersEx()) > 0 || ((8 & e.getModifiersEx()) > 0)) {
+            if (e.getSource() instanceof TabLabel tabLabel) {
                 removeTab(tabLabel.getInfo());
             }
         }
@@ -183,8 +182,7 @@ public class ExecutionConsoleForm extends DBNFormBase {
                 if (newSelection != null) {
                     ExecutionResult<?> executionResult = getExecutionResult(newSelection);
                     if (isNotValid(executionResult)) return;
-                    if (executionResult instanceof StatementExecutionResult) {
-                        StatementExecutionResult statementExecutionResult = (StatementExecutionResult) executionResult;
+                    if (executionResult instanceof StatementExecutionResult statementExecutionResult) {
                         statementExecutionResult.navigateToEditor(NavigationInstructions.create(FOCUS, SCROLL));
                     }
                 }
@@ -396,8 +394,7 @@ public class ExecutionConsoleForm extends DBNFormBase {
         boolean selectTab = sourceFile != null;
         for (TabInfo tabInfo : resultTabs.getTabs()) {
             ExecutionResult<?> executionResult = getExecutionResult(tabInfo);
-            if (executionResult instanceof DatabaseLoggingResult) {
-                DatabaseLoggingResult logOutput = (DatabaseLoggingResult) executionResult;
+            if (executionResult instanceof DatabaseLoggingResult logOutput) {
                 if (logOutput.matches(context)) {
                     logOutput.write(context, output);
                     if (!emptyOutput && !selectTab) {
@@ -446,7 +443,7 @@ public class ExecutionConsoleForm extends DBNFormBase {
         } else {
             ExecutionResult<?> previousExecutionResult = executionResult.getPrevious();
 
-            ExecutionResultForm executionResultForm;
+            ExecutionResultForm<ExecutionResult<?>> executionResultForm;
             if (previousExecutionResult == null) {
                 executionResultForm = getExecutionResultForm(executionResult);
                 if (executionResultForm != null) {
@@ -506,8 +503,7 @@ public class ExecutionConsoleForm extends DBNFormBase {
                 TabInfo tabInfo = resultTabs.findInfo(resultForm.getComponent());
                 if (resultTabs.getTabs().contains(tabInfo)) {
                     DBLanguagePsiFile file = null;
-                    if (executionResult instanceof StatementExecutionResult) {
-                        StatementExecutionResult statementExecutionResult = (StatementExecutionResult) executionResult;
+                    if (executionResult instanceof StatementExecutionResult statementExecutionResult) {
                         StatementExecutionInput executionInput = statementExecutionResult.getExecutionInput();
                         file = executionInput.getExecutionProcessor().getPsiFile();
                     }
@@ -586,7 +582,7 @@ public class ExecutionConsoleForm extends DBNFormBase {
     }
 
     @Nullable
-    public <T extends ExecutionResultForm> T getExecutionResultForm(ExecutionResult<?> executionResult) {
+    public <T extends ExecutionResultForm<?>> T getExecutionResultForm(ExecutionResult<?> executionResult) {
         return cast(executionResultForms.get(executionResult));
     }
 }
