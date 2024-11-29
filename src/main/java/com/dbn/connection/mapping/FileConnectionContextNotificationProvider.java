@@ -6,6 +6,7 @@ import com.dbn.common.util.Editors;
 import com.dbn.connection.mapping.ui.FileConnectionContextNotificationPanel;
 import com.dbn.language.psql.PSQLFileType;
 import com.dbn.language.sql.SQLFileType;
+import com.dbn.sql.SqlFileType;
 import com.intellij.injected.editor.VirtualFileWindow;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileTypes.FileType;
@@ -30,26 +31,33 @@ public class FileConnectionContextNotificationProvider extends EditorNotificatio
 
     @Nullable
     @Override
-    public FileConnectionContextNotificationPanel createComponent(@NotNull VirtualFile virtualFile, @NotNull FileEditor fileEditor, @NotNull Project project) {
-
+    public FileConnectionContextNotificationPanel createComponent(@NotNull VirtualFile virtualFile,
+                                                                  @NotNull FileEditor fileEditor,
+                                                                  @NotNull Project project) {
         FileType fileType = virtualFile.getFileType();
-        if (fileType == SQLFileType.INSTANCE || fileType == PSQLFileType.INSTANCE) return null;
+        if (fileType == SQLFileType.INSTANCE
+                || fileType == PSQLFileType.INSTANCE
+                || fileType == SqlFileType.INSTANCE) {
+            return null;
+        }
 
         FileConnectionContextManager contextManager = FileConnectionContextManager.getInstance(project);
         FileConnectionContext mapping = contextManager.getMapping(virtualFile);
-        if (mapping == null) return null;
+        if (mapping == null) {
+            return null;
+        }
 
         return new FileConnectionContextNotificationPanel(project, virtualFile, mapping);
     }
 
+
     public static final FileConnectionContextListener mappingListener = new FileConnectionContextListener() {
         @Override
         public void mappingChanged(Project project, VirtualFile file) {
-            if (file instanceof VirtualFileWindow) {
-                VirtualFileWindow fileWindow = (VirtualFileWindow) file;
+            if (file instanceof VirtualFileWindow fileWindow) {
                 file = fileWindow.getDelegate();
             }
-            EditorNotifications notifications = Editors.getNotifications(project);;
+            EditorNotifications notifications = Editors.getNotifications(project);
             notifications.updateNotifications(file);
         }
     };
