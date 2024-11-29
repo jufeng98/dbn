@@ -3,6 +3,7 @@ package com.dbn.connection.console;
 import com.dbn.DatabaseNavigator;
 import com.dbn.common.component.PersistentState;
 import com.dbn.common.component.ProjectComponentBase;
+import com.dbn.common.content.DynamicContent;
 import com.dbn.common.event.ProjectEvents;
 import com.dbn.common.thread.Progress;
 import com.dbn.common.thread.Write;
@@ -57,6 +58,23 @@ public class DatabaseConsoleManager extends ProjectComponentBase implements Pers
 
     private DatabaseConsoleManager(@NotNull Project project) {
         super(project, COMPONENT_NAME);
+        SessionManagerListener sessionManagerListener = new SessionManagerListener() {
+            @Override
+            public void sessionDeleted(DatabaseSession session) {
+                ConnectionManager connectionManager = ConnectionManager.getInstance(getProject());
+                List<ConnectionHandler> connections = connectionManager.getConnectionBundle().getAllConnections();
+                for (ConnectionHandler connection : connections) {
+                    List<DBConsole> consoles = connection.getConsoleBundle().getConsoles();
+                    for (DBConsole console : consoles) {
+                        DBConsoleVirtualFile virtualFile = console.getVirtualFile();
+                        if (virtualFile.getSession() == session) {
+                            DatabaseSession mainSession = connection.getSessionBundle().getMainSession();
+                            virtualFile.setDatabaseSession(mainSession);
+                        }
+                    }
+                }
+            }
+        };
         ProjectEvents.subscribe(project, this, SessionManagerListener.TOPIC, sessionManagerListener);
     }
 
@@ -140,7 +158,7 @@ public class DatabaseConsoleManager extends ProjectComponentBase implements Pers
     private void reloadConsoles(@NotNull ConnectionHandler connection) {
         DBObjectBundle objectBundle = connection.getObjectBundle();
         DBObjectList<?> objectList = objectBundle.getObjectList(DBObjectType.CONSOLE);
-        Safe.run(objectList, target -> target.markDirty());
+        Safe.run(objectList, DynamicContent::markDirty);
     }
 
     public void saveConsoleToFile(DBConsoleVirtualFile consoleFile) {
@@ -180,27 +198,6 @@ public class DatabaseConsoleManager extends ProjectComponentBase implements Pers
         contextManager.setDatabaseSession(file, consoleFile.getSession());
         Editors.openFileEditor(project, file, true);
     }
-
-    /***************************************
-     *         SessionManagerListener      *
-     ***************************************/
-    private final SessionManagerListener sessionManagerListener = new SessionManagerListener() {
-        @Override
-        public void sessionDeleted(DatabaseSession session) {
-            ConnectionManager connectionManager = ConnectionManager.getInstance(getProject());
-            List<ConnectionHandler> connections = connectionManager.getConnectionBundle().getAllConnections();
-            for (ConnectionHandler connection : connections) {
-                List<DBConsole> consoles = connection.getConsoleBundle().getConsoles();
-                for (DBConsole console : consoles) {
-                    DBConsoleVirtualFile virtualFile = console.getVirtualFile();
-                    if (virtualFile.getSession() == session) {
-                        DatabaseSession mainSession = connection.getSessionBundle().getMainSession();
-                        virtualFile.setDatabaseSession(mainSession);
-                    }
-                }
-            }
-        }
-    };
 
     /*********************************************
      *            PersistentStateComponent       *
