@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "com.dbn"
-version = "3.4.4179.0"
+version = "3.4.4180.0"
 
 repositories {
     maven { url = URI("https://maven.aliyun.com/nexus/content/groups/public/") }
@@ -118,16 +118,16 @@ tasks.getByName("processResources") {
 }
 
 tasks.register<Copy>("unZip") {
-    from(zipTree("$buildDir/distributions/DataBaseManager-${project.version}.zip"))
-    into("$buildDir/distributions")
+    from(zipTree("${layout.buildDirectory}/distributions/DataBaseManager-${project.version}.zip"))
+    into("${layout.buildDirectory}/distributions")
 
     dependsOn(tasks.buildPlugin)
 }
 
 tasks.register<Copy>("buildPluginAndUnzip") {
-    from("$buildDir/libs")
+    from("${layout.buildDirectory}/libs")
     include("instrumented-DataBaseManager-${project.version}-sources.jar")
-    into("$buildDir/distributions/DataBaseManager/lib")
+    into("${layout.buildDirectory}/distributions/DataBaseManager/lib")
 
     dependsOn(tasks["unZip"])
 }
