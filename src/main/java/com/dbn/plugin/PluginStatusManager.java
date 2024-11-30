@@ -44,7 +44,7 @@ public class PluginStatusManager extends ApplicationComponentBase implements Per
         super(COMPONENT_NAME);
 
         // reevaluate statuses just before closing
-        Projects.projectClosing(project -> evaluatePluginStatus(project));
+        Projects.projectClosing(this::evaluatePluginStatus);
     }
 
     public static PluginStatusManager getInstance() {
@@ -67,11 +67,11 @@ public class PluginStatusManager extends ApplicationComponentBase implements Per
     }
 
     public DBPluginStatus getDbnPluginStatus() {
-        return pluginStatuses.values().stream().map(s -> s.getDbn()).max(Comparator.naturalOrder()).orElse(UNKNOWN);
+        return pluginStatuses.values().stream().map(DBPluginStatusPair::getDbn).max(Comparator.naturalOrder()).orElse(UNKNOWN);
     }
 
     public DBPluginStatus getSqlPluginStatus() {
-        return pluginStatuses.values().stream().map(s -> s.getSql()).max(Comparator.naturalOrder()).orElse(UNKNOWN);
+        return pluginStatuses.values().stream().map(DBPluginStatusPair::getSql).max(Comparator.naturalOrder()).orElse(UNKNOWN);
     }
 
     private static DBPluginStatus evaluateDbnPluginStatus(Project project) {
