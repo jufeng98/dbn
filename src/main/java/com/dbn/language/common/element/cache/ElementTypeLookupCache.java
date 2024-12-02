@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.Set;
 
 public abstract class ElementTypeLookupCache<T extends ElementType>/* implements ElementTypeLookupCache<T>*/ {
-    private final Latent<IndexContainer<TokenType>> nextPossibleTokens = Latent.basic(() -> computeNextPossibleTokens());
+    private final Latent<IndexContainer<TokenType>> nextPossibleTokens = Latent.basic(this::computeNextPossibleTokens);
     protected final T elementType;
 
     ElementTypeLookupCache(T elementType) {
@@ -33,7 +33,6 @@ public abstract class ElementTypeLookupCache<T extends ElementType>/* implements
 
     /**
      * This method returns all possible tokens (optional or not) which may follow current element.
-     *
      * NOTE: to be used only for limited scope, since the tree walk-up
      * is done only until first named element is hit.
      * (named elements do not have parents)
@@ -43,7 +42,7 @@ public abstract class ElementTypeLookupCache<T extends ElementType>/* implements
         TokenTypeBundle tokenTypes = elementType.getLanguageDialect().getParserTokenTypes();
         return nextPossibleTokens == null ?
                 Collections.emptySet() :
-                nextPossibleTokens.elements(index -> tokenTypes.getTokenType(index));
+                nextPossibleTokens.elements(tokenTypes::getTokenType);
     }
 
     public boolean isNextPossibleToken(TokenType tokenType) {
@@ -56,7 +55,7 @@ public abstract class ElementTypeLookupCache<T extends ElementType>/* implements
         return NextTokenResolver.from(this.elementType).resolve();
     }
 
-    protected DBLanguage getLanguage() {
+    protected DBLanguage<?> getLanguage() {
         return elementType.getLanguage();
     }
 
@@ -134,6 +133,7 @@ public abstract class ElementTypeLookupCache<T extends ElementType>/* implements
 
     public abstract boolean isFirstPossibleLeaf(LeafElementType elementType);
 
+    @SuppressWarnings("unused")
     public abstract boolean isFirstRequiredLeaf(LeafElementType elementType);
 
     public abstract boolean startsWithIdentifier();

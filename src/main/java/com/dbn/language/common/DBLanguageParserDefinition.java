@@ -33,11 +33,9 @@ public abstract class DBLanguageParserDefinition implements ParserDefinition {
     @NotNull
     public PsiElement createElement(ASTNode astNode) {
         IElementType et = astNode.getElementType();
-        if(et instanceof ElementType) {
-            ElementType elementType = (ElementType) et;
-            PsiElement psiElement = elementType.createPsiElement(astNode);
+        if(et instanceof ElementType elementType) {
             //return WeakPsiDelegate.wrap(psiElement);
-            return psiElement;
+            return elementType.createPsiElement(astNode);
         }
         return new ASTWrapperPsiElement(astNode);
     }

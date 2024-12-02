@@ -55,7 +55,7 @@ public class SimpleTokenType<T extends SimpleTokenType<T>> extends IElementType 
 
         if (register) {
             int count = REGISTERED_COUNT.incrementAndGet();
-            log.info("Registering element " + id + " for language " + language.getID() + " (" + count + ")");
+            log.info("Registering element {} for language {} ({})", id, language.getID(), count);
         }
 
         this.lookupIndex = integerAttribute(element, "index", lookupIndex);
@@ -95,7 +95,8 @@ public class SimpleTokenType<T extends SimpleTokenType<T>> extends IElementType 
     }
 
     public int compareTo(Object o) {
-        SimpleTokenType tokenType = (SimpleTokenType) o;
+        //noinspection unchecked
+        SimpleTokenType<T> tokenType = (SimpleTokenType<T>) o;
         return getValue().compareTo(tokenType.getValue());
     }
 
@@ -187,26 +188,18 @@ public class SimpleTokenType<T extends SimpleTokenType<T>> extends IElementType 
     @NotNull
     private SharedTokenTypeBundle getSharedTokenTypes() {
         Language lang = getLanguage();
-        if (lang instanceof DBLanguageDialect) {
-            DBLanguageDialect languageDialect = (DBLanguageDialect) lang;
+        if (lang instanceof DBLanguageDialect languageDialect) {
             return languageDialect.getSharedTokenTypes();
-        } else if (lang instanceof DBLanguage) {
-            DBLanguage language = (DBLanguage) lang;
+        } else if (lang instanceof DBLanguage<?> language) {
             return language.getSharedTokenTypes();
         }
         throw new IllegalArgumentException("Language element of type " + lang + "is not supported");
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return this == obj;
-    }
-
-    @Override
     public boolean matches(TokenType tokenType) {
         if (this.equals(tokenType)) return true;
-        if (this.isIdentifier() && tokenType.isIdentifier()) return true;
-        return false;
+        return this.isIdentifier() && tokenType.isIdentifier();
     }
 
     public int hashCode() {

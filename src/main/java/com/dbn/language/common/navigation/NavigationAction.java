@@ -14,10 +14,11 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 
 public abstract class NavigationAction extends BasicAction {
-    private final PsiElementRef<BasePsiElement> navigationElement;
+    private final PsiElementRef<BasePsiElement<?>> navigationElement;
     private final DBObjectRef<DBObject> parentObjectRef;
 
-    NavigationAction(String text, Icon icon, @Nullable DBObject parentObject, @NotNull BasePsiElement navigationElement) {
+    NavigationAction(String text, Icon icon, @Nullable DBObject parentObject,
+                     @NotNull BasePsiElement<?> navigationElement) {
         super(text, null, icon);
         this.parentObjectRef = DBObjectRef.of(parentObject);
         this.navigationElement = PsiElementRef.of(navigationElement);
@@ -27,13 +28,13 @@ public abstract class NavigationAction extends BasicAction {
         return DBObjectRef.get(parentObjectRef);
     }
 
-    public BasePsiElement getNavigationElement() {
+    public BasePsiElement<?> getNavigationElement() {
         return PsiElementRef.get(navigationElement);
     }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
-        BasePsiElement navigationElement = getNavigationElement();
+        BasePsiElement<?> navigationElement = getNavigationElement();
         DBObject parentObject = getParentObject();
         if (parentObject != null) {
             SourceCodeManager codeEditorManager = SourceCodeManager.getInstance(parentObject.getProject());

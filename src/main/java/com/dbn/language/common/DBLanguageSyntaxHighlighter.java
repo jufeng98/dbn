@@ -15,8 +15,10 @@ import java.util.Map;
 
 @Getter
 public abstract class DBLanguageSyntaxHighlighter extends SyntaxHighlighterBase {
+    @SuppressWarnings("rawtypes")
     protected Map colors = new HashMap<>();
-    protected Map backgrounds = new HashMap();
+    @SuppressWarnings("rawtypes")
+    protected Map backgrounds = new HashMap<>();
 
     private final DBLanguageDialect languageDialect;
     private final TokenTypeBundle tokenTypes;
@@ -32,7 +34,7 @@ public abstract class DBLanguageSyntaxHighlighter extends SyntaxHighlighterBase 
         return XmlContents.fileToDocument(getResourceLookupClass(), tokenTypesFile);
     }
 
-    protected Class getResourceLookupClass() {
+    protected Class<?> getResourceLookupClass() {
         return getClass();
     }
 
@@ -40,10 +42,8 @@ public abstract class DBLanguageSyntaxHighlighter extends SyntaxHighlighterBase 
     protected abstract Lexer createLexer();
 
     @Override
-    @NotNull
-    public TextAttributesKey[] getTokenHighlights(IElementType tokenType) {
-        if (tokenType instanceof SimpleTokenType) {
-            SimpleTokenType simpleTokenType = (SimpleTokenType) tokenType;
+    public TextAttributesKey @NotNull [] getTokenHighlights(IElementType tokenType) {
+        if (tokenType instanceof SimpleTokenType<?> simpleTokenType) {
             return simpleTokenType.getTokenHighlights(() -> pack(
                         getAttributeKeys(tokenType, backgrounds),
                         getAttributeKeys(tokenType, colors)));
@@ -52,7 +52,7 @@ public abstract class DBLanguageSyntaxHighlighter extends SyntaxHighlighterBase 
         }
     }
 
-    private static TextAttributesKey getAttributeKeys(IElementType tokenType, Map map) {
+    private static TextAttributesKey getAttributeKeys(IElementType tokenType, Map<?, ?> map) {
         return (TextAttributesKey) map.get(tokenType);
     }
 

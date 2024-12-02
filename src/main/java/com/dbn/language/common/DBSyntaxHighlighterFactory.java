@@ -20,7 +20,7 @@ public class DBSyntaxHighlighterFactory extends SyntaxHighlighterFactory {
         if (isNotValid(project) || isNotValid(file) || !Files.isDbLanguageFile(file)) return getDefault(project, file);
 
         DBLanguageFileType fileType = (DBLanguageFileType) file.getFileType();
-        DBLanguage language = (DBLanguage) fileType.getLanguage();
+        DBLanguage<?> language = (DBLanguage<?>) fileType.getLanguage();
 
         ConnectionHandler connection = FileConnectionContextManager.getInstance(project).getConnection(file);
         DBLanguageDialect languageDialect = connection == null ?

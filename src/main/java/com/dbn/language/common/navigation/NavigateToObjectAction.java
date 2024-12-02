@@ -8,7 +8,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.jetbrains.annotations.NotNull;
 
 public class NavigateToObjectAction extends BasicAction {
-    private final DBObjectRef object;
+    private final DBObjectRef<?> object;
+
     public NavigateToObjectAction(DBObject object, DBObjectType objectType) {
         super("Navigate to " + objectType.getName(), null, objectType.getIcon());
         this.object = DBObjectRef.of(object);
@@ -16,12 +17,16 @@ public class NavigateToObjectAction extends BasicAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
-        if (object != null) {
-            DBObject object = this.object.get();
-            if (object != null) {
-                object.navigate(true);
-            }
+        if (object == null) {
+            return;
         }
+
+        DBObject object = this.object.get();
+        if (object == null) {
+            return;
+        }
+
+        object.navigate(true);
 
     }
 }
