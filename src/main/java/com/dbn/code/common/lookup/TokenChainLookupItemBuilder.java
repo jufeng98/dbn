@@ -20,6 +20,7 @@ import javax.swing.*;
 import static com.dbn.common.util.Strings.toLowerCase;
 import static com.dbn.common.util.Strings.toUpperCase;
 
+@SuppressWarnings("unused")
 public class TokenChainLookupItemBuilder extends LookupItemBuilder {
 
     private final TokenElementType tokenElementType;
@@ -44,7 +45,7 @@ public class TokenChainLookupItemBuilder extends LookupItemBuilder {
         TokenType tokenType = tokenElementType.getTokenType();
         String text = tokenType.getValue();
 
-        DBLanguage language = tokenElementType.getLanguage();
+        DBLanguage<?> language = tokenElementType.getLanguage();
         CodeStyleCaseSettings styleCaseSettings = DBLCodeStyleManager.getInstance(project).getCodeStyleCaseSettings(language);
         CodeStyleCaseOption caseOption =
                 tokenType.isFunction() ? styleCaseSettings.getFunctionCaseOption() :
@@ -57,7 +58,7 @@ public class TokenChainLookupItemBuilder extends LookupItemBuilder {
         }
 
         String userInput = completionContext.getUserInput();
-        if (userInput != null && userInput.length() > 0 && !text.startsWith(userInput)) {
+        if (userInput != null && !userInput.isEmpty() && !text.startsWith(userInput)) {
             char firstInputChar = userInput.charAt(0);
             char firstPresentationChar = text.charAt(0);
 
@@ -87,7 +88,7 @@ public class TokenChainLookupItemBuilder extends LookupItemBuilder {
     }
 
     private void createLookupItem(CompletionResultSet resultSet, String presentation, CodeCompletionContext completionContext, boolean insertParenthesis) {
-        LookupItem lookupItem = new CodeCompletionLookupItem(this, presentation, completionContext);
+        LookupItem<?> lookupItem = new CodeCompletionLookupItem(this, presentation, completionContext);
         lookupItem.setInsertHandler(
                 insertParenthesis ?
                         BracketsInsertHandler.INSTANCE :

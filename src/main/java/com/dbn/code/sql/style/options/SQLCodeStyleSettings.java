@@ -12,9 +12,9 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-public class SQLCodeStyleSettings extends DBLCodeStyleSettings<DBLCodeStyleSettings, SQLCodeStyleSettingsEditorForm> {
+public class SQLCodeStyleSettings extends DBLCodeStyleSettings<DBLCodeStyleSettings<?, ?>, SQLCodeStyleSettingsEditorForm> {
 
-    SQLCodeStyleSettings(DBLCodeStyleSettings parent) {
+    SQLCodeStyleSettings(DBLCodeStyleSettings<?, ?> parent) {
         super(parent);
     }
 
@@ -31,12 +31,12 @@ public class SQLCodeStyleSettings extends DBLCodeStyleSettings<DBLCodeStyleSetti
     }
 
     @Override
-    protected CodeStyleCaseSettings createCaseSettings(DBLCodeStyleSettings parent) {
+    protected CodeStyleCaseSettings createCaseSettings(DBLCodeStyleSettings<?, ?> parent) {
         return new SQLCodeStyleCaseSettings(parent);
     }
 
     @Override
-    protected CodeStyleFormattingSettings createAttributeSettings(DBLCodeStyleSettings parent) {
+    protected CodeStyleFormattingSettings createAttributeSettings(DBLCodeStyleSettings<?, ?> parent) {
         return new SQLCodeStyleFormattingSettings(parent);
     }
 

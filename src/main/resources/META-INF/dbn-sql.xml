@@ -18,7 +18,7 @@
         <highlightVisitor implementation="com.dbn.sql.highlight.SqlRainbowVisitor"/>
         <lang.braceMatcher language="sql"
                            implementationClass="com.dbn.sql.bracematcher.SqlPairedBraceMatcher"/>
-        <quoteHandler fileType="SQL" className="com.dbn.sql.quotehandler.SqlQuoteHandler"/>
+        <lang.quoteHandler language="sql" implementationClass="com.dbn.sql.quotehandler.SqlQuoteHandler"/>
         <lang.namesValidator language="sql" implementationClass="com.dbn.sql.name.SqlNamesValidator"/>
         <multiHostInjector
                 implementation="com.dbn.sql.inject.SqlMultiHostInjector"/>

@@ -30,20 +30,16 @@ public class DatabaseConnectIntentionAction extends GenericIntentionAction imple
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile psiFile) {
-        if (psiFile instanceof DBLanguagePsiFile) {
-            DBLanguagePsiFile dbLanguagePsiFile = (DBLanguagePsiFile) psiFile;
+        if (psiFile instanceof DBLanguagePsiFile dbLanguagePsiFile) {
             ConnectionHandler connection = dbLanguagePsiFile.getConnection();
-            if (isLiveConnection(connection) && !connection.canConnect() && !connection.isConnected()) {
-                return true;
-            }
+            return isLiveConnection(connection) && !connection.canConnect() && !connection.isConnected();
         }
         return false;
     }
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile psiFile) throws IncorrectOperationException {
-        if (psiFile instanceof DBLanguagePsiFile) {
-            DBLanguagePsiFile dbLanguagePsiFile = (DBLanguagePsiFile) psiFile;
+        if (psiFile instanceof DBLanguagePsiFile dbLanguagePsiFile) {
             ConnectionHandler connection = dbLanguagePsiFile.getConnection();
             if (isLiveConnection(connection)) {
                 connection.getInstructions().setAllowAutoConnect(true);

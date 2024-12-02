@@ -3,13 +3,14 @@ package com.dbn.diagnostics.ui;
 import com.dbn.common.ui.form.DBNFormBase;
 import com.dbn.common.ui.form.DBNHeaderForm;
 import com.dbn.common.ui.misc.DBNScrollPane;
-import com.dbn.common.ui.tab.TabbedPane;
 import com.dbn.common.ui.table.DBNMutableTableModel;
 import com.dbn.common.ui.table.DBNTable;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.diagnostics.ui.model.AbstractDiagnosticsTableModel;
 import com.dbn.diagnostics.ui.model.ConnectivityDiagnosticsTableModel;
 import com.dbn.diagnostics.ui.model.MetadataDiagnosticsTableModel2;
+import com.intellij.ui.tabs.JBTabs;
+import com.intellij.ui.tabs.JBTabsFactory;
 import com.intellij.ui.tabs.TabInfo;
 import com.intellij.ui.tabs.TabsListener;
 import org.jetbrains.annotations.NotNull;
@@ -20,13 +21,10 @@ import java.awt.*;
 import static com.dbn.common.dispose.Failsafe.nd;
 
 public class ConnectionDiagnosticsDetailsForm extends DBNFormBase {
-    private final DBNTable<AbstractDiagnosticsTableModel> metadataTable;
-    private final DBNTable<AbstractDiagnosticsTableModel> connectivityTable;
-
     private JPanel mainPanel;
     private JPanel headerPanel;
     private JPanel diagnosticsTabsPanel;
-    private final TabbedPane diagnosticsTabs;
+    private final JBTabs diagnosticsTabs;
 
     public ConnectionDiagnosticsDetailsForm(@NotNull ConnectionDiagnosticsForm parent, ConnectionHandler connection) {
         super(parent);
@@ -34,17 +32,17 @@ public class ConnectionDiagnosticsDetailsForm extends DBNFormBase {
         DBNHeaderForm headerForm = new DBNHeaderForm(this, connection).withEmptyBorder();
         headerPanel.add(headerForm.getComponent(), BorderLayout.CENTER);
 
-        diagnosticsTabs = new TabbedPane(this);
-        diagnosticsTabsPanel.add(diagnosticsTabs, BorderLayout.CENTER);
+        diagnosticsTabs = JBTabsFactory.createTabs(getProject(), parent);
+        diagnosticsTabsPanel.add((Component) diagnosticsTabs, BorderLayout.CENTER);
 
 
-        AbstractDiagnosticsTableModel metadataTableModel = new MetadataDiagnosticsTableModel2(connection);
-        metadataTable = new DiagnosticsTable<>(this, metadataTableModel);
+        AbstractDiagnosticsTableModel<?> metadataTableModel = new MetadataDiagnosticsTableModel2(connection);
+        DBNTable<AbstractDiagnosticsTableModel<?>> metadataTable = new DiagnosticsTable<>(this, metadataTableModel);
         metadataTable.getRowSorter().toggleSortOrder(0);
         addTab(metadataTable, "Metadata Interface");
 
-        AbstractDiagnosticsTableModel connectivityTableModel = new ConnectivityDiagnosticsTableModel(connection);
-        connectivityTable = new DiagnosticsTable<>(this, connectivityTableModel);
+        AbstractDiagnosticsTableModel<?> connectivityTableModel = new ConnectivityDiagnosticsTableModel(connection);
+        DBNTable<AbstractDiagnosticsTableModel<?>> connectivityTable = new DiagnosticsTable<>(this, connectivityTableModel);
         connectivityTable.getRowSorter().toggleSortOrder(0);
         addTab(connectivityTable, "Database Connectivity");
 
@@ -56,7 +54,7 @@ public class ConnectionDiagnosticsDetailsForm extends DBNFormBase {
                 parent.setTabSelectionIndex(selectedIndex);
             }
         });
-   }
+    }
 
     private void addTab(JComponent component, String title) {
         JScrollPane scrollPane = new DBNScrollPane(component);
@@ -70,8 +68,9 @@ public class ConnectionDiagnosticsDetailsForm extends DBNFormBase {
     protected void selectTab(int tabIndex) {
         TabInfo tabInfo = diagnosticsTabs.getTabs().get(tabIndex);
         diagnosticsTabs.select(tabInfo, false);
-        DBNTable table = (DBNTable) tabInfo.getObject();
-        DBNMutableTableModel model = (DBNMutableTableModel) table.getModel();
+        DBNTable<?> table = (DBNTable<?>) tabInfo.getObject();
+        //noinspection DataFlowIssue
+        DBNMutableTableModel<?> model = (DBNMutableTableModel<?>) table.getModel();
         model.notifyRowChanges();
     }
 

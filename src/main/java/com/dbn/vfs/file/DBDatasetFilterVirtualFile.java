@@ -15,7 +15,6 @@ import com.dbn.object.lookup.DBObjectRef;
 import com.dbn.vfs.DBParseableVirtualFile;
 import com.dbn.vfs.DBVirtualFileBase;
 import com.dbn.vfs.DatabaseFileViewProvider;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,7 +22,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 
 import static com.dbn.common.action.UserDataKeys.LANGUAGE_DIALECT;
@@ -69,6 +72,7 @@ public class DBDatasetFilterVirtualFile extends DBVirtualFileBase implements DBP
     @NotNull
     @Override
     public ConnectionId getConnectionId() {
+        //noinspection DataFlowIssue
         return dataset.getConnectionId();
     }
 
@@ -98,7 +102,7 @@ public class DBDatasetFilterVirtualFile extends DBVirtualFileBase implements DBP
 
     @Override
     @NotNull
-    public OutputStream getOutputStream(Object requestor, long modificationStamp, long timeStamp) throws IOException {
+    public OutputStream getOutputStream(Object requestor, long modificationStamp, long timeStamp) {
         return new ByteArrayOutputStream() {
             @Override
             public void close() {
@@ -111,8 +115,7 @@ public class DBDatasetFilterVirtualFile extends DBVirtualFileBase implements DBP
     }
 
     @Override
-    @NotNull
-    public byte[] contentsToByteArray() throws IOException {
+    public byte @NotNull [] contentsToByteArray() throws IOException {
         Charset charset = getCharset();
         return content.toString().getBytes(charset);
     }

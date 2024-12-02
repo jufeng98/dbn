@@ -28,10 +28,10 @@ import static com.dbn.common.util.Strings.toLowerCase;
 import static com.dbn.common.util.Strings.toUpperCase;
 
 public class ObjectLookupItemBuilder extends LookupItemBuilder {
-    private final DBLanguage language;
-    private final DBObjectRef objectRef;
+    private final DBLanguage<?> language;
+    private final DBObjectRef<?> objectRef;
 
-    public ObjectLookupItemBuilder(DBObjectRef objectRef, DBLanguage language) {
+    public ObjectLookupItemBuilder(DBObjectRef<?> objectRef, DBLanguage<?> language) {
         this.objectRef = objectRef;
         this.language = language;
     }
@@ -70,8 +70,7 @@ public class ObjectLookupItemBuilder extends LookupItemBuilder {
             DBObject parentObject = object.getParentObject();
 
             String typePrefix = "";
-            if (object instanceof DBSynonym) {
-                DBSynonym synonym = (DBSynonym) object;
+            if (object instanceof DBSynonym synonym) {
                 DBObjectType underlyingObjectType = synonym.getUnderlyingObjectType();
                 if (underlyingObjectType != null) {
                     typePrefix = underlyingObjectType.getName() + ' ';

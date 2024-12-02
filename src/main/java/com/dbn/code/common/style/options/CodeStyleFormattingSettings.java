@@ -19,11 +19,11 @@ import static com.dbn.common.options.setting.Settings.*;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = false)
-public abstract class CodeStyleFormattingSettings extends BasicConfiguration<DBLCodeStyleSettings, CodeStyleFormattingSettingsForm> {
+public abstract class CodeStyleFormattingSettings extends BasicConfiguration<DBLCodeStyleSettings<?, ?>, CodeStyleFormattingSettingsForm> {
     private final Map<String, CodeStyleFormattingOption> options = new LinkedHashMap<>();
     private boolean enabled = false;
 
-    public CodeStyleFormattingSettings(DBLCodeStyleSettings parent) {
+    public CodeStyleFormattingSettings(DBLCodeStyleSettings<?, ?> parent) {
         super(parent);
     }
 
@@ -45,7 +45,7 @@ public abstract class CodeStyleFormattingSettings extends BasicConfiguration<DBL
     }
 
     @Nullable
-    public CodeStylePreset getPreset(BasePsiElement element) {
+    public CodeStylePreset getPreset(BasePsiElement<?> element) {
         for (CodeStyleFormattingOption option : options.values()) {
             CodeStylePreset preset = option.getPreset();
             if (preset.accepts(element)) {

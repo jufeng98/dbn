@@ -15,7 +15,7 @@ import static com.dbn.common.options.setting.Settings.newElement;
 
 @Getter
 @EqualsAndHashCode(callSuper = false)
-public abstract class DBLCodeStyleSettings<P extends DBLCodeStyleSettings, T extends CompositeConfigurationEditorForm>
+public abstract class DBLCodeStyleSettings<P extends DBLCodeStyleSettings<?, ?>, T extends CompositeConfigurationEditorForm<?>>
         extends CompositeConfiguration<P, T> implements CodeStyleConfigurable {
 
     private final CodeStyleCaseSettings caseSettings = createCaseSettings(this);
@@ -25,8 +25,8 @@ public abstract class DBLCodeStyleSettings<P extends DBLCodeStyleSettings, T ext
         super(parent);
     }
 
-    protected abstract CodeStyleCaseSettings createCaseSettings(DBLCodeStyleSettings parent);
-    protected abstract CodeStyleFormattingSettings createAttributeSettings(DBLCodeStyleSettings parent);
+    protected abstract CodeStyleCaseSettings createCaseSettings(DBLCodeStyleSettings<?, ?> parent);
+    protected abstract CodeStyleFormattingSettings createAttributeSettings(DBLCodeStyleSettings<?, ?> parent);
 
     @Override
     public void reset(@NotNull CodeStyleSettings settings) {
@@ -39,11 +39,11 @@ public abstract class DBLCodeStyleSettings<P extends DBLCodeStyleSettings, T ext
     }
 
     /*********************************************************
-    *                     Configuration                     *
-    *********************************************************/
+     *                     Configuration                     *
+     *********************************************************/
     @Override
-    protected Configuration[] createConfigurations() {
-        return new Configuration[] {
+    protected Configuration<?, ?>[] createConfigurations() {
+        return new Configuration[]{
                 caseSettings,
                 formattingSettings};
     }

@@ -7,27 +7,27 @@ import org.jdom.Element;
 import static com.dbn.common.options.setting.Settings.enumAttribute;
 
 public enum SpacingDefinition implements FormattingAttribute<Spacing>{
-    NO_SPACE  (new Loader(){
+    NO_SPACE  (new Loader<>(){
         @Override
         Spacing load(){return CodeStylePreset.SPACING_NO_SPACE;}}),
-    ONE_SPACE (new Loader(){
+    ONE_SPACE (new Loader<>(){
         @Override
         Spacing load(){return CodeStylePreset.SPACING_ONE_SPACE;}}),
 
-    LINE_BREAK (new Loader(){
+    LINE_BREAK (new Loader<>(){
         @Override
         Spacing load(){return CodeStylePreset.SPACING_LINE_BREAK;}}),
-    ONE_LINE  (new Loader(){
+    ONE_LINE  (new Loader<>(){
         @Override
         Spacing load(){return CodeStylePreset.SPACING_ONE_LINE;}}),
 
-    MIN_LINE_BREAK (new Loader(){
+    MIN_LINE_BREAK (new Loader<>(){
         @Override
         Spacing load(){return CodeStylePreset.SPACING_MIN_LINE_BREAK;}}),
-    MIN_ONE_LINE  (new Loader(){
+    MIN_ONE_LINE  (new Loader<>(){
         @Override
         Spacing load(){return CodeStylePreset.SPACING_MIN_ONE_LINE;}}),
-    MIN_ONE_SPACE  (new Loader(){
+    MIN_ONE_SPACE  (new Loader<>(){
         @Override
         Spacing load(){return CodeStylePreset.SPACING_MIN_ONE_SPACE;}}),
     ;
@@ -35,7 +35,7 @@ public enum SpacingDefinition implements FormattingAttribute<Spacing>{
     private Spacing value;
     private Loader<Spacing> loader;
 
-    private SpacingDefinition(Loader<Spacing> loader) {
+    SpacingDefinition(Loader<Spacing> loader) {
         this.loader = loader;
     }
 

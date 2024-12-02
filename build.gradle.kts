@@ -23,6 +23,7 @@ sourceSets["main"].java.srcDirs("src/main/gen")
 dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.30")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
+    testImplementation("junit:junit:4.13.1")
 
     implementation("org.projectlombok:lombok:1.18.30")
     implementation("com.github.mwiede:jsch:0.2.17")
@@ -102,7 +103,7 @@ tasks.register<Jar>("packageSource") {
     manifest {
         attributes(
             "Manifest-Version" to "1.0",
-            "Gradle-Version" to "7.6"
+            "Gradle-Version" to "8.5"
         )
     }
 }
@@ -160,7 +161,7 @@ tasks {
     }
 
     patchPluginXml {
-        sinceBuild.set("232")
+        sinceBuild.set("243")
         untilBuild.set("243.*")
     }
 

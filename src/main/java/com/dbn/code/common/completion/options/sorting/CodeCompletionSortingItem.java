@@ -17,20 +17,12 @@ import static com.dbn.common.options.setting.Settings.stringAttribute;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = false)
-public class CodeCompletionSortingItem extends BasicConfiguration<CodeCompletionSortingSettings, ConfigurationEditorForm> {
+public class CodeCompletionSortingItem extends BasicConfiguration<CodeCompletionSortingSettings, ConfigurationEditorForm<?>> {
     private DBObjectType objectType;
     private TokenTypeCategory tokenTypeCategory = TokenTypeCategory.UNKNOWN;
 
     CodeCompletionSortingItem(CodeCompletionSortingSettings parent) {
         super(parent);
-    }
-
-    public DBObjectType getObjectType() {
-        return objectType;
-    }
-
-    public TokenTypeCategory getTokenTypeCategory() {
-        return tokenTypeCategory;
     }
 
     public String getTokenTypeName() {
@@ -46,7 +38,7 @@ public class CodeCompletionSortingItem extends BasicConfiguration<CodeCompletion
      *********************************************************/
     @Override
     @NotNull
-    public ConfigurationEditorForm createConfigurationEditor() {
+    public ConfigurationEditorForm<?> createConfigurationEditor() {
         throw new UnsupportedOperationException();
     }
 

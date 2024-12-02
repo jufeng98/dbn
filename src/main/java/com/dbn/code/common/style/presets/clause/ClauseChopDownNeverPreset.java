@@ -17,16 +17,15 @@ public class ClauseChopDownNeverPreset extends ClauseAbstractPreset {
 
     @Override
     @Nullable
-    public Wrap getWrap(BasePsiElement psiElement, CodeStyleSettings settings) {
+    public Wrap getWrap(BasePsiElement<?> psiElement, CodeStyleSettings settings) {
         return WRAP_NONE;
     }
 
     @Override
     @Nullable
-    public Spacing getSpacing(BasePsiElement psiElement, CodeStyleSettings settings) {
+    public Spacing getSpacing(BasePsiElement<?> psiElement, CodeStyleSettings settings) {
         PsiElement previousPsiElement = psiElement.getPrevSibling();
-        if (previousPsiElement instanceof TokenPsiElement) {
-            TokenPsiElement previousToken = (TokenPsiElement) previousPsiElement;
+        if (previousPsiElement instanceof TokenPsiElement previousToken) {
             SharedTokenTypeBundle sharedTokenTypes = psiElement.getLanguage().getSharedTokenTypes();
             TokenType tokenType = previousToken.getTokenType();
             return tokenType ==  sharedTokenTypes.getChrLeftParenthesis() ?

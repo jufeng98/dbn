@@ -14,7 +14,7 @@ public class TestAction extends BasicAction {
     public TestAction(DBObject object) {
         super("Test", "Test", null);
         this.object = object;
-        setDefaultIcon(true);
+//        setDefaultIcon(true);
     }
 
     @Override

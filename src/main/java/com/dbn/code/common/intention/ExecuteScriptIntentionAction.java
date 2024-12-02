@@ -43,9 +43,7 @@ public class ExecuteScriptIntentionAction extends GenericIntentionAction impleme
         if (file instanceof DBSourceCodeVirtualFile) return false;
         if (isDebugConsole(file)) return false;
         if (!hasConnectivityContext(file)) return false;
-        if (!isMainEditor(editor)) return false;
-
-        return true;
+        return isMainEditor(editor);
     }
 
     @Override

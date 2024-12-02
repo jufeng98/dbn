@@ -10,9 +10,9 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 
 public class MoveDownAction extends BasicAction {
-    private final JList list;
+    private final JList<?> list;
     private final CodeCompletionSortingSettings settings;
-    public MoveDownAction(JList list, CodeCompletionSortingSettings settings) {
+    public MoveDownAction(JList<?> list, CodeCompletionSortingSettings settings) {
         super("Move Down", null, Icons.ACTION_MOVE_DOWN);
         this.list = list;
         this.settings = settings;

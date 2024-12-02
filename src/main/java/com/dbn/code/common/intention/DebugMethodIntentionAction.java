@@ -25,7 +25,7 @@ public class DebugMethodIntentionAction extends AbstractMethodExecutionIntention
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile psiFile) {
-        if (psiFile != null) {
+         if (psiFile != null) {
             DBMethod method = resolveMethod(editor, psiFile);
             return method != null;
         }

@@ -13,13 +13,13 @@ public class StatementOneLineSpacingAtLeastPreset extends StatementAbstractPrese
 
     @Override
     @Nullable
-    public Wrap getWrap(BasePsiElement psiElement, CodeStyleSettings settings) {
+    public Wrap getWrap(BasePsiElement<?> psiElement, CodeStyleSettings settings) {
         return null;
     }
 
     @Override
     @Nullable
-    public Spacing getSpacing(BasePsiElement psiElement, CodeStyleSettings settings) {
+    public Spacing getSpacing(BasePsiElement<?> psiElement, CodeStyleSettings settings) {
         return SPACING_MIN_ONE_LINE;
     }
 }

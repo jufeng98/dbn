@@ -44,7 +44,11 @@ import java.sql.Timestamp;
 import static com.dbn.common.util.GuardedBlocks.createGuardedBlocks;
 import static com.dbn.common.util.GuardedBlocks.removeGuardedBlocks;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
-import static com.dbn.vfs.file.status.DBFileStatus.*;
+import static com.dbn.vfs.file.status.DBFileStatus.LATEST;
+import static com.dbn.vfs.file.status.DBFileStatus.MERGED;
+import static com.dbn.vfs.file.status.DBFileStatus.MODIFIED;
+import static com.dbn.vfs.file.status.DBFileStatus.OUTDATED;
+import static com.dbn.vfs.file.status.DBFileStatus.REFRESHING;
 
 @Slf4j
 @Getter
@@ -123,7 +127,6 @@ public class DBSourceCodeVirtualFile extends DBContentVirtualFile implements DBP
             if (isChangeMonitoringSupported()) {
                 latestTimestamp = sourceCodeManager.loadChangeTimestamp(object, contentType);
                 checkSources = databaseTimestamp.isOlderThan(latestTimestamp);
-                databaseTimestamp = latestTimestamp;
             }
 
             databaseTimestamp = latestTimestamp;
@@ -156,7 +159,7 @@ public class DBSourceCodeVirtualFile extends DBContentVirtualFile implements DBP
 
         if (reload || databaseTimestamp.isDirty()) {
             if (ThreadMonitor.isTimeSensitiveThread()) {
-                Background.run(getProject(), () -> refreshContentState());
+                Background.run(getProject(), this::refreshContentState);
             } else {
                 refreshContentState();
             }
@@ -257,8 +260,7 @@ public class DBSourceCodeVirtualFile extends DBContentVirtualFile implements DBP
     }
 
     @Override
-    @NotNull
-    public byte[] contentsToByteArray() {
+    public byte @NotNull [] contentsToByteArray() {
         return localContent.getText().toString().getBytes(getCharset());
     }
 
@@ -269,7 +271,7 @@ public class DBSourceCodeVirtualFile extends DBContentVirtualFile implements DBP
 
     @Override
     public <T> void putUserData(@NotNull Key<T> key, T value) {
-        if (key == FileDocumentManagerImpl.HARD_REF_TO_DOCUMENT_KEY && contentType.isOneOf(DBContentType.CODE, DBContentType.CODE_BODY) ) {
+        if (key == FileDocumentManagerImpl.HARD_REF_TO_DOCUMENT_KEY && contentType.isOneOf(DBContentType.CODE, DBContentType.CODE_BODY)) {
             getMainDatabaseFile().putUserData(FileDocumentManagerImpl.HARD_REF_TO_DOCUMENT_KEY, (Document) value);
         }
         super.putUserData(key, value);

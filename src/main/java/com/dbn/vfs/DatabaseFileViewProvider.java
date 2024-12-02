@@ -11,6 +11,7 @@ import com.dbn.object.common.DBObjectPsiCache;
 import com.dbn.vfs.file.DBConsoleVirtualFile;
 import com.dbn.vfs.file.DBObjectVirtualFile;
 import com.intellij.lang.Language;
+import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
@@ -56,9 +57,9 @@ public class DatabaseFileViewProvider extends SingleRootFileViewProvider {
             VirtualFile virtualFile = getVirtualFile();
             if (virtualFile instanceof DBConsoleVirtualFile) {
                 // do not use psi facade
-            } else  if (virtualFile instanceof DBObjectVirtualFile) {
+            } else if (virtualFile instanceof DBObjectVirtualFile) {
                 return guarded(null, virtualFile, f -> {
-                    DBObjectVirtualFile objectFile = (DBObjectVirtualFile) f;
+                    DBObjectVirtualFile<?> objectFile = (DBObjectVirtualFile<?>) f;
                     DBObject object = objectFile.getObject();
                     return DBObjectPsiCache.asPsiFile(object);
                 });
@@ -93,12 +94,15 @@ public class DatabaseFileViewProvider extends SingleRootFileViewProvider {
         if (file == null) {
             DBLanguageParserDefinition parserDefinition = languageDialect.getParserDefinition();
             file = (DBLanguagePsiFile) parserDefinition.createFile(this);
-            forceCachedPsi(file);
-            Document document = Documents.getDocument(file);// cache hard reference to document (??)
-            if (isValid(document)) {
-                // TODO non-physical fs assertion
-                //FileDocumentManagerImpl.registerDocument(document, getVirtualFile());
-            }
+            DBLanguagePsiFile finalFile = file;
+            WriteAction.runAndWait(() -> {
+                forceCachedPsi(finalFile);
+                Document document = Documents.getDocument(finalFile);// cache hard reference to document (??)
+                if (isValid(document)) {
+                    // TODO non-physical fs assertion
+                    //FileDocumentManagerImpl.registerDocument(document, getVirtualFile());
+                }
+            });
         }
         return file;
     }
@@ -108,8 +112,7 @@ public class DatabaseFileViewProvider extends SingleRootFileViewProvider {
             return (DBParseableVirtualFile) virtualFile;
         }
 
-        if (virtualFile instanceof LightVirtualFile) {
-            LightVirtualFile lightVirtualFile = (LightVirtualFile) virtualFile;
+        if (virtualFile instanceof LightVirtualFile lightVirtualFile) {
             VirtualFile originalFile = lightVirtualFile.getOriginalFile();
             if (originalFile != null && !originalFile.equals(virtualFile)) {
                 return getParseableFile(originalFile);

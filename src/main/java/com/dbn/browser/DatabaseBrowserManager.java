@@ -122,8 +122,7 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
         if (activeBrowserTree == null) return null;
 
         BrowserTreeModel model = activeBrowserTree.getModel();
-        if (model instanceof ConnectionBrowserTreeModel) {
-            ConnectionBrowserTreeModel treeModel = (ConnectionBrowserTreeModel) model;
+        if (model instanceof ConnectionBrowserTreeModel treeModel) {
             return treeModel.getConnection();
         }
 
@@ -243,6 +242,7 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
     }
 
 
+    @SuppressWarnings("unused")
     public Filter<BrowserTreeNode> getObjectTypeFilter() {
         DatabaseBrowserSettings browserSettings = DatabaseBrowserSettings.getInstance(getProject());
         return browserSettings.getFilterSettings().getObjectTypeFilterSettings().getElementFilter();
@@ -298,7 +298,7 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
 
             dbViews = dbViews.stream()
                     .filter(it -> tableNames.contains(it.getName()))
-                    .collect(Collectors.toList());
+                    .toList();
 
             if (dbTables.isEmpty() && dbViews.isEmpty()) {
                 TooltipUtils.INSTANCE.showTooltip("无法跳转,在" + dbSchema.getName() + "数据库中未找到表:" + tableNames, project);
@@ -338,11 +338,11 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
 
             dbColumns = dbColumns.stream()
                     .filter(it -> columnName.equals(it.getName()))
-                    .collect(Collectors.toList());
+                    .toList();
 
             viewDbColumns = viewDbColumns.stream()
                     .filter(it -> columnName.equals(it.getName()))
-                    .collect(Collectors.toList());
+                    .toList();
 
             if (dbColumns.isEmpty() && viewDbColumns.isEmpty()) {
                 TooltipUtils.INSTANCE.showTooltip("无法跳转,在" + tableNames + "中未能解析列" + columnName + "!", project);
@@ -454,8 +454,7 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
                 if (!autoscrollFromEditor.value()) return;
                 if (isSkipBrowserAutoscroll(file)) return;
 
-                if (file instanceof DBVirtualFile) {
-                    DBVirtualFile databaseVirtualFile = (DBVirtualFile) file;
+                if (file instanceof DBVirtualFile databaseVirtualFile) {
                     DBObject object = databaseVirtualFile.getObject();
                     if (object != null) {
                         navigateToElement(object, true);
@@ -477,8 +476,7 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
                 if (isSkipBrowserAutoscroll(newFile)) return;
                 if (Objects.equals(oldFile, newFile)) return;
 
-                if (newFile instanceof DBVirtualFile) {
-                    DBVirtualFile virtualFile = (DBVirtualFile) newFile;
+                if (newFile instanceof DBVirtualFile virtualFile) {
                     DBObject object = virtualFile.getObject();
                     if (object != null) {
                         navigateToElement(object, true);
@@ -521,8 +519,7 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
 
         for (TreePath treePath : selectionPaths) {
             Object lastPathComponent = treePath.getLastPathComponent();
-            if (lastPathComponent instanceof DBObject) {
-                DBObject object = (DBObject) lastPathComponent;
+            if (lastPathComponent instanceof DBObject object) {
                 selectedObjects.add(object);
             }
         }

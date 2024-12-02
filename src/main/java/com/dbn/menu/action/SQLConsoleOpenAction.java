@@ -93,7 +93,7 @@ public class SQLConsoleOpenAction extends ProjectAction {
 
         @NotNull
         @Override
-        public AnAction[] getChildren(AnActionEvent e) {
+        public AnAction @NotNull [] getChildren(AnActionEvent e) {
             ConnectionHandler connection = this.connection.ensure();
             List<AnAction> actions = new ArrayList<>();
             Collection<DBConsole> consoles = connection.getConsoleBundle().getConsoles();

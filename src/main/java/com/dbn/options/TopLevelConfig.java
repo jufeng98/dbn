@@ -5,6 +5,7 @@ import com.dbn.common.options.Configuration;
 import com.dbn.common.options.ui.ConfigurationEditorForm;
 import org.jetbrains.annotations.NotNull;
 
+@SuppressWarnings("rawtypes")
 public interface TopLevelConfig<P extends BasicConfiguration, E extends ConfigurationEditorForm>  {
     ConfigId getConfigId();
 

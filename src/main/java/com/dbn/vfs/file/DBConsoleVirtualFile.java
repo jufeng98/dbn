@@ -51,7 +51,7 @@ public class DBConsoleVirtualFile extends DBObjectVirtualFile<DBConsole> impleme
 
         ConnectionHandler connection = console.getConnection();
         SessionId sessionId = connection.getSessionBundle().getMainSession().getId();
-        connectionContext = createConnectionContext(this, sessionId, null);
+        connectionContext = createConnectionContext(this, sessionId);
 
         setCharset(connection.getSettings().getDetailSettings().getCharset());
     }
@@ -89,11 +89,11 @@ public class DBConsoleVirtualFile extends DBObjectVirtualFile<DBConsole> impleme
     @Nullable
     @Override
     public Icon getIcon() {
-        switch (getType()) {
-            case STANDARD: return Icons.FILE_SQL_CONSOLE;
-            case DEBUG: return Icons.FILE_SQL_DEBUG_CONSOLE;
-        }
-        return null;
+        return switch (getType()) {
+            case STANDARD -> Icons.FILE_SQL_CONSOLE;
+            case DEBUG -> Icons.FILE_SQL_DEBUG_CONSOLE;
+            default -> null;
+        };
     }
     public void setDatabaseSchema(SchemaId schemaId) {
         connectionContext.setSchemaId(schemaId);
@@ -111,6 +111,7 @@ public class DBConsoleVirtualFile extends DBObjectVirtualFile<DBConsole> impleme
         return connectionContext.getSchemaName();
     }
 
+    @SuppressWarnings("unused")
     public void setDatabaseSessionId(SessionId sessionId) {
         connectionContext.setSessionId(sessionId);
     }
@@ -161,7 +162,7 @@ public class DBConsoleVirtualFile extends DBObjectVirtualFile<DBConsole> impleme
 
     @Override
     @NotNull
-    public OutputStream getOutputStream(Object requestor, long modificationStamp, long timeStamp) throws IOException {
+    public OutputStream getOutputStream(Object requestor, long modificationStamp, long timeStamp) {
         return new ByteArrayOutputStream() {
             @Override
             public void close() {
@@ -175,8 +176,7 @@ public class DBConsoleVirtualFile extends DBObjectVirtualFile<DBConsole> impleme
     }
 
     @Override
-    @NotNull
-    public byte[] contentsToByteArray() throws IOException {
+    public byte @NotNull [] contentsToByteArray() throws IOException {
         Charset charset = getCharset();
         return content.getBytes(charset);
     }
@@ -206,8 +206,7 @@ public class DBConsoleVirtualFile extends DBObjectVirtualFile<DBConsole> impleme
     public void documentChanged(DocumentEvent event) {
         Document document = event.getDocument();
         content.setText(document.getCharsSequence());
-        if (document instanceof DocumentEx) {
-            DocumentEx documentEx = (DocumentEx) document;
+        if (document instanceof DocumentEx documentEx) {
             List<RangeMarker> blocks = documentEx.getGuardedBlocks();
             if (!blocks.isEmpty()) {
                 content.getOffsets().setGuardedBlocks(blocks);
@@ -217,9 +216,8 @@ public class DBConsoleVirtualFile extends DBObjectVirtualFile<DBConsole> impleme
 
     private static FileConnectionContext createConnectionContext(
             DBConsoleVirtualFile consoleFile,
-            SessionId sessionId,
-            SchemaId schemaId) {
-        return new FileConnectionContextImpl(consoleFile.getUrl(), consoleFile.getConnectionId(), sessionId, schemaId) {
+            SessionId sessionId) {
+        return new FileConnectionContextImpl(consoleFile.getUrl(), consoleFile.getConnectionId(), sessionId, null) {
             @Override
             public void setFileUrl(String fileUrl) {
                 throw new UnsupportedOperationException();

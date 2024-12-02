@@ -5,7 +5,7 @@ import com.dbn.code.common.style.options.DBLCodeStyleSettings;
 
 class PSQLCodeStyleCaseSettings extends CodeStyleCaseSettings {
 
-    PSQLCodeStyleCaseSettings(DBLCodeStyleSettings parent) {
+    PSQLCodeStyleCaseSettings(DBLCodeStyleSettings<?, ?> parent) {
         super(parent);
     }
 }

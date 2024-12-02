@@ -49,8 +49,7 @@ public class SelectSchemaIntentionAction extends GenericIntentionAction implemen
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile psiFile) throws IncorrectOperationException {
-        if (psiFile instanceof DBLanguagePsiFile) {
-            DBLanguagePsiFile dbLanguageFile = (DBLanguagePsiFile) psiFile;
+        if (psiFile instanceof DBLanguagePsiFile dbLanguageFile) {
             FileConnectionContextManager contextManager = FileConnectionContextManager.getInstance(project);
             DataContext dataContext = Context.getDataContext(editor);
             contextManager.promptSchemaSelector(dbLanguageFile.getVirtualFile(), dataContext, null);

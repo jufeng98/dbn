@@ -6,8 +6,8 @@ import javax.swing.*;
 
 public class VariableLookupItemBuilder extends LookupItemBuilder {
 
-    private CharSequence text;
-    private boolean isDefinition;
+    private final CharSequence text;
+    private final boolean isDefinition;
 
     public VariableLookupItemBuilder(CharSequence text, boolean isDefinition) {
         this.text = text;

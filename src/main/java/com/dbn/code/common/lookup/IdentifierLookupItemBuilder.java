@@ -8,7 +8,7 @@ import com.dbn.object.type.DBObjectType;
 import javax.swing.Icon;
 
 public class IdentifierLookupItemBuilder extends LookupItemBuilder {
-    private IdentifierPsiElement identifierPsiElement;
+    private final IdentifierPsiElement identifierPsiElement;
     public IdentifierLookupItemBuilder(IdentifierPsiElement identifierPsiElement) {
         this.identifierPsiElement = identifierPsiElement;
     }

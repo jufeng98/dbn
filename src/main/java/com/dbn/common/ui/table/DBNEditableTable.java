@@ -24,6 +24,11 @@ public class DBNEditableTable<T extends DBNEditableTableModel> extends DBNTableW
     public DBNEditableTable(DBNComponent parent, T model, boolean showHeader) {
         super(parent, model, showHeader);
         setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        ListSelectionListener selectionListener = e -> {
+            if (!e.getValueIsAdjusting() && getSelectedRowCount() == 1) {
+                startCellEditing();
+            }
+        };
         getSelectionModel().addListSelectionListener(selectionListener);
         setSelectionBackground(Colors.getTableBackground());
         setSelectionForeground(Colors.getTableForeground());
@@ -32,7 +37,7 @@ public class DBNEditableTable<T extends DBNEditableTableModel> extends DBNTableW
 
         setDefaultRenderer(String.class, new DBNColoredTableCellRenderer() {
             @Override
-            protected void customizeCellRenderer(DBNTable table, Object value, boolean selected, boolean hasFocus, int row, int column) {
+            protected void customizeCellRenderer(DBNTable<?> table, Object value, boolean selected, boolean hasFocus, int row, int column) {
                 acquireState(table, false, false, row, column);
                 SimpleTextAttributes attributes = SimpleTextAttributes.SIMPLE_CELL_ATTRIBUTES;
                 if (selected && !table.isEditing()) {
@@ -42,12 +47,6 @@ public class DBNEditableTable<T extends DBNEditableTableModel> extends DBNTableW
             }
         });
     }
-
-    private final ListSelectionListener selectionListener = e -> {
-        if (!e.getValueIsAdjusting() && getSelectedRowCount() == 1) {
-            startCellEditing();
-        }
-    };
 
     @Override
     public void columnSelectionChanged(ListSelectionEvent e) {
@@ -87,8 +86,7 @@ public class DBNEditableTable<T extends DBNEditableTableModel> extends DBNTableW
     @Override
     public Component prepareEditor(TableCellEditor editor, int rowIndex, int columnIndex) {
         Component component = super.prepareEditor(editor, rowIndex, columnIndex);
-        if (component instanceof JTextField) {
-            JTextField textField = (JTextField) component;
+        if (component instanceof JTextField textField) {
             textField.setBorder(Borders.EMPTY_BORDER);
 
             //selectCell(rowIndex, columnIndex);

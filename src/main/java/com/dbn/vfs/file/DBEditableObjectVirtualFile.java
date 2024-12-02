@@ -35,15 +35,16 @@ import static com.dbn.common.dispose.Failsafe.guarded;
 import static com.dbn.common.dispose.Failsafe.nn;
 import static com.dbn.vfs.file.status.DBFileStatus.SAVING;
 
+@SuppressWarnings("unused")
 @Getter
 @Setter
 public class DBEditableObjectVirtualFile extends DBObjectVirtualFile<DBSchemaObject>/* implements VirtualFileWindow*/ {
     private static final List<DBContentVirtualFile> EMPTY_CONTENT_FILES = Collections.emptyList();
-    private final Latent<List<DBContentVirtualFile>> contentFiles = Latent.basic(() -> computeContentFiles());
+    private final Latent<List<DBContentVirtualFile>> contentFiles = Latent.basic(this::computeContentFiles);
     private transient EditorProviderId selectedEditorProviderId;
     private SessionId databaseSessionId;
 
-    public DBEditableObjectVirtualFile(Project project, DBObjectRef object) {
+    public DBEditableObjectVirtualFile(Project project, DBObjectRef<DBSchemaObject> object) {
         super(project, object);
         if (object.getObjectType() == DBObjectType.TABLE) {
             databaseSessionId = SessionId.MAIN;
@@ -135,6 +136,7 @@ public class DBEditableObjectVirtualFile extends DBObjectVirtualFile<DBSchemaObj
     public <T extends DBContentVirtualFile> T getContentFile(DBContentType contentType) {
         for (DBContentVirtualFile contentFile : getContentFiles()) {
             if (contentFile.getContentType() == contentType) {
+                //noinspection unchecked
                 return (T) contentFile;
             }
         }
@@ -165,8 +167,7 @@ public class DBEditableObjectVirtualFile extends DBObjectVirtualFile<DBSchemaObj
     }
 
     @Override
-    @NotNull
-    public byte[] contentsToByteArray() throws IOException {
+    public byte @NotNull [] contentsToByteArray() throws IOException {
         DBContentType mainContentType = getMainContentType();
         if (mainContentType != null) {
             DBContentVirtualFile contentFile = getContentFile(mainContentType);
@@ -186,6 +187,7 @@ public class DBEditableObjectVirtualFile extends DBObjectVirtualFile<DBSchemaObj
                     DBContentVirtualFile mainContentFile = getMainContentFile();
                     if (mainContentFile != null) {
                         Document document = Documents.getDocument(mainContentFile);
+                        //noinspection unchecked
                         return (T) document;
                     }
                 }

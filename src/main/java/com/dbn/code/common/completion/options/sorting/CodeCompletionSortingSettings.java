@@ -39,8 +39,7 @@ public class CodeCompletionSortingSettings extends BasicConfiguration<CodeComple
         if (lookupItemBuilder instanceof AliasLookupItemBuilder) {
             return -1;
         }
-        if (lookupItemBuilder instanceof ObjectLookupItemBuilder) {
-            ObjectLookupItemBuilder objectLookupItemBuilder = (ObjectLookupItemBuilder) lookupItemBuilder;
+        if (lookupItemBuilder instanceof ObjectLookupItemBuilder objectLookupItemBuilder) {
             DBObject object = objectLookupItemBuilder.getObject();
             if (isValid(object)) {
                 DBObjectType objectType = object.getObjectType();
@@ -48,8 +47,7 @@ public class CodeCompletionSortingSettings extends BasicConfiguration<CodeComple
             }
         }
 
-        if (lookupItemBuilder instanceof TokenLookupItemBuilder) {
-            TokenLookupItemBuilder tokenLookupItemBuilder = (TokenLookupItemBuilder) lookupItemBuilder;
+        if (lookupItemBuilder instanceof TokenLookupItemBuilder tokenLookupItemBuilder) {
             TokenTypeCategory tokenTypeCategory = tokenLookupItemBuilder.getTokenTypeCategory();
             return getSortingIndexFor(tokenTypeCategory);
         }

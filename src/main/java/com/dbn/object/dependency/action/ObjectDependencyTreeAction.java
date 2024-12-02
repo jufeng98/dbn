@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 public class ObjectDependencyTreeAction extends AnObjectAction<DBSchemaObject> {
     public ObjectDependencyTreeAction(DBSchemaObject schemaObject) {
         super(schemaObject);
-        setDefaultIcon(true);
+//        setDefaultIcon(true);
     }
 
     @Override

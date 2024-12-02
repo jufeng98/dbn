@@ -61,7 +61,7 @@ public class DBLCodeStyleManager extends ProjectComponentBase implements Persist
         }
     }
 
-    public CodeStyleCaseSettings getCodeStyleCaseSettings(DBLanguage language) {
+    public CodeStyleCaseSettings getCodeStyleCaseSettings(DBLanguage<?> language) {
         return language.codeStyleSettings(getProject()).getCaseSettings();
     }
 
@@ -69,7 +69,7 @@ public class DBLCodeStyleManager extends ProjectComponentBase implements Persist
         Language language = PsiUtil.getLanguage(psiElement);
         if (!(language instanceof DBLanguage)) return;
 
-        CodeStyleCaseSettings styleCaseSettings = getCodeStyleCaseSettings((DBLanguage) language);
+        CodeStyleCaseSettings styleCaseSettings = getCodeStyleCaseSettings((DBLanguage<?>) language);
         PsiElement child = psiElement.getFirstChild();
         while (child != null) {
             if (child instanceof LeafPsiElement) {
@@ -80,14 +80,12 @@ public class DBLCodeStyleManager extends ProjectComponentBase implements Persist
                                         textRange.getEndOffset() <= endOffset);
                 if (isInRange) {
                     CodeStyleCaseOption caseOption = null;
-                    if (child instanceof IdentifierPsiElement) {
-                        IdentifierPsiElement identifierPsiElement = (IdentifierPsiElement) child;
+                    if (child instanceof IdentifierPsiElement identifierPsiElement) {
                         if (identifierPsiElement.isObject() && !identifierPsiElement.isQuoted()) {
                             caseOption = styleCaseSettings.getObjectCaseOption();
                         }
                     }
-                    else if (child instanceof TokenPsiElement) {
-                        TokenPsiElement tokenPsiElement = (TokenPsiElement) child;
+                    else if (child instanceof TokenPsiElement tokenPsiElement) {
                         TokenType tokenType = tokenPsiElement.getTokenType();
                         caseOption =
                                 tokenType.isKeyword() ? styleCaseSettings.getKeywordCaseOption() :

@@ -43,14 +43,12 @@ public abstract class DBLColorSettingsPage implements ColorSettingsPage {
     public abstract String getDemoTextFileName();
 
     @Override
-    @NotNull
-    public AttributesDescriptor[] getAttributeDescriptors() {
+    public AttributesDescriptor @NotNull [] getAttributeDescriptors() {
         return attributeDescriptors.toArray(new AttributesDescriptor[0]);
     }
 
     @Override
-    @NotNull
-    public ColorDescriptor[] getColorDescriptors() {
+    public ColorDescriptor @NotNull [] getColorDescriptors() {
         return new ColorDescriptor[0];
     }
 

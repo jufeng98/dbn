@@ -13,7 +13,6 @@ import com.dbn.language.common.DBLanguageDialect;
 import com.dbn.language.psql.PSQLLanguage;
 import com.dbn.language.sql.SQLLanguage;
 import com.dbn.object.DBSchema;
-import com.dbn.object.DBView;
 import com.dbn.object.common.DBSchemaObject;
 import com.dbn.object.lookup.DBObjectRef;
 import com.dbn.object.type.DBObjectType;
@@ -33,7 +32,7 @@ import java.io.File;
 import static com.dbn.vfs.file.status.DBFileStatus.MODIFIED;
 
 @Getter
-public abstract class DBContentVirtualFile extends DBVirtualFileBase implements PropertyHolder<DBFileStatus>  {
+public abstract class DBContentVirtualFile extends DBVirtualFileBase implements PropertyHolder<DBFileStatus> {
     private final WeakRef<DBEditableObjectVirtualFile> mainDatabaseFile;
     private final FileType fileType;
 
@@ -63,6 +62,7 @@ public abstract class DBContentVirtualFile extends DBVirtualFileBase implements 
     public boolean is(DBFileStatus status) {
         return this.status.is(status);
     }
+
     @Override
     @Nullable
     public SchemaId getSchemaId() {
@@ -108,7 +108,7 @@ public abstract class DBContentVirtualFile extends DBVirtualFileBase implements 
         DBObjectType objectType = getObjectRef().getObjectType();
 
         boolean view = objectType.isOneOf(DBObjectType.VIEW, DBObjectType.MATERIALIZED_VIEW);
-        DBLanguage language = view ? SQLLanguage.INSTANCE : PSQLLanguage.INSTANCE;
+        DBLanguage<?> language = view ? SQLLanguage.INSTANCE : PSQLLanguage.INSTANCE;
 
         ConnectionHandler connection = getConnection();
         return connection.getLanguageDialect(language);
@@ -142,7 +142,7 @@ public abstract class DBContentVirtualFile extends DBVirtualFileBase implements 
     public VirtualFile getParent() {
         if (!isValid()) return null;
 
-        DBObjectRef parentObject = getObjectRef().getParentRef();
+        DBObjectRef<?> parentObject = getObjectRef().getParentRef();
         if (parentObject == null) return null;
 
         return DBObjectVirtualFile.of(parentObject);

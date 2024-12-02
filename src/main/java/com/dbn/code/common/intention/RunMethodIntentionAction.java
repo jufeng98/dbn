@@ -48,8 +48,4 @@ public class RunMethodIntentionAction extends AbstractMethodExecutionIntentionAc
         return false;
     }
 
-    @Override
-    protected Integer getGroupPriority() {
-        return 0;
-    }
 }

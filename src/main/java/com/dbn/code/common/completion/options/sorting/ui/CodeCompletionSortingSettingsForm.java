@@ -25,7 +25,7 @@ import static com.dbn.common.util.Strings.cachedUpperCase;
 
 public class CodeCompletionSortingSettingsForm extends ConfigurationEditorForm<CodeCompletionSortingSettings> {
     private JPanel mainPanel;
-    private JList sortingItemsList;
+    private JList<CodeCompletionSortingItem> sortingItemsList;
     private JCheckBox enableCheckBox;
     private JPanel actionPanel;
 
@@ -46,15 +46,15 @@ public class CodeCompletionSortingSettingsForm extends ConfigurationEditorForm<C
 
     @Override
     protected ActionListener createActionListener() {
-         return e -> {
-             getConfiguration().setModified(true);
-             sortingItemsList.setEnabled(enableCheckBox.isSelected());
-             sortingItemsList.setBackground(
-                     enableCheckBox.isSelected() ?
-                             Colors.getTextFieldBackground() :
-                             UIUtil.getComboBoxDisabledBackground());
-             sortingItemsList.clearSelection();
-         };
+        return e -> {
+            getConfiguration().setModified(true);
+            sortingItemsList.setEnabled(enableCheckBox.isSelected());
+            sortingItemsList.setBackground(
+                    enableCheckBox.isSelected() ?
+                            Colors.getTextFieldBackground() :
+                            UIUtil.getComboBoxDisabledBackground());
+            sortingItemsList.clearSelection();
+        };
     }
 
     @NotNull
@@ -67,8 +67,8 @@ public class CodeCompletionSortingSettingsForm extends ConfigurationEditorForm<C
     public void applyFormChanges() throws ConfigurationException {
         List<CodeCompletionSortingItem> sortingItems = getConfiguration().getSortingItems();
         sortingItems.clear();
-        ListModel model = sortingItemsList.getModel();
-        for (int i=0; i<model.getSize(); i++) {
+        ListModel<?> model = sortingItemsList.getModel();
+        for (int i = 0; i < model.getSize(); i++) {
             sortingItems.add((CodeCompletionSortingItem) model.getElementAt(i));
         }
         getConfiguration().setEnabled(enableCheckBox.isSelected());
@@ -76,7 +76,7 @@ public class CodeCompletionSortingSettingsForm extends ConfigurationEditorForm<C
 
     @Override
     public void resetFormChanges() {
-        DefaultListModel model = new DefaultListModel();
+        DefaultListModel<CodeCompletionSortingItem> model = new DefaultListModel<>();
         for (CodeCompletionSortingItem sortingItem : getConfiguration().getSortingItems()) {
             model.addElement(sortingItem);
         }
@@ -89,18 +89,18 @@ public class CodeCompletionSortingSettingsForm extends ConfigurationEditorForm<C
                         UIUtil.getComboBoxDisabledBackground());
     }
 
-    public static ListCellRenderer LIST_CELL_RENDERER = new ColoredListCellRenderer() {
+    public static ListCellRenderer<CodeCompletionSortingItem> LIST_CELL_RENDERER = new ColoredListCellRenderer<>() {
         @Override
-        protected void customizeCellRenderer(@NotNull JList list, Object value, int index, boolean selected, boolean hasFocus) {
-            CodeCompletionSortingItem sortingItem = (CodeCompletionSortingItem) value;
-            DBObjectType objectType = sortingItem.getObjectType();
+        protected void customizeCellRenderer(@NotNull JList<? extends CodeCompletionSortingItem> list,
+                                             CodeCompletionSortingItem value, int index, boolean selected,
+                                             boolean hasFocus) {
+            DBObjectType objectType = value.getObjectType();
             if (objectType == null) {
-                append(sortingItem.getTokenTypeName(), SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
+                append(value.getTokenTypeName(), SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
             } else {
                 append(cachedUpperCase(objectType.getName()), SimpleTextAttributes.REGULAR_ATTRIBUTES);
                 setIcon(objectType.getIcon());
             }
-
         }
     };
 }

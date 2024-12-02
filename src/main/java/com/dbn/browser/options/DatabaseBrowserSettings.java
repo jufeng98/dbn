@@ -11,6 +11,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
+@SuppressWarnings("rawtypes")
 @EqualsAndHashCode(callSuper = false)
 public class DatabaseBrowserSettings
         extends CompositeProjectConfiguration<ProjectSettings, DatabaseBrowserSettingsForm>

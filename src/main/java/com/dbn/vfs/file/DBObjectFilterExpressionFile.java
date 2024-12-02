@@ -91,7 +91,7 @@ public class DBObjectFilterExpressionFile extends DBVirtualFileBase implements D
 
     @Override
     @NotNull
-    public OutputStream getOutputStream(Object requestor, long modificationStamp, long timeStamp) throws IOException {
+    public OutputStream getOutputStream(Object requestor, long modificationStamp, long timeStamp) {
         return new ByteArrayOutputStream() {
             @Override
             public void close() {
@@ -104,8 +104,7 @@ public class DBObjectFilterExpressionFile extends DBVirtualFileBase implements D
     }
 
     @Override
-    @NotNull
-    public byte[] contentsToByteArray() throws IOException {
+    public byte @NotNull [] contentsToByteArray() throws IOException {
         Charset charset = getCharset();
         return content.toString().getBytes(charset);
     }

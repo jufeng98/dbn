@@ -15,17 +15,16 @@ public abstract class ClauseAbstractPreset extends CodeStylePresetImpl {
     }
 
     @Override
-    public boolean accepts(BasePsiElement psiElement) {
+    public boolean accepts(BasePsiElement<?> psiElement) {
         return psiElement.getElementType().is(ElementTypeAttribute.CLAUSE);
     }
 
-    protected Spacing getSpacing(BasePsiElement psiElement, boolean shouldWrap) {
+    protected Spacing getSpacing(BasePsiElement<?> psiElement, boolean shouldWrap) {
         if (shouldWrap) {
             return SPACING_LINE_BREAK;
         } else {
             PsiElement previousPsiElement = psiElement.getPrevSibling();
-            if (previousPsiElement instanceof TokenPsiElement) {
-                TokenPsiElement previousToken = (TokenPsiElement) previousPsiElement;
+            if (previousPsiElement instanceof TokenPsiElement previousToken) {
                 SharedTokenTypeBundle sharedTokenTypes = psiElement.getLanguage().getSharedTokenTypes();
                 TokenType tokenType = previousToken.getTokenType();
                 return tokenType ==  sharedTokenTypes.getChrLeftParenthesis() ?

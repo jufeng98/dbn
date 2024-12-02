@@ -1,6 +1,8 @@
 package com.dbn.common.action;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.project.DumbAware;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -18,5 +20,10 @@ public abstract class ToggleAction
 
     public ToggleAction(@Nullable String text, @Nullable String description, @Nullable Icon icon) {
         super(text, description, icon);
+    }
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.EDT;
     }
 }

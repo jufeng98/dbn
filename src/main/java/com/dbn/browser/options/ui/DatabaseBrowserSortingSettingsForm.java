@@ -20,8 +20,6 @@ import com.intellij.ui.components.JBScrollPane;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -33,7 +31,7 @@ import static com.dbn.common.util.Strings.cachedUpperCase;
 public class DatabaseBrowserSortingSettingsForm extends ConfigurationEditorForm<DatabaseBrowserSortingSettings> {
     private JPanel mainPanel;
     private JBScrollPane sortingTypesScrollPanel;
-    private JTable sortingTypeTable;
+    private final JTable sortingTypeTable;
 
     public DatabaseBrowserSortingSettingsForm(DatabaseBrowserSortingSettings settings) {
         super(settings);
@@ -41,7 +39,6 @@ public class DatabaseBrowserSortingSettingsForm extends ConfigurationEditorForm<
         sortingTypesScrollPanel.setViewportView(sortingTypeTable);
         registerComponent(sortingTypeTable);
     }
-
 
 
     @Override
@@ -63,14 +60,14 @@ public class DatabaseBrowserSortingSettingsForm extends ConfigurationEditorForm<
 
     public static class SortingTypeTable extends DBNEditableTable<SortingTypeTableModel> {
 
-        public SortingTypeTable(DBNForm parent, Collection<DBObjectComparator> comparators) {
+        public SortingTypeTable(DBNForm parent, Collection<DBObjectComparator<?>> comparators) {
             super(parent, new SortingTypeTableModel(comparators), true);
             setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             adjustRowHeight(3);
 
             setDefaultRenderer(DBObjectType.class, new DBNColoredTableCellRenderer() {
                 @Override
-                protected void customizeCellRenderer(DBNTable table, Object value, boolean selected, boolean hasFocus, int row, int column) {
+                protected void customizeCellRenderer(DBNTable<?> table, Object value, boolean selected, boolean hasFocus, int row, int column) {
                     DBObjectType objectType = (DBObjectType) value;
                     if (objectType != null) {
                         setIcon(objectType.getIcon());
@@ -84,23 +81,22 @@ public class DatabaseBrowserSortingSettingsForm extends ConfigurationEditorForm<
 
             setDefaultRenderer(SortingType.class, new DBNColoredTableCellRenderer() {
                 @Override
-                protected void customizeCellRenderer(DBNTable table, Object value, boolean selected, boolean hasFocus, int row, int column) {
+                protected void customizeCellRenderer(DBNTable<?> table, Object value, boolean selected, boolean hasFocus, int row, int column) {
                     SortingType sortingType = (SortingType) value;
                     append(sortingType.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
                     setBorder(SELECTION_BORDER);
                 }
             });
 
-            ComboBoxTableRenderer<SortingType> editor = new ComboBoxTableRenderer<SortingType>(SortingType.values()) {};
+            ComboBoxTableRenderer<SortingType> editor = new ComboBoxTableRenderer<>(SortingType.values()) {
+            };
             editor.setBorder(Borders.TEXT_FIELD_INSETS);
             setDefaultEditor(SortingType.class, editor);
 
-            getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-                @Override
-                public void valueChanged(ListSelectionEvent e) {
-                    if (!e.getValueIsAdjusting()) {
-                        //editCellAt(getSelectedRows()[0], getSelectedColumns()[0]);
-                    }
+            getSelectionModel().addListSelectionListener(e -> {
+                //noinspection StatementWithEmptyBody
+                if (!e.getValueIsAdjusting()) {
+                    //editCellAt(getSelectedRows()[0], getSelectedColumns()[0]);
                 }
             });
         }
@@ -119,9 +115,9 @@ public class DatabaseBrowserSortingSettingsForm extends ConfigurationEditorForm<
     }
 
     public static class SortingTypeTableModel extends DBNEditableTableModel {
-        private final List<DBObjectComparator> comparators;
+        private final List<DBObjectComparator<?>> comparators;
 
-        public SortingTypeTableModel(Collection<DBObjectComparator> comparators) {
+        public SortingTypeTableModel(Collection<DBObjectComparator<?>> comparators) {
             this.comparators = new ArrayList<>(comparators);
         }
 
@@ -137,39 +133,39 @@ public class DatabaseBrowserSortingSettingsForm extends ConfigurationEditorForm<
 
         @Override
         public String getColumnName(int columnIndex) {
-            switch (columnIndex) {
-                case 0: return "Object Type";
-                case 1: return "Sorting Type";
-            }
-            return null;
+            return switch (columnIndex) {
+                case 0 -> "Object Type";
+                case 1 -> "Sorting Type";
+                default -> null;
+            };
         }
 
         @Override
         public Class<?> getColumnClass(int columnIndex) {
-            switch (columnIndex) {
-                case 0: return DBObjectType.class;
-                case 1: return SortingType.class;
-            }
-            return null;
+            return switch (columnIndex) {
+                case 0 -> DBObjectType.class;
+                case 1 -> SortingType.class;
+                default -> null;
+            };
         }
 
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-            switch (columnIndex) {
-                case 0: return false;
-                case 1: return true;
-            }
-            return false;
+            return switch (columnIndex) {
+                case 0 -> false;
+                case 1 -> true;
+                default -> false;
+            };
         }
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
-            DBObjectComparator comparator = comparators.get(rowIndex);
-            switch (columnIndex) {
-                case 0: return comparator.getObjectType();
-                case 1: return comparator.getSortingType();
-            }
-            return null;
+            DBObjectComparator<?> comparator = comparators.get(rowIndex);
+            return switch (columnIndex) {
+                case 0 -> comparator.getObjectType();
+                case 1 -> comparator.getSortingType();
+                default -> null;
+            };
         }
 
         @Override
@@ -177,7 +173,7 @@ public class DatabaseBrowserSortingSettingsForm extends ConfigurationEditorForm<
             if (columnIndex == 1) {
                 SortingType sortingType = (SortingType) value;
                 if (sortingType != null) {
-                    DBObjectComparator comparator = comparators.remove(rowIndex);
+                    DBObjectComparator<?> comparator = comparators.remove(rowIndex);
                     comparators.add(rowIndex, DBObjectComparators.predefined(comparator.getObjectType(), sortingType));
                 }
             }

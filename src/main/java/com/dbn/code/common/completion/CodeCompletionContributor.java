@@ -34,12 +34,14 @@ public class CodeCompletionContributor extends CompletionContributor {
 
     @Override
     public String handleEmptyLookup(@NotNull CompletionParameters parameters, Editor editor) {
-        if (parameters.getCompletionType() == CompletionType.BASIC && parameters.getInvocationCount() == 1) {
-            Shortcut[] basicShortcuts = Keyboard.getShortcuts(IdeActions.ACTION_CODE_COMPLETION);
-
-            return "No suggestions. Press " + KeymapUtil.getShortcutsText(basicShortcuts) + " again to invoke extended completion";
+        if (parameters.getCompletionType() != CompletionType.BASIC || parameters.getInvocationCount() != 1) {
+            return null;
         }
 
-        return null;
+        Shortcut[] basicShortcuts = Keyboard.getShortcuts(IdeActions.ACTION_CODE_COMPLETION);
+
+        return "No suggestions. Press " + KeymapUtil.getShortcutsText(basicShortcuts)
+                + " again to invoke extended completion";
+
     }
 }

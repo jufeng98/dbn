@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 public class SQLCodeStyleSettingsProvider extends CodeStyleSettingsProvider {
 
     @Override
-    public CustomCodeStyleSettings createCustomSettings(CodeStyleSettings codeStyleSettings) {
+    public CustomCodeStyleSettings createCustomSettings(@NotNull CodeStyleSettings codeStyleSettings) {
         return new SQLCodeStyleSettingsWrapper(codeStyleSettings);
     }
 

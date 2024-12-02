@@ -4,7 +4,8 @@ import com.dbn.code.common.style.options.ProjectCodeStyleSettings;
 import com.dbn.common.icon.Icons;
 import com.dbn.common.options.Configuration;
 import com.dbn.common.options.ui.CompositeConfigurationEditorForm;
-import com.dbn.common.ui.tab.TabbedPane;
+import com.intellij.ui.tabs.JBTabs;
+import com.intellij.ui.tabs.JBTabsFactory;
 import com.intellij.ui.tabs.TabInfo;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,19 +14,20 @@ import java.awt.*;
 
 public class CodeStyleSettingsForm extends CompositeConfigurationEditorForm<ProjectCodeStyleSettings> {
     private JPanel mainPanel;
-    private TabbedPane languageTabs;
+    private final JBTabs languageTabs;
 
     public CodeStyleSettingsForm(ProjectCodeStyleSettings settings) {
         super(settings);
-        languageTabs = new TabbedPane(this);
+        languageTabs = JBTabsFactory.createTabs(getProject(), settings);
         //languageTabs.setAdjustBorders(false);
-        mainPanel.add(languageTabs, BorderLayout.CENTER);
+        mainPanel.add((Component) languageTabs, BorderLayout.CENTER);
         addSettingsPanel(settings.getSQLCodeStyleSettings(), Icons.FILE_SQL);
         addSettingsPanel(settings.getPSQLCodeStyleSettings(), Icons.FILE_PLSQL);
     }
 
-    private void addSettingsPanel(Configuration configuration, Icon icon) {
+    private void addSettingsPanel(Configuration<?, ?> configuration, Icon icon) {
         JComponent component = configuration.createComponent();
+        //noinspection DataFlowIssue
         TabInfo tabInfo = new TabInfo(component);
         tabInfo.setText(configuration.getDisplayName());
         tabInfo.setObject(configuration);

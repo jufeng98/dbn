@@ -46,11 +46,11 @@ public class ProjectCodeStyleSettings extends CompositeProjectConfiguration<Proj
     }
 
     /*********************************************************
-    *                     Configuration                      *
-    *********************************************************/
+     *                     Configuration                      *
+     *********************************************************/
     @Override
-    protected Configuration[] createConfigurations() {
-        return new Configuration[] {
+    protected Configuration<?, ?>[] createConfigurations() {
+        return new Configuration[]{
                 getSQLCodeStyleSettings(),
                 getPSQLCodeStyleSettings()};
     }

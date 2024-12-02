@@ -5,7 +5,6 @@ import com.dbn.common.dispose.Disposer;
 import com.dbn.common.icon.Icons;
 import com.dbn.common.thread.Dispatch;
 import com.dbn.common.ui.form.DBNForm;
-import com.dbn.common.ui.tab.TabbedPane;
 import com.dbn.common.ui.util.Borders;
 import com.dbn.common.ui.util.UserInterface;
 import com.dbn.common.util.Actions;
@@ -13,17 +12,19 @@ import com.dbn.common.util.Strings;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.SessionId;
 import com.dbn.database.interfaces.DatabaseCompatibilityInterface;
+import com.dbn.execution.common.result.ui.ExecutionResultFormBase;
 import com.dbn.execution.logging.LogOutput;
 import com.dbn.execution.logging.LogOutputContext;
 import com.dbn.execution.logging.ui.DatabaseLoggingResultConsole;
 import com.dbn.execution.method.ArgumentValue;
-import com.dbn.execution.common.result.ui.ExecutionResultFormBase;
 import com.dbn.execution.method.result.MethodExecutionResult;
 import com.dbn.object.DBArgument;
 import com.dbn.object.DBMethod;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.tabs.JBTabs;
+import com.intellij.ui.tabs.JBTabsFactory;
 import com.intellij.ui.tabs.TabInfo;
 import com.intellij.util.ui.tree.TreeUtil;
 import org.jetbrains.annotations.NotNull;
@@ -38,16 +39,17 @@ import static com.dbn.common.util.Commons.nvl;
 public class MethodExecutionResultForm extends ExecutionResultFormBase<MethodExecutionResult> {
     private JPanel mainPanel;
     private JPanel actionsPanel;
+    @SuppressWarnings("unused")
     private JPanel statusPanel;
     private JLabel connectionLabel;
     private JLabel durationLabel;
     private JPanel outputCursorsPanel;
-    private JTree argumentValuesTree;
+    private final JTree argumentValuesTree;
     private JPanel argumentValuesPanel;
     private JPanel executionResultPanel;
     private JBScrollPane argumentValuesScrollPane;
 
-    private final TabbedPane outputTabs;
+    private final JBTabs outputTabs;
 
 
     public MethodExecutionResultForm(@NotNull MethodExecutionResult executionResult) {
@@ -58,11 +60,11 @@ public class MethodExecutionResultForm extends ExecutionResultFormBase<MethodExe
         argumentValuesScrollPane.setViewportView(argumentValuesTree);
 
 
-        outputTabs = new TabbedPane(this);
+        outputTabs = JBTabsFactory.createTabs(getProject(), executionResult);
         createActionsPanel();
         updateOutputTabs();
 
-        outputCursorsPanel.add(outputTabs, BorderLayout.CENTER);
+        outputCursorsPanel.add((Component) outputTabs, BorderLayout.CENTER);
 
         argumentValuesPanel.setBorder(Borders.lineBorder(JBColor.border(), 0, 1, 1, 0));
         updateStatusBarLabels();
@@ -99,7 +101,7 @@ public class MethodExecutionResultForm extends ExecutionResultFormBase<MethodExe
         MethodExecutionResult executionResult = getExecutionResult();
         addOutputArgumentTabs(executionResult);
         addLoggingConsoleTab(executionResult);
-        UserInterface.repaint(outputTabs);
+        UserInterface.repaint((JComponent) outputTabs);
     }
 
     private void addLoggingConsoleTab(MethodExecutionResult executionResult) {
@@ -162,14 +164,12 @@ public class MethodExecutionResultForm extends ExecutionResultFormBase<MethodExe
     void selectArgumentOutputTab(DBArgument argument) {
         for (TabInfo tabInfo : outputTabs.getTabs()) {
             Object object = tabInfo.getObject();
-            if (object instanceof MethodExecutionCursorResultForm) {
-                MethodExecutionCursorResultForm cursorResultForm = (MethodExecutionCursorResultForm) object;
+            if (object instanceof MethodExecutionCursorResultForm cursorResultForm) {
                 if (cursorResultForm.getArgument().equals(argument)) {
                     outputTabs.select(tabInfo, true);
                     break;
                 }
-            } else if (object instanceof MethodExecutionLargeValueResultForm) {
-                MethodExecutionLargeValueResultForm largeValueResultForm = (MethodExecutionLargeValueResultForm) object;
+            } else if (object instanceof MethodExecutionLargeValueResultForm largeValueResultForm) {
                 if (largeValueResultForm.getArgument().equals(argument)) {
                     outputTabs.select(tabInfo, true);
                     break;
@@ -185,14 +185,13 @@ public class MethodExecutionResultForm extends ExecutionResultFormBase<MethodExe
         SessionId sessionId = executionResult.getExecutionInput().getTargetSessionId();
         String connectionType =
                 sessionId == SessionId.MAIN ? " (main)" :
-                sessionId == SessionId.POOL ? " (pool)" : " (session)";
+                        sessionId == SessionId.POOL ? " (pool)" : " (session)";
         ConnectionHandler connection = executionResult.getConnection();
         connectionLabel.setIcon(connection.getIcon());
         connectionLabel.setText(connection.getName() + connectionType);
 
         durationLabel.setText(": " + executionResult.getExecutionDuration() + " ms");
     }
-
 
 
     private void createActionsPanel() {

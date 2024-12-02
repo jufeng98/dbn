@@ -76,7 +76,7 @@ public class DBMethodRunConfigForm extends DBProgramRunConfigForm<DBMethodRunCon
 
 
         @Override
-        public void update(@NotNull AnActionEvent e, Project project) {
+        public void update(@NotNull AnActionEvent e, @NotNull Project project) {
             Presentation presentation = e.getPresentation();
             presentation.setText("Select Method");
             presentation.setIcon(Icons.DBO_METHOD);

@@ -3,6 +3,7 @@ package com.dbn.code.common.style.formatting;
 import org.jdom.Element;
 
 public class FormattingDefinitionFactory {
+    @SuppressWarnings("unused")
     public static FormattingDefinition cloneDefinition(FormattingDefinition attributes) {
         if (attributes != null && !attributes.isEmpty()) {
             return new FormattingDefinition(attributes);

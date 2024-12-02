@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import static com.dbn.common.util.Commons.nvln;
 
 public abstract class AbstractMethodExecutionIntentionAction extends GenericIntentionAction implements HighPriorityAction {
+    @SafeFieldForPreview
     private DBObjectRef<DBMethod> lastChecked;
     public static final ObjectLookupAdapter METHOD_LOOKUP_ADAPTER = new ObjectLookupAdapter(null, IdentifierCategory.DEFINITION, DBObjectType.METHOD);
 
@@ -39,23 +40,20 @@ public abstract class AbstractMethodExecutionIntentionAction extends GenericInte
 
     @Nullable
     protected DBMethod resolveMethod(Editor editor, PsiFile psiFile) {
-        if (psiFile instanceof DBLanguagePsiFile) {
-            DBLanguagePsiFile dbLanguagePsiFile = (DBLanguagePsiFile) psiFile;
+        if (psiFile instanceof DBLanguagePsiFile dbLanguagePsiFile) {
             DBObject underlyingObject = dbLanguagePsiFile.getUnderlyingObject();
 
             if (underlyingObject != null) {
-                if (underlyingObject instanceof DBMethod) {
-                    DBMethod method = (DBMethod) underlyingObject;
+                if (underlyingObject instanceof DBMethod method) {
                     lastChecked = DBObjectRef.of(method);
                     return method;
                 }
 
                 if (underlyingObject.getObjectType().isParentOf(DBObjectType.METHOD) && editor != null) {
-                    BasePsiElement psiElement = PsiUtil.lookupLeafAtOffset(psiFile, editor.getCaretModel().getOffset());
+                    BasePsiElement<?> psiElement = PsiUtil.lookupLeafAtOffset(psiFile, editor.getCaretModel().getOffset());
                     if (psiElement != null) {
-                        BasePsiElement methodPsiElement = null;
-                        if (psiElement instanceof IdentifierPsiElement) {
-                            IdentifierPsiElement identifierPsiElement = (IdentifierPsiElement) psiElement;
+                        BasePsiElement<?> methodPsiElement = null;
+                        if (psiElement instanceof IdentifierPsiElement identifierPsiElement) {
                             DBObjectType objectType = identifierPsiElement.getObjectType();
                             if (identifierPsiElement.isDefinition() && objectType.getGenericType() == DBObjectType.METHOD) {
                                 methodPsiElement = identifierPsiElement;
@@ -63,11 +61,9 @@ public abstract class AbstractMethodExecutionIntentionAction extends GenericInte
                         }
 
                         methodPsiElement = nvln(methodPsiElement, () -> METHOD_LOOKUP_ADAPTER.findInParentScopeOf(psiElement));
-                        if (methodPsiElement instanceof IdentifierPsiElement) {
-                            IdentifierPsiElement identifierPsiElement = (IdentifierPsiElement) methodPsiElement;
+                        if (methodPsiElement instanceof IdentifierPsiElement identifierPsiElement) {
                             DBObject object = identifierPsiElement.getUnderlyingObject();
-                            if (object instanceof DBMethod) {
-                                DBMethod method = (DBMethod) object;
+                            if (object instanceof DBMethod method) {
                                 lastChecked = DBObjectRef.of(method);
                                 return method;
                             }

@@ -81,13 +81,11 @@ public class BrowserToolWindowForm extends DBNFormBase {
     }
 
     public DatabaseBrowserTree getBrowserTree(ConnectionId connectionId) {
-        if (browserForm instanceof TabbedBrowserForm) {
-            TabbedBrowserForm tabbedBrowserForm = (TabbedBrowserForm) browserForm;
+        if (browserForm instanceof TabbedBrowserForm tabbedBrowserForm) {
             return tabbedBrowserForm.getBrowserTree(connectionId);
         }
 
-        if (browserForm instanceof SelectorBrowserForm) {
-            SelectorBrowserForm selectorBrowserForm = (SelectorBrowserForm) browserForm;
+        if (browserForm instanceof SelectorBrowserForm selectorBrowserForm) {
             return selectorBrowserForm.getBrowserTree(connectionId);
         }
 
@@ -105,8 +103,7 @@ public class BrowserToolWindowForm extends DBNFormBase {
         DatabaseBrowserManager browserManager = DatabaseBrowserManager.getInstance(project);
         DatabaseBrowserTree activeBrowserTree = browserManager.getActiveBrowserTree();
         BrowserTreeNode treeNode = activeBrowserTree == null ? null : activeBrowserTree.getSelectedNode();
-        if (treeNode instanceof DBObject) {
-            DBObject object = (DBObject) treeNode;
+        if (treeNode instanceof DBObject object) {
             objectPropertiesForm.setObject(object);
         }
 
@@ -136,8 +133,7 @@ public class BrowserToolWindowForm extends DBNFormBase {
     }
 
     private void refreshTabs(ConnectionId connectionId) {
-        if (browserForm instanceof TabbedBrowserForm && isValid(browserForm)) {
-            TabbedBrowserForm tabbedBrowserForm = (TabbedBrowserForm) browserForm;
+        if (browserForm instanceof TabbedBrowserForm tabbedBrowserForm && isValid(browserForm)) {
             tabbedBrowserForm.refreshTabInfo(connectionId);
         }
     }

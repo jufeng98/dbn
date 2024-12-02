@@ -1,7 +1,6 @@
 package com.dbn.vfs.file;
 
 import com.dbn.browser.model.BrowserTreeNode;
-import com.dbn.common.DevNullStreams;
 import com.dbn.common.compatibility.Compatibility;
 import com.dbn.common.compatibility.Workaround;
 import com.dbn.common.dispose.Failsafe;
@@ -26,14 +25,12 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
 
 import static com.dbn.common.dispose.Failsafe.guarded;
 import static com.dbn.common.dispose.Failsafe.nd;
 
 public class DBObjectVirtualFile<T extends DBObject> extends DBVirtualFileBase {
-    private static final WeakRefCache<DBObjectRef, DBObjectVirtualFile> virtualFileCache = WeakRefCache.weakKey();
+    private static final WeakRefCache<DBObjectRef<?>, DBObjectVirtualFile<?>> virtualFileCache = WeakRefCache.weakKey();
     protected final DBObjectRef<T> object;
 
     public DBObjectVirtualFile(@NotNull Project project, @NotNull DBObjectRef<T> object) {
@@ -45,8 +42,9 @@ public class DBObjectVirtualFile<T extends DBObject> extends DBVirtualFileBase {
         return of(object.ref());
     }
 
-    public static DBObjectVirtualFile<?> of(DBObjectRef objectRef) {
-        return virtualFileCache.get(objectRef, o -> new DBObjectVirtualFile(o.getProject(), o));
+    public static DBObjectVirtualFile<?> of(DBObjectRef<?> objectRef) {
+        //noinspection DataFlowIssue
+        return virtualFileCache.get(objectRef, o -> new DBObjectVirtualFile<>(o.getProject(), o));
     }
 
     public DBObjectType getObjectType() {
@@ -66,6 +64,7 @@ public class DBObjectVirtualFile<T extends DBObject> extends DBVirtualFileBase {
     @NotNull
     @Override
     public final ConnectionId getConnectionId() {
+        //noinspection DataFlowIssue
         return object.getConnectionId();
     }
 
@@ -130,7 +129,7 @@ public class DBObjectVirtualFile<T extends DBObject> extends DBVirtualFileBase {
     @Workaround
     @Compatibility
     public VirtualFile getParent() {
-        return guarded(null, this, f -> f.findParent());
+        return guarded(null, this, DBObjectVirtualFile::findParent);
     }
 
     @Nullable
@@ -148,8 +147,7 @@ public class DBObjectVirtualFile<T extends DBObject> extends DBVirtualFileBase {
         BrowserTreeNode treeParent = object.getParent();
         if (treeParent == null) return null;
 
-        if (treeParent instanceof DBObjectList<?>) {
-            DBObjectList objectList = (DBObjectList) treeParent;
+        if (treeParent instanceof DBObjectList<?> objectList) {
             PsiDirectory psiDirectory = objectList.getPsiDirectory();
             return psiDirectory.getVirtualFile();
         }
@@ -160,11 +158,6 @@ public class DBObjectVirtualFile<T extends DBObject> extends DBVirtualFileBase {
     @Override
     public Icon getIcon() {
         return object.getObjectType().getIcon();
-    }
-
-    @Override
-    public long getLength() {
-        return 0;
     }
 
     @Override

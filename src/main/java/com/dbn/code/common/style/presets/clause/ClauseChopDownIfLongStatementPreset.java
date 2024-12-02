@@ -17,7 +17,7 @@ public class ClauseChopDownIfLongStatementPreset extends ClauseAbstractPreset {
 
     @Override
     @Nullable
-    public Wrap getWrap(BasePsiElement psiElement, CodeStyleSettings settings) {
+    public Wrap getWrap(BasePsiElement<?> psiElement, CodeStyleSettings settings) {
         NamedPsiElement namedPsiElement = getEnclosingStatementElement(psiElement);
         boolean shouldWrap = namedPsiElement != null && namedPsiElement.approximateLength() > settings.getRightMargin(psiElement.getLanguage());
         return shouldWrap ? WRAP_ALWAYS : WRAP_NONE;
@@ -26,14 +26,14 @@ public class ClauseChopDownIfLongStatementPreset extends ClauseAbstractPreset {
 
     @Override
     @Nullable
-    public Spacing getSpacing(BasePsiElement psiElement, CodeStyleSettings settings) {
+    public Spacing getSpacing(BasePsiElement<?> psiElement, CodeStyleSettings settings) {
         NamedPsiElement namedPsiElement = getEnclosingStatementElement(psiElement);
         boolean shouldWrap = namedPsiElement!= null && namedPsiElement.approximateLength() > settings.getRightMargin(psiElement.getLanguage());
         return getSpacing(psiElement, shouldWrap);
     }
 
     @Nullable
-    private NamedPsiElement getEnclosingStatementElement(BasePsiElement psiElement) {
+    private NamedPsiElement getEnclosingStatementElement(BasePsiElement<?> psiElement) {
         BasePsiElement<?> parentPsiElement = getParentPsiElement(psiElement);
         if (parentPsiElement != null) {
             DBLanguagePsiFile psiFile = parentPsiElement.getFile();

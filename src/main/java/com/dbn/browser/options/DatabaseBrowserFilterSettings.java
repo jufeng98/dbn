@@ -44,7 +44,7 @@ public class DatabaseBrowserFilterSettings
      *********************************************************/
 
     @Override
-    protected Configuration[] createConfigurations() {
+    protected Configuration<?, ?>[] createConfigurations() {
         return new Configuration[]{getObjectTypeFilterSettings()};
     }
 }

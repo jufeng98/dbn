@@ -23,7 +23,6 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.tree.TreeCellRenderer;
-import javax.swing.tree.TreeNode;
 import java.awt.*;
 
 public class DatabaseBrowserTreeCellRenderer implements TreeCellRenderer {
@@ -48,16 +47,14 @@ public class DatabaseBrowserTreeCellRenderer implements TreeCellRenderer {
 
         @Override
         public void customizeCellRenderer(DBNTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
-            if (value instanceof LoadInProgressTreeNode) {
-                LoadInProgressTreeNode loadInProgressTreeNode = (LoadInProgressTreeNode) value;
+            if (value instanceof LoadInProgressTreeNode loadInProgressTreeNode) {
                 setIcon(loadInProgressTreeNode.getIcon(0));
                 append("Loading...", SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES);
                 return;
             }
 
-            if (!(value instanceof BrowserTreeNode)) return;
+            if (!(value instanceof BrowserTreeNode treeNode)) return;
 
-            BrowserTreeNode treeNode = (BrowserTreeNode) value;
             setIcon(treeNode.getIcon(0));
 
             boolean isDirty = false;
@@ -68,8 +65,7 @@ public class DatabaseBrowserTreeCellRenderer implements TreeCellRenderer {
                 displayName = treeNode.getPresentableText();
             }
 
-            if (treeNode instanceof DBObjectList) {
-                DBObjectList objectsList = (DBObjectList) treeNode;
+            if (treeNode instanceof DBObjectList<?> objectsList) {
                 boolean isEmpty = objectsList.getChildCount() == 0;
                 isDirty = /*objectsList.isDirty() ||*/ objectsList.isLoading() || (!objectsList.isLoaded() && !hasConnectivity(objectsList));
                 SimpleTextAttributes textAttributes =
@@ -96,26 +92,21 @@ public class DatabaseBrowserTreeCellRenderer implements TreeCellRenderer {
                 boolean showBold = false;
                 boolean showGrey = false;
                 boolean isDisposed = false;
-                if (treeNode instanceof DBObject) {
-                    DBObject object = (DBObject) treeNode;
-                    if (object instanceof DBSchema) {
-                        DBSchema schema = (DBSchema) object;
+                if (treeNode instanceof DBObject object) {
+                    if (object instanceof DBSchema schema) {
                         showBold = schema.isUserSchema();
                         showGrey = schema.isEmptySchema();
-                    } else if (object instanceof DBUser) {
-                        DBUser user = (DBUser) object;
+                    } else if (object instanceof DBUser user) {
                         showBold = user.isSessionUser();
                         showGrey = user.isExpired();
-                    } else if (object instanceof DBSchemaObject) {
-                        DBSchemaObject schemaObject = (DBSchemaObject) object;
+                    } else if (object instanceof DBSchemaObject schemaObject) {
                         showGrey = schemaObject.isDisabled();
                     }
 
                     isDisposed = object.isDisposed();
                 }
 
-                if (!showGrey && treeNode instanceof DBColumn) {
-                    DBColumn column = (DBColumn) treeNode;
+                if (!showGrey && treeNode instanceof DBColumn column) {
                     showGrey = column.isAudit();
                 }
 
@@ -145,7 +136,7 @@ public class DatabaseBrowserTreeCellRenderer implements TreeCellRenderer {
             }
         }
 
-        private boolean hasConnectivity(@NotNull DBObjectList objectsList) {
+        private boolean hasConnectivity(@NotNull DBObjectList<?> objectsList) {
             ConnectionHandler connection = objectsList.getConnection();
             return connection.canConnect() && connection.isValid();
         }

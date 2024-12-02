@@ -67,7 +67,7 @@ public class DatabaseBrowserGeneralSettingsForm extends ConfigurationEditorForm<
             } else if (repaintTree) {
                 ProjectEvents.notify(project,
                         ObjectDetailSettingsListener.TOPIC,
-                        (listener) -> listener.displayDetailsChanged());
+                        ObjectDetailSettingsListener::displayDetailsChanged);
             }
         });
     }

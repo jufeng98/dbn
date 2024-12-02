@@ -2,14 +2,10 @@ package com.dbn.vfs.file;
 
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.ConnectionRef;
-import com.dbn.connection.SchemaId;
-import com.dbn.connection.session.DatabaseSession;
 import com.dbn.vfs.DBVirtualFileBase;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.io.IOException;
 
 public class DBConnectionVirtualFile extends DBVirtualFileBase {
     private final ConnectionRef connection;

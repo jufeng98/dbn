@@ -65,10 +65,10 @@ public class SelectorBrowserForm extends DatabaseBrowserForm {
     @NotNull
     private ConnectionHandlerStatusListener connectionHandlerStatusListener() {
         return (connectionId) -> {
-            if (connectionId != selectedConnectionId) return;
+            //if (connectionId != selectedConnectionId) return;
 
-            ConnectionHandler connection = ConnectionHandler.get(connectionId);
-            if (connection == null) return;
+            //ConnectionHandler connection = ConnectionHandler.get(connectionId);
+            //if (connection == null) return;
 
             //connectionLabel.setIcon(connection.getIcon());
         };
@@ -122,7 +122,7 @@ public class SelectorBrowserForm extends DatabaseBrowserForm {
 
         ProjectEvents.notify(ensureProject(),
                 BrowserTreeEventListener.TOPIC,
-                (listener) -> listener.selectionChanged());
+                BrowserTreeEventListener::selectionChanged);
     }
 
     @Nullable
@@ -149,8 +149,7 @@ public class SelectorBrowserForm extends DatabaseBrowserForm {
                 () -> popup = null,
                 10,
                 a -> {
-                    if (a instanceof SelectConnectionAction) {
-                        SelectConnectionAction connectionAction = (SelectConnectionAction) a;
+                    if (a instanceof SelectConnectionAction connectionAction) {
                         return Objects.equals(connectionAction.getConnectionId(), selectedConnectionId);
                     }
                     return false;
@@ -179,7 +178,7 @@ public class SelectorBrowserForm extends DatabaseBrowserForm {
 
     @Override
     public void rebuildTree() {
-        browserForms.values().forEach(f -> f.rebuildTree());
+        browserForms.values().forEach(SimpleBrowserForm::rebuildTree);
     }
 
     @Override

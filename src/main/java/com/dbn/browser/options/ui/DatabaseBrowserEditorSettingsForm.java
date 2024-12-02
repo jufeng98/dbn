@@ -30,7 +30,7 @@ import static com.dbn.common.util.Strings.cachedUpperCase;
 public class DatabaseBrowserEditorSettingsForm extends ConfigurationEditorForm<DatabaseBrowserEditorSettings> {
     private JPanel mainPanel;
     private JBScrollPane editorTypesScrollPanel;
-    private JTable editorTypeTable;
+    private final JTable editorTypeTable;
 
 
     public DatabaseBrowserEditorSettingsForm(DatabaseBrowserEditorSettings settings) {
@@ -66,7 +66,7 @@ public class DatabaseBrowserEditorSettingsForm extends ConfigurationEditorForm<D
             adjustRowHeight(3);
             setDefaultRenderer(DBObjectType.class, new DBNColoredTableCellRenderer() {
                 @Override
-                protected void customizeCellRenderer(DBNTable table, Object value, boolean selected, boolean hasFocus, int row, int column) {
+                protected void customizeCellRenderer(DBNTable<?> table, Object value, boolean selected, boolean hasFocus, int row, int column) {
                     DBObjectType objectType = (DBObjectType) value;
                     if (objectType != null) {
                         setIcon(objectType.getIcon());
@@ -80,7 +80,7 @@ public class DatabaseBrowserEditorSettingsForm extends ConfigurationEditorForm<D
 
             setDefaultRenderer(DefaultEditorType.class, new DBNColoredTableCellRenderer() {
                 @Override
-                protected void customizeCellRenderer(DBNTable table, Object value, boolean selected, boolean hasFocus, int row, int column) {
+                protected void customizeCellRenderer(DBNTable<?> table, Object value, boolean selected, boolean hasFocus, int row, int column) {
                     DefaultEditorType editorType = (DefaultEditorType) value;
                     append(editorType.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
                     setBorder(SELECTION_BORDER);
@@ -92,6 +92,7 @@ public class DatabaseBrowserEditorSettingsForm extends ConfigurationEditorForm<D
             setDefaultEditor(DefaultEditorType.class, editor);
 
             getSelectionModel().addListSelectionListener(e -> {
+                //noinspection StatementWithEmptyBody
                 if (!e.getValueIsAdjusting()) {
                     //editCellAt(getSelectedRows()[0], getSelectedColumns()[0]);
                 }
@@ -142,39 +143,39 @@ public class DatabaseBrowserEditorSettingsForm extends ConfigurationEditorForm<D
 
         @Override
         public String getColumnName(int columnIndex) {
-            switch (columnIndex) {
-                case 0: return "Object Type";
-                case 1: return "Default Editor";
-            }
-            return null;
+            return switch (columnIndex) {
+                case 0 -> "Object Type";
+                case 1 -> "Default Editor";
+                default -> null;
+            };
         }
 
         @Override
         public Class<?> getColumnClass(int columnIndex) {
-            switch (columnIndex) {
-                case 0: return DBObjectType.class;
-                case 1: return DefaultEditorType.class;
-            }
-            return null;
+            return switch (columnIndex) {
+                case 0 -> DBObjectType.class;
+                case 1 -> DefaultEditorType.class;
+                default -> null;
+            };
         }
 
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-            switch (columnIndex) {
-                case 0: return false;
-                case 1: return true;
-            }
-            return false;
+            return switch (columnIndex) {
+                case 0 -> false;
+                case 1 -> true;
+                default -> false;
+            };
         }
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
             DefaultEditorOption option = options.get(rowIndex);
-            switch (columnIndex) {
-                case 0: return option.getObjectType();
-                case 1: return option.getEditorType();
-            }
-            return null;
+            return switch (columnIndex) {
+                case 0 -> option.getObjectType();
+                case 1 -> option.getEditorType();
+                default -> null;
+            };
         }
 
         @Override

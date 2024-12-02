@@ -6,23 +6,23 @@ import org.jdom.Element;
 import static com.dbn.common.options.setting.Settings.enumAttribute;
 
 public enum IndentDefinition implements FormattingAttribute<Indent> {
-    NORMAL       (new Loader(){
+    NORMAL       (new Loader<>(){
         @Override
         Indent load() {return Indent.getNormalIndent(true);}}),
-    CONTINUE     (new Loader(){
+    CONTINUE     (new Loader<>(){
         @Override
         Indent load() {return Indent.getContinuationIndent();}}),
-    NONE         (new Loader(){
+    NONE         (new Loader<>(){
         @Override
         Indent load() {return Indent.getNoneIndent();}}),
-    ABSOLUTE_NONE(new Loader(){
+    ABSOLUTE_NONE(new Loader<>(){
         @Override
         Indent load() {return Indent.getAbsoluteNoneIndent();}});
 
     private Indent value;
     private Loader<Indent> loader;
 
-    private IndentDefinition(Loader<Indent> loader) {
+    IndentDefinition(Loader<Indent> loader) {
         this.loader = loader;
     }
 

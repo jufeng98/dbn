@@ -11,8 +11,8 @@ import javax.swing.*;
 import java.awt.*;
 
 public class CodeCompletionFilterSettingsForm extends ConfigurationEditorForm<CodeCompletionFilterSettings> {
-    private JPanel mainPanel;
-    private CodeCompletionFilterTreeModel treeModel;
+    private final JPanel mainPanel;
+    private final CodeCompletionFilterTreeModel treeModel;
 
     public CodeCompletionFilterSettingsForm(CodeCompletionFilterSettings codeCompletionFilterSettings) {
         super(codeCompletionFilterSettings);

@@ -11,9 +11,9 @@ import javax.swing.*;
 
 public class MoveUpAction extends BasicAction {
     private final CodeCompletionSortingSettings settings;
-    private final JList list;
+    private final JList<?> list;
 
-    public MoveUpAction(JList list, CodeCompletionSortingSettings settings)  {
+    public MoveUpAction(JList<?> list, CodeCompletionSortingSettings settings)  {
         super("Move Up", null, Icons.ACTION_MOVE_UP);
         this.list = list;
         this.settings = settings;

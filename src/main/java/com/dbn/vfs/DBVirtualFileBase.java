@@ -90,7 +90,7 @@ public abstract class DBVirtualFileBase extends VirtualFile implements DBVirtual
 
     @Override
     @NotNull
-    public OutputStream getOutputStream(Object requestor, long modificationStamp, long timeStamp) throws IOException {
+    public OutputStream getOutputStream(Object requestor, long modificationStamp, long timeStamp) {
         return DevNullStreams.OUTPUT_STREAM;
     }
 
@@ -181,7 +181,7 @@ public abstract class DBVirtualFileBase extends VirtualFile implements DBVirtual
     }
 
     @Override
-    public byte[] contentsToByteArray() throws IOException {
+    public byte @NotNull [] contentsToByteArray() throws IOException {
         return EMPTY_CONTENT;
     }
 
@@ -197,11 +197,10 @@ public abstract class DBVirtualFileBase extends VirtualFile implements DBVirtual
         DatabaseFileViewProvider cachedViewProvider = getCachedViewProvider();
 
         if (cachedViewProvider != null) {
-            DebugUtil.performPsiModification("disposing database view provider", () -> cachedViewProvider.markInvalidated());
+            DebugUtil.performPsiModification("disposing database view provider", cachedViewProvider::markInvalidated);
             List<PsiFile> cachedPsiFiles = cachedViewProvider.getCachedPsiFiles();
             for (PsiFile cachedPsiFile: cachedPsiFiles) {
-                if (cachedPsiFile instanceof DBLanguagePsiFile) {
-                    DBLanguagePsiFile languagePsiFile = (DBLanguagePsiFile) cachedPsiFile;
+                if (cachedPsiFile instanceof DBLanguagePsiFile languagePsiFile) {
                     Disposer.dispose(languagePsiFile);
                 }
             }

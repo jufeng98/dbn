@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class CodeEditorDDLFileAction extends ProjectPopupAction {
     @Override
-    public void update(@NotNull AnActionEvent e, Project project) {
+    public void update(@NotNull AnActionEvent e, @NotNull Project project) {
         DBSourceCodeVirtualFile sourceCodeFile = getSourcecodeFile(e);
         Presentation presentation = e.getPresentation();
         presentation.setIcon(Icons.CODE_EDITOR_DDL_FILE);

@@ -4,16 +4,18 @@ import com.dbn.common.icon.Icons;
 import com.dbn.common.ref.WeakRef;
 import com.dbn.common.ui.component.DBNComponent;
 import com.dbn.common.ui.form.DBNFormBase;
-import com.dbn.common.ui.tab.TabbedPane;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.database.DatabaseFeature;
+import com.dbn.editor.session.SessionBrowser;
 import com.dbn.editor.session.details.SessionDetailsTable;
 import com.dbn.editor.session.details.SessionDetailsTableModel;
 import com.dbn.editor.session.model.SessionBrowserModelRow;
-import com.dbn.editor.session.SessionBrowser;
 import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.tabs.JBTabs;
+import com.intellij.ui.tabs.JBTabsFactory;
 import com.intellij.ui.tabs.TabInfo;
 import com.intellij.ui.tabs.TabsListener;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,10 +27,9 @@ public class SessionBrowserDetailsForm extends DBNFormBase {
     private JPanel sessionDetailsTabsPanel;
     private JBScrollPane sessionDetailsTablePane;
     private final SessionDetailsTable sessionDetailsTable;
-    private final TabbedPane detailsTabbedPane;
-    private JPanel explainPlanPanel;
 
     private final WeakRef<SessionBrowser> sessionBrowser;
+    @Getter
     private final SessionBrowserCurrentSqlPanel currentSqlPanel;
 
     public SessionBrowserDetailsForm(@NotNull DBNComponent parent, SessionBrowser sessionBrowser) {
@@ -37,8 +38,8 @@ public class SessionBrowserDetailsForm extends DBNFormBase {
         sessionDetailsTable = new SessionDetailsTable(this);
         sessionDetailsTablePane.setViewportView(sessionDetailsTable);
 
-        detailsTabbedPane = new TabbedPane(this);
-        sessionDetailsTabsPanel.add(detailsTabbedPane, BorderLayout.CENTER);
+        JBTabs detailsTabbedPane = JBTabsFactory.createTabs(getProject(), parent);
+        sessionDetailsTabsPanel.add((Component) detailsTabbedPane, BorderLayout.CENTER);
 
         currentSqlPanel = new SessionBrowserCurrentSqlPanel(this, sessionBrowser);
         TabInfo currentSqlTabInfo = new TabInfo(currentSqlPanel.getComponent());
@@ -49,7 +50,6 @@ public class SessionBrowserDetailsForm extends DBNFormBase {
 
         ConnectionHandler connection = getConnection();
         if (DatabaseFeature.EXPLAIN_PLAN.isSupported(connection)) {
-            explainPlanPanel = new JPanel(new BorderLayout());
             TabInfo explainPlanTabInfo = new TabInfo(new JPanel());
             explainPlanTabInfo.setText("Explain Plan");
             explainPlanTabInfo.setIcon(Icons.EXPLAIN_PLAN_RESULT);
@@ -57,9 +57,10 @@ public class SessionBrowserDetailsForm extends DBNFormBase {
             detailsTabbedPane.addTab(explainPlanTabInfo);
         }
 
-        detailsTabbedPane.addListener(new TabsListener(){
+        detailsTabbedPane.addListener(new TabsListener() {
             @Override
             public void selectionChanged(TabInfo oldSelection, TabInfo newSelection) {
+                //noinspection StatementWithEmptyBody
                 if (newSelection.getText().equals("Explain Plan")) {
 
                 }
@@ -82,10 +83,6 @@ public class SessionBrowserDetailsForm extends DBNFormBase {
         sessionDetailsTable.setModel(model);
         sessionDetailsTable.accommodateColumnsSize();
         currentSqlPanel.loadCurrentStatement();
-    }
-
-    public SessionBrowserCurrentSqlPanel getCurrentSqlPanel() {
-        return currentSqlPanel;
     }
 
     @NotNull

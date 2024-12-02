@@ -23,7 +23,7 @@ import static com.dbn.common.util.Strings.*;
 
 public class TokenLookupItemBuilder extends LookupItemBuilder {
 
-    private TokenElementType tokenElementType;
+    private final TokenElementType tokenElementType;
 
     public TokenLookupItemBuilder(TokenElementType tokenElementType) {
         this.tokenElementType = tokenElementType;
@@ -48,7 +48,7 @@ public class TokenLookupItemBuilder extends LookupItemBuilder {
         }
         Project project = completionContext.getParameters().getOriginalFile().getProject();
 
-        DBLanguage language = tokenElementType.getLanguage();
+        DBLanguage<?> language = tokenElementType.getLanguage();
         CodeStyleCaseSettings styleCaseSettings = DBLCodeStyleManager.getInstance(project).getCodeStyleCaseSettings(language);
         CodeStyleCaseOption caseOption =
                 tokenType.isFunction() ? styleCaseSettings.getFunctionCaseOption() :
@@ -83,8 +83,9 @@ public class TokenLookupItemBuilder extends LookupItemBuilder {
         return getTokenTypeCategory().getName();
     }
 
+    @SuppressWarnings("unused")
     private void createLookupItem(CompletionResultSet resultSet, String presentation, CodeCompletionContext completionContext, boolean insertParenthesis) {
-        LookupItem lookupItem = new CodeCompletionLookupItem(this, presentation, completionContext);
+        LookupItem<?> lookupItem = new CodeCompletionLookupItem(this, presentation, completionContext);
         lookupItem.setInsertHandler(
                 insertParenthesis ?
                         BracketsInsertHandler.INSTANCE :

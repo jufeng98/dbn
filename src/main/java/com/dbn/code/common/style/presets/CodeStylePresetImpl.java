@@ -25,16 +25,16 @@ public abstract class CodeStylePresetImpl implements CodeStylePreset {
     }
 
     @Nullable
-    protected static BasePsiElement getParentPsiElement(@NotNull PsiElement psiElement) {
+    protected static BasePsiElement<?> getParentPsiElement(@NotNull PsiElement psiElement) {
         PsiElement parentPsiElement = psiElement.getParent();
         if (parentPsiElement instanceof BasePsiElement) {
-            return (BasePsiElement) parentPsiElement;
+            return (BasePsiElement<?>) parentPsiElement;
         }
         return null;
     }
 
     protected static ElementType getParentElementType(PsiElement psiElement) {
-        BasePsiElement parentPsiElement = getParentPsiElement(psiElement);
+        BasePsiElement<?> parentPsiElement = getParentPsiElement(psiElement);
         if (parentPsiElement != null) {
             return parentPsiElement.getElementType();
         }

@@ -1,5 +1,6 @@
 package com.dbn.common.action;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
@@ -15,8 +16,7 @@ public abstract class ProjectActionGroup extends DefaultActionGroup implements B
     }
 
     @Override
-    @NotNull
-    public final AnAction[] getChildren(AnActionEvent e) {
+    public final AnAction @NotNull [] getChildren(AnActionEvent e) {
         if (e == null) return AnAction.EMPTY_ARRAY;
         return guarded(AnAction.EMPTY_ARRAY, this, a -> a.loadChildren(e));
     }
@@ -27,5 +27,10 @@ public abstract class ProjectActionGroup extends DefaultActionGroup implements B
     @Override
     public void update(@NotNull AnActionEvent e) {
         super.update(e);
+    }
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.EDT;
     }
 }

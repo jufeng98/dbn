@@ -8,9 +8,7 @@ import com.intellij.ide.IdeEventQueue;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.popup.JBPopupFactory;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public abstract class BrowserDisplayModeAction extends ToggleAction {
     private final BrowserDisplayMode displayMode;

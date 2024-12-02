@@ -17,7 +17,7 @@ public class IterationChopDownIfLongStatementPreset extends IterationAbstractPre
 
     @Override
     @Nullable
-    public Wrap getWrap(BasePsiElement psiElement, CodeStyleSettings settings) {
+    public Wrap getWrap(BasePsiElement<?> psiElement, CodeStyleSettings settings) {
         BasePsiElement<?> parentPsiElement = getParentPsiElement(psiElement);
         if (parentPsiElement == null) return null;
 
@@ -33,7 +33,7 @@ public class IterationChopDownIfLongStatementPreset extends IterationAbstractPre
 
     @Override
     @Nullable
-    public Spacing getSpacing(BasePsiElement psiElement, CodeStyleSettings settings) {
+    public Spacing getSpacing(BasePsiElement<?> psiElement, CodeStyleSettings settings) {
         BasePsiElement<?> parentPsiElement = getParentPsiElement(psiElement);
         if (parentPsiElement == null) return null;
 
