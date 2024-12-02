@@ -37,6 +37,7 @@ import static com.dbn.common.thread.ThreadMonitor.isTimeSensitiveThread;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 import static com.dbn.vfs.DatabaseFileSystem.FilePathType.*;
 
+@SuppressWarnings("unused")
 @Slf4j
 public class DatabaseFileSystem extends VirtualFileSystem implements NonPhysicalFileSystem, NamedComponent {
     public static final char PS = '/';
@@ -78,10 +79,10 @@ public class DatabaseFileSystem extends VirtualFileSystem implements NonPhysical
 
     static final IOException READONLY_FILE_SYSTEM = new IOException("Operation not supported");
 
-    private final Map<DBObjectRef<?>, DBEditableObjectVirtualFile> filesCache = new ConcurrentHashMap<>();
+    private final Map<DBObjectRef<DBSchemaObject>, DBEditableObjectVirtualFile> filesCache = new ConcurrentHashMap<>();
 
     public DatabaseFileSystem() {
-        Projects.projectClosed(project -> clearCachedFiles(project));
+        Projects.projectClosed(this::clearCachedFiles);
     }
 
     public static DatabaseFileSystem getInstance() {
@@ -136,7 +137,7 @@ public class DatabaseFileSystem extends VirtualFileSystem implements NonPhysical
         if (CONSOLES.is(relativePath)) {
             String consoleName = CONSOLES.collate(relativePath);
             DBConsole console = connection.getConsoleBundle().getConsole(consoleName);
-            return Safe.call(console, target -> target.getVirtualFile());
+            return Safe.call(console, DBConsole::getVirtualFile);
 
         } else if (SESSION_BROWSERS.is(relativePath)) {
             return connection.getSessionBrowserFile();
@@ -144,8 +145,7 @@ public class DatabaseFileSystem extends VirtualFileSystem implements NonPhysical
         } else if (OBJECTS.is(relativePath)) {
             String objectIdentifier = OBJECTS.collate(relativePath);
             DBObjectRef<DBSchemaObject> objectRef = new DBObjectRef<>(connectionId, objectIdentifier);
-            DBEditableObjectVirtualFile databaseFile = findOrCreateDatabaseFile(project, objectRef);
-            return databaseFile;
+            return findOrCreateDatabaseFile(project, objectRef);
 
         } else if (OBJECT_CONTENTS.is(relativePath)) {
             String contentIdentifier = OBJECT_CONTENTS.collate(relativePath);
@@ -237,11 +237,13 @@ public class DatabaseFileSystem extends VirtualFileSystem implements NonPhysical
 
     @Nullable
     public DBEditableObjectVirtualFile findOrCreateDatabaseFile(@NotNull DBObject object) {
+        //noinspection unchecked
         return findOrCreateDatabaseFile(object.getProject(), object.ref());
     }
 
     @Nullable
-    public DBEditableObjectVirtualFile findOrCreateDatabaseFile(@NotNull Project project, @NotNull DBObjectRef<?> ref) {
+    public DBEditableObjectVirtualFile findOrCreateDatabaseFile(@NotNull Project project,
+                                                                @NotNull DBObjectRef<DBSchemaObject> ref) {
         ConnectionHandler connection = ref.getConnection();
         if (isNotValid(connection)) return null;
 
@@ -280,65 +282,54 @@ public class DatabaseFileSystem extends VirtualFileSystem implements NonPhysical
         try {
             ConnectionId connectionId = virtualFile.getConnectionId();
 
-            if (virtualFile instanceof DBConsoleVirtualFile) {
-                DBConsoleVirtualFile file = (DBConsoleVirtualFile) virtualFile;
+            if (virtualFile instanceof DBConsoleVirtualFile file) {
                 return connectionId + PSS + CONSOLES + file.getName();
             }
 
-            if (virtualFile instanceof DBConnectionVirtualFile) {
-                DBConnectionVirtualFile file = (DBConnectionVirtualFile) virtualFile;
+            if (virtualFile instanceof DBConnectionVirtualFile file) {
                 return file.getConnectionId() + "";
             }
 
-            if (virtualFile instanceof DBObjectVirtualFile) {
-                DBObjectVirtualFile<?> file = (DBObjectVirtualFile<?>) virtualFile;
+            if (virtualFile instanceof DBObjectVirtualFile<?> file) {
                 DBObjectRef<?> objectRef = file.getObjectRef();
                 return createObjectPath(objectRef);
             }
 
-            if (virtualFile instanceof DBContentVirtualFile) {
-                DBContentVirtualFile file = (DBContentVirtualFile) virtualFile;
+            if (virtualFile instanceof DBContentVirtualFile file) {
                 DBObjectRef<?> objectRef = file.getObjectRef();
                 DBContentType contentType = file.getContentType();
                 return objectRef.getConnectionId() + PSS + OBJECT_CONTENTS + contentType.name() + PS + objectRef.serialize();
             }
 
-            if (virtualFile instanceof DBObjectListVirtualFile) {
-                DBObjectListVirtualFile<?> file = (DBObjectListVirtualFile<?>) virtualFile;
+            if (virtualFile instanceof DBObjectListVirtualFile<?> file) {
                 DBObjectList<?> objectList = file.getObjectList();
                 DatabaseEntity parentElement = objectList.getParentEntity();
                 String listName = objectList.getObjectType().getListName();
-                if (parentElement instanceof DBObject) {
-                    DBObject object = (DBObject) parentElement;
+                if (parentElement instanceof DBObject object) {
                     DBObjectRef<?> objectRef = object.ref();
                     return connectionId + PSS + objectRef.serialize() + PSS + listName;
                 } else {
                     return connectionId + PSS + listName; }
             }
 
-            if (virtualFile instanceof DBDatasetFilterVirtualFile) {
-                DBDatasetFilterVirtualFile file = (DBDatasetFilterVirtualFile) virtualFile;
+            if (virtualFile instanceof DBDatasetFilterVirtualFile file) {
                 return connectionId + PSS + DATASET_FILTERS + file.getDataset().ref().serialize();
             }
 
-            if (virtualFile instanceof DBSessionBrowserVirtualFile) {
-                DBSessionBrowserVirtualFile file = (DBSessionBrowserVirtualFile) virtualFile;
+            if (virtualFile instanceof DBSessionBrowserVirtualFile file) {
                 return connectionId + PSS + SESSION_BROWSERS + file.getName();
 
             }
 
-            if (virtualFile instanceof DBSessionStatementVirtualFile) {
-                DBSessionStatementVirtualFile file = (DBSessionStatementVirtualFile) virtualFile;
+            if (virtualFile instanceof DBSessionStatementVirtualFile file) {
                 return connectionId + PSS + SESSION_STATEMENTS + file.getName();
             }
 
-            if (virtualFile instanceof DBObjectFilterExpressionFile) {
-                DBObjectFilterExpressionFile file = (DBObjectFilterExpressionFile) virtualFile;
+            if (virtualFile instanceof DBObjectFilterExpressionFile file) {
                 return connectionId + PSS + FILTER_EXPRESSIONS + PSS + file.getName();
             }
 
-            if (virtualFile instanceof DBLooseContentVirtualFile) {
-                DBLooseContentVirtualFile file = (DBLooseContentVirtualFile) virtualFile;
+            if (virtualFile instanceof DBLooseContentVirtualFile file) {
                 return connectionId + PSS + LOOSE_CONTENTS + PSS + DBObjectRef.serialised(file.getObject());
             }
 
@@ -439,7 +430,7 @@ public class DatabaseFileSystem extends VirtualFileSystem implements NonPhysical
 
 
     void clearCachedFiles(Project project) {
-        Iterator<DBObjectRef<?>> objectRefs = filesCache.keySet().iterator();
+        Iterator<DBObjectRef<DBSchemaObject>> objectRefs = filesCache.keySet().iterator();
         while (objectRefs.hasNext()) {
             DBObjectRef<?> objectRef = objectRefs.next();
             DBEditableObjectVirtualFile file = filesCache.get(objectRef);

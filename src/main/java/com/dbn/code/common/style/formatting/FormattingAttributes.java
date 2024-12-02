@@ -4,22 +4,22 @@ import com.dbn.common.util.Commons;
 import com.intellij.formatting.Indent;
 import com.intellij.formatting.Spacing;
 import com.intellij.formatting.Wrap;
+import lombok.Getter;
 
+@Getter
 public class FormattingAttributes {
     public static final FormattingAttributes NO_ATTRIBUTES = new FormattingAttributes(null, null, null, null);
 
+    @Getter
     public enum Type {
         WRAP(true),
         INDENT(true),
         SPACING_BEFORE(true),
         SPACING_AFTER(false);
 
-        boolean left;
-        private Type(boolean left) {
+        final boolean left;
+        Type(boolean left) {
             this.left = left;
-        }
-        public boolean isLeft() {
-            return left;
         }
     }
 
@@ -62,6 +62,7 @@ public class FormattingAttributes {
         return attributes;
     }
 
+    @SuppressWarnings("unused")
     public static FormattingAttributes overwrite(FormattingAttributes attributes, FormattingAttributes defaultAttributes) {
         if (attributes != null && defaultAttributes != null) {
             attributes.wrap = Commons.nvln(defaultAttributes.wrap, attributes.wrap);
@@ -72,34 +73,17 @@ public class FormattingAttributes {
         return attributes;
     }
 
-    public Wrap getWrap() {
-        return wrap;
-    }
-
-    public Indent getIndent() {
-        return indent;
-    }
-
-    public Spacing getSpacingBefore() {
-        return spacingBefore;
-    }
-
-    public Spacing getSpacingAfter() {
-        return spacingAfter;
-    }
-
     public boolean isEmpty() {
         return wrap == null && indent == null && spacingBefore == null && spacingAfter == null;
     }
 
     public Object getAttribute(Type type) {
-        switch (type) {
-            case WRAP: return wrap;
-            case INDENT: return indent;
-            case SPACING_BEFORE: return spacingBefore;
-            case SPACING_AFTER: return spacingAfter;
-        }
-        return null;
+        return switch (type) {
+            case WRAP -> wrap;
+            case INDENT -> indent;
+            case SPACING_BEFORE -> spacingBefore;
+            case SPACING_AFTER -> spacingAfter;
+        };
     }
 
     public static Object getAttribute(FormattingAttributes attributes, Type type) {
@@ -108,7 +92,7 @@ public class FormattingAttributes {
 
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder("");
+        StringBuilder result = new StringBuilder();
         if (wrap != null) result.append(" wrap=").append(wrap);
         if (indent != null) result.append(" indent=").append(indent);
         if (spacingBefore != null) result.append(" spacingBefore=").append(spacingBefore);

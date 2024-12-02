@@ -7,23 +7,23 @@ import org.jdom.Element;
 import static com.dbn.common.options.setting.Settings.enumAttribute;
 
 public enum WrapDefinition implements FormattingAttribute<Wrap>{
-    NONE    (new Loader(){
+    NONE    (new Loader<>(){
         @Override
         Wrap load(){return CodeStylePreset.WRAP_NONE;}}),
-    NORMAL  (new Loader(){
+    NORMAL  (new Loader<>(){
         @Override
         Wrap load(){return CodeStylePreset.WRAP_NORMAL;}}),
-    ALWAYS  (new Loader(){
+    ALWAYS  (new Loader<>(){
         @Override
         Wrap load(){return CodeStylePreset.WRAP_ALWAYS;}}),
-    IF_LONG (new Loader(){
+    IF_LONG (new Loader<>(){
         @Override
         Wrap load(){return CodeStylePreset.WRAP_IF_LONG;}});
 
     private Wrap value;
     private Loader<Wrap> loader;
 
-    private WrapDefinition(Loader<Wrap> loader) {
+    WrapDefinition(Loader<Wrap> loader) {
         this.loader = loader;
     }
 

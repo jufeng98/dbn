@@ -9,18 +9,28 @@ import com.dbn.common.options.SettingsChangeNotifier;
 import com.dbn.common.options.ui.CompositeConfigurationEditorForm;
 import com.dbn.common.thread.Dispatch;
 import com.dbn.common.ui.form.DBNHeaderForm;
-import com.dbn.common.ui.tab.TabbedPane;
 import com.dbn.common.ui.util.UserInterface;
 import com.dbn.common.util.Messages;
 import com.dbn.common.util.Safe;
-import com.dbn.connection.ConnectionId;
 import com.dbn.connection.ConnectionManager;
 import com.dbn.connection.ConnectivityStatus;
 import com.dbn.connection.DatabaseType;
-import com.dbn.connection.config.*;
+import com.dbn.connection.config.ConnectionBundleSettings;
+import com.dbn.connection.config.ConnectionConfigListener;
+import com.dbn.connection.config.ConnectionConfigType;
+import com.dbn.connection.config.ConnectionDatabaseSettings;
+import com.dbn.connection.config.ConnectionDebuggerSettings;
+import com.dbn.connection.config.ConnectionDetailSettings;
+import com.dbn.connection.config.ConnectionFilterSettings;
+import com.dbn.connection.config.ConnectionPropertiesSettings;
+import com.dbn.connection.config.ConnectionSettings;
+import com.dbn.connection.config.ConnectionSshTunnelSettings;
+import com.dbn.connection.config.ConnectionSslSettings;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.tabs.JBTabs;
+import com.intellij.ui.tabs.JBTabsFactory;
 import com.intellij.ui.tabs.TabInfo;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,6 +38,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Objects;
 
 import static com.dbn.common.dispose.Checks.isNotValid;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
@@ -40,14 +51,14 @@ public class ConnectionSettingsForm extends CompositeConfigurationEditorForm<Con
     private JButton testButton;
     private JCheckBox activeCheckBox;
 
-    private final TabbedPane tabbedPane;
+    private final JBTabs tabbedPane;
     private final DBNHeaderForm headerForm;
 
     public ConnectionSettingsForm(ConnectionSettings connectionSettings) {
         super(connectionSettings);
         ConnectionDatabaseSettings databaseSettings = connectionSettings.getDatabaseSettings();
-        tabbedPane = new TabbedPane(this);
-        contentPanel.add(tabbedPane, BorderLayout.CENTER);
+        tabbedPane = JBTabsFactory.createTabs(getProject(), connectionSettings);
+        contentPanel.add((Component) tabbedPane, BorderLayout.CENTER);
 
         TabInfo connectionTabInfo = new TabInfo(new JBScrollPane(databaseSettings.createComponent()));
         connectionTabInfo.setText(nls("cfg.connection.title.Database"));
@@ -89,15 +100,31 @@ public class ConnectionSettingsForm extends CompositeConfigurationEditorForm<Con
 
         ConnectivityStatus connectivityStatus = databaseSettings.getConnectivityStatus();
         Icon icon = connectionSettings.isNew() ? Icons.CONNECTION_NEW :
-                   !connectionSettings.isActive() ? Icons.CONNECTION_DISABLED :
-                   connectivityStatus == ConnectivityStatus.VALID ? Icons.CONNECTION_CONNECTED :
-                   connectivityStatus == ConnectivityStatus.INVALID ? Icons.CONNECTION_INVALID : Icons.CONNECTION_INACTIVE;
+                !connectionSettings.isActive() ? Icons.CONNECTION_DISABLED :
+                        connectivityStatus == ConnectivityStatus.VALID ? Icons.CONNECTION_CONNECTED :
+                                connectivityStatus == ConnectivityStatus.INVALID ? Icons.CONNECTION_INVALID : Icons.CONNECTION_INACTIVE;
 
         String name = connectionSettings.getDatabaseSettings().getName();
         Color color = detailSettings.getEnvironmentType().getColor();
 
         headerForm = new DBNHeaderForm(this, name, icon, color);
         headerPanel.add(headerForm.getComponent(), BorderLayout.CENTER);
+        //if (databaseType != null) databaseIconLabel.setIcon(databaseType.getLargeIcon());
+        ConnectionPresentationChangeListener connectionPresentationChangeListener = (name1, icon1, color1, connectionId, databaseType) ->
+                Dispatch.run(() -> {
+                    if (isNotValid(ConnectionSettingsForm.this)) return;
+
+                    ConnectionSettings configuration = getConfiguration();
+                    if (!configuration.getConnectionId().equals(connectionId)) return;
+
+                    DBNHeaderForm header = headerForm;
+
+                    if (name1 != null) header.setTitle(name1);
+                    if (icon1 != null) header.setIcon(icon1);
+                    if (color1 != null) header.setBackground(color1);
+                    else header.setBackground(Colors.getPanelBackground());
+                    //if (databaseType != null) databaseIconLabel.setIcon(databaseType.getLargeIcon());
+                });
         ProjectEvents.subscribe(ensureProject(), this, ConnectionPresentationChangeListener.TOPIC, connectionPresentationChangeListener);
 
         //databaseSettingsForm.notifyPresentationChanges();
@@ -120,10 +147,11 @@ public class ConnectionSettingsForm extends CompositeConfigurationEditorForm<Con
             clone.getDatabaseSettings().getAuthenticationInfo().setTemporary(true);
 
             ConnectionDatabaseSettingsForm databaseSettingsEditor = configuration.getDatabaseSettings().getSettingsEditor();
-            if(databaseSettingsEditor != null) databaseSettingsEditor.applyFormChanges(clone.getDatabaseSettings());
+            if (databaseSettingsEditor != null) databaseSettingsEditor.applyFormChanges(clone.getDatabaseSettings());
 
             ConnectionPropertiesSettingsForm propertiesSettingsEditor = configuration.getPropertiesSettings().getSettingsEditor();
-            if (propertiesSettingsEditor != null) propertiesSettingsEditor.applyFormChanges(clone.getPropertiesSettings());
+            if (propertiesSettingsEditor != null)
+                propertiesSettingsEditor.applyFormChanges(clone.getPropertiesSettings());
 
             ConnectionSshTunnelSettingsForm sshTunnelSettingsForm = configuration.getSshTunnelSettings().getSettingsEditor();
             if (sshTunnelSettingsForm != null) sshTunnelSettingsForm.applyFormChanges(clone.getSshTunnelSettings());
@@ -174,7 +202,7 @@ public class ConnectionSettingsForm extends CompositeConfigurationEditorForm<Con
                             refreshConnectionList(configuration);
                         } catch (ConfigurationException e1) {
                             conditionallyLog(e1);
-                            Messages.showErrorDialog(project, "Configuration error", e1.getMessage());
+                            Messages.showErrorDialog(project, "Configuration error", e1.getLocalizedMessage());
                         }
                     }
                 }
@@ -190,7 +218,7 @@ public class ConnectionSettingsForm extends CompositeConfigurationEditorForm<Con
                 ConnectionBundleSettingsForm bundleSettingsEditor = bundleSettings.getSettingsEditor();
                 if (bundleSettingsEditor == null) return;
 
-                JList connectionList = bundleSettingsEditor.getList();
+                JList<?> connectionList = bundleSettingsEditor.getList();
                 UserInterface.repaint(connectionList);
                 ConnectionDatabaseSettingsForm settingsEditor = configuration.getDatabaseSettings().getSettingsEditor();
                 if (settingsEditor == null) return;
@@ -205,11 +233,26 @@ public class ConnectionSettingsForm extends CompositeConfigurationEditorForm<Con
     }
 
     public void selectTab(String tabName) {
-        Safe.run(tabbedPane, t -> t.selectTab(tabName));
+        Safe.run(tabbedPane, t -> {
+            for (TabInfo tabInfo : t.getTabs()) {
+                if (!Objects.equals(tabName, tabInfo.getText())) {
+                    continue;
+                }
+
+                tabbedPane.select(tabInfo, true);
+            }
+        });
     }
 
     public String getSelectedTabName() {
-        return Safe.call(tabbedPane, t -> t.getSelectedTabName());
+        return Safe.call(tabbedPane, t -> {
+            TabInfo selectedInfo = t.getSelectedInfo();
+            if (selectedInfo == null) {
+                return null;
+            }
+
+            return selectedInfo.getText();
+        });
     }
 
     @NotNull
@@ -217,26 +260,6 @@ public class ConnectionSettingsForm extends CompositeConfigurationEditorForm<Con
     public JPanel getMainComponent() {
         return mainPanel;
     }
-
-    private final ConnectionPresentationChangeListener connectionPresentationChangeListener = new ConnectionPresentationChangeListener() {
-        @Override
-        public void presentationChanged(String name, Icon icon, Color color, ConnectionId connectionId, DatabaseType databaseType) {
-            Dispatch.run(() -> {
-                if (isNotValid(ConnectionSettingsForm.this)) return;
-
-                ConnectionSettings configuration = getConfiguration();
-                if (!configuration.getConnectionId().equals(connectionId)) return;
-
-                DBNHeaderForm header = headerForm;
-                if (header == null) return;
-
-                if (name != null) header.setTitle(name);
-                if (icon != null) header.setIcon(icon);
-                if (color != null) header.setBackground(color); else header.setBackground(Colors.getPanelBackground());
-                //if (databaseType != null) databaseIconLabel.setIcon(databaseType.getLargeIcon());
-            });
-        }
-    };
 
     @Override
     public void resetFormChanges() {

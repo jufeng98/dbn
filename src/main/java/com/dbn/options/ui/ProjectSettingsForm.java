@@ -6,7 +6,6 @@ import com.dbn.common.options.BasicConfiguration;
 import com.dbn.common.options.Configuration;
 import com.dbn.common.options.ui.CompositeConfigurationEditorForm;
 import com.dbn.common.options.ui.ConfigurationEditorForm;
-import com.dbn.common.ui.tab.TabbedPane;
 import com.dbn.connection.ConnectionId;
 import com.dbn.connection.config.ConnectionBundleSettings;
 import com.dbn.connection.config.ui.ConnectionBundleSettingsForm;
@@ -21,6 +20,8 @@ import com.dbn.options.ConfigId;
 import com.dbn.options.ProjectSettings;
 import com.dbn.options.general.GeneralProjectSettings;
 import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.tabs.JBTabs;
+import com.intellij.ui.tabs.JBTabsFactory;
 import com.intellij.ui.tabs.TabInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,15 +32,14 @@ import java.awt.*;
 public class ProjectSettingsForm extends CompositeConfigurationEditorForm<ProjectSettings> {
     private JPanel mainPanel;
     private JPanel tabsPanel;
-    private final TabbedPane configurationTabs;
+    private final JBTabs configurationTabs;
 
     public ProjectSettingsForm(ProjectSettings globalSettings) {
         super(globalSettings);
 
-        configurationTabs = new TabbedPane(this);
-        //configurationTabs.setAdjustBorders(false);
+        configurationTabs = JBTabsFactory.createTabs(globalSettings.ensureProject(), globalSettings);
 
-        tabsPanel.add(configurationTabs, BorderLayout.CENTER);
+        tabsPanel.add((Component) configurationTabs, BorderLayout.CENTER);
 
         ConnectionBundleSettings connectionSettings = globalSettings.getConnectionSettings();
         DatabaseBrowserSettings browserSettings = globalSettings.getBrowserSettings();
@@ -67,9 +67,9 @@ public class ProjectSettingsForm extends CompositeConfigurationEditorForm<Projec
         globalSettings.reset();
 
         tabsPanel.setFocusable(true);
-   }
+    }
 
-    private void addSettingsPanel(BasicConfiguration configuration) {
+    private void addSettingsPanel(BasicConfiguration<?, ?> configuration) {
         JComponent component = configuration.createComponent();
         JBScrollPane scrollPane = new JBScrollPane(component);
         TabInfo tabInfo = new TabInfo(scrollPane);
@@ -95,9 +95,9 @@ public class ProjectSettingsForm extends CompositeConfigurationEditorForm<Projec
     }
 
     void selectSettingsEditor(ConfigId configId) {
-        Configuration configuration = getConfiguration().getConfiguration(configId);
+        Configuration<?, ?> configuration = getConfiguration().getConfiguration(configId);
         if (configuration != null) {
-            ConfigurationEditorForm settingsEditor = configuration.getSettingsEditor();
+            ConfigurationEditorForm<?> settingsEditor = configuration.getSettingsEditor();
             if (settingsEditor != null) {
                 JComponent component = settingsEditor.getComponent();
                 TabInfo tabInfo = getTabInfo(component);
@@ -119,12 +119,17 @@ public class ProjectSettingsForm extends CompositeConfigurationEditorForm<Projec
     }
 
     @NotNull
-    public Configuration getActiveSettings() {
+    public Configuration<?, ?> getActiveSettings() {
         TabInfo tabInfo = configurationTabs.getSelectedInfo();
-        if (tabInfo != null) {
-            ConfigurationEditorForm configurationEditorForm = (ConfigurationEditorForm) tabInfo.getObject();
-            return configurationEditorForm.getConfiguration();
+        if (tabInfo == null) {
+            return getConfiguration();
         }
-        return getConfiguration();
+
+        ConfigurationEditorForm<?> configurationEditorForm = (ConfigurationEditorForm<?>) tabInfo.getObject();
+        if (configurationEditorForm == null) {
+            return getConfiguration();
+        }
+
+        return configurationEditorForm.getConfiguration();
     }
 }

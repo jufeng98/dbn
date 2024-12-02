@@ -4,8 +4,6 @@ import com.dbn.browser.DatabaseBrowserManager;
 import com.dbn.browser.DatabaseBrowserUtils;
 import com.dbn.browser.TreeNavigationHistory;
 import com.dbn.browser.model.*;
-import com.dbn.browser.options.BrowserDisplayMode;
-import com.dbn.browser.options.DatabaseBrowserSettings;
 import com.dbn.common.color.Colors;
 import com.dbn.common.dispose.Disposer;
 import com.dbn.common.event.ProjectEvents;
@@ -51,8 +49,6 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.*;
 
-import static com.dbn.browser.options.BrowserDisplayMode.SIMPLE;
-import static com.dbn.browser.options.BrowserDisplayMode.TABBED;
 import static com.dbn.common.dispose.Checks.isNotValid;
 
 @Getter
@@ -97,6 +93,7 @@ public final class DatabaseBrowserTree extends DBNTree implements Borderless {
         return (BrowserTreeModel) super.getModel();
     }
 
+    @SuppressWarnings("unused")
     public void expandConnectionManagers() {
         ConnectionManager connectionManager = ConnectionManager.getInstance(ensureProject());
         ConnectionBundle connectionBundle = connectionManager.getConnectionBundle();
@@ -168,8 +165,7 @@ public final class DatabaseBrowserTree extends DBNTree implements Borderless {
             ActionCallback callback = TreeUtil.selectPath(tree, treePath, true);
             if (callback == ActionCallback.REJECTED) {
                 Object target = treePath.getLastPathComponent();
-                if (target instanceof DBObject) {
-                    DBObject object = (DBObject) target;
+                if (target instanceof DBObject object) {
                     Point mousePosition = tree.getMousePosition();
                     if (mousePosition == null) {
                         return;
@@ -187,8 +183,7 @@ public final class DatabaseBrowserTree extends DBNTree implements Borderless {
     @Override
     public String getToolTipText(MouseEvent e) {
         Object object = getTreeNode(e);
-        if (object instanceof ToolTipProvider) {
-            ToolTipProvider toolTipProvider = (ToolTipProvider) object;
+        if (object instanceof ToolTipProvider toolTipProvider) {
             return toolTipProvider.getToolTip();
         }
         return null;
@@ -256,12 +251,10 @@ public final class DatabaseBrowserTree extends DBNTree implements Borderless {
         if (isNotValid(lastPathEntity)) return;
 
         DatabaseFileEditorManager editorManager = DatabaseFileEditorManager.getInstance(getProject());
-        if (lastPathEntity instanceof DBObject) {
-            DBObject object = (DBObject) lastPathEntity;
+        if (lastPathEntity instanceof DBObject object) {
 
             Project project = ensureProject();
-            if (object instanceof DBConsole) {
-                DBConsole console = (DBConsole) object;
+            if (object instanceof DBConsole console) {
                 editorManager.openDatabaseConsole(console, false, deliberate);
                 event.consume();
             } else if (object.is(DBObjectProperty.EDITABLE)) {
@@ -285,8 +278,7 @@ public final class DatabaseBrowserTree extends DBNTree implements Borderless {
                             }
                         });
             }
-        } else if (lastPathEntity instanceof DBObjectBundle) {
-            DBObjectBundle objectBundle = (DBObjectBundle) lastPathEntity;
+        } else if (lastPathEntity instanceof DBObjectBundle objectBundle) {
             ConnectionHandler connection = objectBundle.getConnection();
             DBConsole defaultConsole = connection.getConsoleBundle().getDefaultConsole();
             editorManager.openDatabaseConsole(defaultConsole, false, deliberate);
@@ -328,8 +320,7 @@ public final class DatabaseBrowserTree extends DBNTree implements Borderless {
                 Object object = e.getPath().getLastPathComponent();
                 if (isNotValid(object)) return;
 
-                if (object instanceof BrowserTreeNode) {
-                    BrowserTreeNode treeNode = (BrowserTreeNode) object;
+                if (object instanceof BrowserTreeNode treeNode) {
                     if (targetSelection == null || treeNode.equals(targetSelection)) {
                         navigationHistory.add(treeNode);
                     }
@@ -337,7 +328,7 @@ public final class DatabaseBrowserTree extends DBNTree implements Borderless {
 
                 ProjectEvents.notify(ensureProject(),
                         BrowserTreeEventListener.TOPIC,
-                        (listener) -> listener.selectionChanged());
+                        BrowserTreeEventListener::selectionChanged);
             }
         };
     }
@@ -372,11 +363,9 @@ public final class DatabaseBrowserTree extends DBNTree implements Borderless {
         if (isNotValid(lastPathEntity)) return;
 
         ActionGroup actionGroup = null;
-        if (lastPathEntity instanceof DBObjectList) {
-            DBObjectList<?> objectList = (DBObjectList<?>) lastPathEntity;
+        if (lastPathEntity instanceof DBObjectList<?> objectList) {
             actionGroup = new ObjectListActionGroup(objectList);
-        } else if (lastPathEntity instanceof DBObject) {
-            DBObject object = (DBObject) lastPathEntity;
+        } else if (lastPathEntity instanceof DBObject object) {
             Progress.prompt(
                     getProject(),
                     object,
@@ -384,8 +373,7 @@ public final class DatabaseBrowserTree extends DBNTree implements Borderless {
                     "Loading object properties",
                     "Loading properties of " + object.getQualifiedNameWithType(),
                     progress -> showPopupMenu(new ObjectActionGroup(object), x, y));
-        } else if (lastPathEntity instanceof DBObjectBundle) {
-            DBObjectBundle objectsBundle = (DBObjectBundle) lastPathEntity;
+        } else if (lastPathEntity instanceof DBObjectBundle objectsBundle) {
             ConnectionHandler connection = objectsBundle.getConnection();
             actionGroup = new ConnectionActionGroup(connection);
         }

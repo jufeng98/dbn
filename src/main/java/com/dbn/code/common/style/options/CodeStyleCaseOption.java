@@ -27,15 +27,16 @@ public class CodeStyleCaseOption implements PersistentConfiguration {
     }
 
     public String format(String string) {
-        if (string != null) {
-            switch (styleCase) {
-                case UPPER: return ignore(string) ? string : toUpperCase(string);
-                case LOWER: return ignore(string) ? string : toLowerCase(string);
-                case CAPITALIZED: return ignore(string) ? string : Naming.capitalize(string);
-                case PRESERVE: return string;
-            }
+        if (string == null) {
+            return null;
         }
-        return null;
+
+        return switch (styleCase) {
+            case UPPER -> ignore(string) ? string : toUpperCase(string);
+            case LOWER -> ignore(string) ? string : toLowerCase(string);
+            case CAPITALIZED -> ignore(string) ? string : Naming.capitalize(string);
+            case PRESERVE -> string;
+        };
     }
 
     boolean ignore(String string) {
@@ -53,7 +54,7 @@ public class CodeStyleCaseOption implements PersistentConfiguration {
                 Objects.equals(style, "upper") ? CodeStyleCase.UPPER :
                 Objects.equals(style, "lower") ? CodeStyleCase.LOWER :
                 Objects.equals(style, "capitalized") ? CodeStyleCase.CAPITALIZED :
-                Objects.equals(style, "preserve") ? CodeStyleCase.PRESERVE : CodeStyleCase.PRESERVE;
+                        CodeStyleCase.PRESERVE;
     }
 
     @Override
@@ -62,7 +63,7 @@ public class CodeStyleCaseOption implements PersistentConfiguration {
                 styleCase == CodeStyleCase.UPPER ? "upper" :
                 styleCase == CodeStyleCase.LOWER ? "lower" :
                 styleCase == CodeStyleCase.CAPITALIZED ? "capitalized" :
-                styleCase == CodeStyleCase.PRESERVE ? "preserve" :  "preserve";
+                        "preserve";
 
         element.setAttribute("name", name);
         element.setAttribute("value", value);

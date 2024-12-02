@@ -16,11 +16,11 @@ import static com.dbn.common.options.setting.Settings.*;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = false)
-public abstract class CodeStyleCaseSettings extends BasicConfiguration<DBLCodeStyleSettings, CodeStyleCaseSettingsForm> {
+public abstract class CodeStyleCaseSettings extends BasicConfiguration<DBLCodeStyleSettings<?, ?>, CodeStyleCaseSettingsForm> {
     private final Map<String, CodeStyleCaseOption> options = new LinkedHashMap<>();
     private boolean enabled = true;
 
-    public CodeStyleCaseSettings(DBLCodeStyleSettings parent) {
+    public CodeStyleCaseSettings(DBLCodeStyleSettings<?, ?> parent) {
         super(parent);
         addOption("KEYWORD_CASE", CodeStyleCase.LOWER, false);
         addOption("FUNCTION_CASE", CodeStyleCase.LOWER, false);
@@ -94,7 +94,7 @@ public abstract class CodeStyleCaseSettings extends BasicConfiguration<DBLCodeSt
     public void writeConfiguration(Element element) {
         setBooleanAttribute(element, "enabled", enabled);
         for (CodeStyleCaseOption option : options.values()) {
-            Element optionElement = newElement(element,"option");
+            Element optionElement = newElement(element, "option");
             option.writeConfiguration(optionElement);
         }
     }

@@ -59,7 +59,7 @@ public class CodeStyleCaseSettingsForm extends ConfigurationEditorForm<CodeStyle
     }
 
     private void enableDisableOptions() {
-        boolean enabled = enableCheckBox.isSelected();
+//        boolean enabled = enableCheckBox.isSelected();
 /*
         keywordCaseComboBox.setEnabled(enabled);
         functionCaseComboBox.setEnabled(enabled);

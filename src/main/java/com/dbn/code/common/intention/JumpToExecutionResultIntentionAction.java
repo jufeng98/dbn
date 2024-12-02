@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 
 public class JumpToExecutionResultIntentionAction extends GenericIntentionAction implements HighPriorityAction {
+    @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private WeakRef<StatementExecutionProcessor> cachedExecutionProcessor;
 
     @Override

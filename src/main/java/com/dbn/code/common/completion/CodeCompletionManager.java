@@ -19,9 +19,6 @@ import static com.dbn.common.component.Components.projectService;
 public class CodeCompletionManager extends ProjectComponentBase implements PersistentState {
     public static final String COMPONENT_NAME = "DBNavigator.Project.CodeCompletionManager";
 
-    public static final int BASIC_CODE_COMPLETION = 0;
-    public static final int SMART_CODE_COMPLETION = 1;
-
     private CodeCompletionManager(Project project) {
         super(project, COMPONENT_NAME);
     }

@@ -12,13 +12,13 @@ import javax.swing.*;
 
 public class PSQLColorSettingsPage extends DBLColorSettingsPage {
     public PSQLColorSettingsPage() {
-        attributeDescriptors.add(new AttributesDescriptor("Line Comment", PSQLTextAttributesKeys.LINE_COMMENT));
-        attributeDescriptors.add(new AttributesDescriptor("Block Comment", PSQLTextAttributesKeys.BLOCK_COMMENT));
-        attributeDescriptors.add(new AttributesDescriptor("String Literal", PSQLTextAttributesKeys.STRING));
-        attributeDescriptors.add(new AttributesDescriptor("Numeric Literal", PSQLTextAttributesKeys.NUMBER));
+        attributeDescriptors.add(new AttributesDescriptor("Line comment", PSQLTextAttributesKeys.LINE_COMMENT));
+        attributeDescriptors.add(new AttributesDescriptor("Block comment", PSQLTextAttributesKeys.BLOCK_COMMENT));
+        attributeDescriptors.add(new AttributesDescriptor("String literal", PSQLTextAttributesKeys.STRING));
+        attributeDescriptors.add(new AttributesDescriptor("Numeric literal", PSQLTextAttributesKeys.NUMBER));
         attributeDescriptors.add(new AttributesDescriptor("Alias", PSQLTextAttributesKeys.ALIAS));
         attributeDescriptors.add(new AttributesDescriptor("Identifier", PSQLTextAttributesKeys.IDENTIFIER));
-        attributeDescriptors.add(new AttributesDescriptor("Quoted Identifier", PSQLTextAttributesKeys.QUOTED_IDENTIFIER));
+        attributeDescriptors.add(new AttributesDescriptor("Quoted identifier", PSQLTextAttributesKeys.QUOTED_IDENTIFIER));
         attributeDescriptors.add(new AttributesDescriptor("Keyword", PSQLTextAttributesKeys.KEYWORD));
         attributeDescriptors.add(new AttributesDescriptor("Function", PSQLTextAttributesKeys.FUNCTION));
         attributeDescriptors.add(new AttributesDescriptor("DataType", PSQLTextAttributesKeys.DATA_TYPE));

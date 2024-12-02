@@ -20,14 +20,14 @@ public class DBLCodeStyle {
 
         CodeStyleSettings codeStyleSettings;
         if (CodeStyleSettingsManager.getInstance().USE_PER_PROJECT_SETTINGS) {
-            codeStyleSettings = CodeStyleSettingsManager.getSettings(project);
+            codeStyleSettings = CodeStyle.getSettings(project);
         } else {
             codeStyleSettings = CodeStyleSettingsManager.getInstance().getCurrentSettings();
         }
         return codeStyleSettings;
     }
 
-    protected static DBLCodeStyleSettings settings(Project project, Language language) {
+    protected static DBLCodeStyleSettings<?, ?> settings(Project project, Language language) {
         if (language == SQLLanguage.INSTANCE) return SQLCodeStyle.settings(project);
         if (language == PSQLLanguage.INSTANCE) return PSQLCodeStyle.settings(project);
         throw new IllegalArgumentException("Language " + language.getID() + " mot supported");

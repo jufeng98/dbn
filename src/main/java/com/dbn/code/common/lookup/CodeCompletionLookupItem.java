@@ -15,7 +15,8 @@ import static com.dbn.common.util.Strings.toLowerCase;
 import static com.dbn.common.util.Strings.toUpperCase;
 
 
-public class CodeCompletionLookupItem extends LookupItem {
+@SuppressWarnings("deprecation")
+public class CodeCompletionLookupItem extends LookupItem<Object> {
     public CodeCompletionLookupItem(LookupItemBuilder lookupItemBuilder, @NotNull String text, CodeCompletionContext completionContext) {
         super(lookupItemBuilder, Naming.unquote(text));
         setIcon(lookupItemBuilder.getIcon());
@@ -51,6 +52,7 @@ public class CodeCompletionLookupItem extends LookupItem {
         return super.getObject();
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public InsertHandler getInsertHandler() {
         return super.getInsertHandler();
@@ -58,8 +60,7 @@ public class CodeCompletionLookupItem extends LookupItem {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof CodeCompletionLookupItem) {
-            CodeCompletionLookupItem lookupItem = (CodeCompletionLookupItem) o;
+        if (o instanceof CodeCompletionLookupItem lookupItem) {
             return Objects.equals(lookupItem.getLookupString(), getLookupString());
         }
 

@@ -84,7 +84,7 @@ public class CodeCompletionContext {
     }
 
     private static PsiElement calcElementAtCaret(DBLanguagePsiFile file, PsiElement position) {
-        PsiElement elementAtCaret = position instanceof BasePsiElement ? (BasePsiElement) position : PsiUtil.lookupLeafAtOffset(file, position.getTextOffset());
+        PsiElement elementAtCaret = position instanceof BasePsiElement ? (BasePsiElement<?>) position : PsiUtil.lookupLeafAtOffset(file, position.getTextOffset());
         elementAtCaret = elementAtCaret == null ? file : elementAtCaret;
         return elementAtCaret;
     }
@@ -123,7 +123,7 @@ public class CodeCompletionContext {
     }
 
     @NotNull
-    public DBLanguage getLanguage() {
+    public DBLanguage<?> getLanguage() {
         DBLanguageDialect languageDialect = getFile().getLanguageDialect();
         return languageDialect == null ? SQLLanguage.INSTANCE : languageDialect.getBaseLanguage();
     }
@@ -162,13 +162,11 @@ public class CodeCompletionContext {
     }
 
     private static String getLeafUniqueKey(LeafElementType leaf) {
-        if (leaf instanceof TokenElementType) {
-            TokenElementType tokenElementType = (TokenElementType) leaf;
+        if (leaf instanceof TokenElementType tokenElementType) {
             String text = tokenElementType.getText();
             String id = tokenElementType.getTokenType().getId();
             return Strings.isEmpty(text) ? id : id + text;
-        } else if (leaf instanceof IdentifierElementType){
-            IdentifierElementType identifierElementType = (IdentifierElementType) leaf;
+        } else if (leaf instanceof IdentifierElementType identifierElementType){
             return identifierElementType.getQualifiedObjectTypeName();
         }
         return null;

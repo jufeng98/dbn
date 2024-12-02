@@ -10,7 +10,7 @@ import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class GenericIntentionAction implements IntentionAction, PriorityAction, Iconable, DumbAware, Comparable {
+public abstract class GenericIntentionAction implements IntentionAction, PriorityAction, Iconable, DumbAware, Comparable<Object> {
 
     @Override
     @NotNull
@@ -20,8 +20,7 @@ public abstract class GenericIntentionAction implements IntentionAction, Priorit
 
     @Nullable
     protected ConnectionHandler getConnection(PsiFile psiFile) {
-        if (psiFile instanceof DBLanguagePsiFile) {
-            DBLanguagePsiFile dbLanguagePsiFile = (DBLanguagePsiFile) psiFile;
+        if (psiFile instanceof DBLanguagePsiFile dbLanguagePsiFile) {
             return dbLanguagePsiFile.getConnection();
         }
         return null;
@@ -33,8 +32,7 @@ public abstract class GenericIntentionAction implements IntentionAction, Priorit
 
     @Override
     public int compareTo(@NotNull Object o) {
-        if (o instanceof GenericIntentionAction) {
-            GenericIntentionAction a = (GenericIntentionAction) o;
+        if (o instanceof GenericIntentionAction a) {
             int groupLevel = getPriority().compareTo(a.getPriority());
 
             return groupLevel == 0 ? getGroupPriority().compareTo(a.getGroupPriority()) : groupLevel;

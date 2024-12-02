@@ -27,7 +27,7 @@ import java.io.OutputStream;
 import static com.dbn.common.dispose.Checks.isNotValid;
 import static com.dbn.common.dispose.Failsafe.guarded;
 
-public class DBObjectListVirtualFile<T extends DBObjectList> extends DBVirtualFileBase {
+public class DBObjectListVirtualFile<T extends DBObjectList<?>> extends DBVirtualFileBase {
     private final WeakRef<T> objectList;
 
     public DBObjectListVirtualFile(T objectList) {
@@ -43,6 +43,7 @@ public class DBObjectListVirtualFile<T extends DBObjectList> extends DBVirtualFi
     @NotNull
     @Override
     public ConnectionId getConnectionId() {
+        //noinspection DataFlowIssue
         return getObjectList().getConnectionId();
     }
 
@@ -56,8 +57,7 @@ public class DBObjectListVirtualFile<T extends DBObjectList> extends DBVirtualFi
     @Override
     public SchemaId getSchemaId() {
         DatabaseEntity parent = getObjectList().getParentEntity();
-        if (parent instanceof DBObject) {
-            DBObject object = (DBObject) parent;
+        if (parent instanceof DBObject object) {
             return SchemaId.from(object.getSchema());
         }
         return null;
@@ -87,7 +87,7 @@ public class DBObjectListVirtualFile<T extends DBObjectList> extends DBVirtualFi
     @Override
     @Nullable
     public VirtualFile getParent() {
-        return guarded(null, this, f -> f.findParent());
+        return guarded(null, this, DBObjectListVirtualFile::findParent);
     }
 
     @Nullable
@@ -96,13 +96,11 @@ public class DBObjectListVirtualFile<T extends DBObjectList> extends DBVirtualFi
         if (isNotValid(objectList)) return null;
 
         DatabaseEntity parent = getObjectList().getParentEntity();
-        if (parent instanceof DBObject) {
-            DBObject parentObject = (DBObject) parent;
+        if (parent instanceof DBObject parentObject) {
             return DBObjectPsiCache.asPsiDirectory(parentObject).getVirtualFile();
         }
 
-        if (parent instanceof DBObjectBundle) {
-            DBObjectBundle objectBundle = (DBObjectBundle) parent;
+        if (parent instanceof DBObjectBundle objectBundle) {
             return objectBundle.getConnection().getPsiDirectory().getVirtualFile();
         }
 
@@ -117,11 +115,6 @@ public class DBObjectListVirtualFile<T extends DBObjectList> extends DBVirtualFi
     @Override
     public Icon getIcon() {
         return null;
-    }
-
-    @Override
-    public long getLength() {
-        return 0;
     }
 
     @Override

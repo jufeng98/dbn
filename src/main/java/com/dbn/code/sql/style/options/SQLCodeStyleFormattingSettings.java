@@ -21,7 +21,7 @@ import com.dbn.code.common.style.presets.statement.StatementOneLineSpacingAtLeas
 import com.dbn.code.common.style.presets.statement.StatementOneLineSpacingPreset;
 
 class SQLCodeStyleFormattingSettings extends CodeStyleFormattingSettings {
-    SQLCodeStyleFormattingSettings(DBLCodeStyleSettings parent) {
+    SQLCodeStyleFormattingSettings(DBLCodeStyleSettings<?, ?> parent) {
         super(parent);
 
         CodeStyleFormattingOption statementSpacing =

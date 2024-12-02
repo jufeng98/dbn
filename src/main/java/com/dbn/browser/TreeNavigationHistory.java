@@ -19,7 +19,7 @@ public class TreeNavigationHistory implements Disposable{
         monitor.write(() -> {
             offset.set(Math.min(offset.get(), history.size() -1));
             int offset = this.offset.get();
-            if (history.size() > 0 && treeNode == history.get(offset)) {
+            if (!history.isEmpty() && treeNode == history.get(offset)) {
                 return;
             }
             while (history.size() > offset + 1) {
@@ -42,7 +42,7 @@ public class TreeNavigationHistory implements Disposable{
     }
 
     public void clear() {
-        monitor.write(() -> history.clear());
+        monitor.write(history::clear);
     }
 
     public boolean hasNext() {

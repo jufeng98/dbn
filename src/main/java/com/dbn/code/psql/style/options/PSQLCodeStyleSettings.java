@@ -11,9 +11,9 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-public class PSQLCodeStyleSettings extends DBLCodeStyleSettings<DBLCodeStyleSettings, PSQLCodeStyleSettingsEditorForm> {
+public class PSQLCodeStyleSettings extends DBLCodeStyleSettings<DBLCodeStyleSettings<?, ?>, PSQLCodeStyleSettingsEditorForm> {
 
-    PSQLCodeStyleSettings(DBLCodeStyleSettings parent) {
+    PSQLCodeStyleSettings(DBLCodeStyleSettings<?, ?> parent) {
         super(parent);
     }
 
@@ -29,12 +29,12 @@ public class PSQLCodeStyleSettings extends DBLCodeStyleSettings<DBLCodeStyleSett
     }
 
     @Override
-    protected CodeStyleCaseSettings createCaseSettings(DBLCodeStyleSettings parent) {
+    protected CodeStyleCaseSettings createCaseSettings(DBLCodeStyleSettings<?, ?> parent) {
         return new PSQLCodeStyleCaseSettings(parent);
     }
 
     @Override
-    protected CodeStyleFormattingSettings createAttributeSettings(DBLCodeStyleSettings parent) {
+    protected CodeStyleFormattingSettings createAttributeSettings(DBLCodeStyleSettings<?, ?> parent) {
         return new PSQLCodeStyleFormattingSettings(parent);
     }
 

@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import static com.dbn.common.dispose.Checks.isNotValid;
@@ -92,13 +93,13 @@ public abstract class BrowserTreeModel extends StatefulDisposableBase implements
     @Override
     public int getChildCount(Object parent) {
         BrowserTreeNode parentNode = (BrowserTreeNode) parent;
-        return guarded(0, parentNode, p -> p.getChildCount());
+        return guarded(0, parentNode, TreeNode::getChildCount);
     }
 
     @Override
     public boolean isLeaf(Object node) {
         BrowserTreeNode treeNode = (BrowserTreeNode) node;
-        return guarded(true, treeNode, n -> n.isLeaf());
+        return guarded(true, treeNode, TreeNode::isLeaf);
     }
 
     @Override

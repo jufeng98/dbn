@@ -14,14 +14,14 @@ public class IterationChopDownAlwaysPreset extends IterationAbstractPreset {
     }
 
     @Override
-    public boolean accepts(BasePsiElement psiElement) {
+    public boolean accepts(BasePsiElement<?> psiElement) {
         return getParentElementType(psiElement) instanceof IterationElementType;
     }
 
     @Override
     @Nullable
-    public Wrap getWrap(BasePsiElement psiElement, CodeStyleSettings settings) {
-        BasePsiElement parentPsiElement = getParentPsiElement(psiElement);
+    public Wrap getWrap(BasePsiElement<?> psiElement, CodeStyleSettings settings) {
+        BasePsiElement<?> parentPsiElement = getParentPsiElement(psiElement);
         if (parentPsiElement != null) {
             IterationElementType iterationElementType = (IterationElementType) parentPsiElement.getElementType();
             ElementType elementType = psiElement.getElementType();
@@ -32,8 +32,8 @@ public class IterationChopDownAlwaysPreset extends IterationAbstractPreset {
 
     @Override
     @Nullable
-    public Spacing getSpacing(BasePsiElement psiElement, CodeStyleSettings settings) {
-        BasePsiElement parentPsiElement = getParentPsiElement(psiElement);
+    public Spacing getSpacing(BasePsiElement<?> psiElement, CodeStyleSettings settings) {
+        BasePsiElement<?> parentPsiElement = getParentPsiElement(psiElement);
         if (parentPsiElement != null) {
             IterationElementType iterationElementType = (IterationElementType) parentPsiElement.getElementType();
             ElementType elementType = psiElement.getElementType();

@@ -29,6 +29,7 @@ public class FormattingDefinition {
         this.spacingAfter = spacingAfter;
     }
 
+    @SuppressWarnings("CopyConstructorMissesField")
     protected FormattingDefinition(FormattingDefinition attributes) {
         indent = attributes.indent;
         wrap = attributes.wrap;
@@ -70,7 +71,7 @@ public class FormattingDefinition {
 
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder("");
+        StringBuilder result = new StringBuilder();
         if (wrap != null) result.append("wrap=").append(wrap).append(' ');
         if (indent != null) result.append("indent=").append(indent).append(' ');
         if (spacingBefore != null) result.append("spacingBefore=").append(spacingBefore).append(' ');

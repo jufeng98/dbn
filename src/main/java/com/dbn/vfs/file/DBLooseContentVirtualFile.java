@@ -90,7 +90,7 @@ public class DBLooseContentVirtualFile extends DBVirtualFileBase implements DBPa
 
     @Override
     @NotNull
-    public OutputStream getOutputStream(Object requestor, final long modificationStamp, long timeStamp) throws IOException {
+    public OutputStream getOutputStream(Object requestor, final long modificationStamp, long timeStamp) {
         return new ByteArrayOutputStream() {
             @Override
             public void close() {
@@ -103,8 +103,7 @@ public class DBLooseContentVirtualFile extends DBVirtualFileBase implements DBPa
     }
 
     @Override
-    @NotNull
-    public byte[] contentsToByteArray() throws IOException {
+    public byte @NotNull [] contentsToByteArray() throws IOException {
         Charset charset = getCharset();
         return content.toString().getBytes(charset);
     }

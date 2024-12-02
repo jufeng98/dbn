@@ -17,6 +17,7 @@ import lombok.SneakyThrows;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 
+@SuppressWarnings("rawtypes")
 @EqualsAndHashCode(callSuper = false)
 public class CodeCompletionSettings extends CompositeProjectConfiguration<ProjectSettings, CodeCompletionSettingsForm> implements TopLevelConfig {
     private final @Getter(lazy = true) CodeCompletionFiltersSettings filterSettings = new CodeCompletionFiltersSettings(this);

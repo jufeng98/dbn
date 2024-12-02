@@ -8,9 +8,10 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.awt.*;
 
-public class PSQLCodeStyleSettingsEditorForm extends CompositeConfigurationEditorForm<DBLCodeStyleSettings> {
+public class PSQLCodeStyleSettingsEditorForm extends CompositeConfigurationEditorForm<DBLCodeStyleSettings<?, ?>> {
     private JPanel mainPanel;
     private JPanel casePanel;
+    @SuppressWarnings("unused")
     private JPanel previewPanel;
     private JPanel attributesPanel;
 

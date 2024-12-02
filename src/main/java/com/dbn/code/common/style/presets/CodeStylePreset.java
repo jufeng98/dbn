@@ -26,11 +26,11 @@ public interface CodeStylePreset extends Presentable{
 
 
     String getId();
-    boolean accepts(BasePsiElement psiElement);
+    boolean accepts(BasePsiElement<?> psiElement);
 
     @Nullable
-    Wrap getWrap(BasePsiElement psiElement, CodeStyleSettings settings);
+    Wrap getWrap(BasePsiElement<?> psiElement, CodeStyleSettings settings);
 
     @Nullable
-    Spacing getSpacing(BasePsiElement psiElement, CodeStyleSettings settings);
+    Spacing getSpacing(BasePsiElement<?> psiElement, CodeStyleSettings settings);
 }

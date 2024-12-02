@@ -16,8 +16,8 @@ public class IterationChopDownIfNotSinglePreset extends IterationAbstractPreset 
 
     @Override
     @Nullable
-    public Wrap getWrap(BasePsiElement psiElement, CodeStyleSettings settings) {
-        BasePsiElement parentPsiElement = getParentPsiElement(psiElement);
+    public Wrap getWrap(BasePsiElement<?> psiElement, CodeStyleSettings settings) {
+        BasePsiElement<?> parentPsiElement = getParentPsiElement(psiElement);
         if (parentPsiElement != null) {
             IterationElementType iterationElementType = (IterationElementType) parentPsiElement.getElementType();
             ElementType elementType = psiElement.getElementType();
@@ -31,8 +31,8 @@ public class IterationChopDownIfNotSinglePreset extends IterationAbstractPreset 
 
     @Override
     @Nullable
-    public Spacing getSpacing(BasePsiElement psiElement, CodeStyleSettings settings) {
-        BasePsiElement parentPsiElement = getParentPsiElement(psiElement);
+    public Spacing getSpacing(BasePsiElement<?> psiElement, CodeStyleSettings settings) {
+        BasePsiElement<?> parentPsiElement = getParentPsiElement(psiElement);
         if (parentPsiElement != null) {
             IterationElementType iterationElementType = (IterationElementType) parentPsiElement.getElementType();
             ElementType elementType = psiElement.getElementType();

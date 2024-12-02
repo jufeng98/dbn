@@ -16,6 +16,7 @@ import java.lang.reflect.Method;
 import static com.dbn.common.dispose.Checks.isValid;
 import static com.intellij.openapi.actionSystem.AnAction.getEventProject;
 
+@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 @Getter
 public abstract class ShortcutInterceptor implements AnActionListener {
     protected final String delegateActionId;

@@ -61,7 +61,7 @@ public class MoveDatabaseFileHandler extends MoveHandlerDelegate {
     }
 
     @Override
-    public @Nullable String getActionName(PsiElement [] elements) {
+    public @Nullable String getActionName(PsiElement @NotNull [] elements) {
         return super.getActionName(elements);
     }
 

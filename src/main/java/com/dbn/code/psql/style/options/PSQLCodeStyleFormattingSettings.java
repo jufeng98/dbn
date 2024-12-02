@@ -4,7 +4,7 @@ import com.dbn.code.common.style.options.CodeStyleFormattingSettings;
 import com.dbn.code.common.style.options.DBLCodeStyleSettings;
 
 class PSQLCodeStyleFormattingSettings extends CodeStyleFormattingSettings {
-    PSQLCodeStyleFormattingSettings(DBLCodeStyleSettings parent) {
+    PSQLCodeStyleFormattingSettings(DBLCodeStyleSettings<?, ?> parent) {
         super(parent);
     }
 }

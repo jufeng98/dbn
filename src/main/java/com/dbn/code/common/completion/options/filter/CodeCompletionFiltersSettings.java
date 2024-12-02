@@ -10,6 +10,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
+@SuppressWarnings("unused")
 @EqualsAndHashCode(callSuper = false)
 public class CodeCompletionFiltersSettings extends CompositeConfiguration<CodeCompletionSettings, CodeCompletionFiltersSettingsForm> {
     private final @Getter(lazy = true) CodeCompletionFilterSettings basicFilterSettings = new CodeCompletionFilterSettings(this, false);
@@ -66,8 +67,8 @@ public class CodeCompletionFiltersSettings extends CompositeConfiguration<CodeCo
     }
 
     @Override
-    protected Configuration[] createConfigurations() {
-        return new Configuration[] {
+    protected Configuration<?, ?>[] createConfigurations() {
+        return new Configuration[]{
                 getBasicFilterSettings(),
                 getExtendedFilterSettings()};
     }

@@ -77,6 +77,7 @@ import static com.dbn.browser.DatabaseBrowserUtils.markSkipBrowserAutoscroll;
 import static com.dbn.browser.DatabaseBrowserUtils.unmarkSkipBrowserAutoscroll;
 import static com.dbn.common.dispose.Checks.isValid;
 
+@SuppressWarnings("unused")
 @Slf4j
 @UtilityClass
 public class Editors {
@@ -157,7 +158,7 @@ public class Editors {
 
 
     public static void setEditorProviderIcon(@NotNull Project project, @NotNull VirtualFile file, @NotNull FileEditor fileEditor, Icon icon) {
-        JBTabs tabs = getEditorTabComponent(project, file);
+        JBTabs tabs = getEditorTabComponent(project, file, fileEditor);
         if (tabs == null) return;
 
         TabInfo tabInfo = getEditorTabInfo(tabs, fileEditor.getComponent());
@@ -167,7 +168,7 @@ public class Editors {
     }
 
     @Nullable
-    private static JBTabs getEditorTabComponent(@NotNull Project project, @NotNull VirtualFile file) {
+    private static JBTabs getEditorTabComponent(@NotNull Project project, @NotNull VirtualFile file, FileEditor fileEditor) {
         FileEditorManager fileEditorManager = FileEditorManager.getInstance(project);
         FileEditor selectedEditor = fileEditorManager.getSelectedEditor(file);
         if (selectedEditor == null) {
@@ -320,10 +321,10 @@ public class Editors {
         return getFileEditors(project, e -> type.isAssignableFrom(e.getClass()));
     }
 
-    @SuppressWarnings("unchecked")
     public static <T extends FileEditor> List<T> getFileEditors(Project project, Predicate<FileEditor> filter) {
         FileEditorManager fileEditorManager = FileEditorManager.getInstance(project);
         FileEditor[] allEditors = Read.call(fileEditorManager, FileEditorManager::getAllEditors);
+        //noinspection unchecked
         return Arrays
                 .stream(allEditors)
                 .filter(filter)
@@ -331,11 +332,11 @@ public class Editors {
                 .collect(Collectors.toList());
     }
 
-    @SuppressWarnings("unchecked")
     @Nullable
     public static <T extends FileEditor> T getFileEditor(Project project, Predicate<FileEditor> filter) {
         FileEditorManager fileEditorManager = FileEditorManager.getInstance(project);
         FileEditor[] allEditors = Read.call(fileEditorManager, FileEditorManager::getAllEditors);
+        //noinspection unchecked
         return Arrays
                 .stream(allEditors)
                 .filter(filter)
@@ -483,7 +484,6 @@ public class Editors {
         return EditorNotifications.getInstance(Failsafe.nd(project));
     }
 
-    @SuppressWarnings("unused")
     public static void updateAllNotifications(@NotNull Project project) {
         updateNotifications(project, null);
     }

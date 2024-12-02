@@ -70,7 +70,7 @@ public class ProgramMethodDebugAction extends ProjectPopupAction {
     }
 
     @Override
-    public void update(@NotNull AnActionEvent e, Project project) {
+    public void update(@NotNull AnActionEvent e, @NotNull Project project) {
         DBSourceCodeVirtualFile sourceCodeFile = getSourcecodeFile(e);
         Presentation presentation = e.getPresentation();
         boolean visible = false;

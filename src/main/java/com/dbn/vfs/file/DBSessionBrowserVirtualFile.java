@@ -69,7 +69,7 @@ public class DBSessionBrowserVirtualFile extends DBVirtualFileBase implements Co
 
     @Override
     @NotNull
-    public OutputStream getOutputStream(Object requestor, long modificationStamp, long timeStamp) throws IOException {
+    public OutputStream getOutputStream(Object requestor, long modificationStamp, long timeStamp) {
         return new ByteArrayOutputStream() {
             @Override
             public void close() {
@@ -83,10 +83,9 @@ public class DBSessionBrowserVirtualFile extends DBVirtualFileBase implements Co
     }
 
     @Override
-    @NotNull
-    public byte[] contentsToByteArray() throws IOException {
+    public byte @NotNull [] contentsToByteArray() throws IOException {
         Charset charset = getCharset();
-        return content.toString().getBytes(charset.name());
+        return content.toString().getBytes(charset);
     }
 
     @Override

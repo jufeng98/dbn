@@ -10,8 +10,6 @@ import com.intellij.xdebugger.breakpoints.XBreakpointManager;
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Method;
-
 import static com.dbn.common.dispose.Failsafe.guarded;
 
 /**
@@ -32,23 +30,11 @@ public class DBBreakpointUpdaterFileEditorListener extends DBNFileEditorManagerL
         for (XBreakpoint<?> breakpoint : breakpointManager.getAllBreakpoints()) {
             if (breakpoint instanceof XLineBreakpoint<?> lineBreakpoint) {
                 DBBreakpointUtil.setBreakpointId(lineBreakpoint, null);
-                VirtualFile virtualFile = DBBreakpointUtil.getVirtualFile(lineBreakpoint);
-                if (databaseFile.equals(virtualFile)) {
-
-                    try {
-                        Method method = breakpointManager.getClass().getDeclaredMethod("getLineBreakpointManager");
-                        method.setAccessible(true);
-                        Object lineBreakpointManager = method.invoke(breakpointManager);
-
-                        Class<?> aClass = Class.forName("com.intellij.xdebugger.impl.breakpoints.XLineBreakpointImpl");
-                        method = lineBreakpointManager.getClass().getDeclaredMethod("registerBreakpoint", aClass, Boolean.class);
-                        method.setAccessible(true);
-                        //noinspection JavaReflectionInvocation
-                        method.invoke(lineBreakpointManager, lineBreakpoint, true);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
+//                VirtualFile virtualFile = DBBreakpointUtil.getVirtualFile(lineBreakpoint);
+//                if (databaseFile.equals(virtualFile)) {
+//                    XLineBreakpointManager lineBreakpointManager = breakpointManager.getLineBreakpointManager();
+//                    lineBreakpointManager.registerBreakpoint(lineBreakpoint, true);
+//                }
             }
         }
     }

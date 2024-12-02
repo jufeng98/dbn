@@ -1072,6 +1072,13 @@
         <navbar order="last" implementation="com.dbn.navigation.NavigationBarExtension"/>
         <editorTabColorProvider order="first" implementation="com.dbn.editor.DBEditorTabColorProvider"/>
 
+        <lang.documentationProvider
+                language="DBN-SQL"
+                implementationClass="com.dbn.sql.doc.SqlDocumentationProvider"/>
+        <lang.documentationProvider
+                language="DBN-PSQL"
+                implementationClass="com.dbn.sql.doc.SqlDocumentationProvider"/>
+
         <errorHandler implementation="com.dbn.error.jira.JiraIssueReportSubmitter"/>
         <liveTemplateContext implementation="com.dbn.language.sql.template.SQLTemplateContextType" contextId="SQL"/>
         <liveTemplateContext implementation="com.dbn.language.psql.template.PSQLTemplateContextType"

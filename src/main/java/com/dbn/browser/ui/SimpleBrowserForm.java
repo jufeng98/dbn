@@ -39,7 +39,7 @@ public class SimpleBrowserForm extends DatabaseBrowserForm{
         treeScrollPane.setBorder(JBUI.Borders.emptyTop(1));
         ToolTipManager.sharedInstance().registerComponent(browserTree);
 
-        Trees.attachStickyPath(browserTree, () -> isStickyPathEnabled());
+        Trees.attachStickyPath(browserTree, this::isStickyPathEnabled);
 
         ProjectEvents.subscribe(ensureProject(), this, ObjectDetailSettingsListener.TOPIC, objectDetailSettingsListener());
         return browserTree;
@@ -74,8 +74,7 @@ public class SimpleBrowserForm extends DatabaseBrowserForm{
     @Nullable
     public ConnectionHandler getConnection(){
         DatabaseBrowserTree browserTree = getBrowserTree();
-        if (browserTree.getModel() instanceof ConnectionBrowserTreeModel) {
-            ConnectionBrowserTreeModel treeModel = (ConnectionBrowserTreeModel) browserTree.getModel();
+        if (browserTree.getModel() instanceof ConnectionBrowserTreeModel treeModel) {
             return treeModel.getConnection();
         }
         return null;

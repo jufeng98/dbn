@@ -1,5 +1,6 @@
 package com.dbn.common.action;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +13,13 @@ import static com.dbn.common.dispose.Failsafe.guarded;
 
 public abstract class ProjectAction extends BasicAction {
 
-    public ProjectAction() {}
+    public ProjectAction() {
+    }
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.EDT;
+    }
 
     @Deprecated // TODO move presentation in "update"
     public ProjectAction(@Nullable String text, @Nullable String description, @Nullable Icon icon) {
@@ -54,9 +61,6 @@ public abstract class ProjectAction extends BasicAction {
     }
 
     protected abstract void actionPerformed(@NotNull AnActionEvent e, @NotNull Project project);
-
-
-
 
 
 }

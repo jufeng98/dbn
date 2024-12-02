@@ -29,7 +29,7 @@ public class DBLFormattingModelBuilder implements FormattingModelBuilder {
     @NotNull
     @Compatibility
     public FormattingModel createModel(final PsiElement element, final CodeStyleSettings codeStyleSettings) {
-        DBLanguage language = (DBLanguage) PsiUtil.getLanguage(element);
+        DBLanguage<?> language = (DBLanguage<?>) PsiUtil.getLanguage(element);
 
         PsiFile psiFile = element.getContainingFile();
         Document document = Documents.getDocument(psiFile);
@@ -40,7 +40,7 @@ public class DBLFormattingModelBuilder implements FormattingModelBuilder {
 
 
         Project project = element.getProject();
-        DBLCodeStyleSettings settings = language.codeStyleSettings(project);
+        DBLCodeStyleSettings<?, ?> settings = language.codeStyleSettings(project);
 
         boolean deliberate = Traces.isCalledThrough(CodeFormatterFacade.class);
         if (deliberate && settings.getCaseSettings().isEnabled()) {

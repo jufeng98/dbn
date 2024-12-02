@@ -18,11 +18,20 @@ import com.dbn.language.common.element.impl.TokenElementType;
 import com.dbn.language.common.element.parser.Branch;
 import com.dbn.language.common.element.path.AstNode;
 import com.dbn.language.common.element.util.ElementTypeAttribute;
-import com.dbn.language.common.psi.*;
+import com.dbn.language.common.psi.BasePsiElement;
+import com.dbn.language.common.psi.IdentifierPsiElement;
+import com.dbn.language.common.psi.LeafPsiElement;
+import com.dbn.language.common.psi.PsiUtil;
+import com.dbn.language.common.psi.QualifiedIdentifierPsiElement;
+import com.dbn.language.common.psi.TokenPsiElement;
 import com.dbn.language.common.psi.lookup.LookupAdapters;
 import com.dbn.language.common.psi.lookup.PsiLookupAdapter;
 import com.dbn.object.DBSchema;
-import com.dbn.object.common.*;
+import com.dbn.object.common.DBObject;
+import com.dbn.object.common.DBObjectBundle;
+import com.dbn.object.common.DBObjectPsiElement;
+import com.dbn.object.common.DBVirtualObject;
+import com.dbn.object.common.ObjectTypeFilter;
 import com.dbn.object.filter.custom.ObjectFilterAttribute;
 import com.dbn.object.type.DBObjectType;
 import com.dbn.vfs.file.DBObjectFilterExpressionFile;
@@ -60,18 +69,16 @@ public class CodeCompletionProvider extends CompletionProvider<CompletionParamet
             @NotNull ProcessingContext processingContext,
             @NotNull CompletionResultSet result) {
         PsiFile originalFile = parameters.getOriginalFile();
-        if (!(originalFile instanceof DBLanguagePsiFile)) return;
+        if (!(originalFile instanceof DBLanguagePsiFile file)) return;
 
         if (handleFilterExpressionFile(result, originalFile)) return;
-
-        DBLanguagePsiFile file = (DBLanguagePsiFile) originalFile;
 
         int caretOffset = parameters.getOffset();
         PsiElement elementAtCaret = file.findElementAt(caretOffset);
         if (elementAtCaret instanceof PsiComment) return;
 
-        LeafPsiElement leafAtCaret = caretOffset == 0 ? null : PsiUtil.lookupLeafAtOffset(file, caretOffset-1);
-        LeafPsiElement leafBeforeCaret = leafAtCaret == null || leafAtCaret.isCharacterToken() ?
+        LeafPsiElement<?> leafAtCaret = caretOffset == 0 ? null : PsiUtil.lookupLeafAtOffset(file, caretOffset - 1);
+        LeafPsiElement<?> leafBeforeCaret = leafAtCaret == null || leafAtCaret.isCharacterToken() ?
                 PsiUtil.lookupLeafBeforeOffset(file, caretOffset) :
                 PsiUtil.lookupLeafBeforeOffset(file, leafAtCaret.getTextOffset());
 
@@ -88,33 +95,33 @@ public class CodeCompletionProvider extends CompletionProvider<CompletionParamet
 
     private static boolean handleFilterExpressionFile(@NotNull CompletionResultSet result, PsiFile psiFile) {
         VirtualFile virtualFile = psiFile.getVirtualFile();
-        if (virtualFile instanceof DBObjectFilterExpressionFile) {
-            DBObjectFilterExpressionFile expressionFile = (DBObjectFilterExpressionFile) virtualFile;
+        if (virtualFile instanceof DBObjectFilterExpressionFile expressionFile) {
             List<ObjectFilterAttribute> attributesTypes = expressionFile.getFilter().getDefinition().getAttributes();
             attributesTypes.forEach(a -> result.addElement(a.getLookupItem()));
 
-            Arrays.asList("AND", "OR", "IS", "IN", "NOT", "NULL", "LIKE").forEach(s -> result.addElement(new CodeCompletionLookupItem(s, null, s, "keyword", true)));
+            Arrays.asList("AND", "OR", "IS", "IN", "NOT", "NULL", "LIKE")
+                    .forEach(s -> result.addElement(new CodeCompletionLookupItem(s, null, s, "keyword", true)));
             return true;
         }
         return false;
     }
 
-    private boolean shouldAddCompletions(LeafPsiElement leafAtOffset, LeafPsiElement leafBeforeCaret) {
-        if (leafAtOffset instanceof TokenPsiElement) {
-            TokenPsiElement tokenPsiElement = (TokenPsiElement) leafAtOffset;
+    private boolean shouldAddCompletions(LeafPsiElement<?> leafAtOffset,
+                                         @SuppressWarnings("unused") LeafPsiElement<?> leafBeforeCaret) {
+        if (leafAtOffset instanceof TokenPsiElement tokenPsiElement) {
             TokenType tokenType = tokenPsiElement.getTokenType();
             if (tokenType.isNumeric()) return false;
-            if (tokenType.isLiteral()) return false;
+            return !tokenType.isLiteral();
         }
 
         return true;
     }
 
-    private void collectCompletionVariants(CodeCompletionLookupConsumer consumer, LeafPsiElement leafBeforeCaret) {
+    private void collectCompletionVariants(CodeCompletionLookupConsumer consumer, LeafPsiElement<?> leafBeforeCaret) {
         if (leafBeforeCaret == null) {
             collectRootCompletionVariants(consumer);
         } else {
-            leafBeforeCaret = (LeafPsiElement) leafBeforeCaret.getOriginalElement();
+            leafBeforeCaret = (LeafPsiElement<?>) leafBeforeCaret.getOriginalElement();
             collectElementRelativeVariants(leafBeforeCaret, consumer);
         }
     }
@@ -129,32 +136,30 @@ public class CodeCompletionProvider extends CompletionProvider<CompletionParamet
         Set<LeafElementType> firstPossibleLeafs = lookupCache.captureFirstPossibleLeafs(lookupContext);
 
         for (LeafElementType firstPossibleLeaf : firstPossibleLeafs) {
-            if (firstPossibleLeaf instanceof TokenElementType) {
-                TokenElementType tokenElementType = (TokenElementType) firstPossibleLeaf;
+            if (firstPossibleLeaf instanceof TokenElementType tokenElementType) {
                 consumer.accept(tokenElementType);
             }
         }
     }
 
-    private static void collectElementRelativeVariants(LeafPsiElement element, CodeCompletionLookupConsumer consumer) {
+    private static void collectElementRelativeVariants(LeafPsiElement<?> element, CodeCompletionLookupConsumer consumer) {
         CodeCompletionContext context = consumer.getContext();
 
         IdentifierPsiElement parentIdentifierPsiElement = null;
 
         DBObject parentObject = null;
         PsiElement parent = element.getParent();
-        if (parent instanceof QualifiedIdentifierPsiElement) {
-            QualifiedIdentifierPsiElement qualifiedIdentifier = (QualifiedIdentifierPsiElement) parent;
+        if (parent instanceof QualifiedIdentifierPsiElement qualifiedIdentifier) {
             ElementType separator = qualifiedIdentifier.getElementType().getSeparatorToken();
 
-            if (element.getElementType() == separator){
-                BasePsiElement parentPsiElement = element.getPrevElement();
+            if (element.getElementType() == separator) {
+                BasePsiElement<?> parentPsiElement = element.getPrevElement();
                 if (parentPsiElement instanceof IdentifierPsiElement) {
                     parentIdentifierPsiElement = (IdentifierPsiElement) parentPsiElement;
                     parentObject = parentIdentifierPsiElement.getUnderlyingObject();
 
                     if (parentObject != null) {
-                        for (QualifiedIdentifierVariant parseVariant : qualifiedIdentifier.getParseVariants()){
+                        for (QualifiedIdentifierVariant parseVariant : qualifiedIdentifier.getParseVariants()) {
                             boolean match = parseVariant.matchesPsiElement(qualifiedIdentifier);
                             if (match) {
                                 int index = qualifiedIdentifier.getIndexOf(parentIdentifierPsiElement);
@@ -166,16 +171,16 @@ public class CodeCompletionProvider extends CompletionProvider<CompletionParamet
                 }
             }
         } else if (element.getElementType().getTokenType() == element.getLanguage().getSharedTokenTypes().getChrDot()) {
-            LeafPsiElement parentPsiElement = element.getPrevLeaf();
+            LeafPsiElement<?> parentPsiElement = element.getPrevLeaf();
             if (parentPsiElement != null) {
                 if (parentPsiElement instanceof IdentifierPsiElement || parentPsiElement.isVirtualObject()) {
                     parentObject = parentPsiElement.getUnderlyingObject();
                 }
             }
-        } else if (parent instanceof BasePsiElement) {
-            BasePsiElement basePsiElement = (BasePsiElement) parent;
+        } else if (parent instanceof BasePsiElement<?> basePsiElement) {
             ElementType elementType = basePsiElement.getElementType();
-            if (elementType.isWrappingBegin((LeafElementType) element.getElementType())) {
+            if (elementType.isWrappingBegin(element.getElementType())) {
+                @SuppressWarnings("unchecked")
                 Set<LeafElementType> candidates = elementType.getLookupCache().getFirstPossibleLeafs();
                 for (LeafElementType candidate : candidates) {
                     context.addCompletionCandidate(candidate);
@@ -184,7 +189,7 @@ public class CodeCompletionProvider extends CompletionProvider<CompletionParamet
         }
 
         if (!context.hasCompletionCandidates()) {
-            LeafElementType elementType = (LeafElementType) element.getElementType();
+            LeafElementType elementType = element.getElementType();
             AstNode node = new AstNode(element.getNode());
             ElementLookupContext lookupContext = computeParseBranches(element.getNode(), context.getDatabaseVersion());
             if (!context.isNewLine()) {
@@ -209,8 +214,7 @@ public class CodeCompletionProvider extends CompletionProvider<CompletionParamet
         context.queue(() -> {
             Collection<LeafElementType> completionCandidates = context.getCompletionCandidates();
             for (LeafElementType elementType : completionCandidates) {
-                if (elementType instanceof TokenElementType) {
-                    TokenElementType tokenElementType = (TokenElementType) elementType;
+                if (elementType instanceof TokenElementType tokenElementType) {
                     //consumer.setAddParenthesis(addParenthesis && tokenType.isFunction());
                     consumer.accept(tokenElementType);
                 }
@@ -218,17 +222,16 @@ public class CodeCompletionProvider extends CompletionProvider<CompletionParamet
         });
     }
 
-    private static void collectIdentifierElements(LeafPsiElement element, CodeCompletionLookupConsumer consumer) {
+    private static void collectIdentifierElements(LeafPsiElement<?> element, CodeCompletionLookupConsumer consumer) {
         CodeCompletionContext context = consumer.getContext();
         IdentifierPsiElement parentIdentifierPsiElement = context.getParentIdentifierPsiElement();
         DBObject parentObject = context.getParentObject();
 
         Collection<LeafElementType> completionCandidates = context.getCompletionCandidates();
         for (LeafElementType elementType : completionCandidates) {
-            if (!(elementType instanceof IdentifierElementType)) continue;
+            if (!(elementType instanceof IdentifierElementType identifier)) continue;
 
 
-            IdentifierElementType identifier = (IdentifierElementType) elementType;
             if (identifier.isReference()) {
                 DBObjectType objectType = identifier.getObjectType();
                 if (parentIdentifierPsiElement == null) {
@@ -258,11 +261,9 @@ public class CodeCompletionProvider extends CompletionProvider<CompletionParamet
         CodeCompletionFilterSettings filterSettings = context.getCodeCompletionFilterSettings();
         PsiLookupAdapter lookupAdapter = LookupAdapters.objectDefinition(objectType);
         lookupAdapter.collectInParentScopeOf(element, psiElement -> {
-            if (psiElement instanceof IdentifierPsiElement) {
-                IdentifierPsiElement identifierPsiElement = (IdentifierPsiElement) psiElement;
+            if (psiElement instanceof IdentifierPsiElement identifierPsiElement) {
                 PsiElement referencedPsiElement = identifierPsiElement.resolve();
-                if (referencedPsiElement instanceof DBObjectPsiElement) {
-                    DBObjectPsiElement objectPsiElement = (DBObjectPsiElement) referencedPsiElement;
+                if (referencedPsiElement instanceof DBObjectPsiElement objectPsiElement) {
                     consumer.accept(objectPsiElement);
                 } else {
                     consumer.accept(identifierPsiElement);
@@ -270,7 +271,7 @@ public class CodeCompletionProvider extends CompletionProvider<CompletionParamet
             }
         });
 
-        BasePsiElement scope = element.getEnclosingScopeElement();
+        BasePsiElement<?> scope = element.getEnclosingScopeElement();
         if (scope != null) {
             collectObjectMatchingScope(consumer, identifierElementType, filterSettings, scope, context);
         }
@@ -291,8 +292,7 @@ public class CodeCompletionProvider extends CompletionProvider<CompletionParamet
         ElementLookupContext lookupContext = new ElementLookupContext(databaseVersion);
         while (astNode != null && !(astNode instanceof FileElement)) {
             IElementType elementType = astNode.getElementType();
-            if (elementType instanceof ElementType) {
-                ElementType basicElementType = (ElementType) elementType;
+            if (elementType instanceof ElementType basicElementType) {
                 Branch branch = basicElementType.getBranch();
                 if (branch != null) {
                     lookupContext.addBranchMarker(astNode, branch);
@@ -307,18 +307,18 @@ public class CodeCompletionProvider extends CompletionProvider<CompletionParamet
         return lookupContext;
     }
 
-    private static void buildAliasDefinitionNames(BasePsiElement aliasElement, CodeCompletionLookupConsumer consumer) {
+    private static void buildAliasDefinitionNames(BasePsiElement<?> aliasElement, CodeCompletionLookupConsumer consumer) {
         IdentifierPsiElement aliasedObject = PsiUtil.lookupObjectPriorTo(aliasElement, DBObjectType.ANY);
         if (aliasedObject == null) return;
         if (!aliasedObject.isObject()) return;
 
         CharSequence unquotedText = aliasedObject.getUnquotedText();
-        if (unquotedText.length() == 0) return;
+        if (unquotedText.isEmpty()) return;
 
         String[] aliasNames = Naming.createAliasNames(unquotedText);
-        BasePsiElement scope = aliasElement.getEnclosingScopeElement();
+        BasePsiElement<?> scope = aliasElement.getEnclosingScopeElement();
 
-        for (int i = 0; i< aliasNames.length; i++) {
+        for (int i = 0; i < aliasNames.length; i++) {
             while (true) {
                 PsiLookupAdapter lookupAdapter = LookupAdapters.aliasDefinition(null, DBObjectType.ANY, aliasNames[i]);
                 boolean isExisting = scope != null && lookupAdapter.findInScope(scope) != null;
@@ -337,7 +337,7 @@ public class CodeCompletionProvider extends CompletionProvider<CompletionParamet
             Consumer<? super DBObject> consumer,
             IdentifierElementType identifierElementType,
             ObjectTypeFilter filter,
-            @NotNull  BasePsiElement sourceScope,
+            @NotNull BasePsiElement<?> sourceScope,
             CodeCompletionContext context) {
         ConnectionHandler connection = context.getConnection();
         if (!isLiveConnection(connection)) return;
@@ -361,7 +361,7 @@ public class CodeCompletionProvider extends CompletionProvider<CompletionParamet
                     filter,
                     currentSchema);
 
-        } else if (!identifierElementType.isLocalReference()){
+        } else if (!identifierElementType.isLocalReference()) {
             Set<DBObject> parentObjects = LeafPsiElement.identifyPotentialParentObjects(objectType, filter, sourceScope, null);
             if (parentObjects == null || parentObjects.isEmpty()) {
                 if (filter.acceptsRootObject(objectType)) {

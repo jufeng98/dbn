@@ -53,9 +53,7 @@ public class ExecuteStatementIntentionAction extends GenericIntentionAction impl
         if (isNotValid(executable)) return false;
 
         FileEditor fileEditor = Editors.getFileEditor(editor);
-        if (isNotValid(fileEditor)) return false;
-
-        return true;
+        return !isNotValid(fileEditor);
 /*
             StatementExecutionManager executionManager = StatementExecutionManager.getInstance(project);
             StatementExecutionProcessor executionProcessor = executionManager.getExecutionProcessor(fileEditor, executable, true);
@@ -87,8 +85,4 @@ public class ExecuteStatementIntentionAction extends GenericIntentionAction impl
         return false;
     }
 
-    @Override
-    protected Integer getGroupPriority() {
-        return 0;
-    }
 }

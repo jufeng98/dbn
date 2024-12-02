@@ -55,13 +55,11 @@ import com.intellij.xdebugger.breakpoints.XLineBreakpoint;
 import com.intellij.xdebugger.frame.XExecutionStack;
 import com.intellij.xdebugger.frame.XStackFrame;
 import com.intellij.xdebugger.frame.XSuspendContext;
-import com.intellij.xdebugger.impl.ui.XDebugSessionData;
 import com.sun.jdi.Location;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
@@ -165,8 +163,9 @@ public abstract class DBJdwpDebugProcess<T extends ExecutionInput>
         return Failsafe.nn(targetConnection);
     }
 
+    @NotNull
     @Override
-    public DBBreakpointHandler<?> @NotNull [] getBreakpointHandlers() {
+    public DBBreakpointHandler<DBJdwpDebugProcess<?>> @NotNull [] getBreakpointHandlers() {
         return breakpointHandlers;
     }
 
@@ -187,19 +186,10 @@ public abstract class DBJdwpDebugProcess<T extends ExecutionInput>
     @Override
     public void sessionInitialized() {
         XDebugSession session = getSession();
-
-        if (session.getClass().getSimpleName().equals("XDebugSessionImpl")) {
-            try {
-                Class<? extends XDebugSession> sessionClass = session.getClass();
-                Method method = sessionClass.getDeclaredMethod("getSessionData");
-                method.setAccessible(true);
-                XDebugSessionData mySessionData = (XDebugSessionData) method.invoke(session);
-                mySessionData.setBreakpointsMuted(false);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-
+//        if (session instanceof XDebugSessionImpl) {
+//            XDebugSessionImpl sessionImpl = (XDebugSessionImpl) session;
+//            sessionImpl.getSessionData().setBreakpointsMuted(false);
+//        }
         DBRunConfig<T> runProfile = getRunProfile();
         List<DBMethod> methods = runProfile.getMethods();
         if (!methods.isEmpty()) {
@@ -216,6 +206,7 @@ public abstract class DBJdwpDebugProcess<T extends ExecutionInput>
                 if (suspendContext instanceof XSuspendContext xSuspendContext) {
 
                     XExecutionStack[] executionStacks = xSuspendContext.getExecutionStacks();
+                    //noinspection StatementWithEmptyBody,unused
                     for (XExecutionStack executionStack : executionStacks) {
                         //System.out.println();
                     }
@@ -233,10 +224,7 @@ public abstract class DBJdwpDebugProcess<T extends ExecutionInput>
                 if (!shouldSuspend(suspendContext)) {
                     Dispatch.run(session::resume);
                 } else {
-                    if (suspendContext == null) {
-                        return;
-                    }
-
+                    //noinspection DataFlowIssue
                     XExecutionStack activeExecutionStack = suspendContext.getActiveExecutionStack();
                     if (activeExecutionStack != null) {
                         XStackFrame topFrame = activeExecutionStack.getTopFrame();
@@ -295,7 +283,8 @@ public abstract class DBJdwpDebugProcess<T extends ExecutionInput>
     private void initializeBreakpoints() {
         console.system("Registering breakpoints...");
         List<DBMethod> methods = getRunProfile().getMethods();
-        List<XLineBreakpoint<XBreakpointProperties<?>>> breakpoints = DBBreakpointUtil.getDatabaseBreakpoints(getConnection());
+        //noinspection rawtypes
+        List<XLineBreakpoint<XBreakpointProperties>> breakpoints = DBBreakpointUtil.getDatabaseBreakpoints(getConnection());
         getBreakpointHandler().registerBreakpoints(breakpoints, methods);
     }
 
@@ -318,29 +307,28 @@ public abstract class DBJdwpDebugProcess<T extends ExecutionInput>
         // trigger in managed thread
         DebugProcessImpl debugProcess = getDebuggerSession().getProcess();
         T input = getExecutionInput();
-        ManagedThreadCommand.schedule(debugProcess, LOW, () -> {
-            Progress.background(getProject(), getConnection(), false,
-                    "Running debugger target program",
-                    "Executing " + (input == null ? " target program" : input.getExecutionContext().getTargetName()),
-                    progress -> {
-                        console.system("Executing target program...");
-                        if (is(DBDebugProcessStatus.SESSION_INITIALIZATION_THREW_EXCEPTION)) return;
-                        try {
-                            set(DBDebugProcessStatus.TARGET_EXECUTION_STARTED, true);
-                            executeTarget();
-                        } catch (SQLException e) {
-                            conditionallyLog(e);
-                            set(DBDebugProcessStatus.TARGET_EXECUTION_THREW_EXCEPTION, true);
-                            if (isNot(DBDebugProcessStatus.DEBUGGER_STOPPING)) {
-                                String message = input == null ? "Error executing target program" : "Error executing " + input.getExecutionContext().getTargetName();
-                                console.error(message + ": " + e.getMessage());
+        ManagedThreadCommand.schedule(debugProcess, LOW, () ->
+                Progress.background(getProject(), getConnection(), false,
+                        "Running debugger target program",
+                        "Executing " + (input == null ? " target program" : input.getExecutionContext().getTargetName()),
+                        progress -> {
+                            console.system("Executing target program...");
+                            if (is(DBDebugProcessStatus.SESSION_INITIALIZATION_THREW_EXCEPTION)) return;
+                            try {
+                                set(DBDebugProcessStatus.TARGET_EXECUTION_STARTED, true);
+                                executeTarget();
+                            } catch (SQLException e) {
+                                conditionallyLog(e);
+                                set(DBDebugProcessStatus.TARGET_EXECUTION_THREW_EXCEPTION, true);
+                                if (isNot(DBDebugProcessStatus.DEBUGGER_STOPPING)) {
+                                    String message = input == null ? "Error executing target program" : "Error executing " + input.getExecutionContext().getTargetName();
+                                    console.error(message + ": " + e.getMessage());
+                                }
+                            } finally {
+                                set(DBDebugProcessStatus.TARGET_EXECUTION_TERMINATED, true);
+                                stop();
                             }
-                        } finally {
-                            set(DBDebugProcessStatus.TARGET_EXECUTION_TERMINATED, true);
-                            stop();
-                        }
-                    });
-        });
+                        }));
     }
 
     protected abstract void executeTarget() throws SQLException;
@@ -420,7 +408,8 @@ public abstract class DBJdwpDebugProcess<T extends ExecutionInput>
                 String programName = sourcePath.getProgramName();
                 DBSchema schema = getConnection().getObjectBundle().getSchema(schemaName);
                 if (schema != null) {
-                    DBProgram<?, ?, ?> program = schema.getProgram(programName);
+                    //noinspection rawtypes
+                    DBProgram program = schema.getProgram(programName);
                     if (program != null) {
                         DBEditableObjectVirtualFile editableVirtualFile = program.getEditableVirtualFile();
                         DBContentType contentType = Objects.equals(programType, "PackageBody") ? DBContentType.CODE_BODY : DBContentType.CODE_SPEC;

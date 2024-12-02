@@ -15,15 +15,14 @@ public abstract class IterationAbstractPreset extends CodeStylePresetImpl {
     }
 
     @Override
-    public boolean accepts(BasePsiElement psiElement) {
+    public boolean accepts(BasePsiElement<?> psiElement) {
         return !psiElement.getElementType().is(ElementTypeAttribute.STATEMENT) &&
                 getParentElementType(psiElement) instanceof IterationElementType;
     }
 
     protected Wrap getWrap(ElementType elementType, IterationElementType iterationElementType, boolean shouldWrap) {
         if (shouldWrap) {
-            if (elementType instanceof TokenElementType) {
-                TokenElementType tokenElementType = (TokenElementType) elementType;
+            if (elementType instanceof TokenElementType tokenElementType) {
                 return iterationElementType.isSeparator(tokenElementType) ? null : WRAP_ALWAYS;
             } else {
                 return WRAP_ALWAYS;
@@ -35,8 +34,7 @@ public abstract class IterationAbstractPreset extends CodeStylePresetImpl {
     }
 
     protected Spacing getSpacing(IterationElementType iterationElementType, ElementType elementType, boolean shouldWrap) {
-        if (elementType instanceof TokenElementType) {
-            TokenElementType tokenElementType = (TokenElementType) elementType;
+        if (elementType instanceof TokenElementType tokenElementType) {
             if (iterationElementType.isSeparator(tokenElementType)) {
                 return  tokenElementType.isCharacter() ?
                             SPACING_NO_SPACE :

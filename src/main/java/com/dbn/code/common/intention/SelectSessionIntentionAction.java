@@ -52,8 +52,7 @@ public class SelectSessionIntentionAction extends GenericIntentionAction impleme
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile psiFile) throws IncorrectOperationException {
-        if (psiFile instanceof DBLanguagePsiFile) {
-            DBLanguagePsiFile dbLanguageFile = (DBLanguagePsiFile) psiFile;
+        if (psiFile instanceof DBLanguagePsiFile dbLanguageFile) {
             DataContext dataContext = Context.getDataContext(editor);
             FileConnectionContextManager contextManager = FileConnectionContextManager.getInstance(project);
             contextManager.promptSessionSelector(dbLanguageFile.getVirtualFile(), dataContext, null);

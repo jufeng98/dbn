@@ -49,14 +49,12 @@ import com.intellij.xdebugger.breakpoints.XBreakpointProperties;
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint;
 import com.intellij.xdebugger.evaluation.XDebuggerEditorsProvider;
 import com.intellij.xdebugger.frame.XSuspendContext;
-import com.intellij.xdebugger.impl.ui.XDebugSessionData;
 import com.intellij.xdebugger.ui.XDebugTabLayouter;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
@@ -75,7 +73,6 @@ import static com.dbn.debugger.common.process.DBDebugProcessStatus.TARGET_EXECUT
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 import static com.dbn.execution.ExecutionStatus.CANCELLED;
 
-@SuppressWarnings("unused")
 @Getter
 @Setter
 public abstract class DBJdbcDebugProcess<T extends ExecutionInput> extends XDebugProcess implements DBDebugProcess, NotificationSupport {
@@ -83,7 +80,8 @@ public abstract class DBJdbcDebugProcess<T extends ExecutionInput> extends XDebu
     private DBNConnection debuggerConnection;
     private final DBDebugProcessStatusHolder status = new DBDebugProcessStatusHolder();
     private final ConnectionRef connection;
-    private final DBBreakpointHandler<?>[] breakpointHandlers;
+    @SuppressWarnings("rawtypes")
+    private final DBBreakpointHandler[] breakpointHandlers;
     private final DBDebugConsoleLogger console;
 
     private transient DebuggerRuntimeInfo runtimeInfo;
@@ -129,8 +127,8 @@ public abstract class DBJdbcDebugProcess<T extends ExecutionInput> extends XDebu
 
     @NotNull
     public T getExecutionInput() {
-        @SuppressWarnings("unchecked")
-        DBRunConfig<T> runProfile = (DBRunConfig<T>) getSession().getRunProfile();
+        @SuppressWarnings({"rawtypes", "unchecked"})
+        DBRunConfig<T> runProfile = (DBRunConfig) getSession().getRunProfile();
         if (runProfile == null) throw AlreadyDisposedException.INSTANCE;
         return runProfile.getExecutionInput();
     }
@@ -139,19 +137,10 @@ public abstract class DBJdbcDebugProcess<T extends ExecutionInput> extends XDebu
     public void sessionInitialized() {
         Project project = getProject();
         XDebugSession session = getSession();
-
-        if (session.getClass().getSimpleName().equals("XDebugSessionImpl")) {
-            try {
-                Class<? extends XDebugSession> sessionClass = session.getClass();
-                Method method = sessionClass.getDeclaredMethod("getSessionData");
-                method.setAccessible(true);
-                XDebugSessionData mySessionData = (XDebugSessionData) method.invoke(session);
-                mySessionData.setBreakpointsMuted(false);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-
+//        if (session instanceof XDebugSessionImpl) {
+//            XDebugSessionImpl sessionImpl = (XDebugSessionImpl) session;
+//            sessionImpl.getSessionData().setBreakpointsMuted(false);
+//        }
         Progress.background(project, getConnection(), true,
                 "Initializing debug environment",
                 "Starting debugger",
@@ -280,7 +269,8 @@ public abstract class DBJdbcDebugProcess<T extends ExecutionInput> extends XDebu
      */
     private void registerBreakpoints(Runnable callback) {
         console.system("Registering breakpoints...");
-        List<XLineBreakpoint<XBreakpointProperties<?>>> breakpoints = DBBreakpointUtil.getDatabaseBreakpoints(getConnection());
+        //noinspection rawtypes
+        List<XLineBreakpoint<XBreakpointProperties>> breakpoints = DBBreakpointUtil.getDatabaseBreakpoints(getConnection());
 
         getBreakpointHandler().registerBreakpoints(breakpoints, null);
         registerDefaultBreakpoint();
@@ -294,11 +284,12 @@ public abstract class DBJdbcDebugProcess<T extends ExecutionInput> extends XDebu
     /**
      * breakpoints need to be unregistered before closing the database session, otherwise they remain resident.
      */
+    @SuppressWarnings("rawtypes")
     private void unregisterBreakpoints() {
-        Collection<XLineBreakpoint<XBreakpointProperties<?>>> breakpoints = DBBreakpointUtil.getDatabaseBreakpoints(getConnection());
+        Collection<XLineBreakpoint<XBreakpointProperties>> breakpoints = DBBreakpointUtil.getDatabaseBreakpoints(getConnection());
         Set<Integer> unregisteredBreakpointIds = new HashSet<>();
         DBBreakpointHandler<?> breakpointHandler = getBreakpointHandler();
-        for (XLineBreakpoint<XBreakpointProperties<?>> breakpoint : breakpoints) {
+        for (XLineBreakpoint<XBreakpointProperties> breakpoint : breakpoints) {
             Integer breakpointId = DBBreakpointUtil.getBreakpointId(breakpoint);
             if (breakpointId == null) continue;
 
@@ -449,6 +440,7 @@ public abstract class DBJdbcDebugProcess<T extends ExecutionInput> extends XDebu
         });
     }
 
+    @SuppressWarnings("unused")
     private void showErrorDialog(SQLException e) {
         Messages.showErrorDialog(getProject(), "Could not perform operation.", e);
     }
@@ -510,18 +502,22 @@ public abstract class DBJdbcDebugProcess<T extends ExecutionInput> extends XDebu
     @Nullable
     public VirtualFile getRuntimeInfoFile(DebuggerRuntimeInfo runtimeInfo) {
         DBSchemaObject schemaObject = getDatabaseObject(runtimeInfo);
-        if (schemaObject != null) {
-            DBObjectVirtualFile<?> virtualFile = schemaObject.getVirtualFile();
-            if (virtualFile instanceof DBEditableObjectVirtualFile editableObjectFile) {
-                DBContentType contentType = schemaObject.getContentType();
-                if (contentType == DBContentType.CODE_SPEC_AND_BODY) {
-                    return editableObjectFile.getContentFile(DBContentType.CODE_BODY);
-                } else if (contentType.isOneOf(DBContentType.CODE, DBContentType.CODE_AND_DATA)) {
-                    return editableObjectFile.getContentFile(DBContentType.CODE);
-                }
-
-            }
+        if (schemaObject == null) {
+            return null;
         }
+
+        DBObjectVirtualFile<?> virtualFile = schemaObject.getVirtualFile();
+        if (!(virtualFile instanceof DBEditableObjectVirtualFile editableObjectFile)) {
+            return null;
+        }
+
+        DBContentType contentType = schemaObject.getContentType();
+        if (contentType == DBContentType.CODE_SPEC_AND_BODY) {
+            return editableObjectFile.getContentFile(DBContentType.CODE_BODY);
+        } else if (contentType.isOneOf(DBContentType.CODE, DBContentType.CODE_AND_DATA)) {
+            return editableObjectFile.getContentFile(DBContentType.CODE);
+        }
+
         return null;
     }
 

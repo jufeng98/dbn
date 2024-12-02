@@ -103,7 +103,7 @@ tasks.register<Jar>("packageSource") {
     manifest {
         attributes(
             "Manifest-Version" to "1.0",
-            "Gradle-Version" to "7.6"
+            "Gradle-Version" to "8.5"
         )
     }
 }
@@ -161,7 +161,7 @@ tasks {
     }
 
     patchPluginXml {
-        sinceBuild.set("232")
+        sinceBuild.set("243")
         untilBuild.set("243.*")
     }
 

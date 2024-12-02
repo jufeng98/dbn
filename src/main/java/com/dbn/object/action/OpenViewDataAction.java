@@ -17,6 +17,7 @@ public class OpenViewDataAction extends ProjectAction {
 
     public OpenViewDataAction(DBView view) {
         this.view = DBObjectRef.of(view);
+//        setDefaultIcon(true);
     }
 
     @Override
