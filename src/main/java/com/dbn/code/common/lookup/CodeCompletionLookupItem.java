@@ -17,7 +17,8 @@ import static com.dbn.common.util.Strings.toUpperCase;
 
 @SuppressWarnings("deprecation")
 public class CodeCompletionLookupItem extends LookupItem<Object> {
-    public CodeCompletionLookupItem(LookupItemBuilder lookupItemBuilder, @NotNull String text, CodeCompletionContext completionContext) {
+    public CodeCompletionLookupItem(LookupItemBuilder lookupItemBuilder, @NotNull String text,
+                                    CodeCompletionContext completionContext) {
         super(lookupItemBuilder, Naming.unquote(text));
         setIcon(lookupItemBuilder.getIcon());
         if (lookupItemBuilder.isBold()) setBold();
@@ -30,7 +31,8 @@ public class CodeCompletionLookupItem extends LookupItem<Object> {
         }
     }
 
-    public CodeCompletionLookupItem(Object source, Icon icon, @NotNull String text, String description, boolean bold, double sortPriority) {
+    public CodeCompletionLookupItem(Object source, Icon icon, @NotNull String text, String description,
+                                    boolean bold, double sortPriority) {
         this(source, icon, text, description, bold);
         setPriority(sortPriority);
     }

@@ -307,7 +307,9 @@ public final class MetadataCacheService {
 
         for (String delName : delNames) {
             JsonNode jsonNode = rootObjectNode.remove(delName);
-            log.warn("清除元数据:{},共{}个子元素,路径:{}", delName, jsonNode.size(), fileFullName);
+            if (jsonNode != null) {
+                log.warn("清除元数据:{},共{}个子元素,路径:{}", delName, jsonNode.size(), fileFullName);
+            }
         }
 
         JsonUtils.saveTree(rootObjectNode, fileFullName);
