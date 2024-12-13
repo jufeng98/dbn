@@ -18,6 +18,7 @@ public class NavigationGutterRenderer extends GutterIconRenderer {
     @Override
     @NotNull
     public Icon getIcon() {
+        //noinspection DataFlowIssue
         return action.getTemplatePresentation().getIcon();
     }
 
@@ -35,15 +36,16 @@ public class NavigationGutterRenderer extends GutterIconRenderer {
     @Override
     @Nullable
     public String getTooltipText() {
+        //noinspection DialogTitleCapitalization
         return action.getTemplatePresentation().getText();
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof NavigationGutterRenderer) {
-            NavigationGutterRenderer renderer = (NavigationGutterRenderer) obj;
+        if (obj instanceof NavigationGutterRenderer renderer) {
             return action.equals(renderer.action);
         }
+
         return false;
     }
 

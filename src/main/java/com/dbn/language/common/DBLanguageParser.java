@@ -27,7 +27,8 @@ public abstract class DBLanguageParser implements PsiParser {
     private final @Getter(lazy = true) TokenTypeBundle tokenTypes = loadTokenTypes();
     private final @Getter(lazy = true) ElementTypeBundle elementTypes = loadElementTypes();
 
-    public DBLanguageParser(DBLanguageDialect languageDialect, String tokenTypesFile, String elementTypesFile, String defaultParseRootId) {
+    public DBLanguageParser(DBLanguageDialect languageDialect, String tokenTypesFile,
+                            String elementTypesFile, String defaultParseRootId) {
         this.languageDialect = languageDialect;
         this.defaultParseRootId = defaultParseRootId;
         this.tokenTypesFile = tokenTypesFile;
@@ -50,7 +51,7 @@ public abstract class DBLanguageParser implements PsiParser {
     }
 
 
-    protected Class getResourceLookupClass() {
+    protected Class<?> getResourceLookupClass() {
         return getClass();
     }
 
@@ -61,7 +62,8 @@ public abstract class DBLanguageParser implements PsiParser {
     }
 
     @NotNull
-    public ASTNode parse(IElementType rootElementType, PsiBuilder psiBuilder, String parseRootId, double databaseVersion) {
+    public ASTNode parse(IElementType rootElementType, PsiBuilder psiBuilder,
+                         String parseRootId, double databaseVersion) {
         ParserContext context = new ParserContext(psiBuilder, languageDialect, databaseVersion);
         ParserBuilder builder = context.getBuilder();
         if (parseRootId == null ) parseRootId = defaultParseRootId;

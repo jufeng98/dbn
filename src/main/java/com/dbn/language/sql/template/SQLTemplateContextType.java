@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class SQLTemplateContextType extends TemplateContextType {
     protected SQLTemplateContextType() {
-        super("SQL", "SQL (DBN)");
+        super("SQL (DBN)");
     }
 
     @Override

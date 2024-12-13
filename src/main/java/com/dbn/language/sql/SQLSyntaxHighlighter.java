@@ -7,6 +7,7 @@ import com.dbn.language.common.SharedTokenTypeBundle;
 import com.dbn.language.common.TokenTypeBundle;
 
 public abstract class SQLSyntaxHighlighter extends DBLanguageSyntaxHighlighter {
+    @SuppressWarnings("unchecked")
     public SQLSyntaxHighlighter(DBLanguageDialect languageDialect, String tokenTypesFile) {
         super(languageDialect, tokenTypesFile);
         TokenTypeBundle tt = getTokenTypes();

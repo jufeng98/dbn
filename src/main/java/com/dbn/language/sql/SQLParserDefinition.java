@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class SQLParserDefinition extends DBLanguageParserDefinition {
 
+    @SuppressWarnings("unused")
     public SQLParserDefinition() {
         super(() -> getDefaultParseDefinition().getParser());
     }

@@ -59,8 +59,8 @@ public abstract class DBLanguageDialect extends Language implements DBFileElemen
 
     @Override
     @NotNull
-    public DBLanguage getBaseLanguage() {
-        return Failsafe.nn((DBLanguage) super.getBaseLanguage());
+    public DBLanguage<?> getBaseLanguage() {
+        return Failsafe.nn((DBLanguage<?>) super.getBaseLanguage());
     }
 
     public SharedTokenTypeBundle getSharedTokenTypes() {
@@ -101,14 +101,14 @@ public abstract class DBLanguageDialect extends Language implements DBFileElemen
     }
 
     @Nullable
-    public static DBLanguageDialect get(DBLanguage language, @Nullable ConnectionHandler connection) {
+    public static DBLanguageDialect get(DBLanguage<?> language, @Nullable ConnectionHandler connection) {
         if (connection == null) return null;
         return connection.getLanguageDialect(language);
 
     }
 
     @Nullable
-    public static DBLanguageDialect get(@NotNull DBLanguage language, @Nullable VirtualFile file, @Nullable Project project) {
+    public static DBLanguageDialect get(@NotNull DBLanguage<?> language, @Nullable VirtualFile file, @Nullable Project project) {
         if (isNotValid(project)) return null;
         if (isNotValid(file)) return null;
 

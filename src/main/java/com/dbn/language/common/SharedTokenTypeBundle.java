@@ -11,26 +11,26 @@ import java.util.Set;
 
 @Getter
 public class SharedTokenTypeBundle extends TokenTypeBundleBase {
-    private final SimpleTokenType whiteSpace;
-    private final SimpleTokenType identifier;
-    private final SimpleTokenType quotedIdentifier;
-    private final SimpleTokenType variable;
-    private final SimpleTokenType string;
-    private final SimpleTokenType number;
-    private final SimpleTokenType integer;
-    private final SimpleTokenType lineComment;
-    private final SimpleTokenType blockComment;
+    private final SimpleTokenType<?> whiteSpace;
+    private final SimpleTokenType<?> identifier;
+    private final SimpleTokenType<?> quotedIdentifier;
+    private final SimpleTokenType<?> variable;
+    private final SimpleTokenType<?> string;
+    private final SimpleTokenType<?> number;
+    private final SimpleTokenType<?> integer;
+    private final SimpleTokenType<?> lineComment;
+    private final SimpleTokenType<?> blockComment;
 
-    private final SimpleTokenType chrLeftParenthesis;
-    private final SimpleTokenType chrRightParenthesis;
-    private final SimpleTokenType chrLeftBracket;
-    private final SimpleTokenType chrRightBracket;
+    private final SimpleTokenType<?> chrLeftParenthesis;
+    private final SimpleTokenType<?> chrRightParenthesis;
+    private final SimpleTokenType<?> chrLeftBracket;
+    private final SimpleTokenType<?> chrRightBracket;
 
-    private final SimpleTokenType chrDot;
-    private final SimpleTokenType chrComma;
-    private final SimpleTokenType chrColon;
-    private final SimpleTokenType chrSemicolon;
-    private final SimpleTokenType chrStar;
+    private final SimpleTokenType<?> chrDot;
+    private final SimpleTokenType<?> chrComma;
+    private final SimpleTokenType<?> chrColon;
+    private final SimpleTokenType<?> chrSemicolon;
+    private final SimpleTokenType<?> chrStar;
 
     private final TokenSet whitespaceTokens;
     private final TokenSet commentTokens;
@@ -38,7 +38,7 @@ public class SharedTokenTypeBundle extends TokenTypeBundleBase {
 
     private final Set<TokenType> identifierTokens;
 
-    public SharedTokenTypeBundle(DBLanguage language) {
+    public SharedTokenTypeBundle(DBLanguage<?> language) {
         super(language, loadDefinition());
         whiteSpace = getTokenType("WHITE_SPACE");
         identifier = getTokenType("IDENTIFIER");
@@ -85,7 +85,4 @@ public class SharedTokenTypeBundle extends TokenTypeBundleBase {
         return tokenType == variable;
     }
 
-    public Set<TokenType> getIdentifierTokens() {
-        return identifierTokens;
-    }
 }

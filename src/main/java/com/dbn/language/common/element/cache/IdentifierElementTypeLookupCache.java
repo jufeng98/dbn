@@ -49,7 +49,4 @@ public class IdentifierElementTypeLookupCache extends LeafElementTypeLookupCache
     public boolean startsWithIdentifier() {
         return true;
     }
-
-
-
 }

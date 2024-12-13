@@ -23,7 +23,7 @@ public abstract class ElementTypeLookupCacheIndexed<T extends ElementType> exten
     private final IndexContainer<TokenType> allPossibleTokens = new IndexContainer<>();
     private final IndexContainer<TokenType> firstPossibleTokens = new IndexContainer<>();
     private final IndexContainer<TokenType> firstRequiredTokens = new IndexContainer<>();
-    private final Latent<Boolean> startsWithIdentifier = Latent.basic(() -> checkStartsWithIdentifier());
+    private final Latent<Boolean> startsWithIdentifier = Latent.basic(this::checkStartsWithIdentifier);
 
     ElementTypeLookupCacheIndexed(T elementType) {
         super(elementType);

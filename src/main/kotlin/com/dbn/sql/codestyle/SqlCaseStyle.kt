@@ -4,6 +4,7 @@ import com.dbn.common.util.Naming
 import com.dbn.sql.SqlElementFactory
 import com.intellij.psi.PsiElement
 import com.intellij.util.ui.PresentableEnum
+import java.util.*
 
 /**
  * @author yudong
@@ -14,7 +15,10 @@ enum class SqlCaseStyle(val myId: Int, private val myDescription: String) : Pres
             psiElement: PsiElement,
         ) {
             val leafPsiElement =
-                SqlElementFactory.createSqlElement(psiElement.project, psiElement.text.lowercase()).firstChild
+                SqlElementFactory.createSqlElement(
+                    psiElement.project,
+                    psiElement.text.lowercase(Locale.getDefault())
+                ).firstChild
             psiElement.replace(leafPsiElement)
         }
     },
@@ -23,7 +27,10 @@ enum class SqlCaseStyle(val myId: Int, private val myDescription: String) : Pres
             psiElement: PsiElement,
         ) {
             val leafPsiElement =
-                SqlElementFactory.createSqlElement(psiElement.project, psiElement.text.uppercase()).firstChild
+                SqlElementFactory.createSqlElement(
+                    psiElement.project,
+                    psiElement.text.uppercase(Locale.getDefault())
+                ).firstChild
             psiElement.replace(leafPsiElement)
         }
     },

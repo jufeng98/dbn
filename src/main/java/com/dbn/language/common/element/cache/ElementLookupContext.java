@@ -94,10 +94,10 @@ public class ElementLookupContext {
     }
 
     public void removeBranchMarkers(NamedElementType elementType) {
-        if (branchMarkers.size() > 0 && branchMarkers.containsValue(elementType)) {
+        if (!branchMarkers.isEmpty() && branchMarkers.containsValue(elementType)) {
             branchMarkers.keySet().removeIf(key -> branchMarkers.get(key) == elementType);
         }
-        branches = branchMarkers.size() == 0 ? null : branchMarkers.keySet();
+        branches = branchMarkers.isEmpty() ? null : branchMarkers.keySet();
     }
 
 
@@ -106,6 +106,7 @@ public class ElementLookupContext {
         return this;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean isScanned(NamedElementType elementType) {
         return scannedElements.contains(elementType);
     }
