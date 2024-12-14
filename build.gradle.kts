@@ -41,6 +41,8 @@ dependencies {
     implementation("org.apache.commons:commons-collections4:4.4")
     implementation("org.apache.logging.log4j:log4j-api:2.23.0")
     implementation("org.apache.xmlbeans:xmlbeans:3.1.0")
+    implementation("org.mybatis.generator:mybatis-generator-core:1.4.2")
+    implementation("com.github.spullara.mustache.java:compiler:0.9.6")
 }
 
 sourceSets {
