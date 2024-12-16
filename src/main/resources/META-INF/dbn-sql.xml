@@ -59,6 +59,7 @@
         <codeInsight.lineMarkerProvider language="sql"
                                         implementationClass="com.dbn.sql.gutter.SqlExecutorLineMarker"/>
         <highlightErrorFilter implementation="com.dbn.suppress.MyHighlightErrorFilter"/>
+        <consoleFilterProvider implementation="com.dbn.mybatis.console.MyBatisSqlConsoleActionsPostProcessor"/>
     </extensions>
 
 </idea-plugin>
