@@ -197,6 +197,43 @@ public class StringUtil {
         return !"\"".equals(word) && !"\'".equals(word);
     }
 
+    public static String wordsAndHyphenAndCamelToConstantCase(String s) {
+        boolean containsLowerCase = containsLowerCase(s);
+
+        StringBuilder buf = new StringBuilder();
+        char previousChar = ' ';
+        char[] chars = s.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            char c = chars[i];
+            boolean isUpperCaseAndPreviousIsUpperCase = isUpperCase(previousChar) && isUpperCase(c);
+            boolean isUpperCaseAndPreviousIsLowerCase = isLowerCase(previousChar) && isUpperCase(c);
+
+            //camelCase handling - add extra _
+            if (isLetter(c) && isLetter(previousChar) &&
+                    (
+                            isUpperCaseAndPreviousIsLowerCase
+                                    || (containsLowerCase && isUpperCaseAndPreviousIsUpperCase)
+                    )
+            ) {
+                buf.append("_");
+                // extra _ after number
+            } else if ((isDigit(c) && isLetter(previousChar))) {
+                buf.append('_');
+            }
+
+
+            //replace separators by _
+            if ((isSeparator(c) || isWhitespace(c)) && isLetterOrDigit(previousChar) && nextIsLetterOrDigit(s, i)) {
+                buf.append('_');
+            } else {
+                buf.append(Character.toUpperCase(c));
+            }
+
+            previousChar = c;
+        }
+
+        return buf.toString();
+    }
     public static String wordsToConstantCase(String s) {
         StringBuilder buf = new StringBuilder();
 

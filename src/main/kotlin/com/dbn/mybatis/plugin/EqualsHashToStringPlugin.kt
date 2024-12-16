@@ -3,13 +3,8 @@ package com.dbn.mybatis.plugin
 import org.mybatis.generator.api.IntrospectedTable
 import org.mybatis.generator.api.PluginAdapter
 import org.mybatis.generator.api.dom.java.*
-import org.mybatis.generator.config.Context
 
 class EqualsHashToStringPlugin : PluginAdapter() {
-
-    override fun setContext(context: Context) {
-        super.setContext(context)
-    }
 
     override fun validate(warnings: List<String>): Boolean {
         return true

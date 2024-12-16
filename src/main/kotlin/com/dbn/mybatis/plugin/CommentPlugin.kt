@@ -10,19 +10,30 @@ import org.mybatis.generator.api.dom.java.Method
 import org.mybatis.generator.api.dom.java.TopLevelClass
 import org.mybatis.generator.api.dom.xml.Document
 import org.mybatis.generator.api.dom.xml.TextElement
-import org.mybatis.generator.config.Context
 
 /**
  * @author yudong
  */
 class CommentPlugin : PluginAdapter() {
 
-    override fun setContext(context: Context) {
-        super.setContext(context)
-    }
-
     override fun validate(warnings: List<String>): Boolean {
         return true
+    }
+
+    override fun modelBaseRecordClassGenerated(
+        topLevelClass: TopLevelClass,
+        introspectedTable: IntrospectedTable,
+    ): Boolean {
+        val docLine = """
+                /**
+                 * ${introspectedTable.remarks},请勿手工改动此文件,请使用 mybatis generator
+                 *
+                 * @author mybatis generator
+                 */
+                 """.trimIndent()
+        topLevelClass.addJavaDocLine(docLine)
+
+        return super.modelBaseRecordClassGenerated(topLevelClass, introspectedTable)
     }
 
     override fun modelFieldGenerated(
@@ -30,11 +41,11 @@ class CommentPlugin : PluginAdapter() {
         introspectedTable: IntrospectedTable, modelClassType: ModelClassType,
     ): Boolean {
         // 添加entity字段注释
-        val docLine = """
-                     /**
-                      * ${introspectedColumn.remarks}
-                      */
-                     """.trimIndent()
+        val docLine =
+            """
+    /**
+     * ${introspectedColumn.remarks}
+     */""".trimStart()
         field.addJavaDocLine(docLine)
 
         return super.modelFieldGenerated(field, topLevelClass, introspectedColumn, introspectedTable, modelClassType)
@@ -45,10 +56,9 @@ class CommentPlugin : PluginAdapter() {
         introspectedTable: IntrospectedTable, modelClassType: ModelClassType,
     ): Boolean {
         val docLine = """
-                    /**
-                     * 获取${introspectedColumn.remarks}
-                     */
-                     """.trimIndent()
+    /**
+     * 获取${introspectedColumn.remarks}
+     */""".trimStart()
         method.addJavaDocLine(docLine)
 
         return super.modelGetterMethodGenerated(
@@ -66,10 +76,9 @@ class CommentPlugin : PluginAdapter() {
     ): Boolean {
         // 添加entity set方法注释
         val docLine = """
-                    /**
-                     * 设置${introspectedColumn.remarks}
-                     */
-                     """.trimIndent()
+    /**
+     * 设置${introspectedColumn.remarks}
+     */""".trimStart()
         method.addJavaDocLine(docLine)
 
         return super.modelGetterMethodGenerated(
@@ -89,7 +98,7 @@ class CommentPlugin : PluginAdapter() {
         val docLine = """
                     /**
                      * 请勿手工改动此文件,请使用 mybatis generator
-                     * 
+                     *
                      * @author mybatis generator
                      */
                      """.trimIndent()
@@ -106,7 +115,7 @@ class CommentPlugin : PluginAdapter() {
         val docLine = """
                     /**
                      * 操纵${introspectedTable.remarks},请勿手工改动此文件,请使用 mybatis generator
-                     * 
+                     *
                      * @author mybatis generator
                      */
                      """.trimIndent()

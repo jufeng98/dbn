@@ -9,13 +9,8 @@ import org.mybatis.generator.api.dom.java.Field
 import org.mybatis.generator.api.dom.java.FullyQualifiedJavaType
 import org.mybatis.generator.api.dom.java.JavaVisibility
 import org.mybatis.generator.api.dom.java.TopLevelClass
-import org.mybatis.generator.config.Context
 
 class StaticFieldNamePlugin : PluginAdapter() {
-
-    override fun setContext(context: Context) {
-        super.setContext(context)
-    }
 
     override fun validate(warnings: List<String>): Boolean {
         return true
@@ -34,7 +29,7 @@ class StaticFieldNamePlugin : PluginAdapter() {
 
     private fun createConstField(field: Field): Field {
         val stringInstance = FullyQualifiedJavaType.getStringInstance()
-        val constField = Field(StringUtil.wordsToConstantCase(field.name), stringInstance)
+        val constField = Field(StringUtil.wordsAndHyphenAndCamelToConstantCase(field.name), stringInstance)
         constField.setInitializationString("\"" + field.name + "\"")
         constField.isTransient = false
         constField.isVolatile = false

@@ -10,6 +10,7 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.TextBrowseFolderListener;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
+import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.psi.PsiPackage;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBTextField;
@@ -258,6 +259,9 @@ public class GeneratorSettingsForm {
         settings.setHistoryConfigMap(historyConfigMap);
 
         DbnMyBatisGenerator dbnMyBatisGenerator = DbnMyBatisGenerator.createInstance(dbTable, config);
+
         dbnMyBatisGenerator.generator();
+
+        VirtualFileManager.getInstance().asyncRefresh(null);
     }
 }

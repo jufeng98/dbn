@@ -9,9 +9,11 @@ import com.dbn.driver.DriverBundle;
 import com.dbn.mybatis.model.Config;
 import com.dbn.mybatis.plugin.CommentPlugin;
 import com.dbn.mybatis.plugin.EqualsHashToStringPlugin;
+import com.dbn.mybatis.plugin.LombokPlugin;
 import com.dbn.mybatis.plugin.StaticFieldNamePlugin;
 import com.dbn.mybatis.plugins.EnumsPlugin;
 import com.dbn.object.DBTable;
+import com.dbn.utils.NotifyUtil;
 import com.intellij.openapi.util.io.StreamUtil;
 import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
@@ -67,6 +69,7 @@ public class DbnMyBatisGenerator {
 
     static {
         try {
+            //noinspection HttpUrlsUsage
             FACTORY.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
         } catch (ParserConfigurationException e) {
             throw new RuntimeException(e);
@@ -125,10 +128,7 @@ public class DbnMyBatisGenerator {
             Thread.currentThread().setContextClassLoader(classLoader);
         }
 
-        log.warn("生成情况:");
-        for (String warning : warnings) {
-            log.warn(warning);
-        }
+        NotifyUtil.INSTANCE.notifyDbToolWindowInfo(dbTable.getProject(), "生成情况:\r\n" + String.join("\r\n", warnings));
 
         dbnMyBatisGenerator = null;
     }
@@ -193,13 +193,16 @@ public class DbnMyBatisGenerator {
         if (config.isComment()) {
             addPlugin(context, CommentPlugin.class);
         }
+
+        if (config.isUseLombokPlugin()) {
+            addPlugin(context, LombokPlugin.class);
+        }
     }
 
     private String readAndModifyConfigFile(Properties properties) throws Exception {
         URL url = getClass().getClassLoader().getResource("mybatis/generatorConfig.xml");
 
         @Cleanup
-        @SuppressWarnings("DataFlowIssue")
         InputStream inputStream = url.openStream();
         String str = new String(StreamUtil.readBytes(inputStream));
         Matcher matcher = VARIABLE_PATTERN.matcher(str);
