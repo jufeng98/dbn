@@ -24,7 +24,10 @@ import java.sql.Driver;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.dbn.common.ui.util.ComboBoxes.*;
+import static com.dbn.common.ui.util.ComboBoxes.getElements;
+import static com.dbn.common.ui.util.ComboBoxes.getSelection;
+import static com.dbn.common.ui.util.ComboBoxes.initComboBox;
+import static com.dbn.common.ui.util.ComboBoxes.setSelection;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -41,7 +44,9 @@ public class ConnectionDriverSettingsForm extends DBNFormBase {
     private HyperlinkLabel reloadDriversLink;
     private JLabel reloadDriversCheckLabel;
 
-    /** allow select a single jar file or a directory */
+    /**
+     * allow select a single jar file or a directory
+     */
     private static final FileChooserDescriptor LIBRARY_FILE_DESCRIPTOR = new FileChooserDescriptor(false, true, true, true, false, false);
 
     ConnectionDriverSettingsForm(@NotNull ConnectionDatabaseSettingsForm parent) {
@@ -59,11 +64,9 @@ public class ConnectionDriverSettingsForm extends DBNFormBase {
         });
 
         // TODO NLS
-        //noinspection removal
-        driverLibraryTextField.addBrowseFolderListener(
-                nls("cfg.connection.title.SelectDriverLibrary"),
-                nls("cfg.connection.text.LibraryDriverClasses"),
-                null, LIBRARY_FILE_DESCRIPTOR);
+        LIBRARY_FILE_DESCRIPTOR.withTitle(nls("cfg.connection.title.SelectDriverLibrary"))
+                .withDescription(nls("cfg.connection.text.LibraryDriverClasses"));
+        driverLibraryTextField.addBrowseFolderListener(null, LIBRARY_FILE_DESCRIPTOR);
 
         reloadDriversCheckLabel.setText("");
         reloadDriversCheckLabel.setIcon(Icons.COMMON_CHECK);

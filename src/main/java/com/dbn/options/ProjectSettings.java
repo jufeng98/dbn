@@ -16,6 +16,7 @@ import com.dbn.ddl.options.DDLFileSettings;
 import com.dbn.editor.code.options.CodeEditorSettings;
 import com.dbn.editor.data.options.DataEditorSettings;
 import com.dbn.execution.common.options.ExecutionEngineSettings;
+import com.dbn.mybatis.settings.MyBatisSettings;
 import com.dbn.navigation.options.NavigationSettings;
 import com.dbn.options.general.GeneralProjectSettings;
 import com.dbn.options.ui.ProjectSettingsForm;
@@ -34,21 +35,22 @@ import javax.swing.*;
 
 @EqualsAndHashCode(callSuper = false)
 public class ProjectSettings
-        extends CompositeProjectConfiguration<ProjectConfiguration, ProjectSettingsForm>
+        extends CompositeProjectConfiguration<ProjectConfiguration<?, ?>, ProjectSettingsForm>
         implements SearchableConfigurable.Parent, Cloneable<ProjectSettings> {
 
-    private final @Getter(lazy = true) GeneralProjectSettings generalSettings           = new GeneralProjectSettings(this);
-    private final @Getter(lazy = true) DatabaseBrowserSettings browserSettings          = new DatabaseBrowserSettings(this);
-    private final @Getter(lazy = true) NavigationSettings navigationSettings            = new NavigationSettings(this);
-    private final @Getter(lazy = true) DataGridSettings dataGridSettings                = new DataGridSettings(this);
-    private final @Getter(lazy = true) DataEditorSettings dataEditorSettings            = new DataEditorSettings(this);
-    private final @Getter(lazy = true) CodeEditorSettings codeEditorSettings            = new CodeEditorSettings(this);
-    private final @Getter(lazy = true) CodeCompletionSettings codeCompletionSettings    = new CodeCompletionSettings(this);
-    private final @Getter(lazy = true) ProjectCodeStyleSettings codeStyleSettings       = new ProjectCodeStyleSettings(this);
-    private final @Getter(lazy = true) ExecutionEngineSettings executionEngineSettings  = new ExecutionEngineSettings(this);
-    private final @Getter(lazy = true) OperationSettings operationSettings              = new OperationSettings(this);
-    private final @Getter(lazy = true) DDLFileSettings ddlFileSettings                  = new DDLFileSettings(this);
-    private final @Getter(lazy = true) ConnectionBundleSettings connectionSettings      = new ConnectionBundleSettings(this);
+    private final @Getter(lazy = true) GeneralProjectSettings generalSettings = new GeneralProjectSettings(this);
+    private final @Getter(lazy = true) DatabaseBrowserSettings browserSettings = new DatabaseBrowserSettings(this);
+    private final @Getter(lazy = true) NavigationSettings navigationSettings = new NavigationSettings(this);
+    private final @Getter(lazy = true) DataGridSettings dataGridSettings = new DataGridSettings(this);
+    private final @Getter(lazy = true) DataEditorSettings dataEditorSettings = new DataEditorSettings(this);
+    private final @Getter(lazy = true) CodeEditorSettings codeEditorSettings = new CodeEditorSettings(this);
+    private final @Getter(lazy = true) CodeCompletionSettings codeCompletionSettings = new CodeCompletionSettings(this);
+    private final @Getter(lazy = true) ProjectCodeStyleSettings codeStyleSettings = new ProjectCodeStyleSettings(this);
+    private final @Getter(lazy = true) ExecutionEngineSettings executionEngineSettings = new ExecutionEngineSettings(this);
+    private final @Getter(lazy = true) OperationSettings operationSettings = new OperationSettings(this);
+    private final @Getter(lazy = true) DDLFileSettings ddlFileSettings = new DDLFileSettings(this);
+    private final @Getter(lazy = true) MyBatisSettings myBatisSettings = new MyBatisSettings(this);
+    private final @Getter(lazy = true) ConnectionBundleSettings connectionSettings = new ConnectionBundleSettings(this);
 
     public ProjectSettings(Project project) {
         super(project);
@@ -70,7 +72,7 @@ public class ProjectSettings
         if (settingsEditor == null) {
             return super.getHelpTopic();
         } else {
-            Configuration selectedConfiguration = settingsEditor.getActiveSettings();
+            Configuration<?, ?> selectedConfiguration = settingsEditor.getActiveSettings();
             return selectedConfiguration.getHelpTopic();
         }
     }
@@ -86,6 +88,7 @@ public class ProjectSettings
         return new JPanel();
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public JComponent createCustomComponent() {
         return super.createComponent();
     }
@@ -103,20 +106,20 @@ public class ProjectSettings
         return Icons.DATABASE_NAVIGATOR;
     }
 
-    @NotNull
     @Override
-    public Configurable[] getConfigurables() {
+    public Configurable @NotNull [] getConfigurables() {
         return getConfigurations();
     }
 
     @Nullable
-    public Configuration getConfiguration(ConfigId settingsId) {
+    public Configuration<?, ?> getConfiguration(ConfigId settingsId) {
         for (Configurable configurable : getConfigurables()) {
-            TopLevelConfig topLevelConfig = (TopLevelConfig) configurable;
+            TopLevelConfig<?, ?> topLevelConfig = (TopLevelConfig<?, ?>) configurable;
             if (topLevelConfig.getConfigId() == settingsId) {
-                return (Configuration) configurable;
+                return (Configuration<?, ?>) configurable;
             }
         }
+
         return null;
     }
 
@@ -131,8 +134,8 @@ public class ProjectSettings
     }
 
     @Override
-    protected Configuration[] createConfigurations() {
-        return new Configuration[] {
+    protected Configuration<?,?>[] createConfigurations() {
+        return new Configuration[]{
                 getConnectionSettings(),
                 getBrowserSettings(),
                 getNavigationSettings(),
@@ -144,12 +147,13 @@ public class ProjectSettings
                 getExecutionEngineSettings(),
                 getOperationSettings(),
                 getDdlFileSettings(),
-                getGeneralSettings()};
+                getGeneralSettings(),
+                getMyBatisSettings()};
     }
 
     /*********************************************************
-    *              SearchableConfigurable.Parent             *
-    *********************************************************/
+     *              SearchableConfigurable.Parent             *
+     *********************************************************/
     @Override
     public boolean hasOwnContent() {
         return false;
@@ -161,11 +165,7 @@ public class ProjectSettings
         return "DBNavigator.Project.Settings";
     }
 
-    @Override
-    public Runnable enableSearch(String option) {
-        return null;
-    }
-
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
     public ProjectSettings clone() {
         try {

@@ -19,7 +19,7 @@ import static com.dbn.common.options.setting.Settings.stringAttribute;
 
 @Getter
 @Setter
-public abstract class DatasetFilterImpl extends BasicConfiguration<DatasetFilterGroup, ConfigurationEditorForm> implements DatasetFilter {
+public abstract class DatasetFilterImpl extends BasicConfiguration<DatasetFilterGroup, ConfigurationEditorForm<?>> implements DatasetFilter {
     private final DatasetFilterGroup filterGroup;
     private final DatasetFilterType filterType;
 
@@ -66,10 +66,9 @@ public abstract class DatasetFilterImpl extends BasicConfiguration<DatasetFilter
 
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (obj instanceof DatasetFilter) {
-            DatasetFilter remote = (DatasetFilter) obj;
+        if (obj instanceof DatasetFilter remote) {
             return Objects.equals(remote.getFilterGroup(), filterGroup) &&
-                   Objects.equals(remote.getId(), id);
+                    Objects.equals(remote.getId(), id);
         }
         return false;
     }

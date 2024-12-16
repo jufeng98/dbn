@@ -269,8 +269,8 @@ public abstract class DBJdbcDebugProcess<T extends ExecutionInput> extends XDebu
      */
     private void registerBreakpoints(Runnable callback) {
         console.system("Registering breakpoints...");
-        //noinspection rawtypes
-        List<XLineBreakpoint<XBreakpointProperties>> breakpoints = DBBreakpointUtil.getDatabaseBreakpoints(getConnection());
+        //noinspection
+        List<XLineBreakpoint<XBreakpointProperties<?>>>  breakpoints = DBBreakpointUtil.getDatabaseBreakpoints(getConnection());
 
         getBreakpointHandler().registerBreakpoints(breakpoints, null);
         registerDefaultBreakpoint();
@@ -284,12 +284,11 @@ public abstract class DBJdbcDebugProcess<T extends ExecutionInput> extends XDebu
     /**
      * breakpoints need to be unregistered before closing the database session, otherwise they remain resident.
      */
-    @SuppressWarnings("rawtypes")
     private void unregisterBreakpoints() {
-        Collection<XLineBreakpoint<XBreakpointProperties>> breakpoints = DBBreakpointUtil.getDatabaseBreakpoints(getConnection());
+        List<XLineBreakpoint<XBreakpointProperties<?>>> breakpoints = DBBreakpointUtil.getDatabaseBreakpoints(getConnection());
         Set<Integer> unregisteredBreakpointIds = new HashSet<>();
         DBBreakpointHandler<?> breakpointHandler = getBreakpointHandler();
-        for (XLineBreakpoint<XBreakpointProperties> breakpoint : breakpoints) {
+        for (XLineBreakpoint<XBreakpointProperties<?>> breakpoint : breakpoints) {
             Integer breakpointId = DBBreakpointUtil.getBreakpointId(breakpoint);
             if (breakpointId == null) continue;
 

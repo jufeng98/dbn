@@ -16,7 +16,7 @@ import javax.swing.*;
 
 import static com.dbn.common.dispose.Checks.isValid;
 
-public abstract class BasicConfiguration<P extends Configuration, E extends ConfigurationEditorForm>
+public abstract class BasicConfiguration<P extends Configuration<?, ?>, E extends ConfigurationEditorForm<?>>
         extends AbstractConfiguration<P, E> {
 
     private final transient boolean transitory = ConfigurationHandle.isTransitory();
@@ -104,10 +104,9 @@ public abstract class BasicConfiguration<P extends Configuration, E extends Conf
         }
         modified = false;
 
-        if (this instanceof TopLevelConfig) {
-            TopLevelConfig topLevelConfig = (TopLevelConfig) this;
-            Configuration originalSettings = topLevelConfig.getOriginalSettings();
-            if (originalSettings != this ) {
+        if (this instanceof TopLevelConfig<?, ?> topLevelConfig) {
+            Configuration<?, ?> originalSettings = topLevelConfig.getOriginalSettings();
+            if (originalSettings != this) {
                 Element settingsElement = new Element("settings");
                 writeConfiguration(settingsElement);
                 originalSettings.readConfiguration(settingsElement);

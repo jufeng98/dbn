@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import static com.dbn.common.dispose.Failsafe.nd;
 import static com.dbn.common.util.Unsafe.cast;
 
-public interface Configuration<P extends Configuration, E extends ConfigurationEditorForm>
+public interface Configuration<P extends Configuration<?, ?>, E extends ConfigurationEditorForm<?>>
         extends SearchableConfigurable, PersistentConfiguration, NlsSupport {
 
     @Nullable

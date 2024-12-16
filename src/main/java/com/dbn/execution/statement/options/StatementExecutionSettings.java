@@ -16,9 +16,7 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = false)
-public class StatementExecutionSettings extends BasicProjectConfiguration<ExecutionEngineSettings, ConfigurationEditorForm> implements ExecutionTimeoutSettings, ProjectSupplier {
-    private static final String REMEMBER_OPTION_HINT = ""/*"\n\n(you can remember your option and change it at any time in Settings > Execution Engine > Statement Execution)"*/;
-
+public class StatementExecutionSettings extends BasicProjectConfiguration<ExecutionEngineSettings, ConfigurationEditorForm<?>> implements ExecutionTimeoutSettings, ProjectSupplier {
     private int resultSetFetchBlockSize = 100;
     private int executionTimeout = 20;
     private int debugExecutionTimeout = 600;
@@ -44,7 +42,7 @@ public class StatementExecutionSettings extends BasicProjectConfiguration<Execut
      ****************************************************/
     @Override
     @NotNull
-    public ConfigurationEditorForm createConfigurationEditor() {
+    public ConfigurationEditorForm<?> createConfigurationEditor() {
         return new StatementExecutionSettingsForm(this);
     }
 

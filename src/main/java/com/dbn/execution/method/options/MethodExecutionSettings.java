@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = false)
-public class MethodExecutionSettings extends BasicProjectConfiguration<ExecutionEngineSettings, ConfigurationEditorForm> implements ExecutionTimeoutSettings, ProjectSupplier {
+public class MethodExecutionSettings extends BasicProjectConfiguration<ExecutionEngineSettings, ConfigurationEditorForm<?>> implements ExecutionTimeoutSettings, ProjectSupplier {
     private int executionTimeout = 30;
     private int debugExecutionTimeout = 600;
     private int parameterHistorySize = 10;
@@ -40,7 +40,7 @@ public class MethodExecutionSettings extends BasicProjectConfiguration<Execution
      ****************************************************/
     @Override
     @NotNull
-    public ConfigurationEditorForm createConfigurationEditor() {
+    public ConfigurationEditorForm<?> createConfigurationEditor() {
         return new MethodExecutionSettingsForm(this);
     }
 

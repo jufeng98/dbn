@@ -283,8 +283,8 @@ public abstract class DBJdwpDebugProcess<T extends ExecutionInput>
     private void initializeBreakpoints() {
         console.system("Registering breakpoints...");
         List<DBMethod> methods = getRunProfile().getMethods();
-        //noinspection rawtypes
-        List<XLineBreakpoint<XBreakpointProperties>> breakpoints = DBBreakpointUtil.getDatabaseBreakpoints(getConnection());
+        //noinspection
+        List<XLineBreakpoint<XBreakpointProperties<?>>> breakpoints = DBBreakpointUtil.getDatabaseBreakpoints(getConnection());
         getBreakpointHandler().registerBreakpoints(breakpoints, methods);
     }
 

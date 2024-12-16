@@ -13,7 +13,9 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.awt.event.ActionListener;
 
-import static com.dbn.common.ui.util.ComboBoxes.*;
+import static com.dbn.common.ui.util.ComboBoxes.getSelection;
+import static com.dbn.common.ui.util.ComboBoxes.initComboBox;
+import static com.dbn.common.ui.util.ComboBoxes.setSelection;
 
 public class ConnectionSshTunnelSettingsForm extends ConfigurationEditorForm<ConnectionSshTunnelSettings> {
     private JPanel mainPanel;
@@ -42,10 +44,10 @@ public class ConnectionSshTunnelSettingsForm extends ConfigurationEditorForm<Con
         showHideFields();
         registerComponent(mainPanel);
 
-        keyFileField.addBrowseFolderListener(
-                nls("cfg.connection.title.SelectPrivateKeyFile"),
-                "",
-                null, new FileChooserDescriptor(true, false, false, false, false, false));
+        FileChooserDescriptor fileChooserDescriptor = new FileChooserDescriptor(true, false,
+                false, false, false, false);
+        fileChooserDescriptor.withTitle(nls("cfg.connection.title.SelectPrivateKeyFile")).withDescription("");
+        keyFileField.addBrowseFolderListener(null, fileChooserDescriptor);
     }
 
     @NotNull

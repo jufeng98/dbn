@@ -9,20 +9,20 @@ import lombok.Getter;
 import org.jdom.Element;
 
 @EqualsAndHashCode(callSuper = false)
-public abstract class CompositeConfiguration<P extends Configuration, E extends CompositeConfigurationEditorForm>
+public abstract class CompositeConfiguration<P extends Configuration<?, ?>, E extends CompositeConfigurationEditorForm<?>>
         extends BasicConfiguration<P, E> {
 
-    private final @Getter(lazy = true) Configuration[] configurations = createConfigurations();
+    private final @Getter(lazy = true) Configuration<?, ?>[] configurations = createConfigurations();
 
     public CompositeConfiguration(P parent) {
         super(parent);
     }
 
-    protected abstract Configuration[] createConfigurations();
+    protected abstract Configuration<?, ?>[] createConfigurations();
 
     @Override
     public final boolean isModified() {
-        for (Configuration configuration : getConfigurations()) {
+        for (Configuration<?, ?> configuration : getConfigurations()) {
             if (configuration.isModified()) return true;
         }
         return super.isModified();
@@ -34,7 +34,7 @@ public abstract class CompositeConfiguration<P extends Configuration, E extends 
         if (this instanceof TopLevelConfig && settingsEditor != null) {
             UserInterface.stopTableCellEditing(settingsEditor.getComponent());
         }
-        for (Configuration configuration : getConfigurations()) {
+        for (Configuration<?, ?> configuration : getConfigurations()) {
             configuration.apply();
         }
         super.apply();
@@ -42,7 +42,7 @@ public abstract class CompositeConfiguration<P extends Configuration, E extends 
 
     @Override
     public final void reset() {
-        for (Configuration configuration : getConfigurations()) {
+        for (Configuration<?, ?> configuration : getConfigurations()) {
             configuration.reset();
         }
         super.reset();
@@ -51,23 +51,23 @@ public abstract class CompositeConfiguration<P extends Configuration, E extends 
     @Override
     public final void disposeUIResources() {
         super.disposeUIResources();
-        for (Configuration configuration : getConfigurations()) {
+        for (Configuration<?, ?> configuration : getConfigurations()) {
             configuration.disposeUIResources();
         }
     }
 
     @Override
     public void readConfiguration(Element element) {
-        Configuration[] configurations = getConfigurations();
-        for (Configuration configuration : configurations) {
+        Configuration<?, ?>[] configurations = getConfigurations();
+        for (Configuration<?, ?> configuration : configurations) {
             readConfiguration(element, configuration);
         }
     }
 
     @Override
     public void writeConfiguration(Element element) {
-        Configuration[] configurations = getConfigurations();
-        for (Configuration configuration : configurations) {
+        Configuration<?, ?>[] configurations = getConfigurations();
+        for (Configuration<?, ?> configuration : configurations) {
             writeConfiguration(element, configuration);
         }
     }

@@ -7,7 +7,7 @@ import com.dbn.project.ProjectStateManager;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class BasicProjectConfiguration<P extends ProjectConfiguration, E extends ConfigurationEditorForm>
+public abstract class BasicProjectConfiguration<P extends ProjectConfiguration<?, ?>, E extends ConfigurationEditorForm<?>>
         extends BasicConfiguration<P, E>
         implements ProjectConfiguration<P, E> {
 
@@ -24,6 +24,7 @@ public abstract class BasicProjectConfiguration<P extends ProjectConfiguration, 
         ProjectStateManager.registerDisposable(project, this);
     }
 
+    @SuppressWarnings("DataFlowIssue")
     @NotNull
     @Override
     public Project getProject() {

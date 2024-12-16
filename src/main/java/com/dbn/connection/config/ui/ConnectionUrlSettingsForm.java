@@ -27,10 +27,15 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
 
-import static com.dbn.common.ui.util.ComboBoxes.*;
+import static com.dbn.common.ui.util.ComboBoxes.getSelection;
+import static com.dbn.common.ui.util.ComboBoxes.initComboBox;
+import static com.dbn.common.ui.util.ComboBoxes.setSelection;
 import static com.dbn.common.ui.util.TextFields.onTextChange;
 import static com.dbn.common.util.Commons.coalesce;
 import static com.dbn.common.util.Commons.nvl;
@@ -69,12 +74,11 @@ public class ConnectionUrlSettingsForm extends DBNFormBase {
 
         updateTnsAdminField();
 
-        FileChooserDescriptor tnsFolderChooserDesc = new FileChooserDescriptor(false, true, false, false, false, false);
-        //noinspection removal
-        tnsFolderTextField.addBrowseFolderListener(
-                nls("cfg.connection.title.SelectWalletDirectory"),
-                nls("cfg.connection.text.ValidTnsNamesFolder"),
-                null, tnsFolderChooserDesc);
+        FileChooserDescriptor tnsFolderChooserDesc = new FileChooserDescriptor(false, true, false,
+                false, false, false);
+        tnsFolderChooserDesc.withTitle(nls("cfg.connection.title.SelectWalletDirectory"))
+                .withDescription(nls("cfg.connection.text.ValidTnsNamesFolder"));
+        tnsFolderTextField.addBrowseFolderListener(null, tnsFolderChooserDesc);
 
         onTextChange(hostTextField, e -> updateUrlField());
         onTextChange(portTextField, e -> updateUrlField());
@@ -151,7 +155,7 @@ public class ConnectionUrlSettingsForm extends DBNFormBase {
                 getHost(),
                 getPort(),
                 getDatabase(),
-                getMainFilePath() ,
+                getMainFilePath(),
                 getTnsAdmin(),
                 getTnsProfile());
         urlTextField.setText(url);

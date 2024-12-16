@@ -1,9 +1,9 @@
 package com.dbn.common.environment.options;
 
-import com.dbn.common.environment.options.ui.EnvironmentSettingsForm;
 import com.dbn.common.environment.EnvironmentType;
 import com.dbn.common.environment.EnvironmentTypeBundle;
 import com.dbn.common.environment.EnvironmentTypeId;
+import com.dbn.common.environment.options.ui.EnvironmentSettingsForm;
 import com.dbn.common.options.BasicProjectConfiguration;
 import com.dbn.common.options.ui.ConfigurationEditorForm;
 import com.dbn.options.general.GeneralProjectSettings;
@@ -20,7 +20,7 @@ import static com.dbn.common.options.setting.Settings.newElement;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = false)
-public class EnvironmentSettings extends BasicProjectConfiguration<GeneralProjectSettings, ConfigurationEditorForm> {
+public class EnvironmentSettings extends BasicProjectConfiguration<GeneralProjectSettings, ConfigurationEditorForm<?>> {
     private EnvironmentTypeBundle environmentTypes = new EnvironmentTypeBundle(EnvironmentTypeBundle.DEFAULT);
     private EnvironmentVisibilitySettings visibilitySettings = new EnvironmentVisibilitySettings();
 
@@ -30,7 +30,7 @@ public class EnvironmentSettings extends BasicProjectConfiguration<GeneralProjec
 
     @NotNull
     @Override
-    public ConfigurationEditorForm createConfigurationEditor() {
+    public ConfigurationEditorForm<?> createConfigurationEditor() {
         return new EnvironmentSettingsForm(this);
     }
 

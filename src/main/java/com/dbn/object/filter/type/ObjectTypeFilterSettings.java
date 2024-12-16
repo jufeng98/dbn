@@ -27,7 +27,7 @@ import static com.dbn.common.options.setting.Settings.stringAttribute;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = false)
-public class ObjectTypeFilterSettings extends BasicProjectConfiguration<ProjectConfiguration, ObjectTypeFilterSettingsForm> {
+public class ObjectTypeFilterSettings extends BasicProjectConfiguration<ProjectConfiguration<?,?>, ObjectTypeFilterSettingsForm> {
     private final List<ObjectTypeFilterSetting> settings = Arrays.asList(
             new ObjectTypeFilterSetting(this, DBObjectType.SCHEMA),
             new ObjectTypeFilterSetting(this, DBObjectType.USER),
@@ -59,7 +59,7 @@ public class ObjectTypeFilterSettings extends BasicProjectConfiguration<ProjectC
 
     private transient final ConnectionId connectionId;
 
-    public ObjectTypeFilterSettings(ProjectConfiguration parent, @Nullable ConnectionId connectionId) {
+    public ObjectTypeFilterSettings(ProjectConfiguration<?,?> parent, @Nullable ConnectionId connectionId) {
         super(parent);
         this.connectionId = connectionId;
     }
@@ -88,14 +88,12 @@ public class ObjectTypeFilterSettings extends BasicProjectConfiguration<ProjectC
             return false;
         }
 
-        if (treeNode instanceof DBObject) {
-            DBObject object = (DBObject) treeNode;
+        if (treeNode instanceof DBObject object) {
             DBObjectType objectType = object.getObjectType();
             return isVisible(objectType);
         }
 
-        if (treeNode instanceof DBObjectList) {
-            DBObjectList objectList = (DBObjectList) treeNode;
+        if (treeNode instanceof DBObjectList<?> objectList) {
             return isVisible(objectList.getObjectType());
         }
 

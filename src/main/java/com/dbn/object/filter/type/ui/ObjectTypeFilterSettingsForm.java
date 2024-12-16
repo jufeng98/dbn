@@ -22,7 +22,7 @@ public class ObjectTypeFilterSettingsForm extends ConfigurationEditorForm<Object
     private JScrollPane visibleObjectsScrollPane;
     private JCheckBox useMasterSettingsCheckBox;
     private JLabel visibleObjectTypesLabel;
-    private CheckBoxList<ObjectTypeFilterSetting> visibleObjectsList;
+    private final CheckBoxList<ObjectTypeFilterSetting> visibleObjectsList;
 
     public ObjectTypeFilterSettingsForm(ObjectTypeFilterSettings configuration) {
         super(configuration);
