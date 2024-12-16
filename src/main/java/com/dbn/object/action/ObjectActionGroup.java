@@ -10,10 +10,15 @@ import com.dbn.execution.method.action.ProgramMethodDebugAction;
 import com.dbn.execution.method.action.ProgramMethodRunAction;
 import com.dbn.generator.action.GenerateStatementActionGroup;
 import com.dbn.generator.action.OtherActionGroup;
-import com.dbn.object.*;
+import com.dbn.mybatis.action.MyBatisGeneratorAction;
+import com.dbn.object.DBColumn;
+import com.dbn.object.DBConsole;
+import com.dbn.object.DBMethod;
+import com.dbn.object.DBProgram;
+import com.dbn.object.DBSchema;
+import com.dbn.object.DBTable;
 import com.dbn.object.common.DBObject;
 import com.dbn.object.common.DBSchemaObject;
-import com.dbn.object.*;
 import com.dbn.object.common.list.DBObjectNavigationList;
 import com.dbn.object.common.list.action.HideAuditColumnsToggleAction;
 import com.dbn.object.common.list.action.HideEmptySchemasToggleAction;
@@ -26,19 +31,23 @@ import com.intellij.openapi.project.DumbAware;
 
 import java.util.List;
 
-import static com.dbn.object.common.property.DBObjectProperty.*;
+import static com.dbn.object.common.property.DBObjectProperty.COMPILABLE;
+import static com.dbn.object.common.property.DBObjectProperty.DISABLEABLE;
+import static com.dbn.object.common.property.DBObjectProperty.EDITABLE;
+import static com.dbn.object.common.property.DBObjectProperty.REFERENCEABLE;
+import static com.dbn.object.common.property.DBObjectProperty.SCHEMA_OBJECT;
 
 public class ObjectActionGroup extends DefaultActionGroup implements DumbAware {
 
+    @SuppressWarnings("rawtypes")
     public ObjectActionGroup(DBObject object) {
-        if(object instanceof DBSchemaObject) {
-            DBSchemaObject schemaObject = (DBSchemaObject) object;
+        if (object instanceof DBSchemaObject schemaObject) {
 
             if (object.is(EDITABLE)) {
                 DBContentType contentType = schemaObject.getContentType();
                 if (contentType == DBContentType.DATA || contentType == DBContentType.CODE_AND_DATA) {
                     add(new ObjectEditDataAction(schemaObject));
-                } 
+                }
 
                 if (contentType == DBContentType.CODE || contentType == DBContentType.CODE_AND_DATA || contentType == DBContentType.CODE_SPEC_AND_BODY) {
                     if (DatabaseFeature.OBJECT_SOURCE_EDITING.isSupported(object)) {
@@ -81,10 +90,10 @@ public class ObjectActionGroup extends DefaultActionGroup implements DumbAware {
             }
         }
 
-        if(object instanceof DBSchemaObject) {
-            if(object.is(REFERENCEABLE) && DatabaseFeature.OBJECT_DEPENDENCIES.isSupported(object)) {
+        if (object instanceof DBSchemaObject) {
+            if (object.is(REFERENCEABLE) && DatabaseFeature.OBJECT_DEPENDENCIES.isSupported(object)) {
                 addSeparator();
-                add (new ObjectDependencyTreeAction((DBSchemaObject) object));
+                add(new ObjectDependencyTreeAction((DBSchemaObject) object));
             }
         }
 
@@ -102,8 +111,7 @@ public class ObjectActionGroup extends DefaultActionGroup implements DumbAware {
             }
         }
         ConnectionHandler connection = object.getConnection();
-        if (object instanceof DBConsole) {
-            DBConsole console = (DBConsole) object;
+        if (object instanceof DBConsole console) {
             add(new ConsoleRenameAction(console));
             add(new ConsoleDeleteAction(console));
             addSeparator();
@@ -112,8 +120,8 @@ public class ObjectActionGroup extends DefaultActionGroup implements DumbAware {
                 add(new ConsoleCreateAction(connection, DBConsoleType.DEBUG));
             }
         }
-        
-        if (getChildrenCount() > 0){
+
+        if (getChildrenCount() > 0) {
             addSeparator();
         }
         addActionGroup(new GenerateStatementActionGroup(object));
@@ -127,6 +135,9 @@ public class ObjectActionGroup extends DefaultActionGroup implements DumbAware {
         }
         add(new RefreshActionGroup(object));
 
+        if (object instanceof DBTable dbTable) {
+            add(new MyBatisGeneratorAction(dbTable));
+        }
         //add(new ObjectPropertiesAction(object));
         //add(new TestAction(object));
     }
@@ -137,7 +148,6 @@ public class ObjectActionGroup extends DefaultActionGroup implements DumbAware {
         }
 
     }
-
 
 
 }

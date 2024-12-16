@@ -22,7 +22,7 @@ import static com.dbn.common.options.setting.Settings.*;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = false)
-public class AuthenticationInfo extends BasicConfiguration<ConnectionDatabaseSettings, ConfigurationEditorForm> implements Cloneable<AuthenticationInfo>, TimeAware {
+public class AuthenticationInfo extends BasicConfiguration<ConnectionDatabaseSettings, ConfigurationEditorForm<?>> implements Cloneable<AuthenticationInfo>, TimeAware {
     @Deprecated // TODO move to keychain
     private static final String OLD_PWD_ATTRIBUTE = "password";
     @Deprecated // TODO move to keychain
@@ -40,6 +40,7 @@ public class AuthenticationInfo extends BasicConfiguration<ConnectionDatabaseSet
         this.temporary = temporary;
     }
 
+    @SuppressWarnings("DataFlowIssue")
     public ConnectionId getConnectionId() {
         return getParent().getConnectionId();
     }
@@ -49,13 +50,12 @@ public class AuthenticationInfo extends BasicConfiguration<ConnectionDatabaseSet
     }
 
     public boolean isProvided() {
-        switch (type) {
-            case NONE: return true;
-            case USER: return Strings.isNotEmpty(user);
-            case USER_PASSWORD: return Strings.isNotEmpty(user) && Strings.isNotEmpty(password);
-            case OS_CREDENTIALS: return true;
-        }
-        return true;
+        return switch (type) {
+            case NONE -> true;
+            case USER -> Strings.isNotEmpty(user);
+            case USER_PASSWORD -> Strings.isNotEmpty(user) && Strings.isNotEmpty(password);
+            case OS_CREDENTIALS -> true;
+        };
     }
 
     public boolean isSame(AuthenticationInfo authenticationInfo) {
@@ -88,6 +88,7 @@ public class AuthenticationInfo extends BasicConfiguration<ConnectionDatabaseSet
 
         type = getEnum(element, "type", type);
 
+        @SuppressWarnings("DataFlowIssue")
         AuthenticationType[] supportedAuthTypes = getParent().getDatabaseType().getAuthTypes();
         if (!Constants.isOneOf(type, supportedAuthTypes)) {
             type = supportedAuthTypes[0];
@@ -112,6 +113,7 @@ public class AuthenticationInfo extends BasicConfiguration<ConnectionDatabaseSet
         }
     }
 
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
     public AuthenticationInfo clone() {
         AuthenticationInfo authenticationInfo = new AuthenticationInfo(getParent(), temporary);

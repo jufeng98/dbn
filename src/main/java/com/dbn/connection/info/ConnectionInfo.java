@@ -2,7 +2,7 @@ package com.dbn.connection.info;
 
 import com.dbn.common.util.Unsafe;
 import com.dbn.connection.DatabaseType;
-import lombok.Value;
+import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.DatabaseMetaData;
@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 import static com.dbn.common.util.Strings.toLowerCase;
 
-@Value
+@Data
 public class ConnectionInfo {
     private final DatabaseType databaseType;
     private final String productName;
@@ -24,8 +24,8 @@ public class ConnectionInfo {
     public ConnectionInfo(DatabaseMetaData metaData) throws SQLException {
         productName = metaData.getDatabaseProductName();
         productVersion = resolveProductVersion(metaData);
-        driverName = Unsafe.silent("UNKNOWN", metaData, md -> md.getDriverName());
-        driverVersion = Unsafe.silent("UNKNOWN", metaData, md -> md.getDriverVersion());
+        driverName = Unsafe.silent("UNKNOWN", metaData, DatabaseMetaData::getDriverName);
+        driverVersion = Unsafe.silent("UNKNOWN", metaData, DatabaseMetaData::getDriverVersion);
         url = metaData.getURL();
         userName = metaData.getUserName();
         driverJdbcType = resolveDriverType(metaData);
@@ -33,27 +33,18 @@ public class ConnectionInfo {
     }
 
     @NotNull
-    private static String resolveDriverType(DatabaseMetaData metaData) throws SQLException {
-        int majorVersion = Unsafe.silent(0, metaData, md -> md.getJDBCMajorVersion());
-        int minorVersion = Unsafe.silent(0, metaData, md -> md.getJDBCMinorVersion());
+    private static String resolveDriverType(DatabaseMetaData metaData) {
+        int majorVersion = Unsafe.silent(0, metaData, DatabaseMetaData::getJDBCMajorVersion);
+        int minorVersion = Unsafe.silent(0, metaData, DatabaseMetaData::getJDBCMinorVersion);
         return majorVersion + (minorVersion > 0 ? "." + minorVersion : "");
     }
 
     @NotNull
-    private static String resolveProductVersion(DatabaseMetaData metaData) throws SQLException {
-        String productVersion = Unsafe.silent("UNKNOWN", metaData, md -> md.getDatabaseProductVersion());
+    private static String resolveProductVersion(DatabaseMetaData metaData) {
+        String productVersion = Unsafe.silent("UNKNOWN", metaData, DatabaseMetaData::getDatabaseProductVersion);
         int index = productVersion.indexOf('\n');
         productVersion = index > -1 ? productVersion.substring(0, index) : productVersion;
         return productVersion.trim();
     }
 
-    public String toString() {
-        return  "Product name:\t" + productName + '\n' +
-                "Product version:\t" + productVersion + '\n' +
-                "Driver name:\t\t" + driverName + '\n' +
-                "Driver version:\t" + driverVersion + '\n'+
-                "JDBC Type:\t\t" + driverJdbcType + '\n' +
-                "URL:\t\t" + url + '\n' +
-                "User name:\t\t" + userName;
-    }
 }

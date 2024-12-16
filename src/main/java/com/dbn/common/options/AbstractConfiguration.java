@@ -12,12 +12,12 @@ import org.jetbrains.annotations.NotNull;
 import static com.dbn.common.dispose.Checks.isValid;
 
 @Slf4j
-public abstract class AbstractConfiguration<P extends Configuration, E extends ConfigurationEditorForm> implements Configuration<P, E> {
+public abstract class AbstractConfiguration<P extends Configuration<?, ?>, E extends ConfigurationEditorForm<?>> implements Configuration<P, E> {
 
     /*****************************************************************
      *                         DOM utilities                         *
      ****************************************************************/
-    protected void writeConfiguration(Element element, Configuration configuration) {
+    protected void writeConfiguration(Element element, Configuration<?, ?> configuration) {
         String elementName = configuration.getConfigElementName();
         if (elementName == null) return;
 
@@ -26,7 +26,7 @@ public abstract class AbstractConfiguration<P extends Configuration, E extends C
     }
 
 
-    protected void readConfiguration(Element element, Configuration configuration) {
+    protected void readConfiguration(Element element, Configuration<?, ?> configuration) {
         if (element == null) return;
 
         String elementName = configuration.getConfigElementName();
@@ -41,20 +41,18 @@ public abstract class AbstractConfiguration<P extends Configuration, E extends C
     @NotNull
     public E createConfigurationEditor() {
         throw new UnsupportedOperationException();
-    };
-
+    }
 
     @Override
     public final Project resolveProject() {
-        if (this instanceof ProjectSupplier) {
-            ProjectSupplier projectSupplier = (ProjectSupplier) this;
+        if (this instanceof ProjectSupplier projectSupplier) {
             Project project = projectSupplier.getProject();
             if (project != null) {
                 return project;
             }
         }
 
-        Configuration parent = this.getParent();
+        Configuration<?, ?> parent = this.getParent();
         if (parent != null) {
             Project project = parent.resolveProject();
             if (project != null) {
@@ -62,7 +60,7 @@ public abstract class AbstractConfiguration<P extends Configuration, E extends C
             }
         }
 
-        ConfigurationEditorForm settingsEditor = this.getSettingsEditor();
+        ConfigurationEditorForm<?> settingsEditor = this.getSettingsEditor();
         if (isValid(settingsEditor)) {
             return Lookups.getProject(settingsEditor.getComponent());
         }

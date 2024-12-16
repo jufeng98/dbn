@@ -27,12 +27,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static com.dbn.common.options.setting.Settings.*;
+import static com.dbn.common.options.setting.Settings.connectionIdAttribute;
+import static com.dbn.common.options.setting.Settings.newElement;
+import static com.dbn.common.options.setting.Settings.stringAttribute;
 
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = false)
-public class DatasetFilterGroup extends BasicProjectConfiguration<ProjectConfiguration, DatasetFilterForm> implements ListModel {
+public class DatasetFilterGroup extends BasicProjectConfiguration<ProjectConfiguration<?, ?>, DatasetFilterForm> implements ListModel<Object> {
     private ConnectionId connectionId;
     private String datasetName;
     private transient DatasetFilter activeFilter;
@@ -110,7 +112,7 @@ public class DatasetFilterGroup extends BasicProjectConfiguration<ProjectConfigu
         return createCustomFilter(interactive, name);
     }
 
-    public DatasetCustomFilter createCustomFilter(boolean interactive,String name) {
+    public DatasetCustomFilter createCustomFilter(boolean interactive, String name) {
         DatasetCustomFilter filter = new DatasetCustomFilter(this, name);
         initChange();
         addFilter(filter, interactive);
@@ -132,7 +134,7 @@ public class DatasetFilterGroup extends BasicProjectConfiguration<ProjectConfigu
             }
         }
         if (Objects.equals(filterId, DatasetFilterManager.EMPTY_FILTER.getId())) {
-            return DatasetFilterManager.EMPTY_FILTER;            
+            return DatasetFilterManager.EMPTY_FILTER;
         }
         return null;
     }
@@ -168,15 +170,15 @@ public class DatasetFilterGroup extends BasicProjectConfiguration<ProjectConfigu
         int index = getFilters().indexOf(filter);
         if (index > 0) {
             getFilters().remove(filter);
-            getFilters().add(index-1, filter);
-            Lists.notifyListDataListeners(this, state.listeners, index-1, index, ListDataEvent.CONTENTS_CHANGED);
+            getFilters().add(index - 1, filter);
+            Lists.notifyListDataListeners(this, state.listeners, index - 1, index, ListDataEvent.CONTENTS_CHANGED);
         }
     }
 
     public void moveFilterDown(DatasetFilter filter) {
         initChange();
         int index = getFilters().indexOf(filter);
-        if (index < getFilters().size()-1) {
+        if (index < getFilters().size() - 1) {
             getFilters().remove(filter);
             getFilters().add(index + 1, filter);
             Lists.notifyListDataListeners(this, state.listeners, index, index + 1, ListDataEvent.CONTENTS_CHANGED);
@@ -198,6 +200,7 @@ public class DatasetFilterGroup extends BasicProjectConfiguration<ProjectConfigu
                 return Failsafe.nn(dataset);
             }
         }
+        //noinspection deprecation
         throw AlreadyDisposedException.INSTANCE;
     }
 
@@ -240,27 +243,27 @@ public class DatasetFilterGroup extends BasicProjectConfiguration<ProjectConfigu
 
     @Override
     public void disposeUIResources() {
-        for (DatasetFilter filter :filters) {
+        for (DatasetFilter filter : filters) {
             filter.disposeUIResources();
         }
-        for (DatasetFilter filter :state.filtersCapture) {
+        for (DatasetFilter filter : state.filtersCapture) {
             filter.disposeUIResources();
         }
         state.listeners.clear();
         super.disposeUIResources();
     }
 
-   @Override
-   @NotNull
-   public DatasetFilterForm createConfigurationEditor() {
-       return new DatasetFilterForm(this, lookupDataset());
-   }
+    @Override
+    @NotNull
+    public DatasetFilterForm createConfigurationEditor() {
+        return new DatasetFilterForm(this, lookupDataset());
+    }
 
     @Override
     public void readConfiguration(Element element) {
         connectionId = connectionIdAttribute(element, "connection-id");
         datasetName = stringAttribute(element, "dataset");
-        for (Element child : element.getChildren()){
+        for (Element child : element.getChildren()) {
             String type = stringAttribute(child, "type");
             if (Objects.equals(type, "basic")) {
                 DatasetFilter filter = new DatasetBasicFilter(this, null);
@@ -287,15 +290,15 @@ public class DatasetFilterGroup extends BasicProjectConfiguration<ProjectConfigu
         element.setAttribute("active-filter-id", activeFilter == null ? "" : activeFilter.getId());
     }
 
-   /*************************************************
-    *                     ListModel                 *
-    *************************************************/
-   public List<DatasetFilter> getFilters() {
+    /*************************************************
+     *                     ListModel                 *
+     *************************************************/
+    public List<DatasetFilter> getFilters() {
         return state.changed ? state.filtersCapture : filters;
-   }
+    }
 
-   @Override
-   public int getSize() {
+    @Override
+    public int getSize() {
         return getFilters().size();
     }
 
