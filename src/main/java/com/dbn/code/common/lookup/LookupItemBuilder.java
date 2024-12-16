@@ -32,23 +32,25 @@ public abstract class LookupItemBuilder {
         CodeCompletionContext context = consumer.getContext();
 
         CharSequence text = getText(context);
-        if (text != null) {
-            Icon icon = getIcon();
-
-            String textHint = getTextHint();
-            boolean bold = isBold();
-
-            CodeCompletionLookupItem lookupItem;
-            CodeCompletionSortingSettings sortingSettings = context.getCodeCompletionSettings().getSortingSettings();
-            if (sortingSettings.isEnabled()) {
-                int sortingIndex = sortingSettings.getSortingIndexFor(this);
-                lookupItem = new CodeCompletionLookupItem(source, icon, text.toString(), textHint, bold, sortingIndex);
-            } else {
-                lookupItem = new CodeCompletionLookupItem(source, icon, text.toString(), textHint, bold);
-            }
-            adjustLookupItem(lookupItem);
-            context.getResult().addElement(lookupItem);
+        if (text == null) {
+            return;
         }
+
+        Icon icon = getIcon();
+
+        String textHint = getTextHint();
+        boolean bold = isBold();
+
+        CodeCompletionLookupItem lookupItem;
+        CodeCompletionSortingSettings sortingSettings = context.getCodeCompletionSettings().getSortingSettings();
+        if (sortingSettings.isEnabled()) {
+            int sortingIndex = sortingSettings.getSortingIndexFor(this);
+            lookupItem = new CodeCompletionLookupItem(source, icon, text.toString(), textHint, bold, sortingIndex);
+        } else {
+            lookupItem = new CodeCompletionLookupItem(source, icon, text.toString(), textHint, bold);
+        }
+        adjustLookupItem(lookupItem);
+        context.getResult().addElement(lookupItem);
     }
 
 

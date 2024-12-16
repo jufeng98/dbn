@@ -12,6 +12,8 @@ import com.dbn.common.util.Strings;
 import com.dbn.database.interfaces.DatabaseCompatibilityInterface;
 import com.dbn.language.common.DBLanguage;
 import com.dbn.language.common.QuotePair;
+import com.dbn.object.DBColumn;
+import com.dbn.object.DBDataset;
 import com.dbn.object.DBSynonym;
 import com.dbn.object.common.DBObject;
 import com.dbn.object.common.DBVirtualObject;
@@ -66,24 +68,32 @@ public class ObjectLookupItemBuilder extends LookupItemBuilder {
     @Override
     public String getTextHint() {
         DBObject object = getObject();
-        if (object != null) {
-            DBObject parentObject = object.getParentObject();
-
-            String typePrefix = "";
-            if (object instanceof DBSynonym synonym) {
-                DBObjectType underlyingObjectType = synonym.getUnderlyingObjectType();
-                if (underlyingObjectType != null) {
-                    typePrefix = underlyingObjectType.getName() + ' ';
-                }
-            }
-
-            return parentObject == null ?
-                    typePrefix + object.getTypeName() :
-                    typePrefix + object.getTypeName() + " (" +
-                       parentObject.getTypeName() + ' ' +
-                       parentObject.getName() + ')';
+        if (object == null) {
+            return "";
         }
-        return "";
+
+        DBObject parentObject = object.getParentObject();
+
+        String typePrefix = "";
+        if (object instanceof DBSynonym synonym) {
+            DBObjectType underlyingObjectType = synonym.getUnderlyingObjectType();
+            if (underlyingObjectType != null) {
+                typePrefix = underlyingObjectType.getName() + ' ';
+            }
+        }
+
+        if (parentObject == null) {
+            return typePrefix + object.getTypeName();
+        }
+
+        String comment = "";
+        if (object instanceof DBDataset dbDataset) {
+            comment = dbDataset.getComment() + " ";
+        } else if (object instanceof DBColumn dbColumn) {
+            comment = dbColumn.getColumnComment() + " ";
+        }
+
+        return typePrefix + comment + object.getTypeName() + "(" + parentObject.getTypeName() + ':' + parentObject.getName() + ')';
     }
 
     @Override
@@ -94,46 +104,46 @@ public class ObjectLookupItemBuilder extends LookupItemBuilder {
     @Override
     public CharSequence getText(CodeCompletionContext context) {
         String text = objectRef.getObjectName();
-        if (Strings.isNotEmptyOrSpaces(text)) {
-            DBObject object = getObject();
-            if (object instanceof DBVirtualObject && text.contains(CodeCompletionContributor.DUMMY_TOKEN)) {
-                return null;
-            }
+        if (Strings.isEmptyOrSpaces(text)) {
+            return null;
+        }
 
-            Project project = context.getFile().getProject();
-            CodeStyleCaseSettings styleCaseSettings = DBLCodeStyleManager.getInstance(project).getCodeStyleCaseSettings(language);
-            CodeStyleCaseOption caseOption = styleCaseSettings.getObjectCaseOption();
+        DBObject object = getObject();
+        if (object instanceof DBVirtualObject && text.contains(CodeCompletionContributor.DUMMY_TOKEN)) {
+            return null;
+        }
 
-            text = caseOption.format(text);
+        Project project = context.getFile().getProject();
+        CodeStyleCaseSettings styleCaseSettings = DBLCodeStyleManager.getInstance(project).getCodeStyleCaseSettings(language);
+        CodeStyleCaseOption caseOption = styleCaseSettings.getObjectCaseOption();
 
-            String userInput = context.getUserInput();
-            CodeCompletionFormatSettings codeCompletionFormatSettings = CodeCompletionSettings.getInstance(project).getFormatSettings();
-            if (Strings.isNotEmpty(userInput) && !text.startsWith(userInput) && !codeCompletionFormatSettings.isEnforceCodeStyleCase()) {
-                char firstInputChar = userInput.charAt(0);
-                char firstPresentationChar = text.charAt(0);
+        text = caseOption.format(text);
 
-                if (Characters.equalIgnoreCase(firstInputChar, firstPresentationChar)) {
-                    boolean upperCaseInput = Character.isUpperCase(firstInputChar);
-                    boolean upperCasePresentation = Character.isUpperCase(firstPresentationChar);
-
-                    if (Strings.isMixedCase(text)) {
-                        if (upperCaseInput != upperCasePresentation) {
-                            text = upperCaseInput ?
-                                    toUpperCase(text) :
-                                    toLowerCase(text);
-                        }
-                    } else {
-                        text = upperCaseInput ?
-                                toUpperCase(text) :
-                                toLowerCase(text);
-                    }
-                } else {
-                    return null;
-                }
-            }
+        String userInput = context.getUserInput();
+        CodeCompletionFormatSettings codeCompletionFormatSettings = CodeCompletionSettings.getInstance(project).getFormatSettings();
+        if (Strings.isEmpty(userInput) || text.startsWith(userInput) || codeCompletionFormatSettings.isEnforceCodeStyleCase()) {
             return text;
         }
-        return null;
+
+        char firstInputChar = userInput.charAt(0);
+        char firstPresentationChar = text.charAt(0);
+
+        if (!Characters.equalIgnoreCase(firstInputChar, firstPresentationChar)) {
+            return null;
+        }
+
+        boolean upperCaseInput = Character.isUpperCase(firstInputChar);
+        boolean upperCasePresentation = Character.isUpperCase(firstPresentationChar);
+
+        if (Strings.isMixedCase(text)) {
+            if (upperCaseInput != upperCasePresentation) {
+                text = upperCaseInput ? toUpperCase(text) : toLowerCase(text);
+            }
+        } else {
+            text = upperCaseInput ? toUpperCase(text) : toLowerCase(text);
+        }
+
+        return text;
     }
 
     @Override

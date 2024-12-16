@@ -5,7 +5,11 @@ import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.ConnectionHandlerStatus;
 import com.dbn.language.common.DBLanguageAnnotator;
 import com.dbn.language.common.DBLanguageDialect;
-import com.dbn.language.common.psi.*;
+import com.dbn.language.common.psi.ChameleonPsiElement;
+import com.dbn.language.common.psi.ExecutablePsiElement;
+import com.dbn.language.common.psi.IdentifierPsiElement;
+import com.dbn.language.common.psi.NamedPsiElement;
+import com.dbn.language.common.psi.TokenPsiElement;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
@@ -31,8 +35,7 @@ public class SQLLanguageAnnotator extends DBLanguageAnnotator {
             annotateIdentifier(cast(psiElement), holder);
         }
 
-        if (psiElement instanceof NamedPsiElement) {
-            NamedPsiElement namedPsiElement = (NamedPsiElement) psiElement;
+        if (psiElement instanceof NamedPsiElement namedPsiElement) {
             if (namedPsiElement.hasErrors()) {
                 String message = "Invalid " + namedPsiElement.getElementType().getDescription();
                 createAnnotation(holder, namedPsiElement, ERROR, null, message);
@@ -60,7 +63,8 @@ public class SQLLanguageAnnotator extends DBLanguageAnnotator {
             annotateObject(identifierPsiElement, holder);
         } else if (identifierPsiElement.isAlias()) {
             if (identifierPsiElement.isReference())
-                annotateAliasRef(identifierPsiElement, holder); else
+                annotateAliasRef(identifierPsiElement, holder);
+            else
                 annotateAliasDef(identifierPsiElement, holder);
         }
     }

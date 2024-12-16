@@ -1,6 +1,5 @@
 package com.dbn.sql.highlight
 
-import com.dbn.sql.parser.SqlFile
 import com.dbn.sql.psi.SqlColumnAlias
 import com.dbn.sql.psi.SqlColumnName
 import com.dbn.sql.psi.SqlFunctionName
@@ -15,7 +14,9 @@ import com.intellij.psi.PsiFile
  */
 class SqlRainbowVisitor : RainbowVisitor() {
     override fun suitableForFile(file: PsiFile): Boolean {
-        return file is SqlFile
+        // RainbowVisitor 的配置默认是关闭的,因此改用 Annotator 进行着色
+        // return file is SqlFile
+        return false
     }
 
     override fun visit(element: PsiElement) {
