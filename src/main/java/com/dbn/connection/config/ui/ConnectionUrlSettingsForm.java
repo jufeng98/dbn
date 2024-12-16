@@ -70,8 +70,11 @@ public class ConnectionUrlSettingsForm extends DBNFormBase {
         updateTnsAdminField();
 
         FileChooserDescriptor tnsFolderChooserDesc = new FileChooserDescriptor(false, true, false, false, false, false);
-        tnsFolderTextField.addBrowseFolderListener(null, tnsFolderChooserDesc.withTitle(nls("cfg.connection.title.SelectWalletDirectory"))
-                .withDescription(nls("cfg.connection.text.ValidTnsNamesFolder")));
+        //noinspection removal
+        tnsFolderTextField.addBrowseFolderListener(
+                nls("cfg.connection.title.SelectWalletDirectory"),
+                nls("cfg.connection.text.ValidTnsNamesFolder"),
+                null, tnsFolderChooserDesc);
 
         onTextChange(hostTextField, e -> updateUrlField());
         onTextChange(portTextField, e -> updateUrlField());
@@ -122,7 +125,7 @@ public class ConnectionUrlSettingsForm extends DBNFormBase {
     }
 
     public String getTnsProfile() {
-        return Safe.call(tnsProfileComboBox.getSelectedValue(), v -> v.getName());
+        return Safe.call(tnsProfileComboBox.getSelectedValue(), Presentable::getName);
     }
 
     public String getUrl() {
@@ -234,7 +237,7 @@ public class ConnectionUrlSettingsForm extends DBNFormBase {
             DatabaseUrlPattern urlPattern = coalesce(
                     () -> newDatabaseType.resolveUrlPattern(previousUrl),
                     () -> newDatabaseType.getUrlPattern(previousUrlType),
-                    () -> newDatabaseType.getDefaultUrlPattern());
+                    newDatabaseType::getDefaultUrlPattern);
 
             histInfo = urlPattern.getDefaultInfo();
             if (Strings.isNotEmptyOrSpaces(previousUrl)) {
@@ -294,8 +297,7 @@ public class ConnectionUrlSettingsForm extends DBNFormBase {
     @NotNull
     private ConnectionDatabaseSettings getDatabaseSettings() {
         ConnectionDatabaseSettingsForm parent = ensureParentComponent();
-        ConnectionDatabaseSettings configuration = parent.getConfiguration();
-        return configuration;
+        return parent.getConfiguration();
     }
 
     boolean settingsChanged() {
@@ -304,14 +306,14 @@ public class ConnectionUrlSettingsForm extends DBNFormBase {
         DatabaseInfo databaseInfo = configuration.getDatabaseInfo();
         DatabaseUrlType urlType = getUrlType();
         return
-            !Commons.match(databaseInfo.getHost(), getHost()) ||
-            !Commons.match(databaseInfo.getPort(), getPort()) ||
-            !Commons.match(databaseInfo.getDatabase(), getDatabase()) ||
-            !Commons.match(databaseInfo.getTnsFolder(), getTnsFolder()) ||
-            !Commons.match(databaseInfo.getTnsProfile(), getTnsProfile()) ||
-            !Commons.match(databaseInfo.getUrl(), getUrl()) ||
-            !Commons.match(databaseInfo.getUrlType(), urlType) ||
-            !Commons.match(databaseInfo.getFileBundle(), urlType == DatabaseUrlType.FILE ? getFileBundle() : null);
+                !Commons.match(databaseInfo.getHost(), getHost()) ||
+                        !Commons.match(databaseInfo.getPort(), getPort()) ||
+                        !Commons.match(databaseInfo.getDatabase(), getDatabase()) ||
+                        !Commons.match(databaseInfo.getTnsFolder(), getTnsFolder()) ||
+                        !Commons.match(databaseInfo.getTnsProfile(), getTnsProfile()) ||
+                        !Commons.match(databaseInfo.getUrl(), getUrl()) ||
+                        !Commons.match(databaseInfo.getUrlType(), urlType) ||
+                        !Commons.match(databaseInfo.getFileBundle(), urlType == DatabaseUrlType.FILE ? getFileBundle() : null);
 
     }
 }

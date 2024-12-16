@@ -1,11 +1,11 @@
 package com.dbn.debugger.jdwp;
 
 import com.dbn.common.util.Documents;
+import com.dbn.debugger.DBDebugConsoleLogger;
+import com.dbn.debugger.DBDebugUtil;
 import com.dbn.debugger.common.breakpoint.DBBreakpointHandler;
 import com.dbn.debugger.common.breakpoint.DBBreakpointProperties;
 import com.dbn.debugger.common.breakpoint.DBBreakpointUtil;
-import com.dbn.debugger.DBDebugConsoleLogger;
-import com.dbn.debugger.DBDebugUtil;
 import com.dbn.debugger.jdwp.process.DBJdwpDebugProcess;
 import com.dbn.editor.DBContentType;
 import com.dbn.language.common.element.util.ElementTypeAttribute;
@@ -43,13 +43,12 @@ import java.util.Set;
 
 import static com.dbn.common.action.UserDataKeys.LINE_BREAKPOINT;
 import static com.dbn.common.util.Commons.nvl;
-import static com.dbn.debugger.common.breakpoint.DBBreakpointUtil.getProgramIdentifier;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 
-public class DBJdwpBreakpointHandler extends DBBreakpointHandler<DBJdwpDebugProcess> {
+public class DBJdwpBreakpointHandler extends DBBreakpointHandler<DBJdwpDebugProcess<?>> {
     private static final ClassPrepareRequestor GENERIC_CLASS_PREPARE_REQUESTER = (p, r) -> System.out.println();
 
-    public DBJdwpBreakpointHandler(XDebugSession session, DBJdwpDebugProcess debugProcess) {
+    public DBJdwpBreakpointHandler(XDebugSession session, DBJdwpDebugProcess<?> debugProcess) {
         super(session, debugProcess);
     }
 
@@ -62,10 +61,10 @@ public class DBJdwpBreakpointHandler extends DBBreakpointHandler<DBJdwpDebugProc
         PSQLFile psqlFile = (PSQLFile) sourceCodeFile.getPsiFile();
         if (psqlFile == null) return;
 
-        BasePsiElement basePsiElement = psqlFile.lookupObjectDeclaration(method.getObjectType().getGenericType(), method.getName());
+        BasePsiElement<?> basePsiElement = psqlFile.lookupObjectDeclaration(method.getObjectType().getGenericType(), method.getName());
         if (basePsiElement == null) return;
 
-        BasePsiElement subject = basePsiElement.findFirstPsiElement(ElementTypeAttribute.SUBJECT);
+        BasePsiElement<?> subject = basePsiElement.findFirstPsiElement(ElementTypeAttribute.SUBJECT);
         int offset = subject.getTextOffset();
         Document document = Documents.getDocument(psqlFile);
         if (document == null) return;
@@ -84,11 +83,11 @@ public class DBJdwpBreakpointHandler extends DBBreakpointHandler<DBJdwpDebugProc
     }
 
     @Override
-    protected void registerDatabaseBreakpoint(@NotNull final XLineBreakpoint<XBreakpointProperties> breakpoint) {
+    protected void registerDatabaseBreakpoint(@NotNull final XLineBreakpoint<XBreakpointProperties<?>> breakpoint) {
         // not supported (see callback on class prepare)
     }
 
-    private void createBreakpointRequest(@NotNull XLineBreakpoint<XBreakpointProperties> breakpoint) {
+    private void createBreakpointRequest(@NotNull XLineBreakpoint<XBreakpointProperties<?>> breakpoint) {
         DBDebugConsoleLogger console = getDebugProcess().getConsole();
         DBSchemaObject databaseObject = DBBreakpointUtil.getDatabaseObject(breakpoint);
         String breakpointLocation = databaseObject == null ? "" : " on " + databaseObject.getQualifiedName() + " at line " + (breakpoint.getLine() + 1);
@@ -99,7 +98,7 @@ public class DBJdwpBreakpointHandler extends DBBreakpointHandler<DBJdwpDebugProc
             String programIdentifier = DBBreakpointUtil.getProgramIdentifier(getConnection(), breakpoint);
             if (programIdentifier == null) return;
 
-            LineBreakpoint lineBreakpoint = getLineBreakpoint(getSession().getProject(), breakpoint);
+            LineBreakpoint<?> lineBreakpoint = getLineBreakpoint(getSession().getProject(), breakpoint);
             if (lineBreakpoint == null || isBreakpointRequested(lineBreakpoint)) return;
 
             boolean registered = false;
@@ -125,7 +124,7 @@ public class DBJdwpBreakpointHandler extends DBBreakpointHandler<DBJdwpDebugProc
         }
     }
 
-    private boolean isBreakpointRequested(LineBreakpoint lineBreakpoint) {
+    private boolean isBreakpointRequested(LineBreakpoint<?> lineBreakpoint) {
         RequestManagerImpl requestsManager = getRequestsManager();
         Set<EventRequest> requests = requestsManager.findRequests(lineBreakpoint);
         for (EventRequest request : requests) {
@@ -137,11 +136,11 @@ public class DBJdwpBreakpointHandler extends DBBreakpointHandler<DBJdwpDebugProc
     }
 
     @Override
-    public void registerBreakpoints(@NotNull List<XLineBreakpoint<XBreakpointProperties>> breakpoints, final List<? extends DBObject> objects) {
+    public void registerBreakpoints(@NotNull List<XLineBreakpoint<XBreakpointProperties<?>>> breakpoints,
+                                    final List<? extends DBObject> objects) {
         ManagedThreadCommand.invoke(getJdiDebugProcess(), PrioritizedTask.Priority.LOW, () -> {
             for (DBObject object : objects) {
-                if (object instanceof DBSchemaObject) {
-                    DBSchemaObject schemaObject = (DBSchemaObject) object;
+                if (object instanceof DBSchemaObject schemaObject) {
                     DBContentType contentType = schemaObject.getContentType();
                     if (contentType == DBContentType.CODE) {
                         prepareObjectClasses(schemaObject, DBContentType.CODE);
@@ -152,10 +151,9 @@ public class DBJdwpBreakpointHandler extends DBBreakpointHandler<DBJdwpDebugProc
                 }
             }
 
-            for (XLineBreakpoint<XBreakpointProperties> breakpoint : breakpoints) {
-                XBreakpointProperties properties = breakpoint.getProperties();
-                if (properties instanceof DBBreakpointProperties) {
-                    DBBreakpointProperties breakpointProperties = (DBBreakpointProperties) properties;
+            for (XLineBreakpoint<XBreakpointProperties<?>> breakpoint : breakpoints) {
+                XBreakpointProperties<?> properties = breakpoint.getProperties();
+                if (properties instanceof DBBreakpointProperties breakpointProperties) {
                     if (breakpointProperties.getConnection() == getConnection()) {
                         prepareObjectClasses(breakpoint);
                     }
@@ -164,12 +162,12 @@ public class DBJdwpBreakpointHandler extends DBBreakpointHandler<DBJdwpDebugProc
         });
     }
 
-    private void prepareObjectClasses(@NotNull final XLineBreakpoint<XBreakpointProperties> breakpoint) {
+    private void prepareObjectClasses(@NotNull final XLineBreakpoint<XBreakpointProperties<?>> breakpoint) {
 
         String programIdentifier = DBBreakpointUtil.getProgramIdentifier(getConnection(), breakpoint);
         if (programIdentifier == null) return;
 
-        LineBreakpoint lineBreakpoint = getLineBreakpoint(getSession().getProject(), breakpoint);
+        LineBreakpoint<?> lineBreakpoint = getLineBreakpoint(getSession().getProject(), breakpoint);
         if (lineBreakpoint == null) return;
 
         RequestManagerImpl requestsManager = getRequestsManager();
@@ -193,10 +191,11 @@ public class DBJdwpBreakpointHandler extends DBBreakpointHandler<DBJdwpDebugProc
     }
 
     @Override
-    protected void unregisterDatabaseBreakpoint(@NotNull final XLineBreakpoint<XBreakpointProperties> breakpoint, final boolean temporary) {
+    protected void unregisterDatabaseBreakpoint(@NotNull final XLineBreakpoint<XBreakpointProperties<?>> breakpoint,
+                                                final boolean temporary) {
         ManagedThreadCommand.invoke(getJdiDebugProcess(), PrioritizedTask.Priority.LOW, () -> {
             RequestManagerImpl requestsManager = getRequestsManager();
-            LineBreakpoint lineBreakpoint = getLineBreakpoint(getSession().getProject(), breakpoint);
+            LineBreakpoint<?> lineBreakpoint = getLineBreakpoint(getSession().getProject(), breakpoint);
             if (temporary) {
                 final Set<EventRequest> requests = requestsManager.findRequests(lineBreakpoint);
                 for (EventRequest request : requests) {
@@ -210,8 +209,8 @@ public class DBJdwpBreakpointHandler extends DBBreakpointHandler<DBJdwpDebugProc
     }
 
     @Nullable
-    private static LineBreakpoint getLineBreakpoint(Project project, @NotNull XLineBreakpoint breakpoint) {
-        LineBreakpoint lineBreakpoint = breakpoint.getUserData(LINE_BREAKPOINT);
+    private static LineBreakpoint<?> getLineBreakpoint(Project project, @NotNull XLineBreakpoint<?> breakpoint) {
+        LineBreakpoint<?> lineBreakpoint = breakpoint.getUserData(LINE_BREAKPOINT);
         if (lineBreakpoint == null) {
             lineBreakpoint = LineBreakpoint.create(project, breakpoint);
             breakpoint.putUserData(LINE_BREAKPOINT, lineBreakpoint);

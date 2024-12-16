@@ -99,7 +99,7 @@ public class ExecutionManager extends ProjectComponentBase implements Persistent
     }
 
     @Nullable
-    <T extends ExecutionResultForm> T getExecutionResultForm(ExecutionResult executionResult) {
+    <T extends ExecutionResultForm<?>> T getExecutionResultForm(ExecutionResult<?> executionResult) {
         return getExecutionConsoleForm().getExecutionResultForm(executionResult);
     }
 
@@ -189,12 +189,12 @@ public class ExecutionManager extends ProjectComponentBase implements Persistent
         executionConsoleForm.removeMessagesTab();
     }
 
-    public void removeResultTab(ExecutionResult executionResult) {
+    public void removeResultTab(ExecutionResult<?> executionResult) {
         ExecutionConsoleForm executionConsoleForm = getExecutionConsoleForm();
         executionConsoleForm.removeResultTab(executionResult);
     }
 
-    public void selectResultTab(ExecutionResult executionResult) {
+    public void selectResultTab(ExecutionResult<?> executionResult) {
         showExecutionConsole();
         ExecutionConsoleForm executionConsoleForm = getExecutionConsoleForm();
         executionConsoleForm.selectResultTab(executionResult);
@@ -211,7 +211,7 @@ public class ExecutionManager extends ProjectComponentBase implements Persistent
     }
 
     @Nullable
-    public ExecutionResult getSelectedExecutionResult() {
+    public ExecutionResult<?> getSelectedExecutionResult() {
         if (!executionConsoleForm.loaded()) return null;
         return Dispatch.call(true, () ->
                 getExecutionConsoleForm().getSelectedExecutionResult());

@@ -39,16 +39,17 @@ import java.sql.SQLException;
 import static com.dbn.common.util.Strings.cachedUpperCase;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 
-public class DBJdbcBreakpointHandler extends DBBreakpointHandler<DBJdbcDebugProcess> {
+@SuppressWarnings("unused")
+public class DBJdbcBreakpointHandler extends DBBreakpointHandler<DBJdbcDebugProcess<?>> {
     protected BreakpointInfo defaultBreakpointInfo;
 
-    DBJdbcBreakpointHandler(XDebugSession session, DBJdbcDebugProcess debugProcess) {
+    DBJdbcBreakpointHandler(XDebugSession session, DBJdbcDebugProcess<?> debugProcess) {
         super(session, debugProcess);
         //resetBreakpoints();
     }
 
     @Override
-    protected void registerDatabaseBreakpoint(@NotNull XLineBreakpoint<XBreakpointProperties> breakpoint) {
+    protected void registerDatabaseBreakpoint(@NotNull XLineBreakpoint<XBreakpointProperties<?>> breakpoint) {
         DBDebugProcess debugProcess = getDebugProcess();
         DBDebugConsoleLogger console = debugProcess.getConsole();
 
@@ -96,7 +97,7 @@ public class DBJdbcBreakpointHandler extends DBBreakpointHandler<DBJdbcDebugProc
     }
 
     @Override
-    protected void unregisterDatabaseBreakpoint(@NotNull XLineBreakpoint<XBreakpointProperties> breakpoint, boolean temporary) {
+    protected void unregisterDatabaseBreakpoint(@NotNull XLineBreakpoint<XBreakpointProperties<?>> breakpoint, boolean temporary) {
         DBDebugProcess debugProcess = getDebugProcess();
 
         if (!canSetBreakpoints()) return;
@@ -134,10 +135,10 @@ public class DBJdbcBreakpointHandler extends DBBreakpointHandler<DBJdbcDebugProc
         PSQLFile psqlFile = (PSQLFile) sourceCodeFile.getPsiFile();
         if (psqlFile == null) return;
 
-        BasePsiElement basePsiElement = psqlFile.lookupObjectDeclaration(method.getObjectType().getGenericType(), method.getName());
+        BasePsiElement<?> basePsiElement = psqlFile.lookupObjectDeclaration(method.getObjectType().getGenericType(), method.getName());
         if (basePsiElement == null) return;
 
-        BasePsiElement subject = basePsiElement.findFirstPsiElement(ElementTypeAttribute.SUBJECT);
+        BasePsiElement<?> subject = basePsiElement.findFirstPsiElement(ElementTypeAttribute.SUBJECT);
         int offset = subject.getTextOffset();
         Document document = Documents.getDocument(psqlFile);
         if (document == null) return;
@@ -170,11 +171,11 @@ public class DBJdbcBreakpointHandler extends DBBreakpointHandler<DBJdbcDebugProc
     }
 
     private DBNConnection getDebugConnection() {
-        DBJdbcDebugProcess debugProcess = getDebugProcess();
+        DBJdbcDebugProcess<?> debugProcess = getDebugProcess();
         return debugProcess.getDebuggerConnection();
     }
 
-    private BreakpointInfo addBreakpoint(@NotNull XLineBreakpoint<XBreakpointProperties> breakpoint) throws Exception {
+    private BreakpointInfo addBreakpoint(@NotNull XLineBreakpoint<XBreakpointProperties<?>> breakpoint) throws Exception {
         ConnectionHandler connection = getConnection();
         DatabaseDebuggerInterface debuggerInterface = connection.getDebuggerInterface();
         DBNConnection debugConnection = getDebugConnection();
@@ -202,7 +203,7 @@ public class DBJdbcBreakpointHandler extends DBBreakpointHandler<DBJdbcDebugProc
         }
     }
 
-    private void enableBreakpoint(@NotNull XLineBreakpoint<XBreakpointProperties> breakpoint) throws Exception {
+    private void enableBreakpoint(@NotNull XLineBreakpoint<XBreakpointProperties<?>> breakpoint) throws Exception {
         Integer breakpointId = DBBreakpointUtil.getBreakpointId(breakpoint);
         if (breakpointId != null) {
             ConnectionHandler connection = getConnection();
@@ -234,9 +235,9 @@ public class DBJdbcBreakpointHandler extends DBBreakpointHandler<DBJdbcDebugProc
         XBreakpointManager breakpointManager = XDebuggerManager.getInstance(project).getBreakpointManager();
         XBreakpoint<?>[] breakpoints = breakpointManager.getAllBreakpoints();
 
-        for (XBreakpoint breakpoint : breakpoints) {
+        for (XBreakpoint<?> breakpoint : breakpoints) {
             if (breakpoint.getType() instanceof DBBreakpointType) {
-                XLineBreakpoint lineBreakpoint = (XLineBreakpoint) breakpoint;
+                XLineBreakpoint<?> lineBreakpoint = (XLineBreakpoint<?>) breakpoint;
                 VirtualFile virtualFile = DBBreakpointUtil.getVirtualFile(lineBreakpoint);
                 if (virtualFile != null) {
                     FileConnectionContextManager contextManager = FileConnectionContextManager.getInstance(project);

@@ -74,6 +74,7 @@ import static com.dbn.common.navigation.NavigationInstruction.SCROLL;
 import static com.dbn.common.navigation.NavigationInstruction.SELECT;
 import static com.dbn.common.util.Unsafe.cast;
 
+@SuppressWarnings("unused")
 public class ExecutionConsoleForm extends DBNFormBase {
     private JPanel mainPanel;
     private JBTabs resultTabs;

@@ -34,7 +34,7 @@ import static com.dbn.common.util.Files.isDbLanguagePsiFile;
 import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 
 @Slf4j
-public class DBBreakpointType extends XLineBreakpointType<XBreakpointProperties> {
+public class DBBreakpointType extends XLineBreakpointType<XBreakpointProperties<?>> {
 
     public DBBreakpointType() {
         super("db-program", "DB-Program Breakpoint");
@@ -49,25 +49,24 @@ public class DBBreakpointType extends XLineBreakpointType<XBreakpointProperties>
         if (isNotValid(psiFile)) return false;
         if (!isDbLanguagePsiFile(psiFile)) return false;
 
-        if (file instanceof DBSourceCodeVirtualFile) {
-            DBSourceCodeVirtualFile sourceCodeFile = (DBSourceCodeVirtualFile) file;
+        if (file instanceof DBSourceCodeVirtualFile sourceCodeFile) {
             DBContentType contentType = sourceCodeFile.getContentType();
             if (contentType == DBContentType.CODE || contentType == DBContentType.CODE_BODY) {
-                BasePsiElement basePsiElement = findPsiElement(psiFile, line);
+                BasePsiElement<?> basePsiElement = findPsiElement(psiFile, line);
                 return basePsiElement != null;
             }
         } else {
-            BasePsiElement basePsiElement = findPsiElement(psiFile, line);
+            BasePsiElement<?> basePsiElement = findPsiElement(psiFile, line);
             if (basePsiElement == null) return false;
 
-            BasePsiElement debuggablePsiElement = basePsiElement.findEnclosingElement(ElementTypeAttribute.DEBUGGABLE);
+            BasePsiElement<?> debuggablePsiElement = basePsiElement.findEnclosingElement(ElementTypeAttribute.DEBUGGABLE);
             return debuggablePsiElement != null;
         }
         return false;
     }
 
     @Nullable
-    private BasePsiElement findPsiElement(PsiFile psiFile, int line) {
+    private BasePsiElement<?> findPsiElement(PsiFile psiFile, int line) {
         Document document = Documents.getDocument(psiFile);
         if (document == null || line < 0 || document.getLineCount() <= line) return null;
 
@@ -83,10 +82,9 @@ public class DBBreakpointType extends XLineBreakpointType<XBreakpointProperties>
             }
         }
 
-        if (element instanceof BasePsiElement) {
-            BasePsiElement basePsiElement = (BasePsiElement) element;
+        if (element instanceof BasePsiElement<?> basePsiElement) {
             int textOffset = basePsiElement.getTextOffset();
-            if (textOffset< document.getTextLength()) {
+            if (textOffset < document.getTextLength()) {
                 int elementLine = document.getLineNumber(textOffset);
                 if (elementLine == line) {
                     return basePsiElement;
@@ -97,10 +95,9 @@ public class DBBreakpointType extends XLineBreakpointType<XBreakpointProperties>
     }
 
     @Override
-    public XBreakpointProperties createBreakpointProperties(@NotNull VirtualFile file, int line) {
+    public XBreakpointProperties<?> createBreakpointProperties(@NotNull VirtualFile file, int line) {
         ConnectionHandler connection = null;
-        if (file instanceof DatabaseContext) {
-            DatabaseContext connectionProvider = (DatabaseContext) file;
+        if (file instanceof DatabaseContext connectionProvider) {
             connection = connectionProvider.getConnection();
         }
 
@@ -109,34 +106,35 @@ public class DBBreakpointType extends XLineBreakpointType<XBreakpointProperties>
 
     @Nullable
     @Override
-    public XBreakpointProperties createProperties() {
+    public XBreakpointProperties<?> createProperties() {
         return createBreakpointProperties(null);
     }
 
     @Nullable
     @Override
-    public XDebuggerEditorsProvider getEditorsProvider(@NotNull XLineBreakpoint<XBreakpointProperties> breakpoint, @NotNull Project project) {
+    public XDebuggerEditorsProvider getEditorsProvider(@NotNull XLineBreakpoint<XBreakpointProperties<?>> breakpoint,
+                                                       @NotNull Project project) {
         return DBJdbcDebuggerEditorsProvider.INSTANCE;
     }
 
     @Override
     public String getDisplayText(XLineBreakpoint breakpoint) {
         XSourcePosition sourcePosition = breakpoint.getSourcePosition();
-        if (sourcePosition != null ){
-        VirtualFile file = sourcePosition.getFile();
-        return XDebuggerBundle.message("xbreakpoint.default.display.text",
-                breakpoint.getLine() + 1,
-                file.getPresentableUrl());
+        if (sourcePosition != null) {
+            VirtualFile file = sourcePosition.getFile();
+            return XDebuggerBundle.message("xbreakpoint.default.display.text",
+                    breakpoint.getLine() + 1,
+                    file.getPresentableUrl());
         }
         return "unknown";
     }
 
-    private static XBreakpointProperties createBreakpointProperties(ConnectionHandler connection) {
+    private static XBreakpointProperties<?> createBreakpointProperties(ConnectionHandler connection) {
         if (DBDebuggerType.JDWP.isSupported()) {
             try {
-                Class propertiesClass = Class.forName("com.dbn.debugger.jdwp.DBJdwpBreakpointProperties");
-                Constructor constructor = propertiesClass.getConstructor(ConnectionHandler.class);
-                return (XBreakpointProperties) constructor.newInstance(connection);
+                Class<?> propertiesClass = Class.forName("com.dbn.debugger.jdwp.DBJdwpBreakpointProperties");
+                Constructor<?> constructor = propertiesClass.getConstructor(ConnectionHandler.class);
+                return (XBreakpointProperties<?>) constructor.newInstance(connection);
             } catch (Exception e) {
                 conditionallyLog(e);
                 log.error("Error creating JDWP breakpoints properties", e);
