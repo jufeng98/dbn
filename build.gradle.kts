@@ -62,6 +62,7 @@ sourceSets {
             include("**/*.txt")
             include("**/*.jar")
             include("**/*.css")
+            include("**/*.mustache")
             include("**/*.template")
         }
         resources {
@@ -79,6 +80,7 @@ sourceSets {
                 "**/*.txt",
                 "**/*.jar",
                 "**/*.css",
+                "**/*.mustache",
                 "**/*.template"
             )
         }

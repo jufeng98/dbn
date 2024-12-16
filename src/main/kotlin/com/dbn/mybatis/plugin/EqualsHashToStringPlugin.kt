@@ -41,7 +41,7 @@ class EqualsHashToStringPlugin : PluginAdapter() {
 
         newMethods.addAll(topLevelClass.methods)
 
-        val field = InnerClass::class.java.getDeclaredField("methods")
+        val field = AbstractJavaType::class.java.getDeclaredField("methods")
         field.isAccessible = true
         field[topLevelClass] = newMethods
     }

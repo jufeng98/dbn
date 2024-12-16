@@ -86,7 +86,7 @@ public class EnumsPlugin extends PluginAdapter {
         File directory = new DefaultShellCallback(true).getDirectory(targetProject, config.getEnumPackage());
         File targetFile = new File(directory, enumClassName + ".java");
 
-        URL url = DbnMyBatisGenerator.getClassLoader().getResource("mybatis/Enum.mustache");
+        URL url = getClass().getClassLoader().getResource("mybatis/Enum.mustache");
         @Cleanup
         @SuppressWarnings("DataFlowIssue")
         InputStream inputStream = url.openStream();

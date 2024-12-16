@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE generatorConfiguration
-        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
 <generatorConfiguration>
     <!--配置信息,关于有哪些配置及各配置的作用参见官网说明http://www.mybatis.org/generator/configreference/xmlconfig.html-->
@@ -14,14 +13,14 @@
         <property name="beginningDelimiter" value="${delimiter}"/>
         <property name="endingDelimiter" value="${delimiter}"/>
 
-        <plugin type="com.dbn.mybatis.plugin.GeneratorPlugin"/>
-        <plugin type="com.dbn.mybatis.plugin.EnumsPlugin"/>
-        <plugin type="com.dbn.mybatis.plugin.OverridePlugin"/>
+        <plugin type="com.dbn.mybatis.plugin.PrimaryKeyPlugin"/>
 
         <commentGenerator>
             <!--去掉mybatis在字段和方法上添加的无关注释-->
             <property name="suppressDate" value="true"/>
             <property name="suppressAllComments" value="true"/>
+            <property name="useLegacyGeneratedAnnotation" value="true"/>
+            <property name="addRemarkComments" value="true"/>
         </commentGenerator>
 
         <jdbcConnection driverClass="${driverClass}"
@@ -43,15 +42,15 @@
         </javaTypeResolver>
 
         <!--指定实体类位置-->
-        <javaModelGenerator targetPackage="${javaModelPackage}" targetProject="${projectFolderClass}">
+        <javaModelGenerator targetPackage="${modelPackage}" targetProject="${projectFolder}/${modelMvnPath}">
             <property name="enableSubPackages" value="true"/>
         </javaModelGenerator>
         <!--指定xml文件位置-->
-        <sqlMapGenerator targetPackage="${xmlMapperFolder}" targetProject="${projectFolderResource}">
+        <sqlMapGenerator targetPackage="${xmlFolder}" targetProject="${projectFolder}/${xmlMvnPath}">
             <property name="enableSubPackages" value="true"/>
         </sqlMapGenerator>
         <!--指定mapper类位置-->
-        <javaClientGenerator targetPackage="${javaMapperPackage}" targetProject="${projectFolderClass}"
+        <javaClientGenerator targetPackage="${javaMapperPackage}" targetProject="${projectFolder}/${javaMapperMvnPath}"
                              type="XMLMAPPER">
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>

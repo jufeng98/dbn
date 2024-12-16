@@ -13,6 +13,7 @@ public enum ConfigId {
     CODE_STYLE("Code Style"),
     EXECUTION_ENGINE("Execution Engine"),
     DDL_FILES("DDL Files"),
+    MYBATIS("MyBatis"),
     CONNECTIONS("Connections"),
     OPERATIONS ("Operations"),
     GENERAL("General");
