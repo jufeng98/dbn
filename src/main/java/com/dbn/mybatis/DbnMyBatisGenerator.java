@@ -116,7 +116,9 @@ public class DbnMyBatisGenerator {
 
         addPlugins(configuration);
 
-        MyBatisGenerator myBatisGenerator = new MyBatisGenerator(configuration, new DefaultShellCallback(true), warnings);
+        DefaultShellCallback shellCallback = new MyDefaultShellCallback(true, dbTable.getProject());
+
+        MyBatisGenerator myBatisGenerator = new MyBatisGenerator(configuration, shellCallback, warnings);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         try {
             DatabaseDriverManager driverManager = DatabaseDriverManager.getInstance();
@@ -166,6 +168,10 @@ public class DbnMyBatisGenerator {
             addPlugin(context, UnmergeableXmlMappersPlugin.class);
         }
 
+        if (config.isUseLombokPlugin()) {
+            addPlugin(context, LombokPlugin.class);
+        }
+
         if (config.isGenerateEnum()) {
             addPlugin(context, EnumsPlugin.class);
         }
@@ -192,10 +198,6 @@ public class DbnMyBatisGenerator {
 
         if (config.isComment()) {
             addPlugin(context, CommentPlugin.class);
-        }
-
-        if (config.isUseLombokPlugin()) {
-            addPlugin(context, LombokPlugin.class);
         }
     }
 

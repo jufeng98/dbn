@@ -10,11 +10,15 @@ import java.nio.file.Path;
 
 public class VirtualFileUtils {
 
-    @SuppressWarnings("DataFlowIssue")
-    @SneakyThrows
     public static VirtualFile createVirtualSqlFileFromText(byte[] txtBytes) {
+        return createVirtualFileFromText(txtBytes, "mysql");
+    }
+
+    @SneakyThrows
+    @SuppressWarnings("DataFlowIssue")
+    public static VirtualFile createVirtualFileFromText(byte[] txtBytes, String suffix) {
         Path tempFile;
-        tempFile = Files.createTempFile("dbn-", ".mysql");
+        tempFile = Files.createTempFile("dbn-", "." + suffix);
         File file = tempFile.toFile();
         VirtualFile virtualFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(file.getAbsolutePath());
         virtualFile.setBinaryContent(txtBytes);

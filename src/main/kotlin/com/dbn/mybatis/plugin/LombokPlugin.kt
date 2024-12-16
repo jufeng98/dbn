@@ -1,8 +1,9 @@
 package com.dbn.mybatis.plugin
 
+import org.mybatis.generator.api.IntrospectedColumn
 import org.mybatis.generator.api.IntrospectedTable
+import org.mybatis.generator.api.Plugin
 import org.mybatis.generator.api.PluginAdapter
-import org.mybatis.generator.api.dom.java.AbstractJavaType
 import org.mybatis.generator.api.dom.java.Method
 import org.mybatis.generator.api.dom.java.TopLevelClass
 
@@ -19,25 +20,27 @@ class LombokPlugin : PluginAdapter() {
     ): Boolean {
         addLombok(topLevelClass)
 
-        delGetSetMethods(topLevelClass)
-
         return super.modelBaseRecordClassGenerated(topLevelClass, introspectedTable)
     }
 
-    private fun delGetSetMethods(topLevelClass: TopLevelClass) {
-        val field = AbstractJavaType::class.java.getDeclaredField("methods")
-        field.isAccessible = true
+    override fun modelGetterMethodGenerated(
+        method: Method,
+        topLevelClass: TopLevelClass,
+        introspectedColumn: IntrospectedColumn,
+        introspectedTable: IntrospectedTable,
+        modelClassType: Plugin.ModelClassType,
+    ): Boolean {
+        return false
+    }
 
-        val newMethods = mutableListOf<Method>()
-        topLevelClass.methods.forEach {
-            if (it.name.startsWith("get") || it.name.startsWith("set")) {
-                return@forEach
-            }
-
-            newMethods.add(it)
-        }
-
-        field[topLevelClass] = newMethods
+    override fun modelSetterMethodGenerated(
+        method: Method,
+        topLevelClass: TopLevelClass,
+        introspectedColumn: IntrospectedColumn,
+        introspectedTable: IntrospectedTable,
+        modelClassType: Plugin.ModelClassType,
+    ): Boolean {
+        return false
     }
 
     private fun addLombok(topLevelClass: TopLevelClass) {
