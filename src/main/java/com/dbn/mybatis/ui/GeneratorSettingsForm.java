@@ -8,9 +8,9 @@ import com.google.common.collect.Maps;
 import com.intellij.ide.util.PackageChooserDialog;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.TextBrowseFolderListener;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
-import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.psi.PsiPackage;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBTextField;
@@ -57,6 +57,7 @@ public class GeneratorSettingsForm {
     private JCheckBox mapperAnnotationCheckBox;
     private JCheckBox staticFieldNameCheckBox;
     private JPanel namePanel;
+    private JCheckBox tkMapperCheckBox;
 
     public static final String INIT_CONFIG_NAME = "initConfig";
     private Project project;
@@ -65,6 +66,7 @@ public class GeneratorSettingsForm {
     private Map<String, Config> historyConfigMap;
     private boolean fromConfigPage;
     private DBTable dbTable;
+    private String historySelectValue;
 
     public void initForm(GeneratorSettings settings, DBTable dbTable) {
         project = settings.getProject();
@@ -79,6 +81,8 @@ public class GeneratorSettingsForm {
             leftPanel.getParent().remove(leftPanel);
 
             namePanel.getParent().remove(namePanel);
+        } else {
+            mainPanel.setBorder(BorderFactory.createTitledBorder("MyBatis Generator " + dbTable.getName()));
         }
 
         projectFolderBtn.addBrowseFolderListener(new TextBrowseFolderListener(
@@ -91,26 +95,38 @@ public class GeneratorSettingsForm {
         });
 
         historyList.addListSelectionListener(e -> {
-            Config config = historyConfigMap.get(historyList.getSelectedValue());
+            String selectedValue = historyList.getSelectedValue();
+            if (selectedValue == null) {
+                return;
+            }
+
+            historySelectValue = selectedValue;
+            Config config = historyConfigMap.get(historySelectValue);
             initContent(config);
         });
 
         deleteHistoryBtn.addActionListener(e -> {
-            int selectedIndex = historyList.getSelectedIndex();
-            if (selectedIndex == -1) {
+            if (historySelectValue == null) {
                 return;
             }
 
-            DefaultListModel<String> defaultListModel = new DefaultListModel<>();
-            for (String key : historyConfigMap.keySet()) {
-                if (key.equals(historyList.getSelectedValue())) {
-                    continue;
-                }
-
-                defaultListModel.addElement(key);
+            int res = Messages.showYesNoDialog("确定删除" + historySelectValue + "?", "Tip", null);
+            if (res != Messages.OK) {
+                return;
             }
 
+            historyConfigMap.remove(historySelectValue);
+            settings.setHistoryConfigMap(historyConfigMap);
+
+            DefaultListModel<String> defaultListModel = new DefaultListModel<>();
+            for (String key : historyConfigMap.keySet()) {
+                defaultListModel.addElement(key);
+            }
             historyList.setModel(defaultListModel);
+
+            Messages.showInfoMessage("删除历史配置" + historySelectValue + "成功!", "Tip");
+
+            historySelectValue = null;
         });
 
         initChoosePackageBtn(chooseModelPackageBtn, modelPackageTextField);
@@ -180,6 +196,7 @@ public class GeneratorSettingsForm {
         rowBoundsCheckBox.setSelected(config.isRowBounds());
         mapperAnnotationCheckBox.setSelected(config.isMapperAnnotation());
         staticFieldNameCheckBox.setSelected(config.isStaticFieldName());
+        tkMapperCheckBox.setSelected(config.isTkMapper());
     }
 
     private Config createConfig(String configName) {
@@ -214,6 +231,7 @@ public class GeneratorSettingsForm {
         config.setRowBounds(rowBoundsCheckBox.getSelectedObjects() != null);
         config.setMapperAnnotation(mapperAnnotationCheckBox.getSelectedObjects() != null);
         config.setStaticFieldName(staticFieldNameCheckBox.getSelectedObjects() != null);
+        config.setTkMapper(tkMapperCheckBox.getSelectedObjects() != null);
 
         return config;
     }
@@ -261,7 +279,5 @@ public class GeneratorSettingsForm {
         DbnMyBatisGenerator dbnMyBatisGenerator = DbnMyBatisGenerator.createInstance(dbTable, config);
 
         dbnMyBatisGenerator.generator();
-
-        VirtualFileManager.getInstance().asyncRefresh(null);
     }
 }

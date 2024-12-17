@@ -26,7 +26,7 @@ class CommentPlugin : PluginAdapter() {
     ): Boolean {
         val docLine = """
                 /**
-                 * ${introspectedTable.remarks},请勿手工改动此文件,请使用 mybatis generator
+                 * ${introspectedTable.remarks},请勿手工改动此文件,请使用DataBaseManager(IDEA插件)的MyBatis Generator功能
                  *
                  * @author mybatis generator
                  */
@@ -97,7 +97,7 @@ class CommentPlugin : PluginAdapter() {
         // 添加example类注释
         val docLine = """
                     /**
-                     * 请勿手工改动此文件,请使用 mybatis generator
+                     * 请勿手工改动此文件,请使用DataBaseManager(IDEA插件)的MyBatis Generator功能
                      *
                      * @author mybatis generator
                      */
@@ -114,7 +114,7 @@ class CommentPlugin : PluginAdapter() {
         // 添加mapper类注释
         val docLine = """
                     /**
-                     * 操纵${introspectedTable.remarks},请勿手工改动此文件,请使用 mybatis generator
+                     * 操纵${introspectedTable.remarks},请勿手工改动此文件,请使用DataBaseManager(IDEA插件)的MyBatis Generator功能
                      *
                      * @author mybatis generator
                      */
@@ -134,7 +134,7 @@ class CommentPlugin : PluginAdapter() {
     private fun appendComment(document: Document) {
         document.rootElement.addElement(
             0,
-            TextElement("<!-- 此文件由 mybatis generator 生成,注意: 请勿手工改动此文件, 请使用 mybatis generator -->")
+            TextElement("<!-- 此文件由 mybatis generator 生成,注意: 请勿手工改动此文件, 请使用DataBaseManager(IDEA插件)的MyBatis Generator功能 -->")
         )
     }
 

@@ -7,7 +7,9 @@ import org.mybatis.generator.api.PluginAdapter
 import org.mybatis.generator.api.dom.java.Method
 import org.mybatis.generator.api.dom.java.TopLevelClass
 
-
+/**
+ * @author yudong
+ */
 class LombokPlugin : PluginAdapter() {
 
     override fun validate(warnings: List<String?>?): Boolean {
@@ -21,6 +23,18 @@ class LombokPlugin : PluginAdapter() {
         addLombok(topLevelClass)
 
         return super.modelBaseRecordClassGenerated(topLevelClass, introspectedTable)
+    }
+
+    private fun addLombok(topLevelClass: TopLevelClass) {
+        topLevelClass.addImportedType("lombok.AllArgsConstructor")
+        topLevelClass.addImportedType("lombok.Builder")
+        topLevelClass.addImportedType("lombok.Data")
+        topLevelClass.addImportedType("lombok.NoArgsConstructor")
+
+        topLevelClass.addAnnotation("@Data")
+        topLevelClass.addAnnotation("@Builder")
+        topLevelClass.addAnnotation("@AllArgsConstructor")
+        topLevelClass.addAnnotation("@NoArgsConstructor")
     }
 
     override fun modelGetterMethodGenerated(
@@ -42,17 +56,4 @@ class LombokPlugin : PluginAdapter() {
     ): Boolean {
         return false
     }
-
-    private fun addLombok(topLevelClass: TopLevelClass) {
-        topLevelClass.addImportedType("lombok.AllArgsConstructor")
-        topLevelClass.addImportedType("lombok.Builder")
-        topLevelClass.addImportedType("lombok.Data")
-        topLevelClass.addImportedType("lombok.NoArgsConstructor")
-
-        topLevelClass.addAnnotation("@Data")
-        topLevelClass.addAnnotation("@Builder")
-        topLevelClass.addAnnotation("@AllArgsConstructor")
-        topLevelClass.addAnnotation("@NoArgsConstructor")
-    }
-
 }

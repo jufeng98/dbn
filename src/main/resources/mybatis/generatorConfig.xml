@@ -14,6 +14,7 @@
         <property name="endingDelimiter" value="${delimiter}"/>
 
         <plugin type="com.dbn.mybatis.plugin.PrimaryKeyPlugin"/>
+        <plugin type="com.dbn.mybatis.plugin.RemovePlainPlugin"/>
 
         <commentGenerator>
             <!--去掉mybatis在字段和方法上添加的无关注释-->

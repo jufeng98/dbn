@@ -20,8 +20,10 @@ public class MyBatisGeneratorForm extends DialogWrapper {
         super(project, false);
         this.project = project;
         this.dbTable = dbTable;
-        MyBatisSettings myBatisSettings = MyBatisSettings.getInstance(project);
 
+        setOKButtonText("Generate");
+
+        MyBatisSettings myBatisSettings = MyBatisSettings.getInstance(project);
         generatorSettingsForm = new GeneratorSettingsForm();
         generatorSettingsForm.initForm(myBatisSettings.getGeneratorSettings(), dbTable);
 
@@ -32,8 +34,8 @@ public class MyBatisGeneratorForm extends DialogWrapper {
 
     protected void doOKAction() {
         Progress.background(project, dbTable.getConnection(), true,
-                "温馨提示",
-                "正在生成" + dbTable.getName() + "...",
+                "Tip",
+                "Generating " + dbTable.getName() + "...",
                 progress -> generatorSettingsForm.saveAndGenerate());
 
         super.doOKAction();

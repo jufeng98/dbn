@@ -7,14 +7,23 @@ import com.dbn.connection.info.ConnectionInfo;
 import com.dbn.driver.DatabaseDriverManager;
 import com.dbn.driver.DriverBundle;
 import com.dbn.mybatis.model.Config;
+import com.dbn.mybatis.plugin.BatchInsertPlugin;
 import com.dbn.mybatis.plugin.CommentPlugin;
 import com.dbn.mybatis.plugin.EqualsHashToStringPlugin;
+import com.dbn.mybatis.plugin.ExamplePlugin;
+import com.dbn.mybatis.plugin.JpaAnnotationPlugin;
 import com.dbn.mybatis.plugin.LombokPlugin;
+import com.dbn.mybatis.plugin.MapperAnnotationPlugin;
+import com.dbn.mybatis.plugin.SelectOnePlugin;
+import com.dbn.mybatis.plugin.SerializablePlugin;
 import com.dbn.mybatis.plugin.StaticFieldNamePlugin;
+import com.dbn.mybatis.plugin.TkMapperPlugin;
 import com.dbn.mybatis.plugins.EnumsPlugin;
 import com.dbn.object.DBTable;
 import com.dbn.utils.NotifyUtil;
 import com.intellij.openapi.util.io.StreamUtil;
+import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VirtualFileManager;
 import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.utils.Lists;
@@ -25,10 +34,7 @@ import org.mybatis.generator.config.Configuration;
 import org.mybatis.generator.config.Context;
 import org.mybatis.generator.config.PluginConfiguration;
 import org.mybatis.generator.config.xml.ConfigurationParser;
-import org.mybatis.generator.internal.DefaultShellCallback;
-import org.mybatis.generator.plugins.MapperAnnotationPlugin;
 import org.mybatis.generator.plugins.RowBoundsPlugin;
-import org.mybatis.generator.plugins.SerializablePlugin;
 import org.mybatis.generator.plugins.UnmergeableXmlMappersPlugin;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -83,6 +89,42 @@ public class DbnMyBatisGenerator {
     private final ConnectionInfo connectionInfo;
     private final AuthenticationInfo authenticationInfo;
 
+    public void generator() throws Exception {
+        Properties properties = createProperties();
+
+        String content = readAndModifyConfigFile(properties);
+        log.warn("xml配置文件内容:\r\n{}", content);
+
+        List<String> warnings = Lists.newArrayList();
+        ConfigurationParser cp = new ConfigurationParser(properties, warnings);
+        Configuration configuration = cp.parseConfiguration(new StringReader(content));
+
+        addPlugins(configuration);
+
+        MyDefaultShellCallback shellCallback = new MyDefaultShellCallback(true, dbTable.getProject());
+        MyProgressCallback progressCallback = new MyProgressCallback(shellCallback);
+
+        MyBatisGenerator myBatisGenerator = new MyBatisGenerator(configuration, shellCallback, warnings);
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        try {
+            DatabaseDriverManager driverManager = DatabaseDriverManager.getInstance();
+            DriverBundle driverBundle = driverManager.getBundledDrivers(DatabaseType.MYSQL);
+            Thread.currentThread().setContextClassLoader((URLClassLoader) driverBundle.getClassLoader());
+
+            myBatisGenerator.generate(progressCallback);
+        } finally {
+            Thread.currentThread().setContextClassLoader(classLoader);
+        }
+
+        VirtualFileManager.getInstance().asyncRefresh(()->
+                LocalFileSystem.getInstance().refreshFiles(progressCallback.getVirtualFiles(), true, false,
+                progressCallback::reformatCode));
+
+        NotifyUtil.INSTANCE.notifySuccess(dbTable.getProject(), "生成情况:" + String.join("、", warnings));
+
+        dbnMyBatisGenerator = null;
+    }
+
     public DbnMyBatisGenerator(DBTable dbTable, Config config) {
         this.dbTable = dbTable;
         this.config = config;
@@ -104,44 +146,9 @@ public class DbnMyBatisGenerator {
         return dbnMyBatisGenerator.config;
     }
 
-    public void generator() throws Exception {
-        Properties properties = createProperties();
-
-        String content = readAndModifyConfigFile(properties);
-        log.warn("xml配置文件内容:\r\n{}", content);
-
-        List<String> warnings = Lists.newArrayList();
-        ConfigurationParser cp = new ConfigurationParser(properties, warnings);
-        Configuration configuration = cp.parseConfiguration(new StringReader(content));
-
-        addPlugins(configuration);
-
-        DefaultShellCallback shellCallback = new MyDefaultShellCallback(true, dbTable.getProject());
-
-        MyBatisGenerator myBatisGenerator = new MyBatisGenerator(configuration, shellCallback, warnings);
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        try {
-            DatabaseDriverManager driverManager = DatabaseDriverManager.getInstance();
-            DriverBundle driverBundle = driverManager.getBundledDrivers(DatabaseType.MYSQL);
-            Thread.currentThread().setContextClassLoader((URLClassLoader) driverBundle.getClassLoader());
-
-            myBatisGenerator.generate(null);
-        } finally {
-            Thread.currentThread().setContextClassLoader(classLoader);
-        }
-
-        NotifyUtil.INSTANCE.notifyDbToolWindowInfo(dbTable.getProject(), "生成情况:\r\n" + String.join("\r\n", warnings));
-
-        dbnMyBatisGenerator = null;
-    }
-
     private Properties createProperties() {
         Properties properties = new Properties();
-        if (config.isUseExample()) {
-            properties.setProperty("targetRuntime", "MyBatis3");
-        } else {
-            properties.setProperty("targetRuntime", "MyBatis3Simple");
-        }
+        properties.setProperty("targetRuntime", "MyBatis3");
 
         properties.setProperty("delimiter", "`");
 
@@ -164,24 +171,23 @@ public class DbnMyBatisGenerator {
     private void addPlugins(Configuration configuration) {
         Context context = getContext(configuration, "MySQL");
         if (config.isOverrideXML()) {
-            // 重复生成xml文件时覆盖已有文件
             addPlugin(context, UnmergeableXmlMappersPlugin.class);
+        }
+
+        if (config.isTkMapper()) {
+            addPlugin(context, TkMapperPlugin.class);
         }
 
         if (config.isUseLombokPlugin()) {
             addPlugin(context, LombokPlugin.class);
         }
 
+        if (config.isJpaAnnotation()) {
+            addPlugin(context, JpaAnnotationPlugin.class);
+        }
+
         if (config.isGenerateEnum()) {
             addPlugin(context, EnumsPlugin.class);
-        }
-
-        if (config.isNeedToStringHashcodeEquals()) {
-            addPlugin(context, EqualsHashToStringPlugin.class);
-        }
-
-        if (config.isSerializable()) {
-            addPlugin(context, SerializablePlugin.class);
         }
 
         if (config.isRowBounds()) {
@@ -192,6 +198,13 @@ public class DbnMyBatisGenerator {
             addPlugin(context, MapperAnnotationPlugin.class);
         }
 
+        if (config.isUseExample()) {
+            addPlugin(context, SelectOnePlugin.class);
+            addPlugin(context, BatchInsertPlugin.class);
+        } else {
+            addPlugin(context, ExamplePlugin.class);
+        }
+
         if (config.isStaticFieldName()) {
             addPlugin(context, StaticFieldNamePlugin.class);
         }
@@ -199,11 +212,20 @@ public class DbnMyBatisGenerator {
         if (config.isComment()) {
             addPlugin(context, CommentPlugin.class);
         }
+
+        if (config.isSerializable()) {
+            addPlugin(context, SerializablePlugin.class);
+        }
+
+        if (config.isNeedToStringHashcodeEquals()) {
+            addPlugin(context, EqualsHashToStringPlugin.class);
+        }
     }
 
     private String readAndModifyConfigFile(Properties properties) throws Exception {
         URL url = getClass().getClassLoader().getResource("mybatis/generatorConfig.xml");
 
+        @SuppressWarnings("DataFlowIssue")
         @Cleanup
         InputStream inputStream = url.openStream();
         String str = new String(StreamUtil.readBytes(inputStream));

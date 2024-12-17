@@ -10,6 +10,9 @@ import org.mybatis.generator.api.dom.java.FullyQualifiedJavaType
 import org.mybatis.generator.api.dom.java.JavaVisibility
 import org.mybatis.generator.api.dom.java.TopLevelClass
 
+/**
+ * @author yudong
+ */
 class StaticFieldNamePlugin : PluginAdapter() {
 
     override fun validate(warnings: List<String>): Boolean {

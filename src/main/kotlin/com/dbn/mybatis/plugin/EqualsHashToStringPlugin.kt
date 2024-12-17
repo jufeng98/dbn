@@ -4,6 +4,9 @@ import org.mybatis.generator.api.IntrospectedTable
 import org.mybatis.generator.api.PluginAdapter
 import org.mybatis.generator.api.dom.java.*
 
+/**
+ * @author yudong
+ */
 class EqualsHashToStringPlugin : PluginAdapter() {
 
     override fun validate(warnings: List<String>): Boolean {
@@ -26,19 +29,9 @@ class EqualsHashToStringPlugin : PluginAdapter() {
         topLevelClass.addImportedType("org.apache.commons.lang3.builder.ToStringBuilder")
         topLevelClass.addImportedType("org.apache.commons.lang3.builder.ToStringStyle")
 
-        val newMethods: MutableList<Method> = ArrayList()
-
-        newMethods.add(toStringMethod())
-
-        newMethods.add(equalsMethod())
-
-        newMethods.add(hashMethod())
-
-        newMethods.addAll(topLevelClass.methods)
-
-        val field = AbstractJavaType::class.java.getDeclaredField("methods")
-        field.isAccessible = true
-        field[topLevelClass] = newMethods
+        topLevelClass.methods.add(0, hashMethod())
+        topLevelClass.methods.add(0, equalsMethod())
+        topLevelClass.methods.add(0, toStringMethod())
     }
 
     private fun toStringMethod(): Method {

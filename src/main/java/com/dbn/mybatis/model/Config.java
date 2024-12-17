@@ -65,4 +65,5 @@ public class Config {
     private boolean rowBounds;
     private boolean mapperAnnotation;
     private boolean staticFieldName;
+    private boolean tkMapper;
 }
