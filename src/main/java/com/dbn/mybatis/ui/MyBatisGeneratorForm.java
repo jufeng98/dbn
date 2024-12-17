@@ -5,9 +5,11 @@ import com.dbn.mybatis.settings.MyBatisSettings;
 import com.dbn.object.DBTable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.util.List;
 
 public class MyBatisGeneratorForm extends DialogWrapper {
     private final GeneratorSettingsForm generatorSettingsForm;
@@ -33,6 +35,12 @@ public class MyBatisGeneratorForm extends DialogWrapper {
     }
 
     protected void doOKAction() {
+        List<String> errors = generatorSettingsForm.validateParams();
+        if (!errors.isEmpty()) {
+            Messages.showErrorDialog(String.join("、", errors), "Tip");
+            return;
+        }
+
         Progress.background(project, dbTable.getConnection(), true,
                 "Tip",
                 "Generating " + dbTable.getName() + "...",

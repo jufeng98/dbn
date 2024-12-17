@@ -16,11 +16,16 @@ import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBTextField;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class GeneratorSettingsForm {
     private JBList<String> historyList;
@@ -147,7 +152,7 @@ public class GeneratorSettingsForm {
         }
 
         historyConfigMap = settings.getHistoryConfigMap();
-        if (historyConfigMap != null) {
+        if (historyConfigMap != null && !historyConfigMap.isEmpty()) {
             config = historyConfigMap.values().iterator().next();
         }
 
@@ -262,6 +267,34 @@ public class GeneratorSettingsForm {
             String packageName = psiPackage.getQualifiedName();
             textField.setText(packageName);
         });
+    }
+
+    public List<String> validateParams() {
+        Config config = createConfig("temp");
+        Field[] fields = config.getClass().getDeclaredFields();
+        return Arrays.stream(fields)
+                .map(it -> {
+                    it.setAccessible(true);
+                    Class<?> declaringClass = it.getType();
+                    if (declaringClass != String.class) {
+                        return null;
+                    }
+
+                    String value;
+                    try {
+                        value = (String) it.get(config);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    if (StringUtils.isNotBlank(value)) {
+                        return null;
+                    }
+
+                    return it.getName() + "不能为空";
+                })
+                .filter(Objects::nonNull)
+                .toList();
     }
 
     @SneakyThrows

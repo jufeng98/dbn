@@ -29,34 +29,11 @@ public class Config {
     private String xmlFolder;
     private String xmlMvnPath;
 
-    /**
-     * 是否生成实体注释（来自表）
-     */
     private boolean comment;
-
-    /**
-     * 是否覆盖原xml
-     */
     private boolean overrideXML;
-
-    /**
-     * 是否覆盖原java
-     */
     private boolean overrideJava;
-
-    /**
-     * 是否生成toString/hashCode/equals方法
-     */
     private boolean needToStringHashcodeEquals;
-
-    /**
-     * 是否生成JPA注解
-     */
     private boolean jpaAnnotation;
-
-    /**
-     * 是否使用Example
-     */
     private boolean useExample;
     private boolean generateEnum;
     private boolean integerTinyInt;
