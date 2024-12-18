@@ -1,7 +1,7 @@
 <idea-plugin url="https://plugins.jetbrains.com/plugin/1800-database-navigator"
              xmlns:xi="http://www.w3.org/2001/XInclude" require-restart="true">
     <name>DataBaseManager</name>
-    <version>3.4.5101.0</version>
+    <version>3.4.5102.0</version>
     <category>Database</category>
 
     <depends>com.intellij.modules.platform</depends>
@@ -25,7 +25,7 @@
                 <li>PostgreSQL</li>
                 <li>Any JDBC compliant database (EXPERIMENTAL)</li>
             </ul>
-            <br><br><br>
+            <br>
             Fork code from <a herf="https://plugins.jetbrains.com/plugin/1800-database-navigator">Database Navigator</a><br>
             This tool is free for personal and commercial use.<br>
             <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3QAPZFCCARA4J">Donations</a>
@@ -46,6 +46,7 @@
             <ul>
                 <li>支持 MyBatis mapper.xml 文件的 SQL 识别</li>
                 <li>支持提取控制台 MyBatis 打印的 SQL</li>
+                <li>集成 MyBatis Generator</li>
                 <li>支持悬浮展示表元数据信息</li>
                 <li>支持悬浮展示列元数据信息</li>
                 <li>支持输入表名时智能提示</li>
@@ -55,6 +56,17 @@
     ]]></description>
     <change-notes><![CDATA[
         <ul>
+            <li><b>3.4.5102</b>
+            <ul>
+                <li>Integrate mybatis generator</li>
+                <li>Bug fixes</li>
+            </ul>
+            <li><b>3.4.4180</b>
+            <ul>
+                <li>Support 2024.3</li>
+                <li>Extract mybatis sql from console</li>
+                <li>Bug fixes</li>
+            </ul>
             <li><b>3.4.4179</b>
             <ul>
                 <li>Postgres SQL syntax - literal comparison operators

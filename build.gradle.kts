@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "com.dbn"
-version = "3.4.4180.0"
+version = "3.4.5102.0"
 
 repositories {
     maven { url = URI("https://maven.aliyun.com/nexus/content/groups/public/") }
