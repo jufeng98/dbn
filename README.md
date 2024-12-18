@@ -29,6 +29,8 @@ Additionally, it offers diverse navigation capabilities that seamlessly integrat
 
 ### 主要功能如下：
 - 支持 MyBatis mapper.xml 文件的 SQL 识别
+- 支持提取控制台 MyBatis 打印的 SQL
+- 集成 MyBatis Generator
 - 支持悬浮展示表元数据信息
 - 支持悬浮展示列元数据信息
 - 支持输入表名时智能提示
@@ -47,6 +49,14 @@ Additionally, it offers diverse navigation capabilities that seamlessly integrat
 ![column-alias-hint.png](https://github.com/jufeng98/dbn/blob/master/images/column-alias-hint.png)
 ##### SQL 引用及跳转
 ![reference-jump.png](https://github.com/jufeng98/dbn/blob/master/images/reference-jump.png)
+##### 提取 MyBatis 控制台 SQL
+![mybatis-console-log.png](images/mybatis-console-log.png)
+##### MyBatis Generator 配置页
+![mybatis-generator-config.png](images/mybatis-generator-config.png)
+##### MyBatis Generator 入口
+![mybatis-generator-table.png](images/mybatis-generator-table.png)
+##### MyBatis Generator 生成表相关 MyBatis 类及文件
+![mybatis-generator-table-config.png](images/mybatis-generator-table-config.png)
 
 ## 作者信息
 - 作者博客：[知乎](https://www.zhihu.com/people/liang-yu-dong-44)
