@@ -21,11 +21,7 @@ class JpaAnnotationPlugin : PluginAdapter() {
         topLevelClass: TopLevelClass,
         introspectedTable: IntrospectedTable,
     ): Boolean {
-        topLevelClass.addImportedType("javax.persistence.Table")
-        topLevelClass.addImportedType("javax.persistence.Column")
-        topLevelClass.addImportedType("javax.persistence.Id")
-        topLevelClass.addImportedType("javax.persistence.GenerationType")
-        topLevelClass.addImportedType("javax.persistence.GeneratedValue")
+        topLevelClass.addImportedType("javax.persistence.*")
 
         var tableName = introspectedTable.fullyQualifiedTableNameAtRuntime
         if (StringUtility.stringContainsSpace(tableName)) {

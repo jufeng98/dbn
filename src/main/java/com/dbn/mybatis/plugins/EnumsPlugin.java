@@ -63,7 +63,9 @@ public class EnumsPlugin extends PluginAdapter {
     }
 
     private void generateEnum(Field field, String remark) throws Exception {
-        String enumClassName = StringUtil.toCamelCase(field.getName()) + config.getEnumPostfixPackage();
+        String name = StringUtil.toCamelCase(field.getName());
+        name = StringUtil.capitalizeFirstWord2(name);
+        String enumClassName = name + config.getEnumPostfixPackage();
         String enumValue = remark.split("-")[1];
         String[] enums = enumValue.split(";");
 

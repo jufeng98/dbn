@@ -272,7 +272,7 @@ public final class MetadataCacheService {
             ObjectNode objectNode = identifierArrayNode.addObject();
             for (String columnLabel : labels) {
                 val columnValue = resultSet.getObject(columnLabel);
-                put(objectNode, columnLabel, columnValue);
+                put(objectNode, columnLabel.toUpperCase(), columnValue);
             }
         }
         resultSet.close();

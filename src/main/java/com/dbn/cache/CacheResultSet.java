@@ -52,7 +52,7 @@ public class CacheResultSet extends DBNResultSet {
     public String getString(String columnLabel) throws SQLException {
         ObjectNode objectNode = (ObjectNode) identifierArrayNode.get(index);
         JsonNode jsonNode = objectNode.get(columnLabel);
-        if (jsonNode.getClass() == NullNode.class) {
+        if (jsonNode == null || jsonNode.getClass() == NullNode.class) {
             return null;
         }
 
@@ -63,7 +63,7 @@ public class CacheResultSet extends DBNResultSet {
     public int getInt(String columnLabel) throws SQLException {
         ObjectNode objectNode = (ObjectNode) identifierArrayNode.get(index);
         JsonNode jsonNode = objectNode.get(columnLabel);
-        if (jsonNode.getClass() == NullNode.class) {
+        if (jsonNode == null || jsonNode.getClass() == NullNode.class) {
             return 0;
         }
 
@@ -74,7 +74,7 @@ public class CacheResultSet extends DBNResultSet {
     public double getDouble(String columnLabel) {
         ObjectNode objectNode = (ObjectNode) identifierArrayNode.get(index);
         JsonNode jsonNode = objectNode.get(columnLabel);
-        if (jsonNode.getClass() == NullNode.class) {
+        if (jsonNode == null || jsonNode.getClass() == NullNode.class) {
             return 0;
         }
 
@@ -85,7 +85,7 @@ public class CacheResultSet extends DBNResultSet {
     public float getFloat(String columnLabel) {
         ObjectNode objectNode = (ObjectNode) identifierArrayNode.get(index);
         JsonNode jsonNode = objectNode.get(columnLabel);
-        if (jsonNode.getClass() == NullNode.class) {
+        if (jsonNode == null || jsonNode.getClass() == NullNode.class) {
             return 0;
         }
 
@@ -96,7 +96,7 @@ public class CacheResultSet extends DBNResultSet {
     public boolean getBoolean(String columnLabel) throws SQLException {
         ObjectNode objectNode = (ObjectNode) identifierArrayNode.get(index);
         JsonNode jsonNode = objectNode.get(columnLabel);
-        if (jsonNode.getClass() == NullNode.class) {
+        if (jsonNode == null || jsonNode.getClass() == NullNode.class) {
             return false;
         }
 
@@ -107,7 +107,7 @@ public class CacheResultSet extends DBNResultSet {
     public BigDecimal getBigDecimal(String columnLabel) {
         ObjectNode objectNode = (ObjectNode) identifierArrayNode.get(index);
         JsonNode jsonNode = objectNode.get(columnLabel);
-        if (jsonNode.getClass() == NullNode.class) {
+        if (jsonNode == null || jsonNode.getClass() == NullNode.class) {
             return null;
         }
 
@@ -119,7 +119,7 @@ public class CacheResultSet extends DBNResultSet {
     public long getLong(String columnLabel) throws SQLException {
         ObjectNode objectNode = (ObjectNode) identifierArrayNode.get(index);
         JsonNode jsonNode = objectNode.get(columnLabel);
-        if (jsonNode.getClass() == NullNode.class) {
+        if (jsonNode == null || jsonNode.getClass() == NullNode.class) {
             return 0;
         }
 
@@ -130,7 +130,7 @@ public class CacheResultSet extends DBNResultSet {
     public short getShort(String columnLabel) throws SQLException {
         ObjectNode objectNode = (ObjectNode) identifierArrayNode.get(index);
         JsonNode jsonNode = objectNode.get(columnLabel);
-        if (jsonNode.getClass() == NullNode.class) {
+        if (jsonNode == null || jsonNode.getClass() == NullNode.class) {
             return 0;
         }
 

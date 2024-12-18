@@ -1,6 +1,7 @@
 package com.dbn.mybatis.ui;
 
 import com.dbn.common.thread.Progress;
+import com.dbn.connection.DatabaseType;
 import com.dbn.mybatis.settings.MyBatisSettings;
 import com.dbn.object.DBTable;
 import com.intellij.openapi.project.Project;
@@ -35,6 +36,12 @@ public class MyBatisGeneratorForm extends DialogWrapper {
     }
 
     protected void doOKAction() {
+        if (DatabaseType.MYSQL != dbTable.getConnection().getDatabaseType()) {
+            Messages.showInfoMessage("Currently only support MySQL", "Tip");
+            super.doOKAction();
+            return;
+        }
+
         List<String> errors = generatorSettingsForm.validateParams();
         if (!errors.isEmpty()) {
             Messages.showErrorDialog(String.join("、", errors), "Tip");
