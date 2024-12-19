@@ -38,25 +38,27 @@ Additionally, it offers diverse navigation capabilities that seamlessly integrat
 - SQL 结构的跳转等
 
 ##### 悬浮提示表元数据信息
-![table-hover.png](https://github.com/jufeng98/dbn/blob/master/images/table-hover.png)
+![table-hover.png](images/table-hover.png)
 ##### 悬浮提示列元数据信息
-![column-hover.png](https://github.com/jufeng98/dbn/blob/master/images/column-hover.png)
+![column-hover.png](images/column-hover.png)
 ##### 表名输入智能提示
-![table-name-hint.png](https://github.com/jufeng98/dbn/blob/master/images/table-name-hint.png)
+![table-name-hint.png](images/table-name-hint.png)
 ##### 列名输入智能提示
-![column-name-hint.png](https://github.com/jufeng98/dbn/blob/master/images/column-name-hint.png)
+![column-name-hint.png](images/column-name-hint.png)
 ##### 列别名输入智能提示
-![column-alias-hint.png](https://github.com/jufeng98/dbn/blob/master/images/column-alias-hint.png)
+![column-alias-hint.png](images/column-alias-hint.png)
 ##### SQL 引用及跳转
-![reference-jump.png](https://github.com/jufeng98/dbn/blob/master/images/reference-jump.png)
+![reference-jump.png](images/reference-jump.png)
 ##### 提取 MyBatis 控制台 SQL
 ![mybatis-console-log.png](images/mybatis-console-log.png)
 ##### MyBatis Generator 配置页
 ![mybatis-generator-config.png](images/mybatis-generator-config.png)
 ##### MyBatis Generator 入口
 ![mybatis-generator-table.png](images/mybatis-generator-table.png)
-##### MyBatis Generator 生成表相关 MyBatis 类及文件
+##### MyBatis Generator 生成表时相关配置
 ![mybatis-generator-table-config.png](images/mybatis-generator-table-config.png)
+##### MyBatis Generator 生成表相关 MyBatis 类及文件
+![mybatis-generator-result.png](images/mybatis-generator-result.png)
 
 ## 作者信息
 - 作者博客：[知乎](https://www.zhihu.com/people/liang-yu-dong-44)
@@ -65,11 +67,11 @@ Additionally, it offers diverse navigation capabilities that seamlessly integrat
 - 
 ## 捐赠
 如果项目帮到了您，请作者喝杯咖啡吧！
-![donate](https://github.com/jufeng98/dbn/blob/master/images/donate.jpg)
+![donate](images/donate.jpg)
 
 ## 技术支持
 微信记得备注 ```DataBaseManager```，共同进步。
-![wechat](https://github.com/jufeng98/dbn/blob/master/images/wechat.jpg)
+![wechat](images/wechat.jpg)
 
 
 
