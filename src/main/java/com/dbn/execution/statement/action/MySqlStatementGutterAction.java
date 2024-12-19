@@ -45,31 +45,20 @@ public class MySqlStatementGutterAction extends BasicAction {
     public void actionPerformed(@NotNull AnActionEvent e) {
         StatementExecutionProcessor executionProcessor = getExecutionProcessor(false, psiElement);
         DataContext dataContext = e.getDataContext();
+        @SuppressWarnings("DataFlowIssue")
+        StatementExecutionManager executionManager = StatementExecutionManager.getInstance(e.getProject());
 
-        if (executionProcessor != null && !executionProcessor.isDirty()) {
-            Project project = executionProcessor.getProject();
-            StatementExecutionManager executionManager = StatementExecutionManager.getInstance(project);
-            StatementExecutionContext context = executionProcessor.getExecutionContext();
-            if (context.is(ExecutionStatus.EXECUTING) || context.is(ExecutionStatus.QUEUED)) {
-                executionProcessor.cancelExecution();
-            } else {
-                StatementExecutionResult executionResult = executionProcessor.getExecutionResult();
-                if (executionResult == null
-                        || !(executionProcessor instanceof StatementExecutionCursorProcessor)
-                        || executionProcessor.isDirty()) {
-                    executionManager.executeStatement(executionProcessor, dataContext);
-                } else {
-                    executionProcessor.navigateToResult();
-                }
-            }
-        } else {
-            executionProcessor = getExecutionProcessor(true, psiElement);
-            if (executionProcessor != null) {
-                Project project = executionProcessor.getProject();
-                StatementExecutionManager executionManager = StatementExecutionManager.getInstance(project);
-                executionManager.executeStatement(executionProcessor, dataContext);
-            }
+        if (executionProcessor != null) {
+            executionManager.executeStatement(executionProcessor, dataContext);
+            return;
         }
+
+        executionProcessor = getExecutionProcessor(true, psiElement);
+        if (executionProcessor == null) {
+            return;
+        }
+
+        executionManager.executeStatement(executionProcessor, dataContext);
     }
 
 
@@ -125,7 +114,7 @@ public class MySqlStatementGutterAction extends BasicAction {
         MockExecutablePsiElement executablePsiElement = new MockExecutablePsiElement(psiElement.getNode(),
                 namedElementType, psiElement, null);
         StatementExecutionManager executionManager = StatementExecutionManager.getInstance(project);
-        return executionManager.getExecutionProcessor(selectedEditor, executablePsiElement, create);
+        return executionManager.getMyExecutionProcessor(selectedEditor, executablePsiElement, create);
     }
 
     @Nullable
@@ -146,7 +135,7 @@ public class MySqlStatementGutterAction extends BasicAction {
         MockExecutablePsiElement executablePsiElement = new MockExecutablePsiElement(psiElement.getNode(),
                 namedElementType, psiElement, sql);
         StatementExecutionManager executionManager = StatementExecutionManager.getInstance(project);
-        return executionManager.getExecutionProcessor(selectedEditor, executablePsiElement, create);
+        return executionManager.getMyExecutionProcessor(selectedEditor, executablePsiElement, create);
     }
 
 

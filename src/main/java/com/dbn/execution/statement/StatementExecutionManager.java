@@ -35,6 +35,7 @@ import com.dbn.execution.statement.variables.ui.StatementExecutionInputsDialog;
 import com.dbn.language.common.DBLanguagePsiFile;
 import com.dbn.language.common.psi.BasePsiElement.MatchType;
 import com.dbn.language.common.psi.*;
+import com.dbn.sql.gutter.MockExecutablePsiElement;
 import com.dbn.sql.parser.SqlFile;
 import com.dbn.sql.psi.SqlRoot;
 import com.intellij.openapi.actionSystem.DataContext;
@@ -167,7 +168,7 @@ public class StatementExecutionManager extends ProjectComponentBase implements P
         return UserDataUtil.ensure(
                 textEditor,
                 UserDataKeys.STATEMENT_EXECUTION_PROCESSORS,
-                () -> CollectionUtil.createConcurrentList());
+                CollectionUtil::createConcurrentList);
     }
 
     private void bindExecutionProcessors(FileEditor fileEditor, MatchType matchType) {
@@ -177,8 +178,7 @@ public class StatementExecutionManager extends ProjectComponentBase implements P
 
         PsiElement child = psiFile.getFirstChild();
         while (child != null) {
-            if (child instanceof RootPsiElement) {
-                RootPsiElement root = (RootPsiElement) child;
+            if (child instanceof RootPsiElement root) {
                 for (ExecutablePsiElement executable: root.getExecutablePsiElements()) {
                     if (matchType == MatchType.CACHED) {
                         StatementExecutionProcessor executionProcessor = executable.getExecutionProcessor();
@@ -224,10 +224,7 @@ public class StatementExecutionManager extends ProjectComponentBase implements P
     }
 
     public void executeStatement(@NotNull StatementExecutionProcessor executionProcessor, DataContext dataContext) {
-        executeStatements(
-                executionProcessor.getVirtualFile(),
-                Collections.singletonList(executionProcessor),
-                dataContext);
+        executeStatements(executionProcessor.getVirtualFile(), Collections.singletonList(executionProcessor), dataContext);
     }
 
     private void executeStatements(@Nullable VirtualFile virtualFile, List<StatementExecutionProcessor> executionProcessors, DataContext dataContext) {
@@ -483,17 +480,14 @@ public class StatementExecutionManager extends ProjectComponentBase implements P
             if (file != null) {
                 PsiElement child = file.getFirstChild();
                 while (child != null) {
-                    if (child instanceof ChameleonPsiElement) {
-                        ChameleonPsiElement chameleonPsiElement = (ChameleonPsiElement) child;
+                    if (child instanceof ChameleonPsiElement chameleonPsiElement) {
                         for (ExecutablePsiElement executable : chameleonPsiElement.getExecutablePsiElements()) {
                             StatementExecutionProcessor executionProcessor = getExecutionProcessor(fileEditor, executable, true);
                             executionProcessors.add(executionProcessor);
                         }
 
                     }
-                    if (child instanceof RootPsiElement) {
-                        RootPsiElement root = (RootPsiElement) child;
-
+                    if (child instanceof RootPsiElement root) {
                         for (ExecutablePsiElement executable: root.getExecutablePsiElements()) {
                             if (executable.getTextOffset() > offset) {
                                 StatementExecutionProcessor executionProcessor = getExecutionProcessor(fileEditor, executable, true);
@@ -509,10 +503,26 @@ public class StatementExecutionManager extends ProjectComponentBase implements P
     }
 
     @Nullable
-    public StatementExecutionProcessor getExecutionProcessor(@NotNull FileEditor fileEditor, @NotNull ExecutablePsiElement executablePsiElement, boolean create) {
+    public StatementExecutionProcessor getExecutionProcessor(@NotNull FileEditor fileEditor,
+                                                             @NotNull ExecutablePsiElement executablePsiElement,
+                                                             boolean create) {
         List<StatementExecutionProcessor> executionProcessors = getExecutionProcessors(fileEditor);
         for (StatementExecutionProcessor executionProcessor : executionProcessors) {
             if (executablePsiElement == executionProcessor.getCachedExecutable()) {
+                return executionProcessor;
+            }
+        }
+
+        return create ? createExecutionProcessor(fileEditor, executionProcessors, executablePsiElement) : null;
+    }
+
+    @Nullable
+    public StatementExecutionProcessor getMyExecutionProcessor(@NotNull FileEditor fileEditor,
+                                                               @NotNull MockExecutablePsiElement executablePsiElement,
+                                                               boolean create) {
+        List<StatementExecutionProcessor> executionProcessors = getExecutionProcessors(fileEditor);
+        for (StatementExecutionProcessor executionProcessor : executionProcessors) {
+            if (executionProcessor.toString().equals(executablePsiElement.getRawSql())) {
                 return executionProcessor;
             }
         }

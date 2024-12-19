@@ -44,6 +44,7 @@ import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -59,6 +60,7 @@ import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 
 public class StatementExecutionCursorResult extends StatementExecutionBasicResult {
     private ResultSetDataModel<?, ?> dataModel;
+    @Getter
     private DatasetEditor datasetEditor;
 
     public StatementExecutionCursorResult(
@@ -161,11 +163,10 @@ public class StatementExecutionCursorResult extends StatementExecutionBasicResul
 
     private @Nullable DatasetEditor loadDatasetEditorIfSingleTableQuery() {
         ExecutablePsiElement executablePsiElement = getExecutablePsiElement();
-        if (!(executablePsiElement instanceof MockExecutablePsiElement)) {
+        if (!(executablePsiElement instanceof MockExecutablePsiElement mockExecutablePsiElement)) {
             return null;
         }
 
-        MockExecutablePsiElement mockExecutablePsiElement = (MockExecutablePsiElement) executablePsiElement;
         String tableName = mockExecutablePsiElement.getIfSingleTableQuery();
         if (tableName == null) {
             return null;

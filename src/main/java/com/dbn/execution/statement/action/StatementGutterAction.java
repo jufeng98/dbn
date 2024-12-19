@@ -94,7 +94,10 @@ public class StatementGutterAction extends BasicAction {
                 executionProcessor.cancelExecution();
             } else {
                 StatementExecutionResult executionResult = executionProcessor.getExecutionResult();
-                if (executionResult == null || !(executionProcessor instanceof StatementExecutionCursorProcessor) || executionProcessor.isDirty()) {
+                if (executionResult == null
+                        || executionResult.getForm() == null
+                        || !(executionProcessor instanceof StatementExecutionCursorProcessor)
+                        || executionProcessor.isDirty()) {
                     executionManager.executeStatement(executionProcessor, dataContext);
                 } else {
                     executionProcessor.navigateToResult();
