@@ -1,7 +1,7 @@
 <idea-plugin url="https://plugins.jetbrains.com/plugin/1800-database-navigator"
              xmlns:xi="http://www.w3.org/2001/XInclude" require-restart="true">
     <name>DataBaseManager</name>
-    <version>3.4.5102.0</version>
+    <version>3.4.5103.0</version>
     <category>Database</category>
 
     <depends>com.intellij.modules.platform</depends>
@@ -47,6 +47,7 @@
                 <li>支持 MyBatis mapper.xml 文件的 SQL 识别</li>
                 <li>支持提取控制台 MyBatis 打印的 SQL</li>
                 <li>集成 MyBatis Generator</li>
+                <li>MyBatis Generator 支持动态 plugin 功能</li>
                 <li>支持悬浮展示表元数据信息</li>
                 <li>支持悬浮展示列元数据信息</li>
                 <li>支持输入表名时智能提示</li>
@@ -56,6 +57,11 @@
     ]]></description>
     <change-notes><![CDATA[
         <ul>
+            <li><b>3.4.5103</b>
+            <ul>
+                <li>Mybatis generator support custom plugin</li>
+                <li>Bug fixes</li>
+            </ul>
             <li><b>3.4.5102</b>
             <ul>
                 <li>Integrate mybatis generator</li>

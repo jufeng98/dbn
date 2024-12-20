@@ -31,6 +31,7 @@ Additionally, it offers diverse navigation capabilities that seamlessly integrat
 - 支持 MyBatis mapper.xml 文件的 SQL 识别
 - 支持提取控制台 MyBatis 打印的 SQL
 - 集成 MyBatis Generator
+- MyBatis Generator 支持动态 plugin 功能
 - 支持悬浮展示表元数据信息
 - 支持悬浮展示列元数据信息
 - 支持输入表名时智能提示
@@ -59,6 +60,10 @@ Additionally, it offers diverse navigation capabilities that seamlessly integrat
 ![mybatis-generator-table-config.png](images/mybatis-generator-table-config.png)
 ##### MyBatis Generator 生成表相关 MyBatis 类及文件
 ![mybatis-generator-result.png](images/mybatis-generator-result.png)
+##### MyBatis Generator custom plugin 入口
+![mybatis-generator-dynamic-plugin1.png](images/mybatis-generator-dynamic-plugin1.png)
+##### MyBatis Generator custom plugin 
+![mybatis-generator-dynamic-plugin2.png](images/mybatis-generator-dynamic-plugin2.png)
 
 ## 作者信息
 - 作者博客：[知乎](https://www.zhihu.com/people/liang-yu-dong-44)
