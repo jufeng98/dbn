@@ -8,6 +8,7 @@ import com.dbn.common.util.Files;
 import com.dbn.connection.DatabaseType;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
+import com.intellij.util.lang.UrlClassLoader;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -17,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -51,6 +53,12 @@ public class DatabaseDriverManager extends ApplicationComponentBase implements P
 
     public static DatabaseDriverManager getInstance() {
         return applicationService(DatabaseDriverManager.class);
+    }
+
+    public static URLClassLoader getClassLoader() {
+        DatabaseDriverManager driverManager = DatabaseDriverManager.getInstance();
+        DriverBundle driverBundle = driverManager.getBundledDrivers(DatabaseType.MYSQL);
+        return (URLClassLoader) driverBundle.getClassLoader();
     }
 
     public DatabaseDriverManager() {

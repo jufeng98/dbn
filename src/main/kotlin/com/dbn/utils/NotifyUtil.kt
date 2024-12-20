@@ -22,6 +22,10 @@ object NotifyUtil {
         STICKY_BALLOON_GROUP.createNotification("Tip", message, NotificationType.INFORMATION).notify(project)
     }
 
+    fun notifyWarn(project: Project, title: String, message: String) {
+        STICKY_BALLOON_GROUP.createNotification(title, message, NotificationType.WARNING).notify(project)
+    }
+
     fun notifyInfo(project: Project, msg: String) {
         NONE.createNotification("Tip", msg, NotificationType.INFORMATION).notify(project)
     }
