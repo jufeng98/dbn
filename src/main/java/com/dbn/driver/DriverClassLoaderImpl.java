@@ -25,7 +25,7 @@ class DriverClassLoaderImpl extends URLClassLoader implements DriverClassLoader 
     private final List<File> jars = new ArrayList<>();
     private final List<Class<Driver>> drivers = new ArrayList<>();
     private final Set<String> classNames = new HashSet<>();
-    private final Map<String, Class> loadedClasses = new HashMap<>();
+    private final Map<String, Class<?>> loadedClasses = new HashMap<>();
 
     public DriverClassLoaderImpl(DriverBundleMetadata metadata) {
         super(getUrls(metadata.getLibrary()), DriverClassLoader.class.getClassLoader());
@@ -77,7 +77,7 @@ class DriverClassLoaderImpl extends URLClassLoader implements DriverClassLoader 
                     }
                 } catch (Throwable e) {
                     conditionallyLog(e);
-                    log.debug("Failed to load driver " + className + " from library " + jar, e);
+                    log.debug("Failed to load driver {} from library {}", className, jar, e);
                 }
             }
         } catch (Throwable e) {
@@ -136,7 +136,7 @@ class DriverClassLoaderImpl extends URLClassLoader implements DriverClassLoader 
             return Arrays.
                     stream(files).
                     filter(file -> file.getName().endsWith(".jar")).
-                    map(file -> getFileUrl(file)).
+                    map(DriverClassLoaderImpl::getFileUrl).
                     toArray(URL[]::new);
         } else {
             return new URL[]{getFileUrl(library)};
