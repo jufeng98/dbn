@@ -1,11 +1,11 @@
 package com.dbn.mybatis;
 
 import com.dbn.common.database.AuthenticationInfo;
+import com.dbn.compile.MyClassLoader;
 import com.dbn.connection.ConnectionHandler;
-import com.dbn.connection.DatabaseType;
 import com.dbn.connection.info.ConnectionInfo;
 import com.dbn.driver.DatabaseDriverManager;
-import com.dbn.driver.DriverBundle;
+import com.dbn.mybatis.custom.CustomPluginHandler;
 import com.dbn.mybatis.model.Config;
 import com.dbn.mybatis.plugin.BatchInsertPlugin;
 import com.dbn.mybatis.plugin.CommentPlugin;
@@ -19,8 +19,10 @@ import com.dbn.mybatis.plugin.SerializablePlugin;
 import com.dbn.mybatis.plugin.StaticFieldNamePlugin;
 import com.dbn.mybatis.plugin.TkMapperPlugin;
 import com.dbn.mybatis.plugins.EnumsPlugin;
+import com.dbn.mybatis.ui.CustomPluginEditorDialog;
 import com.dbn.object.DBTable;
 import com.dbn.utils.NotifyUtil;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.StreamUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFileManager;
@@ -55,7 +57,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -89,6 +90,15 @@ public class DbnMyBatisGenerator {
     private final ConnectionInfo connectionInfo;
     private final AuthenticationInfo authenticationInfo;
 
+    public DbnMyBatisGenerator(DBTable dbTable, Config config) {
+        this.dbTable = dbTable;
+        this.config = config;
+
+        connectionHandler = dbTable.getConnection();
+        connectionInfo = connectionHandler.getConnectionInfo();
+        authenticationInfo = connectionHandler.getAuthenticationInfo();
+    }
+
     public void generator() throws Exception {
         Properties properties = createProperties();
 
@@ -99,39 +109,37 @@ public class DbnMyBatisGenerator {
         ConfigurationParser cp = new ConfigurationParser(properties, warnings);
         Configuration configuration = cp.parseConfiguration(new StringReader(content));
 
-        addPlugins(configuration);
+        Context context = addPlugins(configuration);
 
-        MyDefaultShellCallback shellCallback = new MyDefaultShellCallback(true, dbTable.getProject());
+        Project project = dbTable.getProject();
+        MyDefaultShellCallback shellCallback = new MyDefaultShellCallback(true, project);
         MyProgressCallback progressCallback = new MyProgressCallback(shellCallback);
 
         MyBatisGenerator myBatisGenerator = new MyBatisGenerator(configuration, shellCallback, warnings);
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+        ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
+
+        ClassLoader classLoader = getClassLoader(project, context);
+
         try {
-            DatabaseDriverManager driverManager = DatabaseDriverManager.getInstance();
-            DriverBundle driverBundle = driverManager.getBundledDrivers(DatabaseType.MYSQL);
-            Thread.currentThread().setContextClassLoader((URLClassLoader) driverBundle.getClassLoader());
+            Thread.currentThread().setContextClassLoader(classLoader);
 
             myBatisGenerator.generate(progressCallback);
         } finally {
-            Thread.currentThread().setContextClassLoader(classLoader);
+            Thread.currentThread().setContextClassLoader(originalClassLoader);
+
+            if (classLoader instanceof MyClassLoader myClassLoader) {
+                myClassLoader.close();
+            }
         }
 
-        VirtualFileManager.getInstance().asyncRefresh(()->
+        VirtualFileManager.getInstance().asyncRefresh(() ->
                 LocalFileSystem.getInstance().refreshFiles(progressCallback.getVirtualFiles(), true, false,
-                progressCallback::reformatCode));
+                        progressCallback::reformatCode));
 
-        NotifyUtil.INSTANCE.notifySuccess(dbTable.getProject(), "生成情况:" + String.join("、", warnings));
+        NotifyUtil.INSTANCE.notifySuccess(project, "生成情况:" + String.join("、", warnings));
 
         dbnMyBatisGenerator = null;
-    }
-
-    public DbnMyBatisGenerator(DBTable dbTable, Config config) {
-        this.dbTable = dbTable;
-        this.config = config;
-
-        connectionHandler = dbTable.getConnection();
-        connectionInfo = connectionHandler.getConnectionInfo();
-        authenticationInfo = connectionHandler.getAuthenticationInfo();
     }
 
     public static DbnMyBatisGenerator createInstance(DBTable dbTable, Config config) {
@@ -140,6 +148,28 @@ public class DbnMyBatisGenerator {
         }
 
         return dbnMyBatisGenerator;
+    }
+
+    private ClassLoader getClassLoader(Project project, Context context) {
+        String javaCode = CustomPluginEditorDialog.getCustomPluginCode(project);
+        if (javaCode == null) {
+            return DatabaseDriverManager.getClassLoader();
+        }
+
+        try {
+            CustomPluginHandler customPluginHandler = new CustomPluginHandler(project);
+            MyClassLoader myClassLoader = customPluginHandler.compile(javaCode);
+
+            PluginConfiguration pluginConfiguration = new PluginConfiguration();
+            pluginConfiguration.setConfigurationType(CustomPluginHandler.PLUGIN_CLASS_NAME);
+            context.addPluginConfiguration(pluginConfiguration);
+
+            return myClassLoader;
+        } catch (RuntimeException e) {
+            NotifyUtil.INSTANCE.notifyWarn(project, CustomPluginHandler.PLUGIN_SIMPLE_NAME + " was ignored!", e.getMessage());
+
+            return DatabaseDriverManager.getClassLoader();
+        }
     }
 
     public static Config getConfig() {
@@ -168,7 +198,7 @@ public class DbnMyBatisGenerator {
         return properties;
     }
 
-    private void addPlugins(Configuration configuration) {
+    private Context addPlugins(Configuration configuration) {
         Context context = getContext(configuration, "MySQL");
         if (config.isOverrideXML()) {
             addPlugin(context, UnmergeableXmlMappersPlugin.class);
@@ -220,6 +250,8 @@ public class DbnMyBatisGenerator {
         if (config.isNeedToStringHashcodeEquals()) {
             addPlugin(context, EqualsHashToStringPlugin.class);
         }
+
+        return context;
     }
 
     private String readAndModifyConfigFile(Properties properties) throws Exception {

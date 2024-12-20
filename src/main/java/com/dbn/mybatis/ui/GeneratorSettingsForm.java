@@ -2,6 +2,7 @@ package com.dbn.mybatis.ui;
 
 import com.dbn.mybatis.DbnMyBatisGenerator;
 import com.dbn.mybatis.model.Config;
+import com.dbn.mybatis.custom.CustomPluginHandler;
 import com.dbn.mybatis.settings.GeneratorSettings;
 import com.dbn.object.DBTable;
 import com.google.common.collect.Maps;
@@ -63,6 +64,7 @@ public class GeneratorSettingsForm {
     private JCheckBox staticFieldNameCheckBox;
     private JPanel namePanel;
     private JCheckBox tkMapperCheckBox;
+    private JButton customPluginButton;
 
     public static final String INIT_CONFIG_NAME = "initConfig";
     private Project project;
@@ -72,6 +74,13 @@ public class GeneratorSettingsForm {
     private boolean fromConfigPage;
     private DBTable dbTable;
     private String historySelectValue;
+
+    public GeneratorSettingsForm() {
+        customPluginButton.addActionListener(e -> {
+            CustomPluginHandler customPluginHandler = new CustomPluginHandler(project);
+            customPluginHandler.show();
+        });
+    }
 
     public void initForm(GeneratorSettings settings, DBTable dbTable) {
         project = settings.getProject();
