@@ -157,7 +157,9 @@ public class CustomPluginEditorDialog extends DialogWrapper {
 
     public void addDependency(Project project, String jarPath) {
         fixScriptLibPath(project, jarPath);
+
         addScriptLibToProject(project, jarPath);
+
         addScriptLibToMainModule(project);
     }
 
@@ -178,10 +180,11 @@ public class CustomPluginEditorDialog extends DialogWrapper {
         }
 
         modifiableModel.addRoot(createScriptLibVirtualFile(path), OrderRootType.CLASSES);
-        SwingUtilities.invokeLater(() -> ApplicationManager.getApplication().runWriteAction(() -> {
-            modifiableModel.commit();
-            projectLibraryModel.commit();
-        }));
+        ApplicationManager.getApplication().invokeAndWait(() ->
+                ApplicationManager.getApplication().runWriteAction(() -> {
+                    modifiableModel.commit();
+                    projectLibraryModel.commit();
+                }));
     }
 
     private void addScriptLibToProject(Project project, String jarPath) {
@@ -227,7 +230,7 @@ public class CustomPluginEditorDialog extends DialogWrapper {
         }
 
         Module finalMainModule = mainModule;
-        ApplicationManager.getApplication().invokeLater(() ->
+        ApplicationManager.getApplication().invokeAndWait(() ->
                 ModuleRootModificationUtil.addDependency(finalMainModule, scriptLib, DependencyScope.COMPILE, false));
 
     }
