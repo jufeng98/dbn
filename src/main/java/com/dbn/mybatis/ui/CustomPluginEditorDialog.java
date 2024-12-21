@@ -36,7 +36,6 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -54,8 +53,6 @@ public class CustomPluginEditorDialog extends DialogWrapper {
     public CustomPluginEditorDialog(Project project) {
         super(project);
         this.project = project;
-
-        addDependency(project, loadGeneratorJar());
 
         setOKActionEnabled(false);
 
@@ -78,17 +75,14 @@ public class CustomPluginEditorDialog extends DialogWrapper {
         saveCustomPluginCode();
     }
 
+    @SneakyThrows
     private void saveCustomPluginCode() {
         String javaCode = textField.getText();
 
         String path = project.getBasePath() + "/.idea";
         File file = new File(path, CustomPluginHandler.PLUGIN_SIMPLE_NAME + ".java");
 
-        try {
-            FileUtils.write(file, javaCode, StandardCharsets.UTF_8);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
+        FileUtils.write(file, javaCode, StandardCharsets.UTF_8);
     }
 
     @SneakyThrows
@@ -104,8 +98,30 @@ public class CustomPluginEditorDialog extends DialogWrapper {
 
     @Override
     protected Action @NotNull [] createActions() {
-        List<Action> actions = List.of(new CompileTestAction(), getOKAction(), getCancelAction());
+        String jarPath = constructGeneratorJarPath();
+        Module mainModule = findMainModule(project);
+
+        List<Action> actions;
+        if (removeWrongScriptLibPath(project, jarPath) || !projectExistScriptLib() || !isExistInModule(mainModule)) {
+            actions = List.of(new InstallLibraryAction(), new CompileTestAction(), getOKAction(), getCancelAction());
+        } else {
+            actions = List.of(new CompileTestAction(), getOKAction(), getCancelAction());
+        }
+
         return actions.toArray(Action[]::new);
+    }
+
+    private class InstallLibraryAction extends AbstractAction {
+
+        private InstallLibraryAction() {
+            super("Install library");
+            putValue(Action.SHORT_DESCRIPTION, "Install MyBatis Generator library(mybatis-generator-core-1.4.2.jar)");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            addDependency(project, constructGeneratorJarPath());
+        }
     }
 
     private class CompileTestAction extends AbstractAction {
@@ -145,7 +161,7 @@ public class CustomPluginEditorDialog extends DialogWrapper {
         }
     }
 
-    private String loadGeneratorJar() {
+    private String constructGeneratorJarPath() {
         String libraryRoot = "/lib/ext/mybatis";
 
         @SuppressWarnings("DataFlowIssue")
@@ -156,47 +172,53 @@ public class CustomPluginEditorDialog extends DialogWrapper {
     }
 
     public void addDependency(Project project, String jarPath) {
-        fixScriptLibPath(project, jarPath);
+        removeWrongScriptLibPath(project, jarPath);
 
         addScriptLibToProject(project, jarPath);
 
         addScriptLibToMainModule(project);
     }
 
-    /**
-     * 修正脚本lib路径，可能被用户篡改
-     */
-    private void fixScriptLibPath(Project project, String path) {
+    private boolean removeWrongScriptLibPath(Project project, String jarPath) {
         LibraryTable projectLibraryTable = LibraryTablesRegistrar.getInstance().getLibraryTable(project);
         LibraryTable.ModifiableModel projectLibraryModel = projectLibraryTable.getModifiableModel();
         Library scriptLib = projectLibraryTable.getLibraryByName(SCRIPT_NAME);
         if (scriptLib == null) {
-            return;
+            return false;
         }
+
+        VirtualFile virtualFile = createScriptLibVirtualFile(jarPath);
+        String jarFullPath = virtualFile.toString();
 
         Library.ModifiableModel modifiableModel = scriptLib.getModifiableModel();
         for (String url : modifiableModel.getUrls(OrderRootType.CLASSES)) {
+            if (url.equals(jarFullPath)) {
+                return false;
+            }
+
             modifiableModel.removeRoot(url, OrderRootType.CLASSES);
         }
 
-        modifiableModel.addRoot(createScriptLibVirtualFile(path), OrderRootType.CLASSES);
+        modifiableModel.addRoot(virtualFile, OrderRootType.CLASSES);
+
         ApplicationManager.getApplication().invokeAndWait(() ->
                 ApplicationManager.getApplication().runWriteAction(() -> {
                     modifiableModel.commit();
                     projectLibraryModel.commit();
                 }));
+
+        return true;
     }
 
     private void addScriptLibToProject(Project project, String jarPath) {
-        LibraryTable projectLibraryTable = LibraryTablesRegistrar.getInstance().getLibraryTable(project);
-        final LibraryTable.ModifiableModel projectLibraryModel = projectLibraryTable.getModifiableModel();
-
-        Library scriptLib = projectLibraryTable.getLibraryByName(SCRIPT_NAME);
-        if (scriptLib != null) {
+        if (projectExistScriptLib()) {
             return;
         }
 
-        scriptLib = projectLibraryModel.createLibrary(SCRIPT_NAME);
+        LibraryTable projectLibraryTable = LibraryTablesRegistrar.getInstance().getLibraryTable(project);
+        LibraryTable.ModifiableModel projectLibraryModel = projectLibraryTable.getModifiableModel();
+
+        Library scriptLib = projectLibraryModel.createLibrary(SCRIPT_NAME);
         Library.ModifiableModel libraryModel = scriptLib.getModifiableModel();
 
         VirtualFile scriptLibVirtualFile = createScriptLibVirtualFile(jarPath);
@@ -258,6 +280,14 @@ public class CustomPluginEditorDialog extends DialogWrapper {
             }
         }
         return false;
+    }
+
+    private boolean projectExistScriptLib() {
+        LibraryTable projectLibraryTable = LibraryTablesRegistrar.getInstance().getLibraryTable(project);
+
+        Library scriptLib = projectLibraryTable.getLibraryByName(SCRIPT_NAME);
+
+        return scriptLib != null;
     }
 
     private VirtualFile createScriptLibVirtualFile(String jarPath) {

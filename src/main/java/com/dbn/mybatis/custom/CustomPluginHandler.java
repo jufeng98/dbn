@@ -4,11 +4,9 @@ import com.dbn.compile.MyClassLoader;
 import com.dbn.compile.MyJavaCompiler;
 import com.dbn.driver.DatabaseDriverManager;
 import com.dbn.mybatis.ui.CustomPluginEditorDialog;
-import com.dbn.utils.NotifyUtil;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
-import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.CompilerModuleExtension;
 import com.intellij.openapi.roots.ModuleRootManager;
@@ -35,11 +33,6 @@ public class CustomPluginHandler {
 
     @SneakyThrows
     public void show() {
-        if (DumbService.getInstance(project).isDumb()) {
-            NotifyUtil.INSTANCE.notifyInfo(project,"IDEA is indexing, so feature no available!");
-            return;
-        }
-
         CustomPluginEditorDialog dialog = new CustomPluginEditorDialog(project);
         dialog.show();
     }
