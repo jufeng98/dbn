@@ -80,8 +80,7 @@ public class GenerateForm extends DialogWrapper {
         dubboRadioButton.addActionListener(e -> apiPanel.setVisible(true));
 
         clearRadioButtonButton.addActionListener(e -> {
-            feignRadioButton.setSelected(false);
-            dubboRadioButton.setSelected(false);
+            buttonGroup.clearSelection();
             apiPanel.setVisible(false);
         });
 
