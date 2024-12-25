@@ -586,6 +586,8 @@
             </group>
             <action id="DBNavigator.Actions.MainMenu.OpenSettings" class="com.dbn.menu.action.ProjectSettingsOpenAction"
                     text="Settings"/>
+            <action id="DBNavigator.Actions.MainMenu.GenerateAction" class="com.dbn.generate.GenerateAction"
+                    text="Generate business..."/>
             <action id="DBNavigator.Actions.MainMenu.OpenAbout" class="com.dbn.menu.action.AboutPageOpenAction"
                     text="About"/>
             <add-to-group anchor="before" group-id="MainMenu" relative-to-action="HelpMenu"/>

@@ -1,0 +1,19 @@
+package {{serviceImplPackage}};
+
+import {{modelPackage}}.{{reqFileName}};
+import {{modelPackage}}.{{resFileName}};
+import {{servicePackage}}.{{serviceFileName}};
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+@Slf4j
+@Service
+public class {{serviceFileName}}Impl implements {{serviceFileName}} {
+
+    @Override
+    public {{resFileName}} {{methodNameTextField}}({{reqFileName}} reqVo) {
+        // TODO Auto-generated
+        return new {{resFileName}}();
+    }
+
+}
