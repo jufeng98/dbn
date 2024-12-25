@@ -1,4 +1,4 @@
-package {{pojoPackageTextField}};
+package {{pojoPackage}};
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class {{modelNamePrefix}}Req{{pojoPostfixTextField}} implements Serializable {
+public class {{pojoReqFileName}} implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @NotBlank

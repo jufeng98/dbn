@@ -1,16 +1,16 @@
-package {{apiPackageTextField}};
+package {{dubboPackage}};
 
-import {{apiPackageTextField}}.{{reqFileNameDubbo}};
-import {{apiPackageTextField}}.{{resFileNameDubbo}};
+import {{pojoPackage}}.{{pojoReqFileName}};
+import {{pojoPackage}}.{{pojoResFileName}};
 
 /**
  * TODO Auto-generate
  */
-public interface {{businessNamePrefix}}Dubbo{{servicePostfixTextField}} {
+public interface {{serviceDubboFileName}} {
 
     /**
      * TODO Auto-generate
      */
-    {{resFileName}} {{methodNameTextField}}({{reqFileName}} reqDto);
+    {{pojoResFileName}} {{methodName}}({{pojoReqFileName}} reqDto);
 
 }
