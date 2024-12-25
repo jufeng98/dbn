@@ -640,6 +640,16 @@
                       <toolTipText value="Mapper接口添加@Mapper注解"/>
                     </properties>
                   </component>
+                  <component id="c3470" class="javax.swing.JCheckBox" binding="bigintIntegerCheckBox" default-binding="true">
+                    <constraints>
+                      <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <gridbag weightx="0.0" weighty="0.0"/>
+                    </constraints>
+                    <properties>
+                      <text value="bigint Integer"/>
+                      <toolTipText value="bigint用Integer表示"/>
+                    </properties>
+                  </component>
                 </children>
               </grid>
             </children>

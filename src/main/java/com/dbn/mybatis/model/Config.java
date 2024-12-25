@@ -37,6 +37,7 @@ public class Config {
     private boolean useExample;
     private boolean generateEnum;
     private boolean integerTinyInt;
+    private boolean integerBigint;
     private boolean useLombokPlugin;
     private boolean serializable;
     private boolean rowBounds;

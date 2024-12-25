@@ -75,7 +75,7 @@ public class EnumsPlugin extends PluginAdapter {
                     val enumMustacheField = new EnumMustacheField();
                     enumMustacheField.label = tmpList[0];
                     enumMustacheField.setCode(Integer.parseInt(tmpList[1]));
-                    enumMustacheField.msg = tmpList[2];
+                    enumMustacheField.name = tmpList[2];
                     return enumMustacheField;
                 }).collect(Collectors.toList());
 
@@ -88,12 +88,13 @@ public class EnumsPlugin extends PluginAdapter {
         File directory = new DefaultShellCallback(true).getDirectory(targetProject, config.getEnumPackage());
         File targetFile = new File(directory, enumClassName + ".java");
 
-        URL url = getClass().getClassLoader().getResource("mybatis/Enum.mustache");
+        String fileName = "Enum.mustache";
+        URL url = getClass().getClassLoader().getResource("mybatis/" + fileName);
         @Cleanup
         @SuppressWarnings("DataFlowIssue")
         InputStream inputStream = url.openStream();
         String str = new String(StreamUtil.readBytes(inputStream), StandardCharsets.UTF_8);
-        Mustache mustache = mf.compile(new StringReader(str), "Enum.mustache");
+        Mustache mustache = mf.compile(new StringReader(str), fileName);
 
         mustache.execute(new PrintWriter(targetFile), enumMustache).flush();
     }

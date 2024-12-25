@@ -289,9 +289,7 @@ public class DbnMyBatisGenerator {
 
         handlerAutoIncrement(xPath, doc);
 
-        if (config.isIntegerTinyInt()) {
-            changeTinyintToInteger(xPath, doc);
-        }
+        changeJavaFieldType(xPath, doc);
 
         DOMImplementationLS domImplementationLs = (DOMImplementationLS) doc.getImplementation().getFeature("LS", "3.0");
 
@@ -363,9 +361,9 @@ public class DbnMyBatisGenerator {
 
 
     /**
-     * 修改所有db列类型为TINYINT的,生成到Java里用Integer表示,通过修改table节点来完成这个任务
+     * 修改所有db列类型为TINYINT或者BIGINT的,生成到Java里用Integer表示
      */
-    private void changeTinyintToInteger(XPath xPath, Document doc) throws Exception {
+    private void changeJavaFieldType(XPath xPath, Document doc) throws Exception {
         Element rootEle = doc.getDocumentElement();
         NodeList nodeList = (NodeList) xPath.evaluate("//table", rootEle, XPathConstants.NODESET);
         for (int i = 0; i < nodeList.getLength(); i++) {
@@ -379,16 +377,25 @@ public class DbnMyBatisGenerator {
             ResultSet rs = databaseMetaData.getColumns(null, null, tableName, null);
             while (rs.next()) {
                 int dataType = rs.getInt("DATA_TYPE");
-                if (Types.TINYINT != dataType && Types.BIT != dataType) {
-                    continue;
+                if (Types.TINYINT == dataType || Types.BIT == dataType) {
+                    if (config.isIntegerTinyInt()) {
+                        String columnName = rs.getString("COLUMN_NAME");
+                        Element columnOverrideEle = doc.createElement("columnOverride");
+                        columnOverrideEle.setAttribute("column", columnName);
+                        columnOverrideEle.setAttribute("javaType", "Integer");
+                        columnOverrideEle.setAttribute("jdbcType", "INTEGER");
+                        tableEle.appendChild(columnOverrideEle);
+                    }
+                } else if (Types.BIGINT == dataType) {
+                    if (config.isIntegerBigint()) {
+                        String columnName = rs.getString("COLUMN_NAME");
+                        Element columnOverrideEle = doc.createElement("columnOverride");
+                        columnOverrideEle.setAttribute("column", columnName);
+                        columnOverrideEle.setAttribute("javaType", "Integer");
+                        columnOverrideEle.setAttribute("jdbcType", "BIGINT");
+                        tableEle.appendChild(columnOverrideEle);
+                    }
                 }
-
-                String columnName = rs.getString("COLUMN_NAME");
-                Element columnOverrideEle = doc.createElement("columnOverride");
-                columnOverrideEle.setAttribute("column", columnName);
-                columnOverrideEle.setAttribute("javaType", "Integer");
-                columnOverrideEle.setAttribute("jdbcType", "INTEGER");
-                tableEle.appendChild(columnOverrideEle);
             }
         }
     }

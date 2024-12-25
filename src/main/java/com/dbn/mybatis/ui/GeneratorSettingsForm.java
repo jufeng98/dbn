@@ -65,6 +65,7 @@ public class GeneratorSettingsForm {
     private JPanel namePanel;
     private JCheckBox tkMapperCheckBox;
     private JButton customPluginButton;
+    private JCheckBox bigintIntegerCheckBox;
 
     public static final String INIT_CONFIG_NAME = "initConfig";
     private Project project;
@@ -202,6 +203,7 @@ public class GeneratorSettingsForm {
         overrideXmlCheckBox.setSelected(config.isOverrideXML());
         overrideJavaCheckBox.setSelected(config.isOverrideJava());
         integerTinyintCheckBox.setSelected(config.isIntegerTinyInt());
+        bigintIntegerCheckBox.setSelected(config.isIntegerBigint());
         toStringHashCodeEqualsCheckBox.setSelected(config.isNeedToStringHashcodeEquals());
         jpaAnnotationCheckBox.setSelected(config.isJpaAnnotation());
         useExampleCheckBox.setSelected(config.isUseExample());
@@ -241,6 +243,7 @@ public class GeneratorSettingsForm {
         config.setUseLombokPlugin(useLombokCheckBox.getSelectedObjects() != null);
         config.setGenerateEnum(generateEnumCheckBox.getSelectedObjects() != null);
         config.setIntegerTinyInt(integerTinyintCheckBox.getSelectedObjects() != null);
+        config.setIntegerBigint(bigintIntegerCheckBox.getSelectedObjects() != null);
         config.setSerializable(serializableCheckBox.getSelectedObjects() != null);
         config.setRowBounds(rowBoundsCheckBox.getSelectedObjects() != null);
         config.setMapperAnnotation(mapperAnnotationCheckBox.getSelectedObjects() != null);

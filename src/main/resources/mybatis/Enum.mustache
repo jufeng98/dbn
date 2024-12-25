@@ -15,13 +15,13 @@ public enum {{enumClassName}} {
     UNKNOWN(-1, ""),
 {{#enumFields}}
     /**
-     * {{msg}}
+     * {{name}}
      */
-    {{label}}({{code}}, "{{msg}}"),
+    {{label}}({{code}}, "{{name}}"),
 {{/enumFields}}
     ;
     private final int code;
-    private final String msg;
+    private final String name;
     private static final Map<Integer, {{enumClassName}}> MAP;
 
     static {
@@ -31,9 +31,9 @@ public enum {{enumClassName}} {
         }
     }
 
-    {{enumClassName}}(int code, String msg) {
+    {{enumClassName}}(int code, String name) {
         this.code = code;
-        this.msg = msg;
+        this.name = name;
     }
 
     public static {{enumClassName}} getByCode(Integer code) {
@@ -44,8 +44,8 @@ public enum {{enumClassName}} {
         return code;
     }
 
-    public String getMsg() {
-        return msg;
+    public String getName() {
+        return name;
     }
 
 }
