@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-{{#feign}}import {{apiPackageTextField}}.{{feignFileName}};{{/feign}}
+{{#feignRadioButton}}import {{apiPackageTextField}}.{{feignFileName}};{{/feignRadioButton}}
 
 @CrossOrigin
 @RestController
 @RequestMapping("/{{businessNameTextField}}")
 @Api(tags = "TODO Auto-generate")
-public class {{businessNamePrefix}}{{controllerPostfixTextField}} {{#feign}}implements {{feignFileName}};{{/feign}} {
+public class {{businessNamePrefix}}{{#feignRadioButton}}Feign{{/feignRadioButton}}{{controllerPostfixTextField}} {{#feignRadioButton}}implements {{feignFileName}};{{/feignRadioButton}} {
     @Autowired
     private {{serviceFileName}} {{serviceFieldName}};
 

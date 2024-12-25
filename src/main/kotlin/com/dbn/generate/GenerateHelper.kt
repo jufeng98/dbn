@@ -94,11 +94,6 @@ class GenerateHelper(private val project: Project) {
         val modelNamePrefix = StringUtil.capitalizeFirstWord2(methodName).replace("List", "")
         scope["modelNamePrefix"] = modelNamePrefix
 
-        if (feign) {
-            val pair = saveFeignInterface(businessNamePrefix, scope, jsonObject, saveFile)
-            scope["feignFileName"] = pair.first()
-        }
-
         if (dubbo) {
             val reqPair = saveDubboPojoFile(modelNamePrefix, scope, "Req", jsonObject, saveFile)
             val resPair = saveDubboPojoFile(modelNamePrefix, scope, "Res", jsonObject, saveFile)
@@ -124,6 +119,11 @@ class GenerateHelper(private val project: Project) {
 
             scope["serviceImplPackage"] = interfacePair.second() + ".impl"
             saveInterface(businessNamePrefix, scope, true, jsonObject, saveFile)
+
+            if (feign) {
+                val pair = saveFeignInterface(businessNamePrefix, scope, jsonObject, saveFile)
+                scope["feignFileName"] = pair.first()
+            }
 
             saveController(businessNamePrefix, scope, jsonObject, saveFile)
         }
