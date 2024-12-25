@@ -9,6 +9,7 @@ import com.google.common.collect.Maps
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.google.gson.JsonPrimitive
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.StreamUtil
@@ -82,36 +83,61 @@ class GenerateHelper(private val project: Project) {
     fun saveAndGenerate(jsonObject: JsonObject, saveFile: Boolean) {
         val scope = saveConfig(jsonObject)
 
+        val feign = jsonObject["feignRadioButton"].asBoolean
+        val dubbo = jsonObject["dubboRadioButton"].asBoolean
+
         val businessName = jsonObject["businessNameTextField"].asString
         val businessNamePrefix = StringUtil.capitalizeFirstWord2(businessName)
         scope["businessNamePrefix"] = businessNamePrefix
 
         val methodName = jsonObject["methodNameTextField"].asString
-        val modelName = StringUtil.capitalizeFirstWord2(methodName).replace("List", "")
-        scope["modelNamePrefix"] = modelName
+        val modelNamePrefix = StringUtil.capitalizeFirstWord2(methodName).replace("List", "")
+        scope["modelNamePrefix"] = modelNamePrefix
 
-        val reqPair = savePojoFile(modelName, scope, "Req", jsonObject, saveFile)
-        val resPair = savePojoFile(modelName, scope, "Res", jsonObject, saveFile)
+        if (feign) {
+            val pair = saveFeignInterface(businessNamePrefix, scope, jsonObject, saveFile)
+            scope["feignFileName"] = pair.first()
+        }
 
-        scope["modelPackage"] = reqPair.second()
-        scope["reqFileName"] = reqPair.first()
-        scope["resFileName"] = resPair.first()
+        if (dubbo) {
+            val reqPair = saveDubboPojoFile(modelNamePrefix, scope, "Req", jsonObject, saveFile)
+            val resPair = saveDubboPojoFile(modelNamePrefix, scope, "Res", jsonObject, saveFile)
 
-        val interfacePair = saveInterface(businessNamePrefix, scope, false, jsonObject, saveFile)
+            scope["modelPackage"] = reqPair.second()
+            scope["reqFileName"] = reqPair.first()
+            scope["resFileName"] = resPair.first()
 
-        scope["serviceFileName"] = interfacePair.first()
-        scope["serviceFieldName"] = StringUtil.toCamelCase(interfacePair.first())
-        scope["servicePackage"] = interfacePair.second()
+            saveDubboInterface(businessNamePrefix, scope, jsonObject, saveFile)
+        } else {
+            val reqPair = savePojoFile(modelNamePrefix, scope, "Req", jsonObject, saveFile)
+            val resPair = savePojoFile(modelNamePrefix, scope, "Res", jsonObject, saveFile)
 
-        scope["serviceImplPackage"] = interfacePair.second() + ".impl"
-        saveInterface(businessNamePrefix, scope, true, jsonObject, saveFile)
+            scope["modelPackage"] = reqPair.second()
+            scope["reqFileName"] = reqPair.first()
+            scope["resFileName"] = resPair.first()
 
-        saveController(businessNamePrefix, scope, jsonObject, saveFile)
+            val interfacePair = saveInterface(businessNamePrefix, scope, false, jsonObject, saveFile)
+
+            scope["serviceFileName"] = interfacePair.first()
+            scope["serviceFieldName"] = StringUtil.toCamelCase(interfacePair.first())
+            scope["servicePackage"] = interfacePair.second()
+
+            scope["serviceImplPackage"] = interfacePair.second() + ".impl"
+            saveInterface(businessNamePrefix, scope, true, jsonObject, saveFile)
+
+            saveController(businessNamePrefix, scope, jsonObject, saveFile)
+        }
     }
 
     private fun getRootFolder(jsonObject: JsonObject): String {
         val rootFolder = jsonObject["projectFolderBtn"].asString
         val path = jsonObject["pathTextField"].asString
+        return "$rootFolder/$path"
+    }
+
+    private fun getApiRootFolder(jsonObject: JsonObject): String {
+        val rootFolder = jsonObject["apiFolderBtn"].asString
+        val path = jsonObject["apiPathTextField"].asString
         return "$rootFolder/$path"
     }
 
@@ -130,7 +156,7 @@ class GenerateHelper(private val project: Project) {
     }
 
     @SneakyThrows
-    private fun saveConfig(jsonObject: JsonObject): MutableMap<String, String> {
+    private fun saveConfig(jsonObject: JsonObject): MutableMap<String, Any> {
         val virtualFile = obtainVirtualFile()
 
         val name = jsonObject["nameTextField"].asString
@@ -141,9 +167,19 @@ class GenerateHelper(private val project: Project) {
 
         VfsUtil.saveText(virtualFile, str)
 
-        val scope: MutableMap<String, String> = Maps.newHashMap()
+        val scope: MutableMap<String, Any> = Maps.newHashMap()
         for ((key, value) in jsonObject.entrySet()) {
-            scope[key] = value.asString
+            if (value !is JsonPrimitive) {
+                throw IllegalArgumentException("不支持的类型$value")
+            }
+
+            if (value.isBoolean) {
+                scope[key] = value.asBoolean
+            } else if (value.isString) {
+                scope[key] = value.asString
+            } else {
+                throw IllegalArgumentException("不支持的类型$value")
+            }
         }
 
         return scope
@@ -161,7 +197,7 @@ class GenerateHelper(private val project: Project) {
     }
 
     private fun savePojoFile(
-        modelName: String,
+        modelNamePrefix: String,
         scope: Map<String, Any?>,
         name: String,
         jsonObject: JsonObject,
@@ -175,7 +211,7 @@ class GenerateHelper(private val project: Project) {
         val pojoPostfix = jsonObject["pojoPostfixTextField"].asString
         val rootFolder = getRootFolder(jsonObject)
 
-        val fileName = modelName + name + pojoPostfix
+        val fileName = modelNamePrefix + name + pojoPostfix
         if (!saveFile) {
             return Pair.of(fileName, pojoPackage)
         }
@@ -185,9 +221,33 @@ class GenerateHelper(private val project: Project) {
         return Pair.of(fileName, pojoPackage)
     }
 
+    private fun saveDubboPojoFile(
+        modelNamePrefix: String,
+        scope: Map<String, Any?>,
+        name: String,
+        jsonObject: JsonObject,
+        saveFile: Boolean,
+    ): Pair<String, String> {
+        val mustache = readMustache("${name}Dubbo.mustache")
+
+        val resStr = writeMustache(mustache, scope)
+
+        val apiPackageTextField = jsonObject["apiPackageTextField"].asString
+        val rootFolder = getApiRootFolder(jsonObject)
+
+        val fileName = modelNamePrefix + name + "Dto"
+        if (!saveFile) {
+            return Pair.of(fileName, apiPackageTextField)
+        }
+
+        saveFile(fileName, resStr, apiPackageTextField, rootFolder)
+
+        return Pair.of(fileName, apiPackageTextField)
+    }
+
     private fun saveInterface(
         businessNamePrefix: String,
-        scope: Map<String, String>,
+        scope: Map<String, Any>,
         isImpl: Boolean,
         jsonObject: JsonObject, saveFile: Boolean,
     ): Pair<String, String> {
@@ -225,7 +285,7 @@ class GenerateHelper(private val project: Project) {
         return Pair.of(fileName, fullPackage)
     }
 
-    private fun appendFile(jsonObject: Map<String, String>, rootClassName: String, isImpl: Boolean) {
+    private fun appendFile(jsonObject: Map<String, Any>, rootClassName: String, isImpl: Boolean) {
         val modelPackage = jsonObject["modelPackage"]
         val reqFileName = jsonObject["reqFileName"]
         val resFileName = jsonObject["resFileName"]
@@ -265,7 +325,7 @@ class GenerateHelper(private val project: Project) {
         psiClass.add(method)
     }
 
-    private fun appendFile(jsonObject: Map<String, String>, rootClassName: String) {
+    private fun appendFile(jsonObject: Map<String, Any>, rootClassName: String) {
         val modelPackage = jsonObject["modelPackage"]
         val reqFileName = jsonObject["reqFileName"]
         val resFileName = jsonObject["resFileName"]
@@ -300,8 +360,71 @@ class GenerateHelper(private val project: Project) {
         psiClass.add(method)
     }
 
+    private fun saveDubboInterface(
+        businessNamePrefix: String, scope: MutableMap<String, Any>,
+        jsonObject: JsonObject, saveFile: Boolean,
+    ): Pair<String, String> {
+        val mustache = readMustache("Dubbo.mustache")
+
+        val resStr = writeMustache(mustache, scope)
+
+        val apiPackageTextField = jsonObject["apiPackageTextField"].asString
+        val servicePostfixTextField = jsonObject["servicePostfixTextField"].asString
+        val rootFolder = getApiRootFolder(jsonObject)
+
+        val fileName = businessNamePrefix + "Dubbo" + servicePostfixTextField
+
+        if (!saveFile) {
+            return Pair.of(fileName, apiPackageTextField)
+        }
+
+        if (fileNotExists(fileName, apiPackageTextField)) {
+            saveFile(fileName, resStr, apiPackageTextField, rootFolder)
+        } else {
+            WriteCommandAction.runWriteCommandAction(project) {
+                appendFile(scope, "$apiPackageTextField.$fileName", false)
+            }
+        }
+
+        return Pair.of(fileName, apiPackageTextField)
+    }
+
+    private fun saveFeignInterface(
+        businessNamePrefix: String, scope: MutableMap<String, Any>,
+        jsonObject: JsonObject, saveFile: Boolean,
+    ): Pair<String, String> {
+        val projectFolder = jsonObject["projectFolderBtn"].asString
+        val idx = projectFolder.lastIndexOf("/")
+        val moduleName = projectFolder.substring(idx + 1)
+        scope["moduleName"] = moduleName
+
+        val mustache = readMustache("Feign.mustache")
+
+        val resStr = writeMustache(mustache, scope)
+
+        val apiPackageTextField = jsonObject["apiPackageTextField"].asString
+        val servicePostfixTextField = jsonObject["servicePostfixTextField"].asString
+        val rootFolder = getApiRootFolder(jsonObject)
+
+        val fileName = businessNamePrefix + "Feign" + servicePostfixTextField
+
+        if (!saveFile) {
+            return Pair.of(fileName, apiPackageTextField)
+        }
+
+        if (fileNotExists(fileName, apiPackageTextField)) {
+            saveFile(fileName, resStr, apiPackageTextField, rootFolder)
+        } else {
+            WriteCommandAction.runWriteCommandAction(project) {
+                appendFile(scope, "$apiPackageTextField.$fileName")
+            }
+        }
+
+        return Pair.of(fileName, apiPackageTextField)
+    }
+
     private fun saveController(
-        businessNamePrefix: String, scope: MutableMap<String, String>,
+        businessNamePrefix: String, scope: MutableMap<String, Any>,
         jsonObject: JsonObject, saveFile: Boolean,
     ) {
         val searchScope = GlobalSearchScope.projectScope(project)

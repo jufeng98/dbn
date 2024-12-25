@@ -1,20 +1,24 @@
-package {{pojoPackageTextField}};
+package {{apiPackageTextField}};
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class {{modelNamePrefix}}Res{{pojoPostfixTextField}} implements Serializable {
+public class {{modelNamePrefix}}ReqDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("TODO Auto-generate")
+    /**
+     * TODO Auto-generate
+     */
+    @NotBlank
     private String code;
 
 }

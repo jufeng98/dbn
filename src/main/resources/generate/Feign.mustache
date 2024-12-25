@@ -1,0 +1,29 @@
+package {{apiPackageTextField}};
+
+import {{modelPackage}}.{{reqFileName}};
+import {{modelPackage}}.{{resFileName}};
+import org.springframework.cloud.openfeign.FeignClient;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+/**
+ * TODO Auto-generate
+ */
+@FeignClient(value = "{{moduleName}}",
+        path = {{businessNamePrefix}}Feign{{servicePostfixTextField}}.FEIGN_PATH,
+        url = "${feign.debug.{{moduleName}}.url:}")
+@Api(tags = "TODO Auto-generate")
+public interface {{businessNamePrefix}}Feign{{servicePostfixTextField}} {
+    String FEIGN_PATH = "/feign/{{businessNameTextField}}";
+
+    /**
+     * TODO Auto-generate
+     */
+    @ApiOperation(value = "TODO Auto-generate")
+    @PostMapping(value = "/{{methodNameTextField}}", headers = "feign=true")
+    {{resFileName}} {{methodNameTextField}}(@Validated @RequestBody {{reqFileName}} reqVo);
+
+}

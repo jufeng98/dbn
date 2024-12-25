@@ -42,15 +42,18 @@ public class GenerateForm extends DialogWrapper {
     private JBTextField pojoPostfixTextField;
     private JBTextField pojoPackageTextField;
     private JBTextField apiPathTextField;
+    private JBTextField apiPackageTextField;
 
     private JButton chooseControllerPackageBtn;
     private JButton chooseServicePackageBtn;
     private JButton choosePojoPackageBtn;
+    private JButton chooseApiPathBtn;
 
     private JPanel mainPanel;
     private JPanel apiPanel;
     private JBRadioButton feignRadioButton;
     private JBRadioButton dubboRadioButton;
+    private JButton clearRadioButtonButton;
 
     private final Project project;
     private String historySelectValue;
@@ -73,12 +76,30 @@ public class GenerateForm extends DialogWrapper {
         buttonGroup.add(feignRadioButton);
         buttonGroup.add(dubboRadioButton);
 
+        feignRadioButton.addActionListener(e -> apiPanel.setVisible(true));
+        dubboRadioButton.addActionListener(e -> apiPanel.setVisible(true));
+
+        clearRadioButtonButton.addActionListener(e -> {
+            feignRadioButton.setSelected(false);
+            dubboRadioButton.setSelected(false);
+            apiPanel.setVisible(false);
+        });
+
         projectFolderBtn.addBrowseFolderListener(new TextBrowseFolderListener(
                 FileChooserDescriptorFactory.createSingleFolderDescriptor()) {
             @Override
             public void actionPerformed(ActionEvent e) {
                 super.actionPerformed(e);
                 projectFolderBtn.setText(projectFolderBtn.getText().replaceAll("\\\\", "/"));
+            }
+        });
+
+        apiFolderBtn.addBrowseFolderListener(new TextBrowseFolderListener(
+                FileChooserDescriptorFactory.createSingleFolderDescriptor()) {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                super.actionPerformed(e);
+                apiFolderBtn.setText(apiFolderBtn.getText().replaceAll("\\\\", "/"));
             }
         });
 
@@ -124,6 +145,8 @@ public class GenerateForm extends DialogWrapper {
         initChoosePackageBtn(chooseServicePackageBtn, servicePackageTextField);
 
         initChoosePackageBtn(choosePojoPackageBtn, pojoPackageTextField);
+
+        initChoosePackageBtn(chooseApiPathBtn, apiPackageTextField);
     }
 
     @SneakyThrows
@@ -164,9 +187,7 @@ public class GenerateForm extends DialogWrapper {
             }
         }
 
-        if (feignRadioButton.getSelectedObjects() != null | dubboRadioButton.getSelectedObjects() != null) {
-            apiPanel.setVisible(true);
-        }
+        apiPanel.setVisible(feignRadioButton.getSelectedObjects() != null | dubboRadioButton.getSelectedObjects() != null);
     }
 
     @SneakyThrows
