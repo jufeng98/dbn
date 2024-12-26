@@ -25,6 +25,8 @@ import com.dbn.utils.NotifyUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.StreamUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VfsUtil;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
@@ -133,11 +135,20 @@ public class DbnMyBatisGenerator {
             }
         }
 
-        VirtualFileManager.getInstance().asyncRefresh(() ->
-                LocalFileSystem.getInstance().refreshFiles(progressCallback.getVirtualFiles(), true, false,
-                        progressCallback::reformatCode));
+        VirtualFileManager.getInstance().asyncRefresh(() -> {
+            List<VirtualFile> virtualFiles = progressCallback.getFiles().stream()
+                    .map(it -> VfsUtil.findFileByIoFile(it, true))
+                    .toList();
 
-        NotifyUtil.INSTANCE.notifySuccess(project, "生成情况:" + String.join("、", warnings));
+            LocalFileSystem.getInstance().refreshFiles(virtualFiles, true, true,
+                    () -> progressCallback.reformatCode(virtualFiles));
+        });
+
+        if (warnings.isEmpty()) {
+            NotifyUtil.INSTANCE.notifySuccess(project, "生成成功!");
+        } else {
+            NotifyUtil.INSTANCE.notifySuccess(project, "生成情况:" + String.join("、", warnings));
+        }
 
         dbnMyBatisGenerator = null;
     }

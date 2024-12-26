@@ -48,10 +48,13 @@ public class MyBatisGeneratorForm extends DialogWrapper {
             return;
         }
 
-        Progress.background(project, dbTable.getConnection(), true,
+        Progress.background(project, dbTable.getConnection(), false,
                 "Tip",
                 "Generating " + dbTable.getName() + "...",
-                progress -> generatorSettingsForm.saveAndGenerate());
+                progress -> {
+                    generatorSettingsForm.saveAndGenerate();
+                    progress.cancel();
+                });
 
         super.doOKAction();
     }

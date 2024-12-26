@@ -3,7 +3,6 @@ package com.dbn.mybatis;
 import com.google.common.collect.Lists;
 import com.intellij.codeInsight.actions.AbstractLayoutCodeProcessor;
 import com.intellij.codeInsight.actions.ReformatCodeProcessor;
-import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiUtil;
@@ -18,7 +17,7 @@ import java.util.List;
 public class MyProgressCallback implements ProgressCallback {
     private final MyDefaultShellCallback shellCallback;
     @Getter
-    private final List<VirtualFile> virtualFiles = Lists.newArrayList();
+    private final List<File> files = Lists.newArrayList();
 
     public MyProgressCallback(MyDefaultShellCallback shellCallback) {
         this.shellCallback = shellCallback;
@@ -38,13 +37,10 @@ public class MyProgressCallback implements ProgressCallback {
 
         String file = shellCallback.getDirectory() + "/" + fileName;
 
-        VirtualFile virtualFile = VfsUtil.findFileByIoFile(new File(file), false);
-        if (virtualFile != null) {
-            virtualFiles.add(virtualFile);
-        }
+        files.add(new File(file));
     }
 
-    public void reformatCode() {
+    public void reformatCode(List<VirtualFile> virtualFiles) {
         PsiFile[] psiFiles = virtualFiles.stream()
                 .map(it -> PsiUtil.getPsiFile(shellCallback.getProject(), it))
                 .toArray(PsiFile[]::new);

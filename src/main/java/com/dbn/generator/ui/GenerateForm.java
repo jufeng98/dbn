@@ -1,8 +1,11 @@
 package com.dbn.generator.ui;
 
+import com.dbn.common.thread.Progress;
 import com.dbn.generate.GenerateHelper;
+import com.dbn.utils.NotifyUtil;
 import com.google.gson.JsonObject;
 import com.intellij.ide.util.PackageChooserDialog;
+import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.project.Project;
@@ -265,7 +268,18 @@ public class GenerateForm extends DialogWrapper {
 
         super.doOKAction();
 
-        ApplicationManager.getApplication().runWriteAction(() -> generateHelper.saveAndGenerate(jsonObject, true));
+        Application application = ApplicationManager.getApplication();
+
+        Progress.background(project, null, false,
+                "Tip",
+                "Generating business java files...",
+                progress -> {
+                    application.invokeLater(() -> {
+                        application.runWriteAction(() -> generateHelper.saveAndGenerate(jsonObject, true));
+                        progress.cancel();
+                        NotifyUtil.INSTANCE.notifyDbToolWindowInfo(project, "生成成功!");
+                    });
+                });
     }
 
     @Override
