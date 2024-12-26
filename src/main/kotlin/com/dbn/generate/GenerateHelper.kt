@@ -5,11 +5,9 @@ import com.dbn.utils.StringUtil
 import com.github.mustachejava.DefaultMustacheFactory
 import com.github.mustachejava.Mustache
 import com.github.mustachejava.MustacheFactory
-import com.google.common.collect.Maps
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import com.google.gson.JsonPrimitive
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.StreamUtil
@@ -81,51 +79,48 @@ class GenerateHelper(private val project: Project) {
     }
 
     fun saveAndGenerate(jsonObject: JsonObject, saveFile: Boolean) {
-        val scope = saveConfig(jsonObject)
+        saveConfig(jsonObject)
 
         val feign = jsonObject["feignRadioButton"].asBoolean
         val dubbo = jsonObject["dubboRadioButton"].asBoolean
 
+        val scope: MutableMap<String, Any> = mutableMapOf()
+        scope["feign"] = feign
+
         val businessName = jsonObject["businessNameTextField"].asString
+        scope["businessName"] = businessName
+
         val businessNamePrefix = StringUtil.capitalizeFirstWord2(businessName)
         scope["businessNamePrefix"] = businessNamePrefix
 
         val methodName = jsonObject["methodNameTextField"].asString
-        val modelNamePrefix = StringUtil.capitalizeFirstWord2(methodName).replace("List", "")
-        scope["modelNamePrefix"] = modelNamePrefix
+        scope["methodName"] = methodName
+
+        val methodNamePrefix = StringUtil.capitalizeFirstWord2(methodName).replace("List", "")
 
         if (dubbo) {
-            val reqPair = saveDubboPojoFile(modelNamePrefix, scope, "Req", jsonObject, saveFile)
-            val resPair = saveDubboPojoFile(modelNamePrefix, scope, "Res", jsonObject, saveFile)
-
-            scope["modelPackage"] = reqPair.second()
-            scope["reqFileName"] = reqPair.first()
-            scope["resFileName"] = resPair.first()
+            saveDubboPojoFile(methodNamePrefix, scope, "Req", jsonObject)
+            saveDubboPojoFile(methodNamePrefix, scope, "Res", jsonObject)
 
             saveDubboInterface(businessNamePrefix, scope, jsonObject, saveFile)
         } else {
-            val reqPair = savePojoFile(modelNamePrefix, scope, "Req", jsonObject, saveFile)
-            val resPair = savePojoFile(modelNamePrefix, scope, "Res", jsonObject, saveFile)
-
-            scope["modelPackage"] = reqPair.second()
-            scope["reqFileName"] = reqPair.first()
-            scope["resFileName"] = resPair.first()
-
-            val interfacePair = saveInterface(businessNamePrefix, scope, false, jsonObject, saveFile)
-
-            scope["serviceFileName"] = interfacePair.first()
-            scope["serviceFieldName"] = StringUtil.toCamelCase(interfacePair.first())
-            scope["servicePackage"] = interfacePair.second()
-
-            scope["serviceImplPackage"] = interfacePair.second() + ".impl"
-            saveInterface(businessNamePrefix, scope, true, jsonObject, saveFile)
-
             if (feign) {
-                val pair = saveFeignInterface(businessNamePrefix, scope, jsonObject, saveFile)
-                scope["feignFileName"] = pair.first()
+                val rootFolder = getApiRootFolder(jsonObject)
+                savePojoFile(methodNamePrefix, scope, "Req", jsonObject, rootFolder)
+                savePojoFile(methodNamePrefix, scope, "Res", jsonObject, rootFolder)
+
+                saveFeignInterface(businessNamePrefix, scope, jsonObject)
+            } else {
+                val rootFolder = getRootFolder(jsonObject)
+                savePojoFile(methodNamePrefix, scope, "Req", jsonObject, rootFolder)
+                savePojoFile(methodNamePrefix, scope, "Res", jsonObject, rootFolder)
             }
 
-            saveController(businessNamePrefix, scope, jsonObject, saveFile)
+            saveInterfaceOrImpl(businessNamePrefix, scope, false, jsonObject)
+
+            saveInterfaceOrImpl(businessNamePrefix, scope, true, jsonObject)
+
+            saveController(businessNamePrefix, scope, jsonObject)
         }
     }
 
@@ -156,7 +151,7 @@ class GenerateHelper(private val project: Project) {
     }
 
     @SneakyThrows
-    private fun saveConfig(jsonObject: JsonObject): MutableMap<String, Any> {
+    private fun saveConfig(jsonObject: JsonObject) {
         val virtualFile = obtainVirtualFile()
 
         val name = jsonObject["nameTextField"].asString
@@ -166,23 +161,6 @@ class GenerateHelper(private val project: Project) {
         val str = historyConfigObj.toString()
 
         VfsUtil.saveText(virtualFile, str)
-
-        val scope: MutableMap<String, Any> = Maps.newHashMap()
-        for ((key, value) in jsonObject.entrySet()) {
-            if (value !is JsonPrimitive) {
-                throw IllegalArgumentException("不支持的类型$value")
-            }
-
-            if (value.isBoolean) {
-                scope[key] = value.asBoolean
-            } else if (value.isString) {
-                scope[key] = value.asString
-            } else {
-                throw IllegalArgumentException("不支持的类型$value")
-            }
-        }
-
-        return scope
     }
 
     @SneakyThrows
@@ -197,99 +175,93 @@ class GenerateHelper(private val project: Project) {
     }
 
     private fun savePojoFile(
-        modelNamePrefix: String,
-        scope: Map<String, Any?>,
-        name: String,
+        methodNamePrefix: String,
+        scope: MutableMap<String, Any>,
+        type: String,
         jsonObject: JsonObject,
-        saveFile: Boolean,
-    ): Pair<String, String> {
-        val mustache = readMustache("$name.mustache")
+        rootFolder: String,
+    ) {
+        val pojoPackage = jsonObject["pojoPackageTextField"].asString
+        scope["pojoPackage"] = pojoPackage
 
+        val pojoPostfix = jsonObject["pojoPostfixTextField"].asString
+        val fileName = methodNamePrefix + type + pojoPostfix
+        scope["pojo${type}FileName"] = fileName
+
+        val mustache = readMustache("$type.mustache")
         val resStr = writeMustache(mustache, scope)
 
-        val pojoPackage = jsonObject["pojoPackageTextField"].asString
-        val pojoPostfix = jsonObject["pojoPostfixTextField"].asString
-        val rootFolder = getRootFolder(jsonObject)
-
-        val fileName = modelNamePrefix + name + pojoPostfix
-        if (!saveFile) {
-            return Pair.of(fileName, pojoPackage)
-        }
-
         saveFile(fileName, resStr, pojoPackage, rootFolder)
-
-        return Pair.of(fileName, pojoPackage)
     }
 
     private fun saveDubboPojoFile(
         modelNamePrefix: String,
-        scope: Map<String, Any?>,
-        name: String,
+        scope: MutableMap<String, Any>,
+        type: String,
         jsonObject: JsonObject,
-        saveFile: Boolean,
-    ): Pair<String, String> {
-        val mustache = readMustache("${name}Dubbo.mustache")
+    ) {
+        val apiPackageTextField = jsonObject["apiPackageTextField"].asString
+        scope["pojoPackage"] = apiPackageTextField
 
+        val fileName = modelNamePrefix + type + "Dto"
+        scope["pojo${type}FileName"] = fileName
+
+        val mustache = readMustache("${type}Dubbo.mustache")
         val resStr = writeMustache(mustache, scope)
 
-        val apiPackageTextField = jsonObject["apiPackageTextField"].asString
         val rootFolder = getApiRootFolder(jsonObject)
-
-        val fileName = modelNamePrefix + name + "Dto"
-        if (!saveFile) {
-            return Pair.of(fileName, apiPackageTextField)
-        }
-
         saveFile(fileName, resStr, apiPackageTextField, rootFolder)
-
-        return Pair.of(fileName, apiPackageTextField)
     }
 
-    private fun saveInterface(
+    private fun saveInterfaceOrImpl(
         businessNamePrefix: String,
-        scope: Map<String, Any>,
+        scope: MutableMap<String, Any>,
         isImpl: Boolean,
-        jsonObject: JsonObject, saveFile: Boolean,
-    ): Pair<String, String> {
+        jsonObject: JsonObject,
+    ) {
         val servicePackage = jsonObject["servicePackageTextField"].asString
         val servicePostfix = jsonObject["servicePostfixTextField"].asString
-        val rootFolder = getRootFolder(jsonObject)
 
         val fileName: String
         val fullPackage: String
         val mustache: Mustache
         if (isImpl) {
             fileName = businessNamePrefix + servicePostfix + "Impl"
+            scope["serviceImplFileName"] = fileName
+
             mustache = readMustache("InterfaceImpl.mustache")
+
             fullPackage = "$servicePackage.impl"
+            scope["serviceImplPackage"] = fullPackage
         } else {
             fileName = businessNamePrefix + servicePostfix
+            scope["serviceFileName"] = fileName
+            scope["serviceFileFieldName"] = StringUtil.toCamelCase(fileName)
+
             mustache = readMustache("Interface.mustache")
+
             fullPackage = servicePackage
+            scope["servicePackage"] = fullPackage
         }
+
 
         val resStr = writeMustache(mustache, scope)
 
-        if (!saveFile) {
-            return Pair.of(fileName, fullPackage)
-        }
-
+        val rootFolder = getRootFolder(jsonObject)
         if (fileNotExists(fileName, fullPackage)) {
             saveFile(fileName, resStr, fullPackage, rootFolder)
         } else {
             WriteCommandAction.runWriteCommandAction(project) {
-                appendFile(scope, "$fullPackage.$fileName", isImpl)
+                appendInterfaceOrImplFile(scope, "$fullPackage.$fileName", isImpl)
             }
         }
-
-        return Pair.of(fileName, fullPackage)
     }
 
-    private fun appendFile(jsonObject: Map<String, Any>, rootClassName: String, isImpl: Boolean) {
-        val modelPackage = jsonObject["modelPackage"]
-        val reqFileName = jsonObject["reqFileName"]
-        val resFileName = jsonObject["resFileName"]
-        val methodNameTextField = jsonObject["methodNameTextField"]
+    private fun appendInterfaceOrImplFile(scope: Map<String, Any>, rootClassName: String, isImpl: Boolean) {
+        val pojoPackage = scope["pojoPackage"]
+        val pojoReqFileName = scope["pojoReqFileName"]
+        val pojoResFileName = scope["pojoResFileName"]
+        val methodName = scope["methodName"]
 
         val searchScope = GlobalSearchScope.projectScope(project)
         val javaPsiFacade = JavaPsiFacade.getInstance(project)
@@ -298,19 +270,19 @@ class GenerateHelper(private val project: Project) {
         val psiImportList = PsiTreeUtil.getChildOfType(psiClass.containingFile, PsiImportList::class.java)
 
         val elementFactory = javaPsiFacade.elementFactory
-        val req = javaPsiFacade.findClass("$modelPackage.$reqFileName", searchScope)
+        val req = javaPsiFacade.findClass("$pojoPackage.$pojoReqFileName", searchScope)
         val reqImport = elementFactory.createImportStatement(req!!)
         psiImportList!!.add(reqImport)
 
-        val res = javaPsiFacade.findClass("$modelPackage.$resFileName", searchScope)
+        val res = javaPsiFacade.findClass("$pojoPackage.$pojoResFileName", searchScope)
         val resImport = elementFactory.createImportStatement(res!!)
         psiImportList.add(resImport)
 
         val methodContent = if (isImpl) {
             """
-                public $resFileName $methodNameTextField($reqFileName reqVo) {
+                public $pojoResFileName $methodName($pojoReqFileName reqVo) {
                     // TODO Auto-generated
-                    return new $resFileName();                
+                    return new $pojoResFileName();                
                 }
             """.trimIndent()
         } else {
@@ -318,19 +290,19 @@ class GenerateHelper(private val project: Project) {
                 /**
                  * TODO Auto-generate
                  */                
-                $resFileName $methodNameTextField($reqFileName reqVo);
+                $pojoResFileName $methodName($pojoReqFileName reqVo);
             """.trimIndent()
         }
         val method = elementFactory.createMethodFromText(methodContent, psiClass)
         psiClass.add(method)
     }
 
-    private fun appendFile(jsonObject: Map<String, Any>, rootClassName: String) {
-        val modelPackage = jsonObject["modelPackage"]
-        val reqFileName = jsonObject["reqFileName"]
-        val resFileName = jsonObject["resFileName"]
-        val methodNameTextField = jsonObject["methodNameTextField"]
-        val serviceFieldName = jsonObject["serviceFieldName"]
+    private fun appendControllerFile(scope: Map<String, Any>, rootClassName: String) {
+        val pojoPackage = scope["pojoPackage"]
+        val pojoReqFileName = scope["pojoReqFileName"]
+        val pojoResFileName = scope["pojoResFileName"]
+        val methodName = scope["methodNameTextField"]
+        val serviceFieldName = scope["serviceFieldName"]
 
         val searchScope = GlobalSearchScope.projectScope(project)
         val javaPsiFacade = JavaPsiFacade.getInstance(project)
@@ -339,20 +311,20 @@ class GenerateHelper(private val project: Project) {
         val psiImportList = PsiTreeUtil.getChildOfType(psiClass.containingFile, PsiImportList::class.java)
 
         val elementFactory = javaPsiFacade.elementFactory
-        val req = javaPsiFacade.findClass("$modelPackage.$reqFileName", searchScope)
+        val req = javaPsiFacade.findClass("$pojoPackage.$pojoReqFileName", searchScope)
         val reqImport = elementFactory.createImportStatement(req!!)
         psiImportList!!.add(reqImport)
 
-        val res = javaPsiFacade.findClass("$modelPackage.$resFileName", searchScope)
+        val res = javaPsiFacade.findClass("$pojoPackage.$pojoResFileName", searchScope)
         val resImport = elementFactory.createImportStatement(res!!)
         psiImportList.add(resImport)
 
         val methodContent =
             """
                 @ApiOperation(value = "TODO Auto-generate")
-                @PostMapping("/$methodNameTextField")
-                public Result<$resFileName> $methodNameTextField(@Validated @RequestBody $reqFileName reqVo) {
-                    return Result.success($serviceFieldName.$methodNameTextField(reqVo));
+                @PostMapping("/$methodName")
+                public Result<$pojoResFileName> $methodName(@Validated @RequestBody $pojoReqFileName reqVo) {
+                    return Result.success($serviceFieldName.$methodName(reqVo));
                 }
             """.trimIndent()
 
@@ -370,19 +342,20 @@ class GenerateHelper(private val project: Project) {
 
         val apiPackageTextField = jsonObject["apiPackageTextField"].asString
         val servicePostfixTextField = jsonObject["servicePostfixTextField"].asString
-        val rootFolder = getApiRootFolder(jsonObject)
 
         val fileName = businessNamePrefix + "Dubbo" + servicePostfixTextField
+        scope["serviceDubboFileName"] = fileName
 
         if (!saveFile) {
             return Pair.of(fileName, apiPackageTextField)
         }
 
+        val rootFolder = getApiRootFolder(jsonObject)
         if (fileNotExists(fileName, apiPackageTextField)) {
             saveFile(fileName, resStr, apiPackageTextField, rootFolder)
         } else {
             WriteCommandAction.runWriteCommandAction(project) {
-                appendFile(scope, "$apiPackageTextField.$fileName", false)
+                appendInterfaceOrImplFile(scope, "$apiPackageTextField.$fileName", false)
             }
         }
 
@@ -390,42 +363,40 @@ class GenerateHelper(private val project: Project) {
     }
 
     private fun saveFeignInterface(
-        businessNamePrefix: String, scope: MutableMap<String, Any>,
-        jsonObject: JsonObject, saveFile: Boolean,
-    ): Pair<String, String> {
+        businessNamePrefix: String,
+        scope: MutableMap<String, Any>,
+        jsonObject: JsonObject,
+    ) {
         val projectFolder = jsonObject["projectFolderBtn"].asString
         val idx = projectFolder.lastIndexOf("/")
         val moduleName = projectFolder.substring(idx + 1)
         scope["moduleName"] = moduleName
 
-        val mustache = readMustache("Feign.mustache")
-
-        val resStr = writeMustache(mustache, scope)
+        val servicePostfixTextField = jsonObject["servicePostfixTextField"].asString
 
         val apiPackageTextField = jsonObject["apiPackageTextField"].asString
-        val servicePostfixTextField = jsonObject["servicePostfixTextField"].asString
+        scope["feignPackage"] = apiPackageTextField
+
+        val feignFileName = businessNamePrefix + "Feign" + servicePostfixTextField
+        scope["feignFileName"] = feignFileName
+
+        val mustache = readMustache("Feign.mustache")
+        val resStr = writeMustache(mustache, scope)
+
         val rootFolder = getApiRootFolder(jsonObject)
-
-        val fileName = businessNamePrefix + "Feign" + servicePostfixTextField
-
-        if (!saveFile) {
-            return Pair.of(fileName, apiPackageTextField)
-        }
-
-        if (fileNotExists(fileName, apiPackageTextField)) {
-            saveFile(fileName, resStr, apiPackageTextField, rootFolder)
+        if (fileNotExists(feignFileName, apiPackageTextField)) {
+            saveFile(feignFileName, resStr, apiPackageTextField, rootFolder)
         } else {
             WriteCommandAction.runWriteCommandAction(project) {
-                appendFile(scope, "$apiPackageTextField.$fileName")
+                appendInterfaceOrImplFile(scope, "$apiPackageTextField.$feignFileName", false)
             }
         }
-
-        return Pair.of(fileName, apiPackageTextField)
     }
 
     private fun saveController(
-        businessNamePrefix: String, scope: MutableMap<String, Any>,
-        jsonObject: JsonObject, saveFile: Boolean,
+        businessNamePrefix: String,
+        scope: MutableMap<String, Any>,
+        jsonObject: JsonObject,
     ) {
         val searchScope = GlobalSearchScope.projectScope(project)
         val results = PsiShortNamesCache.getInstance(project).getClassesByName("Result", searchScope)
@@ -435,25 +406,28 @@ class GenerateHelper(private val project: Project) {
             scope["resultFileName"] = "Result"
         }
 
-        val mustache = readMustache("Controller.mustache")
+        val controllerPackage = jsonObject["controllerPackageTextField"].asString
+        scope["controllerPackage"] = controllerPackage
 
+        val controllerPostfix = jsonObject["controllerPostfixTextField"].asString
+
+        val feign = jsonObject["feignRadioButton"].asBoolean
+        val fileName = if (feign) {
+            businessNamePrefix + "Feign" + controllerPostfix
+        } else {
+            businessNamePrefix + controllerPostfix
+        }
+        scope["controllerFileName"] = fileName
+
+        val mustache = readMustache("Controller.mustache")
         val resStr = writeMustache(mustache, scope)
 
-        val controllerPackage = jsonObject["controllerPackageTextField"].asString
-        val controllerPostfix = jsonObject["controllerPostfixTextField"].asString
         val rootFolder = getRootFolder(jsonObject)
-
-        val fileName = businessNamePrefix + controllerPostfix
-
-        if (!saveFile) {
-            return
-        }
-
         if (fileNotExists(fileName, controllerPackage)) {
             saveFile(fileName, resStr, controllerPackage, rootFolder)
         } else {
             WriteCommandAction.runWriteCommandAction(project) {
-                appendFile(scope, "$controllerPackage.$fileName")
+                appendControllerFile(scope, "$controllerPackage.$fileName")
             }
         }
     }

@@ -1,7 +1,7 @@
-package {{controllerPackageTextField}};
+package {{controllerPackage}};
 
-import {{modelPackage}}.{{reqFileName}};
-import {{modelPackage}}.{{resFileName}};
+import {{pojoPackage}}.{{pojoReqFileName}};
+import {{pojoPackage}}.{{pojoResFileName}};
 import {{servicePackage}}.{{serviceFileName}};
 import {{resultPackage}}.{{resultFileName}};
 import io.swagger.annotations.Api;
@@ -13,20 +13,20 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-{{#feignRadioButton}}import {{apiPackageTextField}}.{{feignFileName}};{{/feignRadioButton}}
+{{#feign}}import {{feignPackage}}.{{feignFileName}};{{/feign}}
 
 @CrossOrigin
 @RestController
-@RequestMapping("/{{businessNameTextField}}")
+@RequestMapping("/{{businessName}}")
 @Api(tags = "TODO Auto-generate")
-public class {{businessNamePrefix}}{{#feignRadioButton}}Feign{{/feignRadioButton}}{{controllerPostfixTextField}} {{#feignRadioButton}}implements {{feignFileName}};{{/feignRadioButton}} {
+public class {{controllerFileName}} {{#feign}}implements {{feignFileName}}{{/feign}} {
     @Autowired
-    private {{serviceFileName}} {{serviceFieldName}};
+    private {{serviceFileName}} {{serviceFileFieldName}};
 
     @ApiOperation(value = "TODO Auto-generate")
-    @PostMapping("/{{methodNameTextField}}")
-    public Result<{{resFileName}}> {{methodNameTextField}}(@Validated @RequestBody {{reqFileName}} reqVo) {
-        return Result.success({{serviceFieldName}}.{{methodNameTextField}}(reqVo));
+    @PostMapping("/{{methodName}}")
+    public Result<{{pojoResFileName}}> {{methodName}}(@Validated @RequestBody {{pojoReqFileName}} reqVo) {
+        return Result.success({{serviceFileFieldName}}.{{methodName}}(reqVo));
     }
 
 }
