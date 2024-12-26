@@ -3,14 +3,16 @@ package {{servicePackage}};
 import {{pojoPackage}}.{{pojoReqFileName}};
 import {{pojoPackage}}.{{pojoResFileName}};
 
+{{#returnList}}import java.util.List;{{/returnList}}
+
 /**
- * TODO Auto-generate
+ * {{businessDesc}}
  */
 public interface {{serviceFileName}} {
 
     /**
-     * TODO Auto-generate
+     * {{methodDesc}}
      */
-    {{pojoResFileName}} {{methodName}}({{pojoReqFileName}} reqVo);
+    {{#returnList}}List<{{/returnList}}{{pojoResFileName}}{{#returnList}}>{{/returnList}} {{methodName}}({{pojoReqFileName}} reqVo);
 
 }

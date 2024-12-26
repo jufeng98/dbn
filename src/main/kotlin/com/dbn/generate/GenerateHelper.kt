@@ -9,6 +9,7 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.module.ModuleUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.StreamUtil
 import com.intellij.openapi.vfs.VfsUtil
@@ -30,6 +31,9 @@ import java.nio.charset.StandardCharsets
 import java.util.*
 
 class GenerateHelper(private val project: Project) {
+    private val javaPsiFacade = JavaPsiFacade.getInstance(project)
+    private val elementFactory = javaPsiFacade.elementFactory
+
     private var historyConfigObj: JsonObject
 
     init {
@@ -55,14 +59,14 @@ class GenerateHelper(private val project: Project) {
             return getConfig(name)
         }
 
-    fun getConfig(name: String?): JsonObject {
+    fun getConfig(name: String): JsonObject {
         return historyConfigObj.getAsJsonObject(name)
     }
 
     val configNames: Set<String>
         get() = historyConfigObj.keySet()
 
-    fun validateParams(jsonObject: JsonObject): List<String?> {
+    fun validateParams(jsonObject: JsonObject): List<String> {
         return jsonObject.entrySet().stream()
             .map { it: Map.Entry<String, JsonElement> ->
                 val key = it.key
@@ -75,6 +79,7 @@ class GenerateHelper(private val project: Project) {
                 key + "不能为空"
             }
             .filter { obj -> Objects.nonNull(obj) }
+            .map { it!! }
             .toList()
     }
 
@@ -90,11 +95,31 @@ class GenerateHelper(private val project: Project) {
         val businessName = jsonObject["businessNameTextField"].asString
         scope["businessName"] = businessName
 
+        val businessDesc = jsonObject["businessDescTextField"].asString
+        scope["businessDesc"] = businessDesc
+
         val businessNamePrefix = StringUtil.capitalizeFirstWord2(businessName)
         scope["businessNamePrefix"] = businessNamePrefix
 
         val methodName = jsonObject["methodNameTextField"].asString
         scope["methodName"] = methodName
+
+        val methodDesc = jsonObject["methodDescTextField"].asString
+        scope["methodDesc"] = methodDesc
+
+        val returnList = methodName.contains("List")
+        scope["returnList"] = returnList
+
+        val searchScope = GlobalSearchScope.projectScope(project)
+        val results = PsiShortNamesCache.getInstance(project).getClassesByName("Result", searchScope)
+        if (results.isNotEmpty()) {
+            val result = results[0]
+            scope["resultPackage"] = PsiUtil.getPackageName(result) + ""
+            scope["resultFileName"] = "Result"
+        } else {
+            scope["resultPackage"] = "org.javamaster"
+            scope["resultFileName"] = "Result"
+        }
 
         val methodNamePrefix = StringUtil.capitalizeFirstWord2(methodName).replace("List", "")
 
@@ -106,14 +131,16 @@ class GenerateHelper(private val project: Project) {
         } else {
             if (feign) {
                 val rootFolder = getApiRootFolder(jsonObject)
-                savePojoFile(methodNamePrefix, scope, "Req", jsonObject, rootFolder)
-                savePojoFile(methodNamePrefix, scope, "Res", jsonObject, rootFolder)
+                val pojoPackage = jsonObject["apiPackageTextField"].asString
+                savePojoFile(methodNamePrefix, scope, "Req", jsonObject, rootFolder, pojoPackage)
+                savePojoFile(methodNamePrefix, scope, "Res", jsonObject, rootFolder, pojoPackage)
 
                 saveFeignInterface(businessNamePrefix, scope, jsonObject)
             } else {
                 val rootFolder = getRootFolder(jsonObject)
-                savePojoFile(methodNamePrefix, scope, "Req", jsonObject, rootFolder)
-                savePojoFile(methodNamePrefix, scope, "Res", jsonObject, rootFolder)
+                val pojoPackage = jsonObject["pojoPackageTextField"].asString
+                savePojoFile(methodNamePrefix, scope, "Req", jsonObject, rootFolder, pojoPackage)
+                savePojoFile(methodNamePrefix, scope, "Res", jsonObject, rootFolder, pojoPackage)
             }
 
             saveInterfaceOrImpl(businessNamePrefix, scope, false, jsonObject)
@@ -180,8 +207,8 @@ class GenerateHelper(private val project: Project) {
         type: String,
         jsonObject: JsonObject,
         rootFolder: String,
+        pojoPackage: String,
     ) {
-        val pojoPackage = jsonObject["pojoPackageTextField"].asString
         scope["pojoPackage"] = pojoPackage
 
         val pojoPostfix = jsonObject["pojoPostfixTextField"].asString
@@ -262,37 +289,49 @@ class GenerateHelper(private val project: Project) {
         val pojoReqFileName = scope["pojoReqFileName"]
         val pojoResFileName = scope["pojoResFileName"]
         val methodName = scope["methodName"]
+        val methodDesc = scope["methodDesc"]
+        val returnList = scope["returnList"] as Boolean
 
         val searchScope = GlobalSearchScope.projectScope(project)
-        val javaPsiFacade = JavaPsiFacade.getInstance(project)
+
         val psiClass = javaPsiFacade.findClass(rootClassName, searchScope)!!
 
         val psiImportList = PsiTreeUtil.getChildOfType(psiClass.containingFile, PsiImportList::class.java)
 
-        val elementFactory = javaPsiFacade.elementFactory
-        val req = javaPsiFacade.findClass("$pojoPackage.$pojoReqFileName", searchScope)
-        val reqImport = elementFactory.createImportStatement(req!!)
-        psiImportList!!.add(reqImport)
+        addImport(psiImportList, "$pojoPackage.$pojoReqFileName")
 
-        val res = javaPsiFacade.findClass("$pojoPackage.$pojoResFileName", searchScope)
-        val resImport = elementFactory.createImportStatement(res!!)
-        psiImportList.add(resImport)
+        addImport(psiImportList, "$pojoPackage.$pojoResFileName")
+
+        val returnType: String
+        val methodBody: String
+        if (returnList) {
+            addImport(psiImportList, "java.util.List")
+
+            addImport(psiImportList, "java.util.Collections")
+
+            returnType = "List<$pojoResFileName>"
+            methodBody = "return Collections.emptyList();"
+        } else {
+            returnType = "$pojoResFileName"
+            methodBody = "return new $pojoResFileName();"
+        }
 
         val methodContent = if (isImpl) {
             """
-                public $pojoResFileName $methodName($pojoReqFileName reqVo) {
+                public $returnType $methodName($pojoReqFileName reqVo) {
                     // TODO Auto-generated
-                    return new $pojoResFileName();                
+                    $methodBody                
                 }
             """.trimIndent()
         } else {
             """
                 /**
-                 * TODO Auto-generate
+                 * $methodDesc
                  */                
-                $pojoResFileName $methodName($pojoReqFileName reqVo);
+                $returnType $methodName($pojoReqFileName reqVo);
             """.trimIndent()
         }
+
         val method = elementFactory.createMethodFromText(methodContent, psiClass)
         psiClass.add(method)
     }
@@ -301,30 +340,36 @@ class GenerateHelper(private val project: Project) {
         val pojoPackage = scope["pojoPackage"]
         val pojoReqFileName = scope["pojoReqFileName"]
         val pojoResFileName = scope["pojoResFileName"]
-        val methodName = scope["methodNameTextField"]
-        val serviceFieldName = scope["serviceFieldName"]
+        val methodName = scope["methodName"]
+        val methodDesc = scope["methodDesc"]
+        val serviceFileFieldName = scope["serviceFileFieldName"]
+        val returnList = scope["returnList"] as Boolean
 
         val searchScope = GlobalSearchScope.projectScope(project)
-        val javaPsiFacade = JavaPsiFacade.getInstance(project)
+
         val psiClass = javaPsiFacade.findClass(rootClassName, searchScope)!!
 
         val psiImportList = PsiTreeUtil.getChildOfType(psiClass.containingFile, PsiImportList::class.java)
 
-        val elementFactory = javaPsiFacade.elementFactory
-        val req = javaPsiFacade.findClass("$pojoPackage.$pojoReqFileName", searchScope)
-        val reqImport = elementFactory.createImportStatement(req!!)
-        psiImportList!!.add(reqImport)
+        addImport(psiImportList, "$pojoPackage.$pojoReqFileName")
 
-        val res = javaPsiFacade.findClass("$pojoPackage.$pojoResFileName", searchScope)
-        val resImport = elementFactory.createImportStatement(res!!)
-        psiImportList.add(resImport)
+        addImport(psiImportList, "$pojoPackage.$pojoResFileName")
+
+        val returnType: String
+        if (returnList) {
+            addImport(psiImportList, "java.util.List")
+
+            returnType = "Result<List<$pojoResFileName>>"
+        } else {
+            returnType = "Result<$pojoResFileName>"
+        }
 
         val methodContent =
             """
-                @ApiOperation(value = "TODO Auto-generate")
+                @ApiOperation(value = "$methodDesc")
                 @PostMapping("/$methodName")
-                public Result<$pojoResFileName> $methodName(@Validated @RequestBody $pojoReqFileName reqVo) {
-                    return Result.success($serviceFieldName.$methodName(reqVo));
+                public $returnType $methodName(@Validated @RequestBody $pojoReqFileName reqVo) {
+                    return Result.success($serviceFileFieldName.$methodName(reqVo));
                 }
             """.trimIndent()
 
@@ -336,30 +381,31 @@ class GenerateHelper(private val project: Project) {
         businessNamePrefix: String, scope: MutableMap<String, Any>,
         jsonObject: JsonObject, saveFile: Boolean,
     ): Pair<String, String> {
-        val mustache = readMustache("Dubbo.mustache")
+        val apiPackage = jsonObject["apiPackageTextField"].asString
+        scope["dubboPackage"] = apiPackage
 
-        val resStr = writeMustache(mustache, scope)
+        val servicePostfix = jsonObject["servicePostfixTextField"].asString
 
-        val apiPackageTextField = jsonObject["apiPackageTextField"].asString
-        val servicePostfixTextField = jsonObject["servicePostfixTextField"].asString
-
-        val fileName = businessNamePrefix + "Dubbo" + servicePostfixTextField
+        val fileName = businessNamePrefix + "Dubbo" + servicePostfix
         scope["serviceDubboFileName"] = fileName
 
         if (!saveFile) {
-            return Pair.of(fileName, apiPackageTextField)
+            return Pair.of(fileName, apiPackage)
         }
 
+        val mustache = readMustache("Dubbo.mustache")
+        val resStr = writeMustache(mustache, scope)
+
         val rootFolder = getApiRootFolder(jsonObject)
-        if (fileNotExists(fileName, apiPackageTextField)) {
-            saveFile(fileName, resStr, apiPackageTextField, rootFolder)
+        if (fileNotExists(fileName, apiPackage)) {
+            saveFile(fileName, resStr, apiPackage, rootFolder)
         } else {
             WriteCommandAction.runWriteCommandAction(project) {
-                appendInterfaceOrImplFile(scope, "$apiPackageTextField.$fileName", false)
+                appendInterfaceOrImplFile(scope, "$apiPackage.$fileName", false)
             }
         }
 
-        return Pair.of(fileName, apiPackageTextField)
+        return Pair.of(fileName, apiPackage)
     }
 
     private fun saveFeignInterface(
@@ -398,14 +444,6 @@ class GenerateHelper(private val project: Project) {
         scope: MutableMap<String, Any>,
         jsonObject: JsonObject,
     ) {
-        val searchScope = GlobalSearchScope.projectScope(project)
-        val results = PsiShortNamesCache.getInstance(project).getClassesByName("Result", searchScope)
-        if (results.isNotEmpty()) {
-            val result = results[0]
-            scope["resultPackage"] = PsiUtil.getPackageName(result) + ""
-            scope["resultFileName"] = "Result"
-        }
-
         val controllerPackage = jsonObject["controllerPackageTextField"].asString
         scope["controllerPackage"] = controllerPackage
 
@@ -440,7 +478,7 @@ class GenerateHelper(private val project: Project) {
         }
     }
 
-    private fun writeMustache(mustache: Mustache, scope: Map<String, Any?>): String {
+    private fun writeMustache(mustache: Mustache, scope: Map<String, Any>): String {
         return StringWriter().use {
             mustache.execute(it, scope).flush()
             it.toString()
@@ -451,7 +489,6 @@ class GenerateHelper(private val project: Project) {
         val tmpFileName = "$fileName.java"
 
         val psiDirectory: PsiDirectory
-        val javaPsiFacade = JavaPsiFacade.getInstance(project)
         val modelPackage = javaPsiFacade.findPackage(packageName)
         if (modelPackage == null) {
             val parent = VfsUtil.findFileByIoFile(File(rootFolder), false)
@@ -472,7 +509,6 @@ class GenerateHelper(private val project: Project) {
     }
 
     private fun fileNotExists(fileName: String, packageName: String): Boolean {
-        val javaPsiFacade = JavaPsiFacade.getInstance(project)
         val modelPackage = javaPsiFacade.findPackage(packageName) ?: return true
 
         val psiDirectory = modelPackage.directories[0]
@@ -480,6 +516,20 @@ class GenerateHelper(private val project: Project) {
         val psiFile = psiDirectory.findFile("$fileName.java")
 
         return psiFile == null
+    }
+
+    private fun addImport(psiImportList: PsiImportList?, clsName: String) {
+        if (psiImportList == null) {
+            return
+        }
+
+        val module = ModuleUtil.findModuleForPsiElement(psiImportList)
+        val searchScope = GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(module!!)
+
+        val psiClass = javaPsiFacade.findClass(clsName, searchScope)
+        val importStatement = elementFactory.createImportStatement(psiClass!!)
+
+        psiImportList.add(importStatement)
     }
 
     companion object {

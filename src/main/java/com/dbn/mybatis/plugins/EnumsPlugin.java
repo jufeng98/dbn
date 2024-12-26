@@ -82,6 +82,7 @@ public class EnumsPlugin extends PluginAdapter {
         EnumMustache enumMustache = new EnumMustache();
         enumMustache.enumPath = config.getEnumPackage();
         enumMustache.enumClassName = enumClassName;
+        enumMustache.setUseLombokPlugin(config.isUseLombokPlugin());
         enumMustache.enumFields = list;
 
         String targetProject = config.getProjectFolder() + "/" + config.getEnumMvnPath();

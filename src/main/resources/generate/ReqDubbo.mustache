@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Data
@@ -16,9 +17,15 @@ public class {{pojoReqFileName}} implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * TODO Auto-generate
+     * AutoGenerate
+     */
+    @NotNull
+    private Integer id;
+
+    /**
+     * AutoGenerate
      */
     @NotBlank
-    private String code;
+    private String name;
 
 }

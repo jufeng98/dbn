@@ -34,7 +34,9 @@ public class GenerateForm extends DialogWrapper {
     private JBTextField pathTextField;
     private JBTextField nameTextField;
     private JBTextField businessNameTextField;
+    private JBTextField businessDescTextField;
     private JBTextField methodNameTextField;
+    private JBTextField methodDescTextField;
     private JBTextField controllerPostfixTextField;
     private JBTextField controllerPackageTextField;
     private JBTextField servicePostfixTextField;

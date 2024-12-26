@@ -2,6 +2,7 @@ package {{feignPackage}};
 
 import {{pojoPackage}}.{{pojoReqFileName}};
 import {{pojoPackage}}.{{pojoResFileName}};
+import {{resultPackage}}.{{resultFileName}};
 import org.springframework.cloud.openfeign.FeignClient;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -9,21 +10,17 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-/**
- * TODO Auto-generate
- */
+{{#returnList}}import java.util.List;{{/returnList}}
+
 @FeignClient(value = "{{moduleName}}",
         path = {{feignFileName}}.FEIGN_PATH,
         url = "${feign.debug.{{moduleName}}.url:}")
-@Api(tags = "TODO Auto-generate")
+@Api(tags = "{{businessDesc}}")
 public interface {{feignFileName}} {
     String FEIGN_PATH = "/feign/{{businessName}}";
 
-    /**
-     * TODO Auto-generate
-     */
-    @ApiOperation(value = "TODO Auto-generate")
+    @ApiOperation(value = "{{methodDesc}}")
     @PostMapping(value = "/{{methodName}}", headers = "feign=true")
-    {{pojoResFileName}} {{methodName}}(@Validated @RequestBody {{pojoReqFileName}} reqVo);
+    Result<{{#returnList}}List<{{/returnList}}{{pojoResFileName}}{{#returnList}}>{{/returnList}}> {{methodName}}(@Validated @RequestBody {{pojoReqFileName}} reqVo);
 
 }

@@ -15,17 +15,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 {{#feign}}import {{feignPackage}}.{{feignFileName}};{{/feign}}
 
+{{#returnList}}import java.util.List;{{/returnList}}
+
 @CrossOrigin
 @RestController
 @RequestMapping("/{{businessName}}")
-@Api(tags = "TODO Auto-generate")
+@Api(tags = "{{businessDesc}}")
 public class {{controllerFileName}} {{#feign}}implements {{feignFileName}}{{/feign}} {
     @Autowired
     private {{serviceFileName}} {{serviceFileFieldName}};
 
-    @ApiOperation(value = "TODO Auto-generate")
+    @ApiOperation(value = "{{methodDesc}}")
     @PostMapping("/{{methodName}}")
-    public Result<{{pojoResFileName}}> {{methodName}}(@Validated @RequestBody {{pojoReqFileName}} reqVo) {
+    public Result<{{#returnList}}List<{{/returnList}}{{pojoResFileName}}{{#returnList}}>{{/returnList}}> {{methodName}}(@Validated @RequestBody {{pojoReqFileName}} reqVo) {
         return Result.success({{serviceFileFieldName}}.{{methodName}}(reqVo));
     }
 

@@ -3,14 +3,16 @@ package {{dubboPackage}};
 import {{pojoPackage}}.{{pojoReqFileName}};
 import {{pojoPackage}}.{{pojoResFileName}};
 
+{{#returnList}}import java.util.List;{{/returnList}}
+
 /**
- * TODO Auto-generate
+ * {{businessDesc}}
  */
 public interface {{serviceDubboFileName}} {
 
     /**
-     * TODO Auto-generate
+     * {{methodDesc}}
      */
-    {{pojoResFileName}} {{methodName}}({{pojoReqFileName}} reqDto);
+    {{#returnList}}List<{{/returnList}}{{pojoResFileName}}{{#returnList}}>{{/returnList}} {{methodName}}({{pojoReqFileName}} reqDto);
 
 }

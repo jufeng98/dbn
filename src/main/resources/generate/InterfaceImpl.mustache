@@ -6,14 +6,20 @@ import {{servicePackage}}.{{serviceFileName}};
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+{{#returnList}}
+import java.util.Collections;
+import java.util.List;
+{{/returnList}}
+
 @Slf4j
 @Service
 public class {{serviceImplFileName}} implements {{serviceFileName}} {
 
     @Override
-    public {{pojoResFileName}} {{methodName}}({{pojoReqFileName}} reqVo) {
-        // TODO Auto-generated
-        return new {{pojoResFileName}}();
+    public {{#returnList}}List<{{/returnList}}{{pojoResFileName}}{{#returnList}}>{{/returnList}} {{methodName}}({{pojoReqFileName}} reqVo) {
+        // AutoGenerate
+        {{#returnList}}return Collections.emptyList();{{/returnList}}
+        {{^returnList}}return new {{pojoResFileName}}();{{/returnList}}
     }
 
 }
