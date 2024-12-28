@@ -27,6 +27,8 @@ public class {{controllerFileName}} {{#feign}}implements {{feignFileName}}{{/fei
 
     @ApiOperation(value = "{{methodDesc}}")
     @PostMapping("/{{methodName}}")
+    {{#modifyDb}}@AopLog{{/modifyDb}}
+    {{#modifyDb}}@AopLock{{/modifyDb}}
     public Result<{{#returnList}}List<{{/returnList}}{{pojoResFileName}}{{#returnList}}>{{/returnList}}> {{methodName}}(@Validated @RequestBody {{pojoReqFileName}} reqVo) {
         return Result.success({{serviceFileFieldName}}.{{methodName}}(reqVo));
     }

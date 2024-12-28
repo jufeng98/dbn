@@ -5,6 +5,7 @@ import {{pojoPackage}}.{{pojoResFileName}};
 import {{servicePackage}}.{{serviceFileName}};
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+{{#modifyDb}}import org.springframework.transaction.annotation.Transactional;{{/modifyDb}}
 
 {{#returnList}}
 import java.util.Collections;
@@ -16,6 +17,7 @@ import java.util.List;
 public class {{serviceImplFileName}} implements {{serviceFileName}} {
 
     @Override
+    {{#modifyDb}}@Transactional(rollbackFor = Exception.class){{/modifyDb}}
     public {{#returnList}}List<{{/returnList}}{{pojoResFileName}}{{#returnList}}>{{/returnList}} {{methodName}}({{pojoReqFileName}} reqVo) {
         // AutoGenerate
         {{#returnList}}return Collections.emptyList();{{/returnList}}

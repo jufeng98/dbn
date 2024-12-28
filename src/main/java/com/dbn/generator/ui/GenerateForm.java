@@ -273,13 +273,11 @@ public class GenerateForm extends DialogWrapper {
         Progress.background(project, null, false,
                 "Tip",
                 "Generating business java files...",
-                progress -> {
-                    application.invokeLater(() -> {
-                        application.runWriteAction(() -> generateHelper.saveAndGenerate(jsonObject, true));
-                        progress.cancel();
-                        NotifyUtil.INSTANCE.notifyDbToolWindowInfo(project, "生成成功!");
-                    });
-                });
+                progress -> application.invokeLater(() -> {
+                    application.runWriteAction(() -> generateHelper.saveAndGenerate(jsonObject, true));
+                    progress.cancel();
+                    NotifyUtil.INSTANCE.notifyDbToolWindowInfo(project, "生成成功!");
+                }));
     }
 
     @Override

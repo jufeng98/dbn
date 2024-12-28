@@ -110,6 +110,11 @@ class GenerateHelper(private val project: Project) {
         val returnList = methodName.contains("List")
         scope["returnList"] = returnList
 
+        val modifyDb = methodName.contains("save") || methodName.contains("insert") || methodName.contains("edit")
+                || methodName.contains("update") || methodName.contains("modify") || methodName.contains("create")
+                || methodName.contains("add") || methodName.lowercase().contains("del")
+        scope["modifyDb"] = modifyDb
+
         val searchScope = GlobalSearchScope.projectScope(project)
         val results = PsiShortNamesCache.getInstance(project).getClassesByName("Result", searchScope)
         if (results.isNotEmpty()) {
@@ -291,6 +296,7 @@ class GenerateHelper(private val project: Project) {
         val methodName = scope["methodName"]
         val methodDesc = scope["methodDesc"]
         val returnList = scope["returnList"] as Boolean
+        val modifyDb = scope["modifyDb"] as Boolean
 
         val searchScope = GlobalSearchScope.projectScope(project)
 
@@ -316,8 +322,18 @@ class GenerateHelper(private val project: Project) {
             methodBody = "return new $pojoResFileName();"
         }
 
+        val annoStr: String
+        if (modifyDb) {
+            addImport(psiImportList, "org.springframework.transaction.annotation.Transactional")
+
+            annoStr = "@Transactional(rollbackFor = Exception.class)"
+        } else {
+            annoStr = ""
+        }
+
         val methodContent = if (isImpl) {
             """
+                $annoStr
                 public $returnType $methodName($pojoReqFileName reqVo) {
                     // TODO Auto-generated
                     $methodBody                
@@ -344,6 +360,7 @@ class GenerateHelper(private val project: Project) {
         val methodDesc = scope["methodDesc"]
         val serviceFileFieldName = scope["serviceFileFieldName"]
         val returnList = scope["returnList"] as Boolean
+        val modifyDb = scope["modifyDb"] as Boolean
 
         val searchScope = GlobalSearchScope.projectScope(project)
 
@@ -364,10 +381,16 @@ class GenerateHelper(private val project: Project) {
             returnType = "Result<$pojoResFileName>"
         }
 
+        val annoStr = if (modifyDb) {
+            "@AopLog @AopLock"
+        } else {
+            ""
+        }
+
         val methodContent =
             """
                 @ApiOperation(value = "$methodDesc")
-                @PostMapping("/$methodName")
+                @PostMapping("/$methodName") $annoStr
                 public $returnType $methodName(@Validated @RequestBody $pojoReqFileName reqVo) {
                     return Result.success($serviceFileFieldName.$methodName(reqVo));
                 }
@@ -523,11 +546,11 @@ class GenerateHelper(private val project: Project) {
             return
         }
 
-        val module = ModuleUtil.findModuleForPsiElement(psiImportList)
-        val searchScope = GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(module!!)
+        val module = ModuleUtil.findModuleForPsiElement(psiImportList) ?: return
+        val searchScope = GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(module)
 
-        val psiClass = javaPsiFacade.findClass(clsName, searchScope)
-        val importStatement = elementFactory.createImportStatement(psiClass!!)
+        val psiClass = javaPsiFacade.findClass(clsName, searchScope) ?: return
+        val importStatement = elementFactory.createImportStatement(psiClass)
 
         psiImportList.add(importStatement)
     }
