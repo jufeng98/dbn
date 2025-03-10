@@ -37,6 +37,8 @@ Additionally, it offers diverse navigation capabilities that seamlessly integrat
 - 支持输入表名时智能提示
 - 支持输入列名时智能提示
 - SQL 结构的跳转等
+- 从 SQL 生成 Java 字段定义
+- 从 MyBatis resultMap 生成 result 子元素
 
 ##### 悬浮提示表元数据信息
 ![table-hover.png](images/table-hover.png)
@@ -52,6 +54,12 @@ Additionally, it offers diverse navigation capabilities that seamlessly integrat
 ![reference-jump.png](images/reference-jump.png)
 ##### 提取 MyBatis 控制台 SQL
 ![mybatis-console-log.png](images/mybatis-console-log.png)
+##### 从 SQL 生成 Java 字段定义
+###### 一般我们都是先写 SQL 然后再定义对应的 Java 数据类，该功能可用于减少这块的乏味工作
+![mybatis-console-log.png](images/generate-field.gif)
+##### 从 MyBatis resultMap 生成 result 子元素
+###### 当 SQL 的返回类型从 resultType 改为 resultMap 时，该功能可用于减少这块的乏味工作
+![mybatis-console-log.png](images/generate-xml.gif)
 ##### MyBatis Generator 配置页
 ![mybatis-generator-config.png](images/mybatis-generator-config.png)
 ##### MyBatis Generator 入口
