@@ -1,4 +1,3 @@
 <resultMap id="testMap" type="org.javamaster.Test">
-    <result property="id" column="id"/>
-    <result property="name" column="name"/>
+
 </resultMap>
