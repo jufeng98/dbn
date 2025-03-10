@@ -34,7 +34,7 @@ object SqlPsiImplUtil {
 
     @JvmStatic
     fun getName(element: SqlColumnAlias): String {
-        return element.text
+        return element.text.replace(ANTI_QUOTE_CHAR, "")
     }
 
     @JvmStatic

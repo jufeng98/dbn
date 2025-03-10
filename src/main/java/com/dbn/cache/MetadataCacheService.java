@@ -2,6 +2,7 @@ package com.dbn.cache;
 
 import com.dbn.browser.DatabaseBrowserManager;
 import com.dbn.connection.ConnectionId;
+import com.dbn.connection.DatabaseType;
 import com.dbn.connection.jdbc.DBNConnection;
 import com.dbn.object.type.DBObjectType;
 import com.dbn.utils.JsonUtils;
@@ -30,6 +31,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static com.dbn.utils.JsonUtils.OBJECT_MAPPER;
+import static com.dbn.utils.SqlUtils.convertName;
 
 /**
  * 数据库元数据本地缓存服务,用于将元数据信息缓存到本地,避免频繁请求数据库,提高效率
@@ -69,12 +71,14 @@ public final class MetadataCacheService {
             return;
         }
 
+        DatabaseType dataBaseType = browserManager.getFirstConnectionType(project);
+
         MetadataCacheService cacheService = MetadataCacheService.getService(project);
         // 从本地缓存中初始化数据库元数据信息
-        cacheService.initCacheDbTable(dbName, project, connectionId.id());
+        cacheService.initCacheDbTable(dbName, project, connectionId.id(), dataBaseType);
     }
 
-    public void initCacheDbTable(String schemaName, Project project, String connectionId) {
+    public void initCacheDbTable(String schemaName, Project project, String connectionId, DatabaseType dataBaseType) {
         String fileFullName = getCacheFileFullName(schemaName, project, connectionId);
 
         ObjectNode rootObjectNode = JsonUtils.readTree(fileFullName);
@@ -89,7 +93,7 @@ public final class MetadataCacheService {
             for (JsonNode jsonNode : identifierTableArrayNode) {
                 ObjectNode objectNode = (ObjectNode) jsonNode;
 
-                CacheDbTable cacheDbTable = createCacheDbTable(objectNode);
+                CacheDbTable cacheDbTable = createCacheDbTable(objectNode, dataBaseType);
 
                 tableMap.put(cacheDbTable.getName(), cacheDbTable);
             }
@@ -101,7 +105,7 @@ public final class MetadataCacheService {
             for (JsonNode jsonNode : identifierViewArrayNode) {
                 ObjectNode objectNode = (ObjectNode) jsonNode;
 
-                CacheDbTable cacheDbTable = createCacheDbTableView(objectNode);
+                CacheDbTable cacheDbTable = createCacheDbTableView(objectNode, dataBaseType);
 
                 tableMap.put(cacheDbTable.getName(), cacheDbTable);
             }
@@ -119,7 +123,7 @@ public final class MetadataCacheService {
                     continue;
                 }
 
-                CacheDbColumn cacheDbColumn = createCacheDbColumn(objectNode);
+                CacheDbColumn cacheDbColumn = createCacheDbColumn(objectNode, dataBaseType);
 
                 cacheDbTable.addCacheDbColumn(cacheDbColumn);
 
@@ -172,21 +176,30 @@ public final class MetadataCacheService {
         return map;
     }
 
-    private CacheDbTable createCacheDbTable(ObjectNode objectNode) {
+    private CacheDbTable createCacheDbTable(ObjectNode objectNode, DatabaseType dataBaseType) {
         String tableName = objectNode.get("TABLE_NAME").asText("");
+
+        tableName = convertName(tableName, dataBaseType);
+
         String tableComment = objectNode.get("TABLE_COMMENT").asText("");
         boolean isTemporary = isYesFlag(objectNode.get("IS_TEMPORARY").asText());
         return new CacheDbTable(tableName, tableComment, isTemporary);
     }
 
-    private CacheDbTable createCacheDbTableView(ObjectNode objectNode) {
+    private CacheDbTable createCacheDbTableView(ObjectNode objectNode, DatabaseType dataBaseType) {
         String viewName = objectNode.get("VIEW_NAME").asText("");
+
+        viewName = convertName(viewName, dataBaseType);
+
         String viewComment = objectNode.get("VIEW_COMMENT").asText("");
         return new CacheDbTable(viewName, viewComment, false);
     }
 
-    private CacheDbColumn createCacheDbColumn(ObjectNode objectNode) {
+    private CacheDbColumn createCacheDbColumn(ObjectNode objectNode, DatabaseType dataBaseType) {
         String columnName = objectNode.get("COLUMN_NAME").asText("");
+
+        columnName = convertName(columnName, dataBaseType);
+
         String columnComment = objectNode.get("COLUMN_COMMENT").asText("");
         String columnDefault = objectNode.get("COLUMN_DEFAULT").asText("");
         short position = objectNode.get("POSITION").shortValue();
@@ -281,7 +294,10 @@ public final class MetadataCacheService {
         log.warn("完成缓存元数据:{},共{}个子元素,路径:{}", identifier, identifierArrayNode.size(), fileFullName);
 
         if (StringUtils.isNotBlank(schemaName)) {
-            initCacheDbTable(schemaName, project, connectionId);
+            DatabaseBrowserManager browserManager = DatabaseBrowserManager.getInstance(project);
+            DatabaseType databaseType = browserManager.getFirstConnectionType(project);
+
+            initCacheDbTable(schemaName, project, connectionId, databaseType);
         }
 
         return identifierArrayNode;

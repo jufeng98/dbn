@@ -1,11 +1,13 @@
 package com.dbn.sql.doc
 
+import com.dbn.browser.DatabaseBrowserManager
 import com.dbn.cache.CacheDbColumn
 import com.dbn.cache.CacheDbTable
 import com.dbn.navigation.psi.DbnToolWindowPsiElement
 import com.dbn.`object`.DBColumn
 import com.dbn.`object`.DBTable
 import com.dbn.`object`.common.DBObjectPsiElement
+import com.dbn.utils.SqlUtils.convertName
 import com.intellij.lang.documentation.AbstractDocumentationProvider
 import com.intellij.lang.documentation.DocumentationMarkup.*
 import com.intellij.psi.PsiElement
@@ -18,22 +20,27 @@ import java.util.stream.Collectors
 class SqlDocumentationProvider : AbstractDocumentationProvider() {
 
     override fun generateDoc(element: PsiElement, originalElement: PsiElement?): String? {
-        val cacheDbTableMap = DbnToolWindowPsiElement.getFirstConnCacheDbTables(element.project) ?: return null
+        val project = element.project
+
+        val cacheDbTableMap = DbnToolWindowPsiElement.getFirstConnCacheDbTables(project) ?: return null
+
+        val browserManager = DatabaseBrowserManager.getInstance(project)
+        val databaseType = browserManager.getFirstConnectionType(project)
 
         if (element is DBObjectPsiElement) {
             val dbObject = element.`object`
             if (dbObject is DBTable) {
-                val tableName = dbObject.name
+                val tableName = convertName(dbObject.name, databaseType)
                 val cacheDbTable = cacheDbTableMap[tableName] ?: return null
 
                 return generateTableDoc(cacheDbTable)
             }
 
             if (dbObject is DBColumn) {
-                val columnName = dbObject.name
+                val columnName = convertName(dbObject.name, databaseType)
                 val dbTable = dbObject.getParentObject<DBTable>()
 
-                val tableName = dbTable.name
+                val tableName = convertName(dbTable.name, databaseType)
                 val cacheDbTable = cacheDbTableMap[tableName] ?: return null
 
                 val cacheDbColumn = cacheDbTable.cacheDbColumnMap[columnName] ?: return null
@@ -44,16 +51,17 @@ class SqlDocumentationProvider : AbstractDocumentationProvider() {
 
         if (element is DbnToolWindowPsiElement) {
             if (element.columnName == null) {
-                val tableName = element.tableNames.iterator().next()
+                val tableName = convertName(element.tableNames.iterator().next(), databaseType)
                 val cacheDbTable = cacheDbTableMap[tableName] ?: return null
-                
+
                 return generateTableDoc(cacheDbTable)
             } else {
                 val columnDocList = element.tableNames.stream()
                     .map {
                         val cacheDbTable = cacheDbTableMap[it] ?: return@map null
 
-                        val cacheDbColumn = cacheDbTable.cacheDbColumnMap[element.columnName] ?: return@map null
+                        val columnName = convertName(element.columnName, databaseType)
+                        val cacheDbColumn = cacheDbTable.cacheDbColumnMap[columnName] ?: return@map null
 
                         generateColumnDoc(cacheDbTable, cacheDbColumn)
                     }

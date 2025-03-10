@@ -1,9 +1,12 @@
 package com.dbn.sql.annotator
 
+import com.dbn.browser.DatabaseBrowserManager
 import com.dbn.cache.CacheDbTable
+import com.dbn.connection.DatabaseType
 import com.dbn.navigation.psi.DbnToolWindowPsiElement.Companion.getFirstConnCacheDbTables
 import com.dbn.sql.psi.*
 import com.dbn.utils.SqlUtils
+import com.dbn.utils.SqlUtils.convertName
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
@@ -40,15 +43,20 @@ class SqlAnnotator : Annotator {
             return
         }
 
+        val project = element.project
+
+        val browserManager = DatabaseBrowserManager.getInstance(project)
+        val databaseType = browserManager.getFirstConnectionType(project)
+
         val injectionHost = InjectedLanguageManager.getInstance(element.project).getInjectionHost(element)
         if (injectionHost !is XmlText) {
-            analyzeSemantics(element, holder)
+            analyzeSemantics(element, holder, databaseType)
             return
         }
 
         val errorElement = PsiTreeUtil.findChildOfType(element.containingFile, PsiErrorElement::class.java)
         if (errorElement == null) {
-            analyzeSemantics(element, holder)
+            analyzeSemantics(element, holder, databaseType)
             return
         }
 
@@ -126,7 +134,7 @@ class SqlAnnotator : Annotator {
         }
     }
 
-    private fun analyzeSemantics(element: SqlRoot, holder: AnnotationHolder) {
+    private fun analyzeSemantics(element: SqlRoot, holder: AnnotationHolder, databaseType: DatabaseType) {
         val tableMap = getFirstConnCacheDbTables(element.project) ?: return
         val statement = element.statement
 
@@ -150,23 +158,23 @@ class SqlAnnotator : Annotator {
 
         sqlCompoundSelectStmts.forEach { compoundSelectStmt ->
             compoundSelectStmt?.selectStmtList?.forEach {
-                annotatorSelect(it, holder, tableMap, aliasMap)
+                annotatorSelect(it, holder, tableMap, aliasMap, databaseType)
             }
         }
 
         val updateStmt = statement.updateStmtLimited
         if (updateStmt != null) {
-            annotatorUpdate(updateStmt, holder, tableMap)
+            annotatorUpdate(updateStmt, holder, tableMap, databaseType)
         }
 
         val sqlInsertStmt = statement.insertStmt
         if (sqlInsertStmt != null) {
-            annotatorInsert(sqlInsertStmt, holder, tableMap)
+            annotatorInsert(sqlInsertStmt, holder, tableMap, databaseType)
         }
 
         val deleteStmt = statement.deleteStmtLimited
         if (deleteStmt != null) {
-            annotatorDelete(deleteStmt, holder, tableMap)
+            annotatorDelete(deleteStmt, holder, tableMap, databaseType)
         }
 
     }
@@ -175,16 +183,17 @@ class SqlAnnotator : Annotator {
         deleteStmt: SqlDeleteStmtLimited,
         holder: AnnotationHolder,
         tableMap: Map<String, CacheDbTable>,
+        databaseType: DatabaseType,
     ) {
         val sqlTableNames = PsiTreeUtil.findChildrenOfType(deleteStmt, SqlTableName::class.java)
         sqlTableNames.forEach {
-            annotateTableName(it, holder, tableMap)
+            annotateTableName(it, holder, tableMap, databaseType)
         }
 
         val sqlColumnNames = PsiTreeUtil.findChildrenOfType(deleteStmt, SqlColumnName::class.java)
         sqlColumnNames.forEach {
             val tableName = deleteStmt.qualifiedTableName.tableName
-            annotateColumnName(it, holder, tableMap, tableName)
+            annotateColumnName(it, holder, tableMap, tableName, databaseType)
         }
     }
 
@@ -192,16 +201,17 @@ class SqlAnnotator : Annotator {
         sqlInsertStmt: SqlInsertStmt,
         holder: AnnotationHolder,
         tableMap: Map<String, CacheDbTable>,
+        databaseType: DatabaseType,
     ) {
         val sqlTableNames = PsiTreeUtil.findChildrenOfType(sqlInsertStmt, SqlTableName::class.java)
         sqlTableNames.forEach {
-            annotateTableName(it, holder, tableMap)
+            annotateTableName(it, holder, tableMap, databaseType)
         }
 
         val sqlColumnNames = PsiTreeUtil.findChildrenOfType(sqlInsertStmt, SqlColumnName::class.java)
         sqlColumnNames.forEach {
             val tableName = sqlInsertStmt.tableName
-            annotateColumnName(it, holder, tableMap, tableName)
+            annotateColumnName(it, holder, tableMap, tableName, databaseType)
         }
     }
 
@@ -209,16 +219,17 @@ class SqlAnnotator : Annotator {
         sqlUpdateStmtLimited: SqlUpdateStmtLimited,
         holder: AnnotationHolder,
         tableMap: Map<String, CacheDbTable>,
+        databaseType: DatabaseType,
     ) {
         val sqlTableNames = PsiTreeUtil.findChildrenOfType(sqlUpdateStmtLimited, SqlTableName::class.java)
         sqlTableNames.forEach {
-            annotateTableName(it, holder, tableMap)
+            annotateTableName(it, holder, tableMap, databaseType)
         }
 
         val sqlColumnNames = PsiTreeUtil.findChildrenOfType(sqlUpdateStmtLimited, SqlColumnName::class.java)
         sqlColumnNames.forEach {
             val tableName = sqlUpdateStmtLimited.qualifiedTableName.tableName
-            annotateColumnName(it, holder, tableMap, tableName)
+            annotateColumnName(it, holder, tableMap, tableName, databaseType)
         }
     }
 
@@ -227,13 +238,14 @@ class SqlAnnotator : Annotator {
         holder: AnnotationHolder,
         tableMap: Map<String, CacheDbTable>,
         aliasMap: MutableMap<String, MutableList<SqlTableAlias>>,
+        databaseType: DatabaseType,
     ) {
         val sqlTableNames = PsiTreeUtil.findChildrenOfType(sqlSelectStmt, SqlTableName::class.java)
         sqlTableNames.forEach {
             if (SqlUtils.isColumnTableAlias(it)) {
-                annotateColumnTableAlias(it, holder, aliasMap)
+                annotateColumnTableAlias(it, holder, aliasMap, databaseType)
             } else {
-                annotateTableName(it, holder, tableMap)
+                annotateTableName(it, holder, tableMap, databaseType)
             }
         }
 
@@ -244,7 +256,7 @@ class SqlAnnotator : Annotator {
                 return@forEach
             }
 
-            annotateColumnName(it, holder, tableMap, aliasMap)
+            annotateColumnName(it, holder, tableMap, aliasMap, databaseType)
         }
     }
 
@@ -252,8 +264,10 @@ class SqlAnnotator : Annotator {
         sqlTableName: SqlTableName,
         holder: AnnotationHolder,
         tableMap: Map<String, CacheDbTable>,
+        databaseType: DatabaseType,
     ) {
-        val name = sqlTableName.text.replace("`", "")
+        val name = convertName(sqlTableName.text, databaseType)
+
         val cacheDbTable = tableMap[name]
         if (cacheDbTable == null) {
             createError("无法解析表名 $name", holder, sqlTableName.textRange)
@@ -264,9 +278,10 @@ class SqlAnnotator : Annotator {
         columnTableAliasName: SqlTableName,
         holder: AnnotationHolder,
         aliasMap: MutableMap<String, MutableList<SqlTableAlias>>,
+        databaseType: DatabaseType,
     ) {
+        val aliasName = convertName(columnTableAliasName.name, databaseType)
 
-        val aliasName = columnTableAliasName.name
         val sqlTableAliases = aliasMap[aliasName]
         if (sqlTableAliases == null) {
             createError("无法解析表别名 $aliasName", holder, columnTableAliasName.textRange)
@@ -278,11 +293,13 @@ class SqlAnnotator : Annotator {
         holder: AnnotationHolder,
         tableMap: Map<String, CacheDbTable>,
         sqlTableName: SqlTableName,
+        databaseType: DatabaseType,
     ) {
-        val tableName = sqlTableName.name
+        val tableName = convertName(sqlTableName.name, databaseType)
         val cacheDbTable = tableMap[tableName] ?: return
 
-        val columnName = sqlColumnName.name
+        val columnName = convertName(sqlColumnName.name, databaseType)
+
         val cacheDbColumn = cacheDbTable.cacheDbColumnMap[columnName]
         if (cacheDbColumn == null) {
             createError("无法解析列名 $columnName", holder, sqlColumnName.textRange)
@@ -294,8 +311,10 @@ class SqlAnnotator : Annotator {
         holder: AnnotationHolder,
         tableMap: Map<String, CacheDbTable>,
         aliasMap: MutableMap<String, MutableList<SqlTableAlias>>,
+        databaseType: DatabaseType,
     ) {
-        val columnName = sqlColumnName.name
+        val columnName = convertName(sqlColumnName.name, databaseType)
+
         val columnTableAlias = SqlUtils.getTableAliasNameOfColumn(sqlColumnName)
         if (columnTableAlias != null) {
             val sqlTableName = SqlUtils.getTableNameOfAlias(aliasMap, columnTableAlias) ?: return

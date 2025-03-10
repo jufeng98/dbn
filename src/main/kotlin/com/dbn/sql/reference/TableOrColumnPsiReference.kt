@@ -1,11 +1,13 @@
 package com.dbn.sql.reference
 
+import com.dbn.browser.DatabaseBrowserManager
 import com.dbn.cache.CacheDbColumn
 import com.dbn.cache.CacheDbTable
 import com.dbn.navigation.psi.DbnToolWindowPsiElement
 import com.dbn.navigation.psi.DbnToolWindowPsiElement.Companion.getFirstConnCacheDbTables
 import com.dbn.sql.psi.*
 import com.dbn.utils.SqlUtils
+import com.dbn.utils.SqlUtils.convertName
 import com.intellij.codeInsight.completion.InsertionContext
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
@@ -20,22 +22,30 @@ import java.util.stream.Collectors
  * @author yudong
  */
 class TableOrColumnPsiReference(
-    sqlStatement: SqlStatement,
-    private val sqlTableNames: List<SqlTableName>,
-    private val sqlColumnName: SqlColumnName?,
+    private val sqlStatement: SqlStatement,
+     val sqlTableNames: List<SqlTableName>,
+     val sqlColumnName: SqlColumnName?,
     textRange: TextRange,
 ) :
     PsiReferenceBase<PsiElement>(sqlStatement, textRange) {
 
     override fun resolve(): PsiElement {
-        val tableNames = sqlTableNames.map { it.name }.toSet()
+        val project = sqlStatement.project
+        val browserManager = DatabaseBrowserManager.getInstance(project)
+        val databaseType = browserManager.getFirstConnectionType(project)
+
+        val tableNames = sqlTableNames.map { convertName(it.name, databaseType) }.toSet()
         return if (sqlColumnName != null) {
             val columnAlias = SqlUtils.getColumnAliasIfInOrderGroupBy(sqlColumnName)
             if (columnAlias != null) {
                 return columnAlias
             }
 
-            DbnToolWindowPsiElement(tableNames, sqlColumnName.name, sqlTableNames[0].node)
+            DbnToolWindowPsiElement(
+                tableNames,
+                convertName(sqlColumnName.name, databaseType),
+                sqlTableNames[0].node
+            )
         } else {
             DbnToolWindowPsiElement(tableNames, null, sqlTableNames[0].node)
         }

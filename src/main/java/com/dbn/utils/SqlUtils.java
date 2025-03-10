@@ -1,5 +1,6 @@
 package com.dbn.utils;
 
+import com.dbn.connection.DatabaseType;
 import com.dbn.sql.psi.SqlColumnAlias;
 import com.dbn.sql.psi.SqlColumnExpr;
 import com.dbn.sql.psi.SqlColumnName;
@@ -211,7 +212,6 @@ public class SqlUtils {
     }
 
     public static Map<String, List<SqlTableAlias>> getAliasMap(Collection<SqlJoinClause> sqlJoinClauses) {
-        //noinspection DataFlowIssue
         return sqlJoinClauses.stream()
                 .map(sqlJoinClause -> {
                     List<SqlTableOrSubquery> tableOrSubqueryList = sqlJoinClause.getTableOrSubqueryList();
@@ -231,5 +231,13 @@ public class SqlUtils {
         }
 
         return psiElement;
+    }
+
+    public static String convertName(String name, DatabaseType dataBaseType) {
+        if (dataBaseType == DatabaseType.MYSQL) {
+            return name.toLowerCase();
+        }
+
+        return name;
     }
 }

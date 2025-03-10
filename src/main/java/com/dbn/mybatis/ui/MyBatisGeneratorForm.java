@@ -21,9 +21,11 @@ public class MyBatisGeneratorForm extends DialogWrapper {
 
     public MyBatisGeneratorForm(Project project, DBTable dbTable) {
         super(project, false);
+
         this.project = project;
         this.dbTable = dbTable;
 
+        setModal(false);
         setOKButtonText("Generate");
 
         MyBatisSettings myBatisSettings = MyBatisSettings.getInstance(project);
