@@ -1,0 +1,3 @@
+<resultMap id="testMap" type="org.javamaster.Test">
+
+</resultMap>
