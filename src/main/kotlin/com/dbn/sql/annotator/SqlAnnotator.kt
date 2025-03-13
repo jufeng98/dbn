@@ -134,27 +134,37 @@ class SqlAnnotator : Annotator {
         }
     }
 
-    private fun analyzeSemantics(element: SqlRoot, holder: AnnotationHolder, databaseType: DatabaseType) {
-        val tableMap = getFirstConnCacheDbTables(element.project) ?: return
-        val statement = element.statement
-
-        val sqlCompoundSelectStmts = PsiTreeUtil.findChildrenOfType(statement, SqlCompoundSelectStmt::class.java)
-
+    private fun calcAliasMap(
+        sqlCompoundSelectStmts: MutableCollection<SqlCompoundSelectStmt>,
+        databaseType: DatabaseType,
+    ): MutableMap<String, MutableList<SqlTableAlias>> {
         val aliasMap: MutableMap<String, MutableList<SqlTableAlias>> = mutableMapOf()
         sqlCompoundSelectStmts.forEach { compoundSelectStmt ->
-            compoundSelectStmt?.selectStmtList?.forEach { sqlSelectStmt ->
+            compoundSelectStmt.selectStmtList.forEach { sqlSelectStmt ->
                 val sqlJoinClauses = PsiTreeUtil.findChildrenOfType(sqlSelectStmt, SqlJoinClause::class.java)
                 val map = SqlUtils.getAliasMap(sqlJoinClauses)
                 map.entries.forEach {
-                    val list = aliasMap[it.key]
+                    val aliasName = convertName(it.key, databaseType)
+                    val list = aliasMap[aliasName]
                     if (list == null) {
-                        aliasMap[it.key] = it.value
+                        aliasMap[aliasName] = it.value
                     } else {
                         list.addAll(it.value)
                     }
                 }
             }
         }
+
+        return aliasMap
+    }
+
+    private fun analyzeSemantics(element: SqlRoot, holder: AnnotationHolder, databaseType: DatabaseType) {
+        val tableMap = getFirstConnCacheDbTables(element.project) ?: return
+        val statement = element.statement
+
+        val sqlCompoundSelectStmts = PsiTreeUtil.findChildrenOfType(statement, SqlCompoundSelectStmt::class.java)
+
+        val aliasMap = calcAliasMap(sqlCompoundSelectStmts, databaseType)
 
         sqlCompoundSelectStmts.forEach { compoundSelectStmt ->
             compoundSelectStmt?.selectStmtList?.forEach {
@@ -192,6 +202,15 @@ class SqlAnnotator : Annotator {
 
         val sqlColumnNames = PsiTreeUtil.findChildrenOfType(deleteStmt, SqlColumnName::class.java)
         sqlColumnNames.forEach {
+            val sqlCompoundSelectStmt = PsiTreeUtil.getParentOfType(it, SqlCompoundSelectStmt::class.java)
+            if (sqlCompoundSelectStmt != null) {
+                val aliasMap = calcAliasMap(mutableListOf(sqlCompoundSelectStmt), databaseType)
+                sqlCompoundSelectStmt.selectStmtList.forEach { selectStmt ->
+                    annotatorSelect(selectStmt, holder, tableMap, aliasMap, databaseType)
+                }
+                return@forEach
+            }
+
             val tableName = deleteStmt.qualifiedTableName.tableName
             annotateColumnName(it, holder, tableMap, tableName, databaseType)
         }
@@ -251,7 +270,7 @@ class SqlAnnotator : Annotator {
 
         val sqlColumnNames = PsiTreeUtil.findChildrenOfType(sqlSelectStmt, SqlColumnName::class.java)
         sqlColumnNames.forEach {
-            val columnAlias = SqlUtils.getColumnAliasIfInOrderGroupBy(it)
+            val columnAlias = SqlUtils.getColumnAliasIfInOrderGroupBy(it, databaseType)
             if (columnAlias != null) {
                 return@forEach
             }
@@ -266,7 +285,7 @@ class SqlAnnotator : Annotator {
         tableMap: Map<String, CacheDbTable>,
         databaseType: DatabaseType,
     ) {
-        val name = convertName(sqlTableName.text, databaseType)
+        val name = convertName(sqlTableName.name, databaseType)
 
         val cacheDbTable = tableMap[name]
         if (cacheDbTable == null) {
@@ -327,7 +346,7 @@ class SqlAnnotator : Annotator {
             return
         }
 
-        val columnAlias = SqlUtils.getColumnAliasIfInOrderGroupBy(sqlColumnName)
+        val columnAlias = SqlUtils.getColumnAliasIfInOrderGroupBy(sqlColumnName, databaseType)
         if (columnAlias != null) {
             return
         }

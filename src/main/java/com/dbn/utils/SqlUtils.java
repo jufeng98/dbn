@@ -74,6 +74,19 @@ public class SqlUtils {
             SqlTypes.VALUES,
             SqlTypes.UNIQUE,
             SqlTypes.UNION,
+            SqlTypes.CURRENT_TIME,
+            SqlTypes.CURRENT_DATE,
+            SqlTypes.CURRENT_TIMESTAMP,
+            SqlTypes.AUTO_INCREMENT,
+            SqlTypes.MONTH,
+            SqlTypes.DAY,
+            SqlTypes.HOUR,
+            SqlTypes.MINUTE,
+            SqlTypes.ENGINE,
+            SqlTypes.CHARSET,
+            SqlTypes.SEPARATOR,
+            SqlTypes.UNSIGNED,
+            SqlTypes.INTERVAL,
             SqlTypes.TRUE,
             SqlTypes.FALSE,
             SqlTypes.SET,
@@ -120,16 +133,16 @@ public class SqlUtils {
     /**
      * 若sqlColumnName位于order by或group by里,则尝试找到其对应的列别名
      */
-    public static @Nullable SqlColumnAlias getColumnAliasIfInOrderGroupBy(SqlColumnName sqlColumnName) {
+    public static @Nullable SqlColumnAlias getColumnAliasIfInOrderGroupBy(SqlColumnName sqlColumnName, DatabaseType databaseType) {
         if (!isInOrderGroupBy(sqlColumnName)) {
             return null;
         }
 
         Collection<SqlColumnAlias> columnAliases = getSqlColumnAliases(sqlColumnName);
 
-        String text = sqlColumnName.getText();
+        String name = SqlUtils.convertName(sqlColumnName.getName(), databaseType);
         Optional<SqlColumnAlias> optionalSqlColumnAlias = columnAliases.stream()
-                .filter(it -> text.equals(it.getText()))
+                .filter(it -> name.equals(SqlUtils.convertName(it.getName(), databaseType)))
                 .findFirst();
 
         return optionalSqlColumnAlias.orElse(null);

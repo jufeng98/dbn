@@ -23,8 +23,8 @@ import java.util.stream.Collectors
  */
 class TableOrColumnPsiReference(
     private val sqlStatement: SqlStatement,
-     val sqlTableNames: List<SqlTableName>,
-     val sqlColumnName: SqlColumnName?,
+    val sqlTableNames: List<SqlTableName>,
+    val sqlColumnName: SqlColumnName?,
     textRange: TextRange,
 ) :
     PsiReferenceBase<PsiElement>(sqlStatement, textRange) {
@@ -36,7 +36,7 @@ class TableOrColumnPsiReference(
 
         val tableNames = sqlTableNames.map { convertName(it.name, databaseType) }.toSet()
         return if (sqlColumnName != null) {
-            val columnAlias = SqlUtils.getColumnAliasIfInOrderGroupBy(sqlColumnName)
+            val columnAlias = SqlUtils.getColumnAliasIfInOrderGroupBy(sqlColumnName, databaseType)
             if (columnAlias != null) {
                 return columnAlias
             }
