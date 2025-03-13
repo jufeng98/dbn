@@ -125,7 +125,6 @@
         CURRENT_TIMESTAMP='regexp:[Cc][Uu][Rr][Rr][Ee][Nn][Tt]_[Tt][Ii][Mm][Ee][Ss][Tt][Aa][Mm][Pp]'
         AUTO_INCREMENT='regexp:[Aa][Uu][Tt][Oo]_[Ii][Nn][Cc][Rr][Ee][Mm][Ee][Nn][Tt]'
         UNSIGNED='regexp:[Uu][Nn][Ss][Ii][Gg][Nn][Ee][Dd]'
-        UNSIGNED='regexp:[Uu][Nn][Ss][Ii][Gg][Nn][Ee][Dd]'
         COMMENT_WORD='regexp:[Cc][Oo][Mm][Mm][Ee][Nn][Tt]'
         SEPARATOR='regexp:[Ss][Ee][Pp][Aa][Rr][Aa][Tt][Oo][Rr]'
         INTERVAL='regexp:[Ii][Nn][Tt][Ee][Rr][Vv][Aa][Ll]'
@@ -134,6 +133,8 @@
         HOUR='regexp:[Hh][Oo][Uu][Rr]'
         MINUTE='regexp:[Mm][Ii][Nn][Uu][Tt][Ee]'
         CHARACTER='regexp:[Cc][Hh][Aa][Rr][Aa][Cc][Tt][Ee][Rr]'
+        ENGINE='regexp:[Ee][Nn][Gg][Ii][Nn][Ee]'
+        CHARSET='regexp:[Cc][Hh][Aa][Rr][Ss][Ee][Tt]'
 
         // 各类符号
         SEMI=';'
@@ -239,7 +240,7 @@ column_constraint ::= [ CONSTRAINT identifier ] ( PRIMARY KEY [ ASC | DESC ] con
     DEFAULT ( signed_number | literal_value | '(' expr ')' ) | COLLATE collation_name | foreign_key_clause | COMMENT_WORD string )
 signed_number ::= [ '+' | '-' ] numeric_literal
 table_constraint ::= [ CONSTRAINT identifier ] (
-    ( PRIMARY KEY | UNIQUE | KEY ) [ index_name ] '(' indexed_column ( ',' indexed_column ) * ')' conflict_clause | CHECK '(' expr ')'
+    ( PRIMARY KEY | UNIQUE KEY | UNIQUE | KEY ) [ index_name ] '(' indexed_column ( ',' indexed_column ) * ')' conflict_clause | CHECK '(' expr ')'
     | FOREIGN KEY '(' column_name ( ',' column_name ) * ')' foreign_key_clause )
 foreign_key_clause ::= REFERENCES_WORD foreign_table [ '(' column_name ( ',' column_name ) * ')' ]
     [ ( ON ( DELETE | UPDATE ) ( SET NULL | SET DEFAULT | CASCADE | RESTRICT | NO ACTION ) | MATCH identifier )* ]
@@ -442,7 +443,7 @@ table_alias ::= id {
 }
 foreign_table ::= id
 identifier ::= id
-attr_name ::= id | AUTO_INCREMENT | DEFAULT | COMMENT_WORD | COLLATE
+attr_name ::= id | AUTO_INCREMENT | DEFAULT | COMMENT_WORD | COLLATE | ENGINE | CHARSET
 attr_value ::= id | string | digit
 pragma_name ::= id
 function_name ::= id | IF

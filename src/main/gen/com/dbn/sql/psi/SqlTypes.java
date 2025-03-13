@@ -145,6 +145,7 @@ public interface SqlTypes {
   IElementType CASE = new SqlTokenType("CASE");
   IElementType CAST = new SqlTokenType("CAST");
   IElementType CHARACTER = new SqlTokenType("CHARACTER");
+  IElementType CHARSET = new SqlTokenType("CHARSET");
   IElementType CHECK = new SqlTokenType("CHECK");
   IElementType COLLATE = new SqlTokenType("COLLATE");
   IElementType COLUMN = new SqlTokenType("COLUMN");
@@ -178,6 +179,7 @@ public interface SqlTypes {
   IElementType EACH = new SqlTokenType("EACH");
   IElementType ELSE = new SqlTokenType("ELSE");
   IElementType END = new SqlTokenType("END");
+  IElementType ENGINE = new SqlTokenType("ENGINE");
   IElementType EQ = new SqlTokenType("=");
   IElementType EQ2 = new SqlTokenType("==");
   IElementType ESCAPE = new SqlTokenType("ESCAPE");

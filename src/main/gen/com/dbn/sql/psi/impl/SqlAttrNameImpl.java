@@ -35,6 +35,12 @@ public class SqlAttrNameImpl extends SqlPsiElement implements SqlAttrName {
 
   @Override
   @Nullable
+  public PsiElement getCharset() {
+    return findChildByType(CHARSET);
+  }
+
+  @Override
+  @Nullable
   public PsiElement getCollate() {
     return findChildByType(COLLATE);
   }
@@ -49,6 +55,12 @@ public class SqlAttrNameImpl extends SqlPsiElement implements SqlAttrName {
   @Nullable
   public PsiElement getDefault() {
     return findChildByType(DEFAULT);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getEngine() {
+    return findChildByType(ENGINE);
   }
 
   @Override
