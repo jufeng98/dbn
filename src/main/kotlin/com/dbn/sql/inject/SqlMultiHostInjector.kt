@@ -46,7 +46,7 @@ class SqlMultiHostInjector : MultiHostInjector {
         }
 
         val name = context.name
-        return "select" == name || "delete" == name || "update" == name || "insert" == name
+        return "select" == name || "delete" == name || "update" == name || "insert" == name || "sql" == name
     }
 
 

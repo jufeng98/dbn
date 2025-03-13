@@ -57,6 +57,12 @@
     ]]></description>
     <change-notes><![CDATA[
         <ul>
+            <li><b>3.4.5213</b>
+            <ul>
+                <li>完善 annotator </li>
+                <li>完善 MySQL 语法识别</li>
+                <li>Bug修复</li>
+            </ul>
             <li><b>3.4.5203</b>
             <ul>
                 <li>解决annotator、document等由于 MySQL 不区分大小写导致的问题</li>
