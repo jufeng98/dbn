@@ -61,6 +61,7 @@
             <ul>
                 <li>完善 annotator </li>
                 <li>完善 MySQL 语法识别</li>
+                <li>完善表和列的文档悬浮提示</li>
                 <li>Bug修复</li>
             </ul>
             <li><b>3.4.5203</b>

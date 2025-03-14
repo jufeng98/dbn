@@ -33,8 +33,15 @@ class SqlAnnotator : Annotator {
         }
 
         if (element is SqlColumnName) {
-            val builder = holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+            val builder = holder.newSilentAnnotation(HighlightSeverity.TEXT_ATTRIBUTES)
             builder.textAttributes(DefaultLanguageHighlighterColors.STATIC_FIELD)
+            builder.create()
+            return
+        }
+
+        if (element is SqlFunctionName) {
+            val builder = holder.newSilentAnnotation(HighlightSeverity.TEXT_ATTRIBUTES)
+            builder.textAttributes(DefaultLanguageHighlighterColors.METADATA)
             builder.create()
             return
         }

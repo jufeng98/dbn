@@ -447,6 +447,15 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
         return config.getDatabaseType();
     }
 
+    public String getFirstConnectionDsName(Project project) {
+        ConnectionDatabaseSettings config = getFirstConnectionConfig(project);
+        if (config == null) {
+            return "";
+        }
+
+        return config.getName();
+    }
+
     private @Nullable String resolveUrlDbName(String url) {
         try {
             val uri = URI.create(url.substring(5));

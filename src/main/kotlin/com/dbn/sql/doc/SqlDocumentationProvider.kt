@@ -26,6 +26,8 @@ class SqlDocumentationProvider : AbstractDocumentationProvider() {
 
         val browserManager = DatabaseBrowserManager.getInstance(project)
         val databaseType = browserManager.getFirstConnectionType(project)
+        val dsName = browserManager.getFirstConnectionDsName(project)
+        val dbName = browserManager.getFirstConnectionConfigDbName(project) ?: ""
 
         if (element is DBObjectPsiElement) {
             val dbObject = element.`object`
@@ -33,7 +35,7 @@ class SqlDocumentationProvider : AbstractDocumentationProvider() {
                 val tableName = convertName(dbObject.name, databaseType)
                 val cacheDbTable = cacheDbTableMap[tableName] ?: return null
 
-                return generateTableDoc(cacheDbTable)
+                return generateTableDoc(cacheDbTable, dsName, dbName)
             }
 
             if (dbObject is DBColumn) {
@@ -45,7 +47,7 @@ class SqlDocumentationProvider : AbstractDocumentationProvider() {
 
                 val cacheDbColumn = cacheDbTable.cacheDbColumnMap[columnName] ?: return null
 
-                return generateColumnDoc(cacheDbTable, cacheDbColumn)
+                return generateColumnDoc(cacheDbTable, cacheDbColumn, dsName, dbName)
             }
         }
 
@@ -54,7 +56,7 @@ class SqlDocumentationProvider : AbstractDocumentationProvider() {
                 val tableName = convertName(element.tableNames.iterator().next(), databaseType)
                 val cacheDbTable = cacheDbTableMap[tableName] ?: return null
 
-                return generateTableDoc(cacheDbTable)
+                return generateTableDoc(cacheDbTable, dsName, dbName)
             } else {
                 val columnDocList = element.tableNames.stream()
                     .map {
@@ -63,7 +65,7 @@ class SqlDocumentationProvider : AbstractDocumentationProvider() {
                         val columnName = convertName(element.columnName, databaseType)
                         val cacheDbColumn = cacheDbTable.cacheDbColumnMap[columnName] ?: return@map null
 
-                        generateColumnDoc(cacheDbTable, cacheDbColumn)
+                        generateColumnDoc(cacheDbTable, cacheDbColumn, dsName, dbName)
                     }
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList())
@@ -82,9 +84,10 @@ class SqlDocumentationProvider : AbstractDocumentationProvider() {
         return null
     }
 
-    private fun generateColumnDoc(table: CacheDbTable, column: CacheDbColumn): String {
+    private fun generateColumnDoc(table: CacheDbTable, column: CacheDbColumn, dsName: String, dbName: String): String {
         return buildString {
-            append("<span>")
+            append(DEFINITION_START)
+            append("<b>Column:</b> ")
             append(column.name)
             append(" ")
             append(column.cacheDbDataType.qualifiedName)
@@ -92,25 +95,36 @@ class SqlDocumentationProvider : AbstractDocumentationProvider() {
             append(column.columnDefault)
             append(" ")
             append(column.columnComment)
-            append(" ")
-            append("</span>")
-
-            append("<span style='color:gray'>")
+            append("<hr>")
+            append("<b>Data Source:</b> ")
+            append(dsName)
+            append("<br>")
+            append("<b>Schema:</b> ")
+            append(dbName)
+            append("<br>")
+            append("<b>Table:</b> ")
             append(table.name)
             append("(")
             append(table.comment)
             append(")")
-            append("</span>")
+            append(DEFINITION_END)
         }
     }
 
-    private fun generateTableDoc(table: CacheDbTable): String {
+    private fun generateTableDoc(table: CacheDbTable, dsName: String, dbName: String): String {
         return buildString {
             append(DEFINITION_START)
+            append("<b>Table:</b> ")
             append(table.name)
             append("(")
             append(table.comment)
             append(")")
+            append("<hr>")
+            append("<b>Data Source:</b> ")
+            append(dsName)
+            append("<br>")
+            append("<b>Schema:</b> ")
+            append(dbName)
             append(DEFINITION_END)
 
             append(SECTIONS_START)
