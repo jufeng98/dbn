@@ -190,7 +190,7 @@ public class SqlParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // id | AUTO_INCREMENT | DEFAULT | COMMENT_WORD | COLLATE
+  // id | AUTO_INCREMENT | DEFAULT | COMMENT_WORD | COLLATE | ENGINE | CHARSET
   public static boolean attr_name(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "attr_name")) return false;
     boolean r;
@@ -200,6 +200,8 @@ public class SqlParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, DEFAULT);
     if (!r) r = consumeToken(b, COMMENT_WORD);
     if (!r) r = consumeToken(b, COLLATE);
+    if (!r) r = consumeToken(b, ENGINE);
+    if (!r) r = consumeToken(b, CHARSET);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -3677,7 +3679,7 @@ public class SqlParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // [ CONSTRAINT identifier ] (
-  //     ( PRIMARY KEY | UNIQUE | KEY ) [ index_name ] '(' indexed_column ( ',' indexed_column ) * ')' conflict_clause | CHECK '(' expr ')'
+  //     ( PRIMARY KEY | UNIQUE KEY | UNIQUE | KEY ) [ index_name ] '(' indexed_column ( ',' indexed_column ) * ')' conflict_clause | CHECK '(' expr ')'
   //     | FOREIGN KEY '(' column_name ( ',' column_name ) * ')' foreign_key_clause )
   public static boolean table_constraint(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "table_constraint")) return false;
@@ -3707,7 +3709,7 @@ public class SqlParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // ( PRIMARY KEY | UNIQUE | KEY ) [ index_name ] '(' indexed_column ( ',' indexed_column ) * ')' conflict_clause | CHECK '(' expr ')'
+  // ( PRIMARY KEY | UNIQUE KEY | UNIQUE | KEY ) [ index_name ] '(' indexed_column ( ',' indexed_column ) * ')' conflict_clause | CHECK '(' expr ')'
   //     | FOREIGN KEY '(' column_name ( ',' column_name ) * ')' foreign_key_clause
   private static boolean table_constraint_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "table_constraint_1")) return false;
@@ -3720,7 +3722,7 @@ public class SqlParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // ( PRIMARY KEY | UNIQUE | KEY ) [ index_name ] '(' indexed_column ( ',' indexed_column ) * ')' conflict_clause
+  // ( PRIMARY KEY | UNIQUE KEY | UNIQUE | KEY ) [ index_name ] '(' indexed_column ( ',' indexed_column ) * ')' conflict_clause
   private static boolean table_constraint_1_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "table_constraint_1_0")) return false;
     boolean r;
@@ -3736,12 +3738,13 @@ public class SqlParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // PRIMARY KEY | UNIQUE | KEY
+  // PRIMARY KEY | UNIQUE KEY | UNIQUE | KEY
   private static boolean table_constraint_1_0_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "table_constraint_1_0_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = parseTokens(b, 0, PRIMARY, KEY);
+    if (!r) r = parseTokens(b, 0, UNIQUE, KEY);
     if (!r) r = consumeToken(b, UNIQUE);
     if (!r) r = consumeToken(b, KEY);
     exit_section_(b, m, null, r);

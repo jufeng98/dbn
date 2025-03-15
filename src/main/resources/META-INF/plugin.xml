@@ -57,6 +57,20 @@
     ]]></description>
     <change-notes><![CDATA[
         <ul>
+            <li><b>3.4.5213</b>
+            <ul>
+                <li>完善 annotator </li>
+                <li>完善 MySQL 语法识别</li>
+                <li>完善表和列的文档悬浮提示</li>
+                <li>Bug修复</li>
+            </ul>
+            <li><b>3.4.5203</b>
+            <ul>
+                <li>解决annotator、document等由于 MySQL 不区分大小写导致的问题</li>
+                <li>新增从 SQL 生成 Java 字段定义的 Intent</li>
+                <li>新增从 MyBatis resultMap 生成 result 子元素 Intent</li>
+                <li>Bug修复</li>
+            </ul>
             <li><b>3.4.5103</b>
             <ul>
                 <li>Mybatis generator support custom plugin</li>
@@ -1211,6 +1225,11 @@
             <language>XML</language>
             <className>com.dbn.sql.intent.GenerateXmlResultAction</className>
             <category>Database/Xml generate</category>
+        </intentionAction>
+        <intentionAction>
+            <language>sql</language>
+            <className>com.dbn.sql.intent.GenerateFieldAction</className>
+            <category>Database/Sql generate</category>
         </intentionAction>
 
         <fileDocumentManagerListener implementation="com.dbn.connection.console.DatabaseConsoleFileInitializer"/>

@@ -23,6 +23,7 @@ import com.dbn.connection.ConnectionBundle;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.ConnectionId;
 import com.dbn.connection.ConnectionManager;
+import com.dbn.connection.DatabaseType;
 import com.dbn.connection.SchemaId;
 import com.dbn.connection.config.ConnectionBundleSettings;
 import com.dbn.connection.config.ConnectionDatabaseSettings;
@@ -435,6 +436,24 @@ public class DatabaseBrowserManager extends ProjectComponentBase implements Pers
         }
 
         return objectBundle.getSchema(dbName);
+    }
+
+    public DatabaseType getFirstConnectionType(Project project) {
+        ConnectionDatabaseSettings config = getFirstConnectionConfig(project);
+        if (config == null) {
+            return DatabaseType.GENERIC;
+        }
+
+        return config.getDatabaseType();
+    }
+
+    public String getFirstConnectionDsName(Project project) {
+        ConnectionDatabaseSettings config = getFirstConnectionConfig(project);
+        if (config == null) {
+            return "";
+        }
+
+        return config.getName();
     }
 
     private @Nullable String resolveUrlDbName(String url) {

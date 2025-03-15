@@ -7,12 +7,11 @@ import com.intellij.codeInspection.util.IntentionName
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.module.ModuleUtil
 import com.intellij.openapi.project.Project
-import com.intellij.psi.JavaPsiFacade
-import com.intellij.psi.PsiDocumentManager
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
+import com.intellij.psi.*
 import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.psi.util.InheritanceUtil
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.util.PsiUtil
 import com.intellij.psi.xml.XmlFile
 import com.intellij.psi.xml.XmlTag
 import com.intellij.util.IncorrectOperationException
@@ -85,12 +84,23 @@ class GenerateXmlResultAction : BaseIntentionAction() {
             return
         }
 
+        var noId = true
         val resultStr = psiClass.allFields.joinToString("\n") {
+            val res = handle(it)
+            if (res != null) {
+                return@joinToString res
+            }
+
             val name = it.name
-            if (name == "id" || name.contains("Id")) {
-                "<id property=\"$name\" column=\"$name\"/>"
+            if ((name == "id" || name.contains("Id")) && noId) {
+                noId = false
+                """
+                    <id property="$name" column="$name"/>
+                """.trimIndent()
             } else {
-                "<result property=\"$name\" column=\"$name\"/>"
+                """
+                    <result property="$name" column="$name"/>
+                """.trimIndent()
             }
         }
 
@@ -100,9 +110,44 @@ class GenerateXmlResultAction : BaseIntentionAction() {
         document.insertString(position, resultStr)
     }
 
+    private fun handle(psiField: PsiField): String? {
+        val fieldType = psiField.type
+        val name = psiField.name
+        if (fieldType !is PsiClassType) return null
+
+        val fieldPsiClass = fieldType.resolve() ?: return null
+
+        val isCollection = InheritanceUtil.isInheritor(fieldPsiClass, "java.util.Collection")
+        if (isCollection) {
+            val typeParameters = fieldType.parameters
+            if (typeParameters.isEmpty()) {
+                return null
+            }
+            val typePsiType = typeParameters[0] as PsiClassType
+            val typePsiClass = typePsiType.resolve() ?: return null
+            return """
+                    <collection property="$name" ofType="${typePsiClass.qualifiedName}">
+                    
+                    </collection>
+            """.trimIndent()
+        } else {
+            val packageName = PsiUtil.getPackageName(fieldPsiClass) ?: return null
+            if (packageName.startsWith("java")) {
+                return null
+            }
+
+            return """
+                    <association property="$name" javaType="${fieldPsiClass.qualifiedName}">
+                        
+                    </association>                
+            """.trimIndent()
+        }
+    }
+
     private fun getElement(editor: Editor, file: PsiFile): PsiElement? {
         val caretModel = editor.caretModel
         val position = caretModel.offset
         return file.findElementAt(position)
     }
 }
+

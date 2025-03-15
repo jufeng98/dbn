@@ -52,7 +52,7 @@ public class SqlReferenceContributor extends PsiReferenceContributor {
         }
 
 
-        private PsiReference[] createSqlReferences(SqlStatement sqlStatement) {
+        public static PsiReference[] createSqlReferences(SqlStatement sqlStatement) {
             SqlRoot sqlRoot = PsiTreeUtil.getParentOfType(sqlStatement, SqlRoot.class);
             if (sqlRoot == null) {
                 return PsiReference.EMPTY_ARRAY;
@@ -101,10 +101,10 @@ public class SqlReferenceContributor extends PsiReferenceContributor {
             return references.toArray(PsiReference[]::new);
         }
 
-        private List<TableOrColumnPsiReference> createColumnNameReferences(SqlStatement sqlStatement,
-                                                                           Collection<SqlColumnName> sqlColumnNames,
-                                                                           Map<String, List<SqlTableAlias>> aliasMap,
-                                                                           int startOffsetInParent) {
+        private static List<TableOrColumnPsiReference> createColumnNameReferences(SqlStatement sqlStatement,
+                                                                                  Collection<SqlColumnName> sqlColumnNames,
+                                                                                  Map<String, List<SqlTableAlias>> aliasMap,
+                                                                                  int startOffsetInParent) {
             return sqlColumnNames.stream()
                     .map(sqlColumnName -> {
                         TextRange textRange = sqlColumnName.getTextRange().shiftLeft(startOffsetInParent);
@@ -142,11 +142,11 @@ public class SqlReferenceContributor extends PsiReferenceContributor {
         }
 
         @Nullable
-        private TableOrColumnPsiReference createColumnTableReference(SqlColumnName sqlColumnName,
-                                                                     SqlTableName columnTableAliasName,
-                                                                     SqlStatement sqlStatement,
-                                                                     Map<String, List<SqlTableAlias>> aliasMap,
-                                                                     TextRange textRange) {
+        private static TableOrColumnPsiReference createColumnTableReference(SqlColumnName sqlColumnName,
+                                                                            SqlTableName columnTableAliasName,
+                                                                            SqlStatement sqlStatement,
+                                                                            Map<String, List<SqlTableAlias>> aliasMap,
+                                                                            TextRange textRange) {
             SqlTableName sqlTableName = SqlUtils.getTableNameOfAlias(aliasMap, columnTableAliasName);
             if (sqlTableName == null) {
                 return null;
@@ -155,9 +155,9 @@ public class SqlReferenceContributor extends PsiReferenceContributor {
             return new TableOrColumnPsiReference(sqlStatement, List.of(sqlTableName), sqlColumnName, textRange);
         }
 
-        private List<TableOrColumnPsiReference> createTableNameReferences(SqlStatement sqlStatement,
-                                                                          List<SqlTableName> sqlTableNameList,
-                                                                          int startOffsetInParent) {
+        private static List<TableOrColumnPsiReference> createTableNameReferences(SqlStatement sqlStatement,
+                                                                                 List<SqlTableName> sqlTableNameList,
+                                                                                 int startOffsetInParent) {
             return sqlTableNameList.stream()
                     .map(sqlTableName -> {
                         TextRange textRange = sqlTableName.getTextRange().shiftLeft(startOffsetInParent);
@@ -166,10 +166,10 @@ public class SqlReferenceContributor extends PsiReferenceContributor {
                     .collect(Collectors.toList());
         }
 
-        private List<ColumnTableAliasPsiReference> createColumnTableAliasReferences(SqlStatement sqlStatement,
-                                                                                    Map<String, List<SqlTableAlias>> aliasMap,
-                                                                                    Collection<SqlTableName> sqlTableNames,
-                                                                                    int startOffsetInParent) {
+        private static List<ColumnTableAliasPsiReference> createColumnTableAliasReferences(SqlStatement sqlStatement,
+                                                                                           Map<String, List<SqlTableAlias>> aliasMap,
+                                                                                           Collection<SqlTableName> sqlTableNames,
+                                                                                           int startOffsetInParent) {
             if (aliasMap.isEmpty()) {
                 return Lists.newArrayList();
             }
@@ -194,7 +194,7 @@ public class SqlReferenceContributor extends PsiReferenceContributor {
                     .collect(Collectors.toList());
         }
 
-        private int calOffset(PsiElement psiElement) {
+        private static int calOffset(PsiElement psiElement) {
             PsiElement prevSibling = psiElement.getPrevSibling();
             if (prevSibling != null) {
                 return prevSibling.getTextLength() + calOffset(prevSibling);

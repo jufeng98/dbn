@@ -142,6 +142,8 @@ DAY=[Dd][Aa][Yy]
 HOUR=[Hh][Oo][Uu][Rr]
 MINUTE=[Mm][Ii][Nn][Uu][Tt][Ee]
 CHARACTER=[Cc][Hh][Aa][Rr][Aa][Cc][Tt][Ee][Rr]
+ENGINE=[Ee][Nn][Gg][Ii][Nn][Ee]
+CHARSET=[Cc][Hh][Aa][Rr][Ss][Ee][Tt]
 SPACE=[ \t\n\x0B\f\r]+
 COMMENT=--.*
 BLOCK_COMMENT="/"\*([^*]|\*+[^*/])*(\*+"/")?
@@ -316,6 +318,8 @@ MYBATIS_OGNL=[$#]\{[a-zA-Z0-9_@()'.,=\s]*}
   {HOUR}                    { return HOUR; }
   {MINUTE}                  { return MINUTE; }
   {CHARACTER}               { return CHARACTER; }
+  {ENGINE}                  { return ENGINE; }
+  {CHARSET}                 { return CHARSET; }
   {SPACE}                   { return SPACE; }
   {COMMENT}                 { return COMMENT; }
   {BLOCK_COMMENT}           { return BLOCK_COMMENT; }

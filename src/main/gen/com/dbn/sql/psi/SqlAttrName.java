@@ -11,6 +11,9 @@ public interface SqlAttrName extends PsiElement {
   PsiElement getAutoIncrement();
 
   @Nullable
+  PsiElement getCharset();
+
+  @Nullable
   PsiElement getCollate();
 
   @Nullable
@@ -18,6 +21,9 @@ public interface SqlAttrName extends PsiElement {
 
   @Nullable
   PsiElement getDefault();
+
+  @Nullable
+  PsiElement getEngine();
 
   @Nullable
   PsiElement getId();
