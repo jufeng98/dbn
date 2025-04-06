@@ -67,6 +67,9 @@ public class GenerateForm extends DialogWrapper {
         super(true);
         this.project = project;
 
+        setTitle("Generate Business");
+        setModal(false);
+
         generateHelper = new GenerateHelper(project);
 
         initForm();

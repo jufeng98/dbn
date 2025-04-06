@@ -26,6 +26,7 @@ public class MyBatisGeneratorForm extends DialogWrapper {
         this.dbTable = dbTable;
 
         setModal(false);
+        setTitle("Generate MyBatis");
         setOKButtonText("Generate");
 
         MyBatisSettings myBatisSettings = MyBatisSettings.getInstance(project);

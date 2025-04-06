@@ -41,37 +41,39 @@ Additionally, it offers diverse navigation capabilities that seamlessly integrat
 - 从 MyBatis resultMap 生成 result 子元素
 
 ##### 悬浮提示表元数据信息
-![table-hover.png](images/table-hover.png)
+![table-hover.png](./images/table-hover.png)
 ##### 悬浮提示列元数据信息
-![column-hover.png](images/column-hover.png)
+![column-hover.png](./images/column-hover.png)
 ##### 表名输入智能提示
-![table-name-hint.png](images/table-name-hint.png)
+![table-name-hint.png](./images/table-name-hint.png)
 ##### 列名输入智能提示
-![column-name-hint.png](images/column-name-hint.png)
+![column-name-hint.png](./images/column-name-hint.png)
 ##### 列别名输入智能提示
-![column-alias-hint.png](images/column-alias-hint.png)
+![column-alias-hint.png](./images/column-alias-hint.png)
 ##### SQL 引用及跳转
-![reference-jump.png](images/reference-jump.png)
+![reference-jump.png](./images/reference-jump.png)
 ##### 提取 MyBatis 控制台 SQL
-![mybatis-console-log.png](images/mybatis-console-log.png)
+![mybatis-console-log.png](./images/mybatis-console-log.png)
 ##### 从 SQL 生成 Java 字段定义
 ###### 一般我们都是先写 SQL 然后再定义对应的 Java 数据类，该功能可用于减少这块的乏味工作
-![mybatis-console-log.png](images/generate-field.gif)
+![mybatis-console-log.png](./images/generate-field.gif)
 ##### 从 MyBatis resultMap 生成 result 子元素
 ###### 当 SQL 的返回类型从 resultType 改为 resultMap 时，该功能可用于减少这块的乏味工作
-![mybatis-console-log.png](images/generate-xml.gif)
+![mybatis-console-log.png](./images/generate-xml.gif)
 ##### MyBatis Generator 配置页
-![mybatis-generator-config.png](images/mybatis-generator-config.png)
+![mybatis-generator-config.png](./images/mybatis-generator-config.png)
 ##### MyBatis Generator 入口
-![mybatis-generator-table.png](images/mybatis-generator-table.png)
+![mybatis-generator-table.png](./images/mybatis-generator-table.png)
 ##### MyBatis Generator 生成表时相关配置
-![mybatis-generator-table-config.png](images/mybatis-generator-table-config.png)
+![mybatis-generator-table-config.png](./images/mybatis-generator-table-config.png)
 ##### MyBatis Generator 生成表相关 MyBatis 类及文件
-![mybatis-generator-result.png](images/mybatis-generator-result.png)
+![mybatis-generator-result.png](./images/mybatis-generator-result.png)
 ##### MyBatis Generator custom plugin 入口
-![mybatis-generator-dynamic-plugin1.png](images/mybatis-generator-dynamic-plugin1.png)
+![mybatis-generator-dynamic-plugin1.png](./images/mybatis-generator-dynamic-plugin1.png)
 ##### MyBatis Generator custom plugin 
-![mybatis-generator-dynamic-plugin2.png](images/mybatis-generator-dynamic-plugin2.png)
+![mybatis-generator-dynamic-plugin2.png](./images/mybatis-generator-dynamic-plugin2.png)
+##### 生成 Controller、 Service 和 Vo 等业务类
+![generate-business.png](./images/generate-business.png)
 
 ## 作者信息
 - 作者博客：[知乎](https://www.zhihu.com/people/liang-yu-dong-44)
@@ -80,11 +82,11 @@ Additionally, it offers diverse navigation capabilities that seamlessly integrat
 - 
 ## 捐赠
 如果项目帮到了您，请作者喝杯咖啡吧！
-![donate](images/donate.jpg)
+![donate](./images/donate.jpg)
 
 ## 技术支持
 微信记得备注 ```DataBaseManager```，共同进步。
-![wechat](images/wechat.jpg)
+![wechat](./images/wechat.jpg)
 
 
 
