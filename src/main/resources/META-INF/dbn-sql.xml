@@ -21,6 +21,8 @@
         <lang.quoteHandler language="sql" implementationClass="com.dbn.sql.quotehandler.SqlQuoteHandler"/>
         <lang.namesValidator language="sql" implementationClass="com.dbn.sql.name.SqlNamesValidator"/>
         <multiHostInjector
+                implementation="com.dbn.sql.inject.SqlAnnoMultiHostInjector"/>
+        <multiHostInjector
                 implementation="com.dbn.sql.inject.SqlMultiHostInjector"/>
         <psi.referenceContributor language="sql"
                                   implementation="com.dbn.sql.reference.SqlReferenceContributor"/>
