@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "com.dbn"
-version = "3.4.5213.0"
+version = "3.4.5313.0"
 
 repositories {
     maven { url = URI("https://maven.aliyun.com/nexus/content/groups/public/") }
@@ -166,8 +166,8 @@ tasks {
     }
 
     patchPluginXml {
-        sinceBuild.set("243")
-        untilBuild.set("243.*")
+        sinceBuild.set("232")
+        untilBuild.set("252.*")
     }
 
     signPlugin {
@@ -181,7 +181,7 @@ tasks {
     }
 
     runIde {
-        systemProperties["idea.auto.reload.plugins"] = true
+        autoReloadPlugins = false
         jvmArgs = listOf(
             "-Xms1024m",
             "-Xmx2048m",

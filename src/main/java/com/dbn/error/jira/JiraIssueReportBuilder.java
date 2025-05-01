@@ -11,10 +11,8 @@ import com.dbn.connection.info.ConnectionInfo;
 import com.dbn.error.IssueReport;
 import com.dbn.error.IssueReportBuilder;
 import com.dbn.error.MarkupElement;
-import com.intellij.diagnostic.AbstractMessage;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.openapi.application.ApplicationInfo;
-import com.intellij.openapi.diagnostic.Attachment;
 import com.intellij.openapi.diagnostic.IdeaLoggingEvent;
 import com.intellij.openapi.diagnostic.SubmittedReportInfo;
 import com.intellij.openapi.project.Project;
@@ -22,9 +20,7 @@ import com.intellij.util.Consumer;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class JiraIssueReportBuilder implements IssueReportBuilder {
     private static final String LINE_DELIMITER = "\n__________________________________________________________________\n";
@@ -35,7 +31,7 @@ public class JiraIssueReportBuilder implements IssueReportBuilder {
             IdeaPluginDescriptor plugin,
             IdeaLoggingEvent[] events,
             String message,
-            Consumer<SubmittedReportInfo> consumer){
+            Consumer<SubmittedReportInfo> consumer) {
         IssueReport report = new IssueReport(project, plugin, events, message, consumer);
 
         initEnvironmentInfo(report);
@@ -69,7 +65,7 @@ public class JiraIssueReportBuilder implements IssueReportBuilder {
         } else {
             ConnectionDatabaseSettings databaseSettings = connection.getSettings().getDatabaseSettings();
             DatabaseType databaseType = DatabaseType.resolve(databaseSettings.getDriver());
-            if (databaseType == DatabaseType.GENERIC ) {
+            if (databaseType == DatabaseType.GENERIC) {
                 databaseType = databaseSettings.getDatabaseType();
             }
             report.setDatabaseType(databaseType.name());
@@ -139,29 +135,29 @@ public class JiraIssueReportBuilder implements IssueReportBuilder {
     }
 
     private static void buildAttachmentInfo(IssueReport report, StringBuilder description) {
-        IdeaLoggingEvent event = report.getEvent();
-        Object eventData = event.getData();
-        if (eventData instanceof AbstractMessage) {
-            List<Attachment> attachments = ((AbstractMessage) eventData).getIncludedAttachments();
-            if (attachments.isEmpty()) return;
-
-            Set<String> attachmentTexts = new HashSet<>();
-            for (Attachment attachment : attachments) {
-                attachmentTexts.add(attachment.getDisplayText().trim());
-            }
-
-            description.append("\n\nAttachments:");
-            description.append(LINE_DELIMITER);
-            int index = 0;
-            for (String attachmentText : attachmentTexts) {
-                if (index > 0) description.append(LINE_DELIMITER);
-                description.append("\n");
-                description.append(attachmentText);
-                index++;
-            }
-
-            description.append(LINE_DELIMITER);
-        }
+        // IdeaLoggingEvent event = report.getEvent();
+        // Object eventData = event.getData();
+        // if (eventData instanceof AbstractMessage) {
+        //     List<Attachment> attachments = ((AbstractMessage) eventData).getIncludedAttachments();
+        //     if (attachments.isEmpty()) return;
+        //
+        //     Set<String> attachmentTexts = new HashSet<>();
+        //     for (Attachment attachment : attachments) {
+        //         attachmentTexts.add(attachment.getDisplayText().trim());
+        //     }
+        //
+        //     description.append("\n\nAttachments:");
+        //     description.append(LINE_DELIMITER);
+        //     int index = 0;
+        //     for (String attachmentText : attachmentTexts) {
+        //         if (index > 0) description.append(LINE_DELIMITER);
+        //         description.append("\n");
+        //         description.append(attachmentText);
+        //         index++;
+        //     }
+        //
+        //     description.append(LINE_DELIMITER);
+        // }
     }
 
     @Nullable
@@ -202,11 +198,16 @@ public class JiraIssueReportBuilder implements IssueReportBuilder {
 
     private static String getMarkupElement(MarkupElement element, String title) {
         switch (element) {
-            case BOLD: return "*";
-            case ITALIC: return "_";
-            case TABLE: return "|";
-            case CODE: return title == null ? "{code}" : "{code:title=" + title + "}";
-            case PANEL: return title == null ? "{panel}" : "{panel:title=" + title + "}";
+            case BOLD:
+                return "*";
+            case ITALIC:
+                return "_";
+            case TABLE:
+                return "|";
+            case CODE:
+                return title == null ? "{code}" : "{code:title=" + title + "}";
+            case PANEL:
+                return title == null ? "{panel}" : "{panel:title=" + title + "}";
         }
         return "";
     }

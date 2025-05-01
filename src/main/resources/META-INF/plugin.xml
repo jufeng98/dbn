@@ -1,7 +1,7 @@
 <idea-plugin url="https://plugins.jetbrains.com/plugin/1800-database-navigator"
              xmlns:xi="http://www.w3.org/2001/XInclude" require-restart="true">
     <name>DataBaseManager</name>
-    <version>3.4.5103.0</version>
+    <version>3.4.5313.0</version>
     <category>Database</category>
 
     <depends>com.intellij.modules.platform</depends>
