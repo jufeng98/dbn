@@ -65,6 +65,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Types;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -293,14 +294,16 @@ public class DbnMyBatisGenerator {
             parentNode.removeChild(nodeList.item(i));
         }
 
+        String database = connectionHandler.getDatabaseInfo().getDatabase();
+
         Element element = doc.createElement("table");
         element.setAttribute("tableName", dbTable.getName());
-        element.setAttribute("schema", connectionHandler.getDatabaseInfo().getDatabase());
+        element.setAttribute("schema", database);
         parentNode.appendChild(element);
 
-        handlerAutoIncrement(xPath, doc);
+        handlerAutoIncrement(xPath, doc, database);
 
-        changeJavaFieldType(xPath, doc);
+        changeJavaFieldType(xPath, doc, database);
 
         DOMImplementationLS domImplementationLs = (DOMImplementationLS) doc.getImplementation().getFeature("LS", "3.0");
 
@@ -335,7 +338,7 @@ public class DbnMyBatisGenerator {
     /**
      * 处理自动递增主键
      */
-    private void handlerAutoIncrement(XPath xPath, Document doc) throws Exception {
+    private void handlerAutoIncrement(XPath xPath, Document doc, String database) throws Exception {
         Element rootEle = doc.getDocumentElement();
 
         NodeList tableNodeList = (NodeList) xPath.evaluate("//table", rootEle, XPathConstants.NODESET);
@@ -344,37 +347,29 @@ public class DbnMyBatisGenerator {
             String tableName = tableEle.getAttribute("tableName");
             DatabaseMetaData databaseMetaData = connectionHandler.getMainConnection().getMetaData();
 
-            var supportsIsAutoIncrement = false;
-            ResultSet resultSet = databaseMetaData.getColumns(null, null, tableName, "%");
-            ResultSetMetaData metaData = resultSet.getMetaData();
-            for (int j = 1; j <= metaData.getColumnCount(); j++) {
-                if ("IS_AUTOINCREMENT".equals(metaData.getColumnName(j))) {
-                    supportsIsAutoIncrement = true;
-                    break;
+            ResultSet pkResultSet = databaseMetaData.getPrimaryKeys(null, database, tableName);
+            while (pkResultSet.next()) {
+                String columnName = pkResultSet.getString("COLUMN_NAME");
+
+                ResultSet columnResultSet = databaseMetaData.getColumns(null, database, tableName, columnName);
+                while (columnResultSet.next()) {
+                    boolean isAutoIncrement = Objects.equals(columnResultSet.getString("IS_AUTOINCREMENT"), "YES");
+                    if (isAutoIncrement) {
+                        Element generatedKeyEle = doc.createElement("generatedKey");
+                        generatedKeyEle.setAttribute("column", columnName);
+                        generatedKeyEle.setAttribute("sqlStatement", "MySql");
+                        generatedKeyEle.setAttribute("identity", "true");
+                        tableEle.appendChild(generatedKeyEle);
+                    }
                 }
-            }
-
-            if (!supportsIsAutoIncrement) {
-                return;
-            }
-
-            ResultSet tableResultSet = databaseMetaData.getPrimaryKeys(null, null, tableName);
-            while (tableResultSet.next()) {
-                String columnName = tableResultSet.getString("COLUMN_NAME");
-                Element generatedKeyEle = doc.createElement("generatedKey");
-                generatedKeyEle.setAttribute("column", columnName);
-                generatedKeyEle.setAttribute("sqlStatement", "MySql");
-                generatedKeyEle.setAttribute("identity", "true");
-                tableEle.appendChild(generatedKeyEle);
             }
         }
     }
 
-
     /**
      * 修改所有db列类型为TINYINT或者BIGINT的,生成到Java里用Integer表示
      */
-    private void changeJavaFieldType(XPath xPath, Document doc) throws Exception {
+    private void changeJavaFieldType(XPath xPath, Document doc, String database) throws Exception {
         Element rootEle = doc.getDocumentElement();
         NodeList nodeList = (NodeList) xPath.evaluate("//table", rootEle, XPathConstants.NODESET);
         for (int i = 0; i < nodeList.getLength(); i++) {
@@ -385,7 +380,7 @@ public class DbnMyBatisGenerator {
 
             String tableName = tableEle.getAttribute("tableName");
             DatabaseMetaData databaseMetaData = connectionHandler.getMainConnection().getMetaData();
-            ResultSet rs = databaseMetaData.getColumns(null, null, tableName, null);
+            ResultSet rs = databaseMetaData.getColumns(null, database, tableName, null);
             while (rs.next()) {
                 int dataType = rs.getInt("DATA_TYPE");
                 if (Types.TINYINT == dataType || Types.BIT == dataType) {
