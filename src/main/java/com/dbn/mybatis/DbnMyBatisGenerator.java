@@ -62,7 +62,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.Types;
 import java.util.List;
 import java.util.Objects;
