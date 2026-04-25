@@ -63,9 +63,7 @@ public class ConnectionDriverSettingsForm extends DBNFormBase {
             //driverSetupPanel.setVisible(isExternalLibrary);
         });
 
-        //noinspection removal
-        driverLibraryTextField.addBrowseFolderListener(nls("cfg.connection.title.SelectDriverLibrary"),
-                nls("cfg.connection.text.LibraryDriverClasses"), null, LIBRARY_FILE_DESCRIPTOR);
+        driverLibraryTextField.addBrowseFolderListener(null, LIBRARY_FILE_DESCRIPTOR);
 
         reloadDriversCheckLabel.setText("");
         reloadDriversCheckLabel.setIcon(Icons.COMMON_CHECK);
