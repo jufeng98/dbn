@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "com.dbn"
-version = "3.4.5413.0"
+version = "3.5.0.0"
 
 repositories {
     maven { url = URI("https://maven.aliyun.com/nexus/content/groups/public/") }
@@ -141,13 +141,13 @@ tasks.register<Copy>("buildPluginAndUnzip") {
 tasks {
     // Set the JVM compatibility versions
     withType<JavaCompile> {
-        sourceCompatibility = "17"
-        targetCompatibility = "17"
+        sourceCompatibility = "21"
+        targetCompatibility = "21"
     }
 
 
     withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "17"
+        kotlinOptions.jvmTarget = "21"
     }
 
     prepareSandbox {
@@ -166,8 +166,8 @@ tasks {
     }
 
     patchPluginXml {
-        sinceBuild.set("232")
-        untilBuild.set("252.*")
+        sinceBuild.set("243")
+        untilBuild.set("261.*")
     }
 
     signPlugin {
