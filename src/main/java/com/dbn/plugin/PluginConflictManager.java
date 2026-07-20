@@ -1,6 +1,5 @@
 package com.dbn.plugin;
 
-import com.dbn.plugin.ui.PluginConflictResolutionDialog;
 import com.dbn.DatabaseNavigator;
 import com.dbn.common.component.ApplicationComponentBase;
 import com.dbn.common.component.PersistentState;
@@ -9,12 +8,13 @@ import com.dbn.common.util.Dialogs;
 import com.dbn.language.common.DBLanguageFileType;
 import com.dbn.language.psql.PSQLFileType;
 import com.dbn.language.sql.SQLFileType;
-import com.intellij.ide.plugins.PluginManager;
-import com.intellij.openapi.application.ex.ApplicationManagerEx;
+import com.dbn.plugin.ui.PluginConflictResolutionDialog;
+import com.intellij.ide.impl.ProjectUtil;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import lombok.Getter;
 import lombok.Setter;
 import org.jdom.Element;
@@ -29,8 +29,8 @@ import static com.dbn.plugin.PluginConflictManager.COMPONENT_NAME;
 @Getter
 @Setter
 @State(
-    name = COMPONENT_NAME,
-    storages = @Storage(DatabaseNavigator.STORAGE_FILE)
+        name = COMPONENT_NAME,
+        storages = @Storage(DatabaseNavigator.STORAGE_FILE)
 )
 public class PluginConflictManager extends ApplicationComponentBase implements PersistentState {
     public static final String COMPONENT_NAME = "DBNavigator.Application.PluginConflictManager";
@@ -53,7 +53,7 @@ public class PluginConflictManager extends ApplicationComponentBase implements P
         DBPluginStatus sqlPluginStatus = statusManager.getSqlPluginStatus();
         DBPluginStatus dbnPluginStatus = statusManager.getDbnPluginStatus();
 
-        if (dbnPluginStatus == ACTIVE)  {
+        if (dbnPluginStatus == ACTIVE) {
             if (sqlPluginStatus == ACTIVE) {
                 // both plugins in use, show resolution dialog
                 showConflictResolutionDialog();
@@ -65,13 +65,13 @@ public class PluginConflictManager extends ApplicationComponentBase implements P
             if (sqlPluginStatus == ACTIVE) {
                 // SQL plugin user - restore default file associations
                 restoreFileAssociations();
-                
+
             } else if (sqlPluginStatus == PASSIVE) {
                 // both plugins inactive - do nothing yet
 
                 // ... or show conflict resolution?
                 // showConflictResolutionDialog();
-                
+
             } else if (sqlPluginStatus == MISSING) {
                 // missing SQL plugin - favor DBN
                 claimFileAssociations(false);
@@ -81,15 +81,23 @@ public class PluginConflictManager extends ApplicationComponentBase implements P
 
     private void showConflictResolutionDialog() {
         conflictPrompted = true;
-        Dialogs.show(() -> new PluginConflictResolutionDialog());
+        Dialogs.show(PluginConflictResolutionDialog::new);
     }
 
     public void applyConflictResolution(PluginConflictResolution resolution) {
         switch (resolution) {
-            case DISABLE_PLUGIN: disablePlugin(); return;
-            case CONTINUE_FEATURED: claimFileAssociations(true); return;
-            case CONTINUE_LIMITED: restoreFileAssociations(); return;
-            case DECIDE_LATER: conflictPrompted = false; return;
+            case DISABLE_PLUGIN:
+                disablePlugin();
+                return;
+            case CONTINUE_FEATURED:
+                claimFileAssociations(true);
+                return;
+            case CONTINUE_LIMITED:
+                restoreFileAssociations();
+                return;
+            case DECIDE_LATER:
+                conflictPrompted = false;
+                return;
             default:
         }
     }
@@ -122,9 +130,16 @@ public class PluginConflictManager extends ApplicationComponentBase implements P
         // prompt again if needed on reinstall
         conflictPrompted = false;
 
-        String pluginId = DatabaseNavigator.DBN_PLUGIN_ID.getIdString();
-        PluginManager.disablePlugin(pluginId);
-        ApplicationManagerEx.getApplicationEx().restart(true);
+        @SuppressWarnings("DialogTitleCapitalization")
+        String message = """
+                本插件与插件官方插件 'Database Tools and SQL' 的功能冲突。为保证IDE稳定运行，需您手动禁用本插件。
+                请前往 Settings (Ctrl + Alt + S) -> Plugins -> installed，找到 DataBaseManager 并点击禁用，然后重启IDE。
+                """.trim();
+        Messages.showWarningDialog(
+                ProjectUtil.getActiveProject(),
+                message,
+                "插件冲突提示"
+        );
     }
 
     /**************************************************************************

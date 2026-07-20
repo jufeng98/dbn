@@ -10,12 +10,7 @@ import com.dbn.common.ui.listener.KeyAdapter;
 import com.dbn.common.ui.util.Borders;
 import com.dbn.common.ui.util.Keyboard;
 import com.dbn.common.util.Context;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.actionSystem.Presentation;
-import com.intellij.openapi.actionSystem.Shortcut;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.fileEditor.FileEditorManagerEvent;
 import com.intellij.openapi.fileEditor.FileEditorManagerListener;
 import com.intellij.openapi.keymap.KeymapUtil;
@@ -107,16 +102,14 @@ public abstract class TextFieldPopupProviderForm extends DBNFormBase implements 
             Presentation templatePresentation = action.getTemplatePresentation();
             Presentation presentation = new Presentation(templatePresentation.getText());
 
-            @SuppressWarnings("removal")
             AnActionEvent actionEvent = new AnActionEvent(
-                    null,
                     dataContext,
-                    "",
                     presentation,
-                    actionManager,
+                    "",
+                    ActionUiKind.NONE,
+                    null,
                     InputEvent.CTRL_DOWN_MASK,
-                    false,
-                    false);
+                    actionManager);
 
             try {
                 Method method = action.getClass().getDeclaredMethod("actionPerformed", AnActionEvent.class);

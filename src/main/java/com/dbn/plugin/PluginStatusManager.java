@@ -7,7 +7,7 @@ import com.dbn.common.project.Projects;
 import com.dbn.connection.ConnectionHandler;
 import com.dbn.connection.ConnectionManager;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
-import com.intellij.ide.plugins.PluginManagerCore;
+import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.project.Project;
@@ -17,9 +17,7 @@ import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Method;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.dbn.common.component.Components.applicationService;
@@ -32,8 +30,8 @@ import static com.dbn.plugin.PluginStatusManager.COMPONENT_NAME;
 @Getter
 @Setter
 @State(
-    name = COMPONENT_NAME,
-    storages = @Storage(DatabaseNavigator.STORAGE_FILE)
+        name = COMPONENT_NAME,
+        storages = @Storage(DatabaseNavigator.STORAGE_FILE)
 )
 public class PluginStatusManager extends ApplicationComponentBase implements PersistentState {
     public static final String COMPONENT_NAME = "DBNavigator.Application.PluginStatusManager";
@@ -84,7 +82,8 @@ public class PluginStatusManager extends ApplicationComponentBase implements Per
 
     private static DBPluginStatus evaluateSqlPluginStatus(Project project) {
         try {
-            IdeaPluginDescriptor pluginDescriptor = PluginManagerCore.getPlugin(DatabaseNavigator.SQL_PLUGIN_ID);
+            PluginManager pluginManager = PluginManager.getInstance();
+            IdeaPluginDescriptor pluginDescriptor = pluginManager.findEnabledPlugin(DatabaseNavigator.SQL_PLUGIN_ID);
             if (pluginDescriptor == null) return MISSING; // not installed
 
             ClassLoader pluginClassLoader = pluginDescriptor.getPluginClassLoader();

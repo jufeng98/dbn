@@ -1,11 +1,7 @@
 package com.dbn.common.ui.shortcut;
 
 import com.dbn.common.ui.util.Keyboard;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.Presentation;
-import com.intellij.openapi.actionSystem.Shortcut;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.actionSystem.ex.AnActionListener;
 import com.intellij.openapi.project.Project;
 import lombok.Getter;
@@ -45,16 +41,15 @@ public abstract class ShortcutInterceptor implements AnActionListener {
 
     protected void invokeDelegateAction(@NotNull AnActionEvent event) {
         AnAction delegateAction = getDelegateAction();
-        @SuppressWarnings("removal")
+
         AnActionEvent delegateEvent = new AnActionEvent(
-                event.getInputEvent(),
                 event.getDataContext(),
-                event.getPlace(),
                 new Presentation(),
-                ActionManager.getInstance(),
+                "",
+                ActionUiKind.NONE,
+                null,
                 0,
-                false,
-                false);
+                ActionManager.getInstance());
 
         try {
             Method method = delegateAction.getClass().getDeclaredMethod("actionPerformed", AnActionEvent.class);

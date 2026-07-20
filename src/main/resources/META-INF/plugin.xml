@@ -10,6 +10,8 @@
     <depends optional="true" config-file="dbn-debugger-support.xml">com.intellij.modules.xdebugger</depends>
     <depends optional="true" config-file="dbn-copyright-support.xml">com.intellij.copyright</depends>
 
+    <incompatible-with>com.intellij.database</incompatible-with>
+
     <vendor email="375709770@qq.com">jufeng98</vendor>
 
     <description><![CDATA[
@@ -57,6 +59,10 @@
     ]]></description>
     <change-notes><![CDATA[
         <ul>
+            <li><b>3.5.1.0</b>
+            <ul>
+                <li>支持262</li>
+            </ul>
             <li><b>3.4.5213</b>
             <ul>
                 <li>完善 annotator </li>

@@ -68,7 +68,7 @@ public class Icons {
     public static final Icon ACTION_STOP                      = AllIcons.Actions.Suspend;
     public static final Icon ACTION_RELOAD                    = AllIcons.Actions.Refresh;
     public static final Icon ACTION_REVERT                    = AllIcons.Actions.Rollback;
-    public static final Icon ACTION_SAVE                      = AllIcons.Actions.Menu_saveall;
+    public static final Icon ACTION_SAVE                      = AllIcons.Actions.MenuSaveall;
     public static final Icon ACTION_SELECT_ALL                = AllIcons.Actions.Selectall;
     public static final Icon ACTION_OPTIONS                   = AllIcons.General.GearPlain;
     public static final Icon ACTION_NAVIGATE                  = load("/img/action/Navigate.png");

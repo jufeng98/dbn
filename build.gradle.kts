@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "com.dbn"
-version = "3.5.0.0"
+version = "3.5.1.0"
 
 repositories {
     maven { url = URI("https://maven.aliyun.com/nexus/content/groups/public/") }
@@ -167,7 +167,7 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("243")
-        untilBuild.set("261.*")
+        untilBuild.set(provider { null })
     }
 
     signPlugin {

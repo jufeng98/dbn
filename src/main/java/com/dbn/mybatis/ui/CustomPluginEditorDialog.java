@@ -5,26 +5,17 @@ import com.dbn.common.thread.Progress;
 import com.dbn.compile.MyClassLoader;
 import com.dbn.mybatis.custom.CustomPluginHandler;
 import com.dbn.mybatis.custom.JavaEditorTextField;
-import com.intellij.ide.plugins.PluginManagerCore;
+import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.DependencyScope;
-import com.intellij.openapi.roots.LibraryOrderEntry;
-import com.intellij.openapi.roots.ModuleRootManager;
-import com.intellij.openapi.roots.ModuleRootModificationUtil;
-import com.intellij.openapi.roots.OrderEntry;
-import com.intellij.openapi.roots.OrderRootType;
-import com.intellij.openapi.roots.libraries.Library;
-import com.intellij.openapi.roots.libraries.LibraryTable;
-import com.intellij.openapi.roots.libraries.LibraryTablesRegistrar;
+import com.intellij.openapi.roots.*;
+import com.intellij.openapi.roots.libraries.*;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.io.StreamUtil;
-import com.intellij.openapi.vfs.JarFileSystem;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.openapi.vfs.*;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.io.URLUtil;
 import lombok.Cleanup;
@@ -164,8 +155,9 @@ public class CustomPluginEditorDialog extends DialogWrapper {
     private String constructGeneratorJarPath() {
         String libraryRoot = "/lib/ext/mybatis";
 
+        PluginManager pluginManager = PluginManager.getInstance();
         @SuppressWarnings("DataFlowIssue")
-        String absolutePath = PluginManagerCore.getPlugin(DatabaseNavigator.DBN_PLUGIN_ID)
+        String absolutePath = pluginManager.findEnabledPlugin(DatabaseNavigator.DBN_PLUGIN_ID)
                 .getPluginPath().toFile().getAbsolutePath();
 
         return absolutePath + libraryRoot + "/" + SCRIPT_NAME;
