@@ -1239,6 +1239,7 @@
         </intentionAction>
 
         <fileDocumentManagerListener implementation="com.dbn.connection.console.DatabaseConsoleFileInitializer"/>
+        <errorHandler implementation="com.intellij.diagnostic.JetBrainsMarketplaceErrorReportSubmitter"/>
     </extensions>
 
     <xi:include href="/META-INF/dbn-sql.xml"/>

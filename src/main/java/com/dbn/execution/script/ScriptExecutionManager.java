@@ -7,12 +7,8 @@ import com.dbn.common.event.ProjectEvents;
 import com.dbn.common.routine.Consumer;
 import com.dbn.common.thread.CancellableDatabaseCall;
 import com.dbn.common.thread.Progress;
-import com.dbn.common.util.Messages;
-import com.dbn.common.util.Strings;
-import com.dbn.common.util.Unsafe;
-import com.dbn.connection.ConnectionHandler;
-import com.dbn.connection.DatabaseType;
-import com.dbn.connection.SchemaId;
+import com.dbn.common.util.*;
+import com.dbn.connection.*;
 import com.dbn.connection.mapping.FileConnectionContextManager;
 import com.dbn.database.CmdLineExecutionInput;
 import com.dbn.database.interfaces.DatabaseExecutionInterface;
@@ -36,17 +32,12 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.text.LineReader;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.val;
-import org.jdesktop.swingx.util.OS;
+import lombok.*;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermission;
@@ -65,8 +56,8 @@ import static com.dbn.diagnostics.Diagnostics.conditionallyLog;
 @Getter
 @Setter
 @State(
-    name = ScriptExecutionManager.COMPONENT_NAME,
-    storages = @Storage(DatabaseNavigator.STORAGE_FILE)
+        name = ScriptExecutionManager.COMPONENT_NAME,
+        storages = @Storage(DatabaseNavigator.STORAGE_FILE)
 )
 public class ScriptExecutionManager extends ProjectComponentBase implements PersistentState {
     public static final String COMPONENT_NAME = "DBNavigator.Project.ScriptExecutionManager";
@@ -113,7 +104,7 @@ public class ScriptExecutionManager extends ProjectComponentBase implements Pers
             int timeout = scriptExecutionSettings.getExecutionTimeout();
             executionInput.setExecutionTimeout(timeout);
 
-            ScriptExecutionInputDialog inputDialog = new ScriptExecutionInputDialog(project,executionInput);
+            ScriptExecutionInputDialog inputDialog = new ScriptExecutionInputDialog(project, executionInput);
 
             inputDialog.show();
             if (inputDialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
@@ -313,7 +304,7 @@ public class ScriptExecutionManager extends ProjectComponentBase implements Pers
     public VirtualFile selectCmdLineExecutable(@NotNull DatabaseType databaseType, @Nullable String selectedExecutable) {
         FileChooserDescriptor fileChooserDescriptor = new FileChooserDescriptor(true, false, false, false, false, false);
         CmdLineInterface defaultCli = CmdLineInterface.getDefault(databaseType);
-        String extension = OS.isWindows() ? ".exe" : "";
+        String extension = com.intellij.util.system.OS.CURRENT == com.intellij.util.system.OS.Windows ? ".exe" : "";
         fileChooserDescriptor.
                 withTitle("Select Command-Line Client").
                 withDescription("Select Command-Line Interface executable (" + defaultCli.getExecutablePath() + extension + ")").

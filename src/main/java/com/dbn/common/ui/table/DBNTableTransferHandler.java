@@ -1,20 +1,18 @@
 package com.dbn.common.ui.table;
 
+import com.dbn.common.clipboard.HtmlContent;
 import com.dbn.common.util.Commons;
 import com.intellij.openapi.ide.CopyPasteManager;
-import org.jdesktop.swingx.plaf.basic.core.BasicTransferable;
 
-import javax.swing.JComponent;
-import javax.swing.TransferHandler;
+import javax.swing.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.Transferable;
-
-import static com.dbn.common.util.Commons.nvl;
 
 public class DBNTableTransferHandler extends TransferHandler {
     public static final DBNTableTransferHandler INSTANCE = new DBNTableTransferHandler();
 
-    private DBNTableTransferHandler() {}
+    private DBNTableTransferHandler() {
+    }
 
     @Override
     public void exportToClipboard(JComponent comp, Clipboard clip, int action) {
@@ -84,7 +82,7 @@ public class DBNTableTransferHandler extends TransferHandler {
         plainStr.deleteCharAt(plainStr.length() - 1);
         htmlStr.append("</table>\n</body>\n</html>");
 
-        return new BasicTransferable(plainStr.toString(), htmlStr.toString());
+        return new HtmlContent(htmlStr.toString());
     }
 
 }

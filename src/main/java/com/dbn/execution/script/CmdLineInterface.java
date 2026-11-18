@@ -2,14 +2,13 @@ package com.dbn.execution.script;
 
 import com.dbn.common.options.PersistentConfiguration;
 import com.dbn.common.ui.Presentable;
+import com.dbn.common.util.*;
 import com.dbn.common.util.Cloneable;
-import com.dbn.common.util.Commons;
-import com.dbn.common.util.Strings;
 import com.dbn.connection.DatabaseType;
 import com.dbn.nls.NlsResources;
+import com.intellij.util.system.OS;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.jdesktop.swingx.util.OS;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,7 +31,7 @@ public class CmdLineInterface implements Cloneable<CmdLineInterface>, Persistent
     private String description;
 
     public interface Defaults {
-        String extension = OS.isWindows() ? ".exe" : "";
+        String extension = OS.CURRENT == OS.Windows ? ".exe" : "";
         CmdLineInterface ORACLE = new CmdLineInterface(DEFAULT_ID, DatabaseType.ORACLE, "sqlplus", NlsResources.nls("app.execution.const.CmdLineInterface_ORACLE"), "sqlplus" + extension);
         CmdLineInterface MYSQL = new CmdLineInterface(DEFAULT_ID, DatabaseType.MYSQL, "mysql", NlsResources.nls("app.execution.const.CmdLineInterface_MYSQL"), "mysql" + extension);
         CmdLineInterface POSTGRES = new CmdLineInterface(DEFAULT_ID, DatabaseType.POSTGRES, "psql ", NlsResources.nls("app.execution.const.CmdLineInterface_POSTGRES"), "psql" + extension);
@@ -43,10 +42,14 @@ public class CmdLineInterface implements Cloneable<CmdLineInterface>, Persistent
     public static CmdLineInterface getDefault(@Nullable DatabaseType databaseType) {
         if (databaseType != null) {
             switch (databaseType) {
-                case ORACLE: return Defaults.ORACLE;
-                case MYSQL: return Defaults.MYSQL;
-                case POSTGRES: return Defaults.POSTGRES;
-                case SQLITE: return Defaults.SQLITE;
+                case ORACLE:
+                    return Defaults.ORACLE;
+                case MYSQL:
+                    return Defaults.MYSQL;
+                case POSTGRES:
+                    return Defaults.POSTGRES;
+                case SQLITE:
+                    return Defaults.SQLITE;
             }
         }
         return Defaults.GENERIC;
